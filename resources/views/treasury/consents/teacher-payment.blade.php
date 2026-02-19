@@ -126,21 +126,19 @@
         @endif
         <h1>DOCUMENT DE DADES DE PAGAMENT</h1>
         <p>Universitat Popular de Granollers - Tresoreria</p>
-        <p>Temporada: {{ $season->name ?? 'N/A' }} ({{ $seasonSlug ?? 'N/A' }})</p>
+        <p>Temporada: {{ $season->name ?? 'N/A' }} </p>
         <p>ID: PAY-{{ $teacher->id }}-{{ $course->id ?? 'N/A' }}-{{ $acceptedAt->format('YmdHis') }}</p>
     </div>
 
     <!-- Informació del Professor -->
     <div class="section">
-        <div class="section-title">1. INFORMACIÓ DEL PROFESSOR/A</div>
+        <div class="section-title">1. INFORMACIÓ PROFESSOR/A</div>
         <div class="info-grid">
             <div class="info-item">
-                <div class="label">Nom complet:</div>
-                <div class="value">{{ $teacher->first_name }} {{ $teacher->last_name }}</div>
+                <div class="label">Nom complet:{{ $teacher->first_name }} {{ $teacher->last_name }}</div>
             </div>
             <div class="info-item">
-                <div class="label">Email:</div>
-                <div class="value">{{ $teacher->email }}</div>
+                <span class="label">Email:</span> <span class="value">{{ $teacher->email }}</span>
             </div>
             <div class="info-item">
                 <div class="label">Telèfon:</div>

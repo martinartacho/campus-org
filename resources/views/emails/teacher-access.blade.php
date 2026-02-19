@@ -7,7 +7,7 @@
     <h1>{{ __('Dades del professorat de la UPG') }}</h1>
     <div>
         <p>
-            {{ __('Hola', ['name' => $teacher->first_name .' '.$teacher->last_name])  ??  $user->name }},
+            {{ __('campus.treasury_mail_welcome', ['name' => $teacher->teacherProfile ? $teacher->teacherProfile->full_name : ($teacher->name ?? 'Docent')]) }}
         </p>
 
         @if ($purpose === 'payments')
@@ -75,9 +75,7 @@
         </p>
 
         <p>
-            Associaió per  a l'impuls d'Estudis Populars (AIEP) - CIF G-66314998 -Carrer Mare de Deu de Montserrat, edifici Roca Umbert, 36 - 08401 Granollers
-            [{{ config('Associaió per  a l´impuls d´Estudis Populars (AIEP) - CIF G-66314998 -Carrer Mare de Deu de Montserrat, edifici Roca Umbert, 36 - 08401 Granollers') }}]
-            
+           {{ config('Associació per  a l´impuls d´Estudis Populars (AIEP) - CIF G-66314998 -Carrer Mare de Deu de Montserrat, edifici Roca Umbert, 36 - 08401 Granollers') }} 
         </p>
 
         <p>
