@@ -27,13 +27,20 @@ class SendTeacherAccessController extends Controller
         $purpose = $request->get('purpose'); // 'consent' | 'payments'
 
         $courseCode = $request->get('courseCode');
+        
+        // Datos adicionales
+        $additionalData = [
+            'autoria' => $request->get('autoria'),
+            'course_title' => $request->get('course_title')
+        ];
 
         Mail::to($teacher->email)
             ->send(new TeacherAccessMail(
                 $teacher,
                 $token,
                 $purpose,
-                $courseCode ?? 'general'  // Valor por defecto si es null
+                $courseCode ?? 'general',  // Valor por defecto si es null
+                $additionalData
             ));
 
 

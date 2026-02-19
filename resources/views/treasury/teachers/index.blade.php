@@ -158,10 +158,14 @@
                                         action="{{ route('campus.treasury.teachers.send-access', [
                                                 'teacher' => $user->id,
                                                 'purpose' => 'payments',
-                                                'courseCode' => $courseData['course_code']
+                                                'courseCode' => $courseData['course_code'],
+                                                'autoria' => auth()->user()->name,
+                                                'course_title' => $courseData['course_title'] ?? $courseData['course_code']
                                         ]) }}"
                                         class="inline">
-                                    @csrf                                   
+                                    @csrf
+                                    <input type="hidden" name="autoria" value="{{ auth()->user()->name }}">
+                                    <input type="hidden" name="course_title" value="{{ $courseData['course_title'] ?? $courseData['course_code'] }}">                                   
                                         <button type="submit"
                                             class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">
                                               <i class="bi bi-envelope mr-1"></i>

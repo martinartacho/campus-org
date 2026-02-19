@@ -2,7 +2,8 @@
 // lang/ca/campus.php
 return [
     'campus' => 'Campus',
-
+    'denominacio_AIEP' => 'Associació per l\'impuls d\'Estudis Populars (AIEP) - CIF G-66314998 -Carrer Mare de Deu de Montserrat, edifici Roca Umbert, 36 - 08401 Granollers',
+    
     // Seasons
     'season' => 'Temporada',
     'seasons' => 'Temporades',
@@ -318,6 +319,7 @@ return [
     // Tresor    
     'treasury' => 'Tresoreria',
     'treasury_management' => 'Gestió de la tresoreria',
+    'treasury_team' => 'Equip de tresoreria',
     'treasury_RGPD' => 'RGPD',
     'treasury_RGPD_info' => 'Registre General de Protecció de Dades (RGPD)',
     

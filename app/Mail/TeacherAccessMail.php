@@ -16,6 +16,7 @@ class TeacherAccessMail extends Mailable
         public TeacherAccessToken $token,
         public string $purpose, // 'consent' | 'payments'
         public string $courseCode,
+        public array $additionalData = []
         //public CampusCourse $course
 
     ) {}
