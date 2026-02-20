@@ -12,29 +12,31 @@
     </li>
 @endsection
 
-@section('actions')
-    
-    <x-campus-button href="{{ route('campus.courses.create') }}" variant="header">
-        <i class="bi bi-plus-lg me-2"></i>
-        {{ __('campus.new_course') }} 
-    </x-campus-button>
-    
-   
-@endsection
-
 @section('content')
 <div class="flex justify-between items-center mb-6">
     <h1 class="text-2xl font-bold">
         {{ __('campus.courses') }}
     </h1>
 
-    @can('campus.courses.create')
-        <a href="{{ route('campus.courses.create') }}"
-           class="campus-primary-button">
-            {{ __('campus.new_course') }}
-        </a>
-    @endcan
-    
+    <div class="flex space-x-3">
+        @can('campus.courses.create')
+            <a href="{{ route('campus.courses.create') }}"
+               class="campus-primary-button">
+                {{ __('campus.new_course') }}
+            </a>
+        @endcan
+        
+        @can('campus.courses.create')
+            <a href="{{ route('importar.cursos') }}"
+               class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+                <i class="bi bi-upload mr-2"></i>{{ __('campus.import_courses') }}
+            </a>
+        @else
+            <span class="text-gray-400 text-sm px-4 py-2 bg-gray-200 rounded-md cursor-not-allowed">
+                <i class="bi bi-upload mr-2"></i>{{ __('campus.import_courses') }} (Sense permisos)
+            </span>
+        @endcan
+    </div>
 </div>
 
 <div class="bg-white shadow rounded-lg overflow-hidden">
@@ -144,6 +146,22 @@
         📥 {{ __('campus.download_template') }}
     </a>
 </p>
+<div class="mt-2 p-3 bg-blue-50 rounded text-xs text-blue-800">
+    <strong>{{ __('campus.code_protocol') }}:</strong><br>
+    {{ __('campus.code_protocol_description') }}<br>
+    &nbsp;&nbsp;- {{ __('campus.code_protocol_prefix') }}<br>
+    &nbsp;&nbsp;- {{ __('campus.code_protocol_suffix') }}<br>
+    &nbsp;&nbsp;- {{ __('campus.code_protocol_result') }}
+</div>
+<div class="mt-2 p-3 bg-green-50 rounded text-xs text-green-800">
+    <strong>{{ __('campus.category_protocol') }}:</strong><br>
+    {{ __('campus.category_protocol_description') }}<br>
+    &nbsp;&nbsp;- {{ __('campus.category_protocol_name') }}<br>
+    &nbsp;&nbsp;- {{ __('campus.category_protocol_slug') }}<br>
+    &nbsp;&nbsp;- {{ __('campus.category_protocol_description') }}<br>
+    &nbsp;&nbsp;- {{ __('campus.category_protocol_order') }}<br>
+    • {{ __('campus.category_protocol_report') }}
+</div>
 </div>
 
 
@@ -156,7 +174,9 @@
 `category,code,title,slug,description,credits,hours,max_students,price,level,schedule_days,schedule_times,start_date,end_date,requirements,objectives,professor,location,calendar_dates,registration_price,format
 Salut i Infermeria,SAN101,PEDIATRIA,pediatria,"Curs de pediatria per a professionals de la salut",4,30,25,20.00,intermediate,Dilluns,10:00-11:30,2026-02-16,2026-03-16,"Titol d'infermeria o medicina","Actualització de coneixements en pediatria","Anna Estapé","CTUG. ROCA UMBERT","16/2, 23/2, 2/3, 9/3, 16/3",20.00,Presencial
 Educació i Pedagogia,EDU201,TDAH,tdah,"Estratègies educatives per al TDAH",3,25,30,25.00,beginner,Dimecres,16:00-18:00,2026-02-19,2026-04-02,"Interès en educació especial","Estratègies pràctiques per a l'aula","Marta Soler","UPC VALLÈS","19/2, 26/2, 5/3, 12/3, 19/3, 26/3",25.00,Semipresencial
-Ciències Socials i Humanitats,SOC301,INTEL·LIGÈNCIA EMOCIONAL,intelligencia-emocional,"Desenvolupament d'habilitats emocionals",2,20,35,15.00,beginner,Dijous,18:00-20:00,2026-02-20,2026-03-20,"Cap requeriment previ","Millora de competències emocionals","Laura Martínez","ONLINE","20/2, 27/2, 6/3, 13/3, 20/3",15.00,Online`;
+Ciències Socials i Humanitats,,INTEL·LIGÈNCIA EMOCIONAL,intelligencia-emocional,"Desenvolupament d'habilitats emocionals",2,20,35,15.00,beginner,Dijous,18:00-20:00,2026-02-20,2026-03-20,"Cap requeriment previ","Millora de competències emocionals","Laura Martínez","ONLINE","20/2, 27/2, 6/3, 13/3, 20/3",15.00,Online
+Tecnologia,Nova Categoria,PROGRAMACIÓ WEB,programacio-web,"Curs complet de desenvolupament web",5,40,20,30.00,intermediate,Dimarts,Dilluns,18:00-21:00,2026-02-25,2026-05-20,"Coneixements bàsics d'informàtica","Full stack development amb HTML, CSS, JavaScript","Carlos Rodríguez","Campus Digital","25/2, 4/3, 11/3, 18/3, 25/3, 1/4, 8/4, 15/4, 22/4, 29/4",30.00,Híbrid
+Arts i Disseny,Disseny Gràfic,DISENY UX/UI,disseny-ux-ui,"Disseny d'experiències d'usuari i interfícies",3,35,25,35.00,intermediate,Divendres,17:00-20:00,2026-02-28,2026-04-25,"Coneixements bàsics de disseny","Creació de prototips i disseny visual","Sofia López","Escola d'Art","28/2, 7/3, 14/3, 21/3, 28/3, 4/4, 11/4, 18/4, 25/4",35.00,Presencial`;
         
         const blob = new Blob([template], { type: 'text/csv' });
         const url = window.URL.createObjectURL(blob);
