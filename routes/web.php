@@ -21,6 +21,7 @@ use App\Http\Controllers\Campus\CourseTeacherController;
 use App\Http\Controllers\Campus\TeacherController;
 use App\Http\Controllers\Campus\CourseRegistrationController;
 use App\Http\Controllers\Campus\CampusImportController;
+use App\Http\Controllers\Campus\ResourceController;
 use App\Http\Controllers\TeacherAccess\TeacherAccessController;
 // use App\Http\Controllers\Manager\DashboardController; // Per ara inhabilitat
 use App\Http\Controllers\Manager\RegistrationController;
@@ -482,6 +483,16 @@ Route::get('test-import', function() {
                 
         Route::resource('registrations', \App\Http\Controllers\Campus\RegistrationController::class)
             ->middleware('can:campus.registrations.view'); 
+            
+        // Re-Cursos - Resource Management
+        Route::get('resources/calendar', [ResourceController::class, 'calendar'])->name('resources.calendar');
+        Route::post('resources/assign', [ResourceController::class, 'assign'])->name('resources.assign');
+        Route::get('resources/spaces', [ResourceController::class, 'spaces'])->name('resources.spaces');
+        Route::post('resources/spaces', [ResourceController::class, 'storeSpace'])->name('resources.spaces.store');
+        Route::get('resources/timeslots', [ResourceController::class, 'timeSlots'])->name('resources.timeslots');
+        Route::post('resources/timeslots', [ResourceController::class, 'storeTimeSlot'])->name('resources.timeslots.store');
+        Route::get('resources/teachers', [ResourceController::class, 'teachers'])->name('resources.teachers');
+        Route::get('resources/getnextcode', [ResourceController::class, 'getNextCode'])->name('resources.getnextcode'); 
             
     });
     

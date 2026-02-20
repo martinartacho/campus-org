@@ -18,6 +18,8 @@ class DatabaseSeeder extends Seeder
                 RolesAndPermissionsSeeder::class,
                 UserSeeder::class,
                 CampusSeeder::class,
+                CampusSpaceSeeder::class,
+                CampusTimeSlotSeeder::class,
                 // NotificationSeeder::class,
                 CampusExempleSeeder::class,
                 // Otros seeders que tengas...
