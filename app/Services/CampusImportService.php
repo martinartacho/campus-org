@@ -334,8 +334,8 @@ class CampusImportService
                 'level' => 'beginner',
                 'start_date' => $season->season_start,
                 'end_date' => $season->season_end,
-                'is_active' => true,
-                'is_public' => true,
+                'is_active' => false,
+                'is_public' => false,
             ]);
             
             return $course;
@@ -365,8 +365,8 @@ class CampusImportService
                     'level' => 'beginner',
                     'start_date' => $season->season_start,
                     'end_date' => $season->season_end,
-                    'is_active' => 0, // Inactivo por error
-                    'is_public' => 0, // No público por error
+                    'is_active' => false, // Inactivo por error
+                    'is_public' => false, // No público por error
                 ]);
                 
                 $this->incidencies[] = "Fila {$rowNumber}: Curs duplicat creat com a inactiu per revisió: {$courseTitle}";

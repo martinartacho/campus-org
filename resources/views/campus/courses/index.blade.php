@@ -40,7 +40,32 @@
 </div>
 
 <div class="bg-white shadow rounded-lg overflow-hidden">
-    <table class="min-w-full divide-y divide-gray-200">
+    <div class="p-6">
+        <div class="mb-4">
+            <div class="flex flex-col sm:flex-row gap-4">
+                <div class="flex-1">
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="bi bi-search text-gray-400"></i>
+                        </div>
+                        <input type="text" 
+                               id="searchCourse" 
+                               placeholder="{{ __('campus.search_course') }}" 
+                               class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button id="clearCourseSearch" 
+                            class="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition duration-200 hidden">
+                        <i class="bi bi-x-circle mr-2"></i>{{ __('campus.clear') }}
+                    </button>
+                    <span id="courseSearchResults" class="text-sm text-gray-500 py-2"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
         <tr>
             <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">
@@ -63,7 +88,7 @@
 
         <tbody class="bg-white divide-y divide-gray-200">
         @forelse ($courses as $course)
-            <tr>
+            <tr class="course-row">
                 <td class="px-4 py-3">
                     <a href="{{ route('campus.courses.show', $course) }}"
                        class="font-medium text-blue-600 hover:underline">
@@ -168,6 +193,46 @@
 @endsection
 
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('searchCourse');
+        const clearButton = document.getElementById('clearCourseSearch');
+        const resultsSpan = document.getElementById('courseSearchResults');
+        const rows = document.querySelectorAll('.course-row');
+        const totalRows = rows.length;
+        
+        function updateCourseSearch() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            let visibleCount = 0;
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                const isVisible = text.includes(searchTerm);
+                row.style.display = isVisible ? '' : 'none';
+                if (isVisible) visibleCount++;
+            });
+            
+            // Update results counter
+            if (searchTerm) {
+                resultsSpan.textContent = `${visibleCount} / ${totalRows} {{ __('campus.results') }}`;
+                clearButton.classList.remove('hidden');
+            } else {
+                resultsSpan.textContent = '';
+                clearButton.classList.add('hidden');
+            }
+        }
+        
+        searchInput.addEventListener('input', updateCourseSearch);
+        
+        clearButton.addEventListener('click', function() {
+            searchInput.value = '';
+            updateCourseSearch();
+            searchInput.focus();
+        });
+        
+        // Initial display
+        updateCourseSearch();
+    });
+
     // Descargar plantilla
     window.downloadTemplate = function() {
         const template = 

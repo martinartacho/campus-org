@@ -34,12 +34,23 @@
 
     {{-- Profesores asignados --}}
     <div class="bg-white shadow rounded-lg p-6">
-        <h2 class="text-lg font-semibold mb-4">
-            {{ __('campus.assigned_teachers') }} ({{ $assignedTeachers->count() }})
-        </h2>
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-lg font-semibold">
+                {{ __('campus.assigned_teachers') }} ({{ $assignedTeachers->count() }})
+            </h2>
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="bi bi-search text-gray-400"></i>
+                </div>
+                <input type="text" 
+                       id="searchTeacher" 
+                       placeholder="{{ __('campus.search_teacher') }}" 
+                       class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+        </div>
 
         @forelse($assignedTeachers as $teacher)
-            <div class="justify-left items-center border-b py-2">
+            <div class="teacher-item justify-left items-center border-b py-2">
                 <div>
                     <strong>{{ $teacher->last_name }}, {{ $teacher->first_name }}</strong>
                 </div>
@@ -178,4 +189,40 @@
 
    
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchTeacher');
+    const teacherItems = document.querySelectorAll('.teacher-item');
+    const totalItems = teacherItems.length;
+    
+    function updateTeacherSearch() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        let visibleCount = 0;
+        
+        teacherItems.forEach(item => {
+            const text = item.textContent.toLowerCase();
+            const isVisible = text.includes(searchTerm);
+            item.style.display = isVisible ? '' : 'none';
+            if (isVisible) visibleCount++;
+        });
+        
+        // Show/hide no results message
+        const noResultsMsg = document.getElementById('noTeacherResults');
+        if (noResultsMsg) {
+            noResultsMsg.remove();
+        }
+        
+        if (searchTerm && visibleCount === 0) {
+            const msg = document.createElement('div');
+            msg.id = 'noTeacherResults';
+            msg.className = 'text-center py-4 text-gray-500';
+            msg.textContent = '{{ __('campus.no_results') }}';
+            searchInput.closest('.bg-white').querySelector('.space-y-6').appendChild(msg);
+        }
+    }
+    
+    searchInput.addEventListener('input', updateTeacherSearch);
+});
+</script>
 @endsection

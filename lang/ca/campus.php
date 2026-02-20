@@ -393,6 +393,14 @@ return [
     
 // General UI
     'clear_filter' => 'Netejar filtre',
+    'clear' => 'Netejar',
+    'search_teacher' => 'Buscar professor...',
+    'search_course' => 'Buscar curs...',
+    'search_student' => 'Buscar estudiant...',
+    'results' => 'resultats',
+    'no_results' => 'No hi ha resultats',
+    'no_course_results' => 'No s\'han trobat cursos que coincideixin amb la teva cerca',
+    'no_student_results' => 'No s\'han trobat estudiants que coincideixin amb la teva cerca',
     'no_active_season' => 'No hi ha temporada activa actualment. Activa una temporada a la configuració.',
     'no_teachers_in_season' => 'No hi ha professors assignats a cursos en la temporada :season.',
     'name' => 'Nom',
