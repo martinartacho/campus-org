@@ -1,4 +1,4 @@
-@extends('campus.shared.layout')
+git@extends('campus.shared.layout')
 
 @section('title', __('campus.registrations'))
 @section('subtitle', $course->title)
