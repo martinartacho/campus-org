@@ -49,13 +49,15 @@ class CampusImportController extends Controller
         try {
             $file = $request->file('csv_file');
             $seasonId = $request->get('season_id');
+            $confirmResponsibility = $request->get('confirm_responsibility', false);
 
-            $result = $this->importService->importFromCSV($file, $seasonId);
+            // Omitir validación previa y proceder directamente
+            $result = $this->importService->importFromCSV($file, $seasonId, true);
 
             if ($result['success']) {
-                $message = "Importació completada amb èxit. " .
-                         "{$result['resum']['teachers_creats']} professors creats, " .
-                         "{$result['resum']['courses_creats']} cursos creats.";
+                $message = __('campus.import_success') . " " .
+                         "{$result['resum']['teachers_creats']} " . __('campus.Professors creats') . ", " .
+                         "{$result['resum']['courses_creats']} " . __('campus.Cursos creats') . ".";
 
                 return response()->json([
                     'success' => true,
@@ -66,7 +68,7 @@ class CampusImportController extends Controller
             } else {
                 return response()->json([
                     'success' => false,
-                    'message' => 'No s\'ha pogut processar el fitxer CSV',
+                    'message' => __('campus.import_error'),
                     'incidencies' => $result['incidencies']
                 ], 400);
             }
@@ -75,6 +77,57 @@ class CampusImportController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Error durant la importació: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Validar archivo CSV
+     */
+    public function validateCSV(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'csv_file' => 'required|file|mimes:csv,txt|max:10240',
+        ], [
+            'csv_file.required' => 'Has de seleccionar un fitxer CSV',
+            'csv_file.mimes' => 'El fitxer ha de ser de tipus CSV',
+            'csv_file.max' => 'El fitxer no pot ser més gran de 10MB',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error de validació',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            $file = $request->file('csv_file');
+            $validation = $this->importService->validateCSV($file);
+
+            if ($validation['valid']) {
+                $message = $validation['has_critical_issues'] 
+                    ? __('campus.import_validation_warning') 
+                    : __('campus.import_validate_success');
+
+                return response()->json([
+                    'success' => true,
+                    'message' => $message,
+                    'has_issues' => $validation['has_critical_issues'],
+                    'warnings' => $validation['warnings']
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => $validation['message']
+                ], 400);
+            }
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error durant la validació: ' . $e->getMessage()
             ], 500);
         }
     }

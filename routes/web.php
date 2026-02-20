@@ -44,6 +44,9 @@ Route::get('importar-cursos', [CampusImportController::class, 'create'])
 Route::post('importar-cursos', [CampusImportController::class, 'store'])
     ->name('importar.cursos.store');
 
+Route::post('importar-cursos/validate', [CampusImportController::class, 'validateCSV'])
+    ->name('importar.cursos.validate');
+
 Route::get('importar-cursos/template', [CampusImportController::class, 'downloadTemplate'])
     ->name('importar.cursos.template');
 

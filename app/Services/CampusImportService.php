@@ -21,8 +21,70 @@ class CampusImportService
         'files_ignorats' => 0,
         'errors' => 0
     ];
+    private $validationWarnings = [];
     
-    public function importFromCSV(UploadedFile $file, $seasonId = null)
+    /**
+     * Validar archivo CSV antes de importar
+     */
+    public function validateCSV(UploadedFile $file)
+    {
+        $this->validationWarnings = [];
+        
+        $handle = fopen($file->getPathname(), 'r');
+        if (!$handle) {
+            return ['valid' => false, 'message' => 'No se puede leer el archivo'];
+        }
+        
+        $header = fgetcsv($handle, 0, ',');
+        $rowNumber = 2; // Empezar desde la fila 2 (después del header)
+        
+        while (($row = fgetcsv($handle, 0, ',')) !== false) {
+            $data = array_combine($header, $row);
+            
+            // Validar campos obligatorios de course (no de teacher)
+            $missingFields = [];
+            if (empty(trim($data['TÍTOL CURS'] ?? ''))) $missingFields[] = 'TÍTOL CURS';
+            
+            // Validar campos de teacher como advertencias (no críticos)
+            $teacherMissingFields = [];
+            if (empty(trim($data['Nom'] ?? ''))) $teacherMissingFields[] = 'Nom';
+            if (empty(trim($data['Cognoms'] ?? ''))) $teacherMissingFields[] = 'Cognoms';
+            if (empty(trim($data['Correu'] ?? ''))) $teacherMissingFields[] = 'Correu';
+            
+            if (!empty($missingFields)) {
+                $this->validationWarnings[] = [
+                    'row' => $rowNumber,
+                    'type' => 'critical',
+                    'fields' => $missingFields,
+                    'message' => "Fila {$rowNumber}: Camps obligatoris buits: " . implode(', ', $missingFields)
+                ];
+            }
+            
+            if (!empty($teacherMissingFields)) {
+                $this->validationWarnings[] = [
+                    'row' => $rowNumber,
+                    'type' => 'warning',
+                    'fields' => $teacherMissingFields,
+                    'message' => "Fila {$rowNumber}: Camps de professor buits: " . implode(', ', $teacherMissingFields) . " (Es crearà el curs sense professor)"
+                ];
+            }
+            
+            $rowNumber++;
+        }
+        
+        fclose($handle);
+        
+        // Solo hay problemas críticos si faltan campos del curso
+        $criticalIssues = array_filter($this->validationWarnings, fn($w) => $w['type'] === 'critical');
+        
+        return [
+            'valid' => true,
+            'warnings' => $this->validationWarnings,
+            'has_critical_issues' => count($criticalIssues) > 0
+        ];
+    }
+    
+    public function importFromCSV(UploadedFile $file, $seasonId = null, $confirmResponsibility = false)
     {
         $this->incidencies = [];
         $this->resum = [
@@ -125,19 +187,21 @@ class CampusImportService
         $data = array_combine($header, $row);
         
         try {
-            // 1. Crear/obtener Teacher
+            // 1. Crear/obtener Teacher (opcional)
             $teacher = $this->createTeacherFromCSV($data, $rowNumber);
             
             if ($teacher) {
                 $this->resum['teachers_creats']++;
+            }
+            
+            // 2. Crear Course (siempre se intenta crear)
+            $course = $this->createCourseFromCSV($data, $season, $rowNumber);
+            
+            if ($course) {
+                $this->resum['courses_creats']++;
                 
-                // 2. Crear Course
-                $course = $this->createCourseFromCSV($data, $season, $rowNumber);
-                
-                if ($course) {
-                    $this->resum['courses_creats']++;
-                    
-                    // 3. Asignar course al teacher
+                // 3. Asignar course al teacher solo si ambos existen
+                if ($teacher && $course) {
                     $teacher->courses()->attach($course->id, [
                         'hours_assigned' => $this->extractSessions($data),
                         'role' => 'teacher',
@@ -153,23 +217,23 @@ class CampusImportService
     
     private function createTeacherFromCSV($data, $rowNumber)
     {
-        // Extraer datos del teacher
-        $firstName = trim($data['Nom'] ?? '');
-        $lastName1 = trim($data['COGNOM 1'] ?? '');
+        // Extraer datos del teacher (soportar ambos idiomas)
+        $firstName = trim($data['Nom'] ?? $data['first_name'] ?? $data['first_name'] ?? '');
+        $lastName1 = trim($data['COGNOM 1'] ?? $data['last_name'] ?? '');
         $lastName2 = trim($data['COGNOM 2'] ?? '');
         $lastName = trim("{$lastName1} {$lastName2}");
-        $email = trim($data['CORREU'] ?? '');
-        $phone = trim($data['TELÉFON'] ?? '');
-        $nif = trim($data['NIF'] ?? '');
-        $address = trim($data['ADREÇA'] ?? '');
-        $city = trim($data['POBLACIO'] ?? '');
-        $postalCode = trim($data['CP'] ?? '');
-        $iban = trim($data['COMPTE IBAN'] ?? '');
+        $email = trim($data['CORREU'] ?? $data['email'] ?? '');
+        $phone = trim($data['TELÉFON'] ?? $data['phone'] ?? '');
+        $nif = trim($data['NIF'] ?? $data['nif'] ?? '');
+        $address = trim($data['ADREÇA'] ?? $data['address'] ?? '');
+        $city = trim($data['POBLACIO'] ?? $data['city'] ?? '');
+        $postalCode = trim($data['CP'] ?? $data['postal_code'] ?? '');
+        $iban = trim($data['COMPTE IBAN'] ?? $data['iban'] ?? '');
         
-        // Validar campos obligatorios
+        // Validar campos obligatorios de teacher (si no hay datos, no crear teacher pero continuar)
         if (empty($firstName) || empty($lastName) || empty($email)) {
-            $this->incidencies[] = "Fila {$rowNumber}: Camps obligatoris de teacher buits (Nom, Cognoms, Correu)";
-            return null;
+            $this->incidencies[] = "Fila {$rowNumber}: Camps de teacher buits (Nom, Cognoms, Correu) - Es crearà el curs sense professor";
+            return null; // No crear teacher, pero permitir continuar
         }
         
         // Comprobar si el usuario ya existe
@@ -219,11 +283,11 @@ class CampusImportService
     
     private function createCourseFromCSV($data, $season, $rowNumber)
     {
-        // Extraer datos del course
-        $courseTitle = trim($data['TÍTOL CURS'] ?? '');
+        // Extraer datos del course (soportar ambos idiomas)
+        $courseTitle = trim($data['TÍTOL CURS'] ?? $data['title'] ?? '');
         
-        // Verificar si hay código en el CSV
-        $csvCode = trim($data['CODI CURS'] ?? '');
+        // Verificar si hay código en el CSV (soportar ambos idiomas)
+        $csvCode = trim($data['CODI CURS'] ?? $data['code'] ?? '');
         if (!empty($csvCode)) {
             $courseCode = $csvCode;
         } else {
@@ -254,12 +318,14 @@ class CampusImportService
         
         try {
             // Crear CampusCourse
+            $slug = Str::slug($courseTitle) . '-' . uniqid();
+            
             $course = CampusCourse::create([
                 'season_id' => $season->id,
                 'category_id' => $category->id,
                 'code' => $courseCode,
                 'title' => $courseTitle,
-                'slug' => Str::slug($courseTitle) . '-' . time(),
+                'slug' => $slug,
                 'description' => "Curs importat des de CSV - {$courseTitle}",
                 'credits' => 1,
                 'hours' => $sessions,
@@ -274,6 +340,42 @@ class CampusImportService
             
             return $course;
             
+        } catch (\Illuminate\Database\QueryException $e) {
+            // Manejar errores de duplicados específicamente
+            if ($e->getCode() == 23000) {
+                $this->incidencies[] = "Fila {$rowNumber}: El curs amb títol '{$courseTitle}' o codi '{$courseCode}' ja existeix";
+            } else {
+                $this->incidencies[] = "Fila {$rowNumber}: Error creant course: " . $e->getMessage();
+            }
+            
+            // Intentar crear el curso como inactivo/no público si falló por duplicado
+            try {
+                $slug = Str::slug($courseTitle) . '-' . uniqid() . '-error';
+                CampusCourse::create([
+                    'season_id' => $season->id,
+                    'category_id' => $category->id,
+                    'code' => $courseCode . '-DUPLICATED',
+                    'title' => $courseTitle,
+                    'slug' => $slug,
+                    'description' => "Curs importat des de CSV amb errors - {$courseTitle}",
+                    'credits' => 1,
+                    'hours' => $sessions,
+                    'max_students' => 30,
+                    'price' => $price,
+                    'level' => 'beginner',
+                    'start_date' => $season->season_start,
+                    'end_date' => $season->season_end,
+                    'is_active' => 0, // Inactivo por error
+                    'is_public' => 0, // No público por error
+                ]);
+                
+                $this->incidencies[] = "Fila {$rowNumber}: Curs duplicat creat com a inactiu per revisió: {$courseTitle}";
+            } catch (\Exception $retryException) {
+                // Si ni siquiera se puede crear como inactivo, reportar error
+                $this->incidencies[] = "Fila {$rowNumber}: Error creant course inactiu: " . $retryException->getMessage();
+            }
+            
+            return null;
         } catch (\Exception $e) {
             $this->incidencies[] = "Fila {$rowNumber}: Error creant course: " . $e->getMessage();
             return null;
@@ -334,8 +436,8 @@ class CampusImportService
      */
     private function getOrCreateCategory($data, $rowNumber)
     {
-        // Extraer nombre de categoría del CSV
-        $categoryName = trim($data['ÀREA FORMATIVA'] ?? '');
+        // Extraer nombre de categoría del CSV (soportar ambos idiomas)
+        $categoryName = trim($data['ÀREA FORMATIVA'] ?? $data['category'] ?? '');
         
         if (empty($categoryName)) {
             // Usar categoría por defecto
