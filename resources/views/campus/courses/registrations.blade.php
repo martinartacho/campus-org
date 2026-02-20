@@ -1,4 +1,4 @@
-@extends('campus.shared.layout')
+git@extends('campus.shared.layout')
 
 @section('title', __('campus.registrations'))
 @section('subtitle', $course->title)
@@ -25,10 +25,20 @@
 
 @section('content')
 <div class="max-w-5xl bg-white shadow rounded-lg p-6">
-
-    <h2 class="text-lg font-semibold mb-4">
-        {{ __('campus.enrolled_students') }}
-    </h2>
+    <div class="flex justify-between items-center mb-4">
+        <h2 class="text-lg font-semibold">
+            {{ __('campus.enrolled_students') }}
+        </h2>
+        <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <i class="bi bi-search text-gray-400"></i>
+            </div>
+            <input type="text" 
+                   id="searchRegistration" 
+                   placeholder="{{ __('campus.search_student') }}" 
+                   class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+    </div>
 
     @if($registrations->isEmpty())
         <p class="text-gray-500">
@@ -46,7 +56,7 @@
             </thead>
             <tbody>
                 @foreach($registrations as $registration)
-                    <tr class="border-b last:border-0">
+                    <tr class="border-b last:border-0 registration-row">
                         <td class="py-2">
                             {{ $registration->student->last_name }},
                             {{ $registration->student->first_name }}
@@ -76,4 +86,38 @@
         </table>
     @endif
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchRegistration');
+    const rows = document.querySelectorAll('.registration-row');
+    
+    function updateRegistrationSearch() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            const isVisible = text.includes(searchTerm);
+            row.style.display = isVisible ? '' : 'none';
+        });
+        
+        // Show/hide no results message
+        const noResultsMsg = document.getElementById('noRegistrationResults');
+        if (noResultsMsg) {
+            noResultsMsg.remove();
+        }
+        
+        const visibleRows = Array.from(rows).filter(row => row.style.display !== 'none');
+        if (searchTerm && visibleRows.length === 0) {
+            const msg = document.createElement('div');
+            msg.id = 'noRegistrationResults';
+            msg.className = 'text-center py-4 text-gray-500';
+            msg.textContent = '{{ __('campus.no_student_results') }}';
+            searchInput.closest('.bg-white').querySelector('table').after(msg);
+        }
+    }
+    
+    searchInput.addEventListener('input', updateRegistrationSearch);
+});
+</script>
 @endsection

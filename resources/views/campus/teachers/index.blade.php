@@ -43,10 +43,26 @@
     <div class="bg-white shadow-lg rounded-lg overflow-hidden">
         <div class="p-6">
             <div class="mb-4">
-                <input type="text" 
-                       id="search" 
-                       placeholder="Buscar professor..." 
-                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <div class="flex-1">
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="bi bi-search text-gray-400"></i>
+                            </div>
+                            <input type="text" 
+                                   id="search" 
+                                   placeholder="{{ __('campus.search_teacher') }}" 
+                                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button id="clearSearch" 
+                                class="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition duration-200 hidden">
+                            <i class="bi bi-x-circle mr-2"></i>{{ __('campus.clear') }}
+                        </button>
+                        <span id="searchResults" class="text-sm text-gray-500 py-2"></span>
+                    </div>
+                </div>
             </div>
 
             <div class="overflow-x-auto">
@@ -165,16 +181,42 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('search');
+    const clearButton = document.getElementById('clearSearch');
+    const resultsSpan = document.getElementById('searchResults');
     const rows = document.querySelectorAll('tbody tr');
+    const totalRows = rows.length;
     
-    searchInput.addEventListener('input', function() {
-        const searchTerm = this.value.toLowerCase();
+    function updateSearchDisplay() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        let visibleCount = 0;
         
         rows.forEach(row => {
             const text = row.textContent.toLowerCase();
-            row.style.display = text.includes(searchTerm) ? '' : 'none';
+            const isVisible = text.includes(searchTerm);
+            row.style.display = isVisible ? '' : 'none';
+            if (isVisible) visibleCount++;
         });
+        
+        // Update results counter
+        if (searchTerm) {
+            resultsSpan.textContent = `${visibleCount} / ${totalRows} {{ __('campus.results') }}`;
+            clearButton.classList.remove('hidden');
+        } else {
+            resultsSpan.textContent = '';
+            clearButton.classList.add('hidden');
+        }
+    }
+    
+    searchInput.addEventListener('input', updateSearchDisplay);
+    
+    clearButton.addEventListener('click', function() {
+        searchInput.value = '';
+        updateSearchDisplay();
+        searchInput.focus();
     });
+    
+    // Initial display
+    updateSearchDisplay();
 });
 </script>
 @endsection
