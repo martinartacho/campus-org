@@ -17,7 +17,7 @@ class AdminUserSeeder extends Seeder
     {
             // Crear usuario admin si no existe
         $admin = User::firstOrCreate(
-            ['email' => 'admin@upg.test'],
+            ['email' => 'admin@' . env('SEEDER_EMAIL_DOMAIN', 'test.local')],
             [
                 'name' => 'Administrador',
                 'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD')),
