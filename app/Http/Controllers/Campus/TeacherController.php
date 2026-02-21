@@ -172,15 +172,15 @@ class TeacherController extends Controller
                 \Log::info('Teacher code generated:', ['code' => $teacherCode]);
 
                 // Crear usuario
-                \Log::info('Creating user...');
+                Log::info('Creating user...');
                 $user = \App\Models\User::create([
             'name' => $validated['first_name'] . ' ' . $validated['last_name'],
             'email' => $validated['email'],
-            'password' => bcrypt('password123'), // Contraseña temporal
+            'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD', 'Campus2026!')), // Contraseña temporal
         ]);
         
         // Asignar rol de profesor
-        \Log::info('Assigning teacher role to user:', ['user_id' => $user->id]);
+        Log::info('Assigning teacher role to user:', ['user_id' => $user->id]);
         $user->assignRole('teacher');
 
         // Crear profesor

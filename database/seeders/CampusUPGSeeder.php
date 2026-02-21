@@ -205,7 +205,7 @@ class CampusUPGSeeder extends Seeder
             $user = User::create([
                 'name' => "{$firstName} {$lastName}",
                 'email' => $email,
-                'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD', 'password123')),
+                'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD', 'Campus2026!')),
                 'email_verified_at' => Carbon::now(),
                 'locale' => 'ca',
             ]);
