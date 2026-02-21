@@ -77,7 +77,7 @@ class UserSeeder extends Seeder
         // Crear perfil de professor
         $teacherProfile1 = CampusTeacher::firstorcreate([
             'user_id' => $teacher1->id,
-            'teacher_code' => 'PROF001',
+            'teacher_code' => 'PROF005',
             'first_name' => 'Joan',
             'last_name' => 'Prat i Soler',
             'dni' => '12345678A',
@@ -106,7 +106,7 @@ class UserSeeder extends Seeder
         
         $teacherProfile2 = CampusTeacher::firstorcreate([
             'user_id' => $teacher2->id,
-            'teacher_code' => 'PROF002',
+            'teacher_code' => 'PROF006',
             'first_name' => 'Maria',
             'last_name' => 'García i López',
             'dni' => '87654321B',
@@ -136,7 +136,7 @@ class UserSeeder extends Seeder
         
         $studentProfile1 = CampusStudent::firstorcreate([
             'user_id' => $student1->id,
-            'student_code' => 'EST001',
+            'student_code' => 'STD007',
             'first_name' => 'Anna',
             'last_name' => 'Martínez i Roca',
             'dni' => '11223344C',
@@ -161,7 +161,7 @@ class UserSeeder extends Seeder
         
         $studentProfile2 = CampusStudent::firstorcreate([
             'user_id' => $student2->id,
-            'student_code' => 'EST002',
+            'student_code' => 'EST008',
             'first_name' => 'Carles',
             'last_name' => 'Ruiz i Navarro',
             'dni' => '55667788D',
