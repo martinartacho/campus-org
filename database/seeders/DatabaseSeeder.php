@@ -2,8 +2,6 @@
 
 namespace Database\Seeders;
 
-// use App\Models\User;
-
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -30,14 +28,8 @@ class DatabaseSeeder extends Seeder
             RegistrationImportSeeder::class,   // 8
             
             // NotificationSeeder::class,
-            CampusExempleSeeder::class,
+            // CampusExempleSeeder::class,
             // Otros seeders que tengas...
         ]);
-
-
-    
-        // User::factory(10)->create();
-
-        
     }
 }

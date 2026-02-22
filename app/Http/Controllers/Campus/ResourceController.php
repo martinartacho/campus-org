@@ -13,6 +13,11 @@ use App\Models\CampusTeacher;
 
 class ResourceController extends Controller
 {
+    public function index()
+    {
+        return view('campus.resources.index');
+    }
+    
     public function calendar(Request $request)
     {
         $semester = $request->get('semester', '1Q');
@@ -65,10 +70,17 @@ class ResourceController extends Controller
     public function spaces()
     {
         $spaces = CampusSpace::with('courseSchedules')
-            ->where('is_active', true)
+            ->when(request('type'), function($query, $type) {
+                return $query->where('type', $type);
+            })
+            ->when(request('is_active') !== null, function($query) {
+                return $query->where('is_active', request('is_active'));
+            })
+            ->orderBy('type')
+            ->orderBy('capacity', 'desc')
             ->get();
             
-        return view('campus.resources.spaces', compact('spaces'));
+        return view('campus.resources.spaces.index', compact('spaces'));
     }
     
     public function getNextCode()
@@ -102,12 +114,17 @@ class ResourceController extends Controller
         $timeSlots = CampusTimeSlot::with(['courseSchedules' => function($query) {
             $query->with(['course', 'space']);
         }])
-        ->where('is_active', true)
-        ->orderBy('day_of_week')
-        ->orderBy('start_time')
-        ->get();
+            ->when(request('day_of_week'), function($query, $day) {
+                return $query->where('day_of_week', $day);
+            })
+            ->when(request('code'), function($query, $code) {
+                return $query->where('code', $code);
+            })
+            ->orderBy('day_of_week')
+            ->orderBy('start_time')
+            ->get();
         
-        return response()->json($timeSlots);
+        return view('campus.resources.timeslots.index', compact('timeSlots'));
     }
     
     public function storeSpace(Request $request)
@@ -118,7 +135,7 @@ class ResourceController extends Controller
             'capacity' => 'required|integer|min:1|max:100',
             'type' => 'required|in:sala_actes,mitjana,petita,polivalent,extern',
             'description' => 'nullable|string|max:500',
-            'equipment' => 'nullable|array'
+            'equipment' => 'nullable|string|max:255'
         ]);
         
         $space = CampusSpace::create($validated);
@@ -134,11 +151,15 @@ class ResourceController extends Controller
     {
         $validated = $request->validate([
             'day_of_week' => 'required|integer|min:1|max:5',
-            'code' => 'required|string|max:10',
+            'code' => 'required|string|max:20',
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time',
-            'description' => 'required|string|max:255'
+            'description' => 'required|string|max:255',
+            'is_active' => 'sometimes|boolean'
         ]);
+        
+        // Por defecto activo si no se especifica
+        $validated['is_active'] = $validated['is_active'] ?? true;
         
         $timeSlot = CampusTimeSlot::create($validated);
         
@@ -146,6 +167,105 @@ class ResourceController extends Controller
             'success' => true,
             'timeSlot' => $timeSlot,
             'message' => 'Franja creada correctament'
+        ]);
+    }
+    
+    // CRUD Methods for Spaces
+    public function editSpace($id)
+    {
+        $space = CampusSpace::findOrFail($id);
+        return response()->json($space);
+    }
+    
+    public function updateSpace(Request $request, $id)
+    {
+        $space = CampusSpace::findOrFail($id);
+        
+        $validated = $request->validate([
+            'code' => 'required|string|max:10|unique:campus_spaces,code,' . $id,
+            'name' => 'required|string|max:255',
+            'capacity' => 'required|integer|min:1|max:100',
+            'type' => 'required|in:sala_actes,mitjana,petita,polivalent,extern',
+            'description' => 'nullable|string|max:500',
+            'equipment' => 'nullable|string|max:255',
+            'is_active' => 'required|boolean'
+        ]);
+        
+        $space->update($validated);
+        
+        return response()->json([
+            'success' => true,
+            'space' => $space,
+            'message' => 'Espai actualitzat correctament'
+        ]);
+    }
+    
+    public function destroySpace($id)
+    {
+        $space = CampusSpace::findOrFail($id);
+        
+        // Verificar si hay asignaciones activas
+        if ($space->courseSchedules()->exists()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No es pot eliminar un espai amb assignacions actives'
+            ], 422);
+        }
+        
+        $space->delete();
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Espai eliminat correctament'
+        ]);
+    }
+    
+    // CRUD Methods for TimeSlots
+    public function editTimeSlot($id)
+    {
+        $timeSlot = CampusTimeSlot::findOrFail($id);
+        return response()->json($timeSlot);
+    }
+    
+    public function updateTimeSlot(Request $request, $id)
+    {
+        $timeSlot = CampusTimeSlot::findOrFail($id);
+        
+        $validated = $request->validate([
+            'day_of_week' => 'required|integer|min:1|max:5',
+            'code' => 'required|string|max:20',
+            'start_time' => 'required|date_format:H:i',
+            'end_time' => 'required|date_format:H:i|after:start_time',
+            'description' => 'required|string|max:255',
+            'is_active' => 'required|boolean'
+        ]);
+        
+        $timeSlot->update($validated);
+        
+        return response()->json([
+            'success' => true,
+            'timeSlot' => $timeSlot,
+            'message' => 'Franja actualitzada correctament'
+        ]);
+    }
+    
+    public function destroyTimeSlot($id)
+    {
+        $timeSlot = CampusTimeSlot::findOrFail($id);
+        
+        // Verificar si hay asignaciones activas
+        if ($timeSlot->courseSchedules()->exists()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No es pot eliminar una franja amb assignacions actives'
+            ], 422);
+        }
+        
+        $timeSlot->delete();
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Franja eliminada correctament'
         ]);
     }
 }

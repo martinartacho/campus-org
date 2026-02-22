@@ -18,7 +18,7 @@ return new class extends Migration
             $table->integer('capacity'); // 50, 25, 10
             $table->enum('type', ['sala_actes', 'mitjana', 'petita', 'polivalent', 'extern']);
             $table->text('description')->nullable();
-            $table->json('equipment')->nullable(); // ["projector", "tv", "audio", "ordinadors"]
+            $table->text('equipment')->nullable(); // "Projector, TV, Àudio, Ordinadors"
             $table->boolean('is_active')->default(true);
             $table->timestamps();
             

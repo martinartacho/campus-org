@@ -6,6 +6,7 @@ namespace Database\Seeders;
 use App\Models\CampusCourse;
 use App\Models\CampusStudent;
 use App\Models\CampusRegistration;
+use App\Models\CampusSeason;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -16,6 +17,7 @@ class StudentsCourseSeeder extends Seeder
 {
     private $courseId = null;
     private $cursoSeleccionado = null;
+    private $temporadaActual = null;
     private $incidencies = [];
     private $resum = [
         'matriculaciones_creadas' => 0,
@@ -27,7 +29,19 @@ class StudentsCourseSeeder extends Seeder
     {
         $this->command->info('=== Seeder de Matriculación de Alumnos en Cursos ===');
         
-        // 1. OBTENER O SELECCIONAR CURSO
+        // 1. OBTENER TEMPORADA ACTIVA O ACTUAL
+        $this->obtenerTemporadaActual();
+        
+        if (!$this->temporadaActual) {
+            $this->command->error('No hay ninguna temporada activa o actual. Operación cancelada.');
+            return;
+        }
+        
+        $this->command->info("📅 Temporada actual: {$this->temporadaActual->name}");
+        $this->command->info("   Estado: {$this->temporadaActual->status}");
+        $this->command->info("   Año académico: {$this->temporadaActual->academic_year}");
+        
+        // 2. OBTENER O SELECCIONAR CURSO
         $this->obtenerCurso();
         
         if (!$this->cursoSeleccionado) {
@@ -39,17 +53,49 @@ class StudentsCourseSeeder extends Seeder
         $this->command->info("   Precio: {$this->cursoSeleccionado->price}€");
         $this->command->info("   Plazas disponibles: {$this->cursoSeleccionado->max_students}");
         
-        // 2. DETERMINAR NÚMERO DE ALUMNOS A MATRICULAR
+        // 3. DETERMINAR NÚMERO DE ALUMNOS A MATRICULAR
         $numAlumnos = $this->determinarNumeroAlumnos();
         
-        // 3. OBTENER O CREAR ALUMNOS
+        // 4. OBTENER O CREAR ALUMNOS
         $alumnos = $this->obtenerOCrearAlumnos($numAlumnos);
         
-        // 4. MATRICULAR ALUMNOS EN EL CURSO
+        // 5. MATRICULAR ALUMNOS EN EL CURSO
         $this->matricularAlumnos($alumnos);
         
         // 5. MOSTRAR RESUMEN
         $this->mostrarResumen();
+    }
+    
+    /**
+     * Obtiene la temporada actual o activa
+     */
+    private function obtenerTemporadaActual()
+    {
+        // Prioridad 1: Temporada actual (is_current = true)
+        $temporadaActual = CampusSeason::where('is_current', true)->first();
+        
+        if ($temporadaActual) {
+            $this->temporadaActual = $temporadaActual;
+            return;
+        }
+        
+        // Prioridad 2: Temporada activa (status = 'active' o 'registration')
+        $temporadaActiva = CampusSeason::whereIn('status', ['active', 'registration'])
+            ->where('is_active', true)
+            ->first();
+        
+        if ($temporadaActiva) {
+            $this->temporadaActual = $temporadaActiva;
+            return;
+        }
+        
+        // Prioridad 3: Última temporada creada
+        $ultimaTemporada = CampusSeason::orderBy('created_at', 'desc')->first();
+        
+        if ($ultimaTemporada) {
+            $this->temporadaActual = $ultimaTemporada;
+            $this->command->warn("⚠️  No hay temporada actual/activa. Usando última temporada: {$ultimaTemporada->name}");
+        }
     }
     
     /**
@@ -81,7 +127,7 @@ class StudentsCourseSeeder extends Seeder
             }
         }
         
-        // Si no se proporcionó ID o no se encontró, mostrar lista
+        // Si no se proporcionó ID o no se encontró, mostrar lista de cursos de la temporada actual
         if (!$this->cursoSeleccionado) {
             $this->mostrarListaCursos();
         }
@@ -92,21 +138,24 @@ class StudentsCourseSeeder extends Seeder
      */
     private function mostrarListaCursos()
     {
-        $this->command->info('📋 Listado de cursos disponibles (últimos 5 activos):');
+        $this->command->info('📋 Listado de cursos disponibles de la temporada actual:');
         
-        $cursos = CampusCourse::where('is_active', true)
+        // Obtener cursos de la temporada actual
+        $cursos = CampusCourse::where('season_id', $this->temporadaActual->id)
+            ->where('is_active', true)
             ->orderBy('created_at', 'desc')
-           //  ->limit(5)
             ->get();
         
         if ($cursos->isEmpty()) {
-            $this->command->error('No hay cursos activos disponibles.');
+            $this->command->error("No hay cursos activos para la temporada: {$this->temporadaActual->name}");
             return;
         }
         
         foreach ($cursos as $curso) {
             $matriculados = $curso->registrations()->count();
-            $this->command->line("   [{$curso->id}] {$curso->code} - {$curso->title} (Plazas: {$curso->max_students}, Matriculados: {$matriculados})");
+            $disponibles = $curso->max_students - $matriculados;
+            $estado = $disponibles > 0 ? '✅' : '❌';
+            $this->command->line("   [{$curso->id}] {$curso->code} - {$curso->title} (Plazas: {$disponibles}/{$curso->max_students}) {$estado}");
         }
         
         // Preguntar al usuario por el curso

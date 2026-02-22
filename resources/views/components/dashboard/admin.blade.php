@@ -246,6 +246,21 @@
                 </div>
             </a>
             
+            {{-- RE-CURS --}}
+            <a href="{{ route('campus.resources.index') }}" class="block">
+                <div class="bg-purple-50 border border-purple-200 hover:bg-purple-100 p-4 rounded-lg transition-colors">
+                    <div class="flex items-center">
+                        <div class="p-2 bg-purple-100 rounded-lg me-3">
+                            <i class="bi bi-grid-3x3-gap text-purple-600"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-purple-800">{{ __('Re-Cursos') }}</h3>
+                            <p class="text-sm text-purple-600">Gestionar recursos del campus</p>
+                        </div>
+                    </div>
+                </div>
+            </a>
+            
         </div>
     </div>
 </div>

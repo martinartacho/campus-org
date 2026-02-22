@@ -18,12 +18,23 @@ return new class extends Migration
             $table->date('season_start');
             $table->date('season_end');
             $table->enum('type', ['annual', 'semester', 'trimester', 'quarter']);
+            $table->enum('status', [
+                'draft',      // Borrador - solo visible para admin/manager
+                'planning',   // Planificación - admin/manager pueden configurar
+                'active',     // Activa - visible para todos
+                'registration', // Inscripciones abiertas
+                'in_progress', // En curso
+                'completed',  // Completada
+                'archived'    // Archivada - solo lectura
+            ])->default('draft');
             $table->boolean('is_active')->default(true);
             $table->boolean('is_current')->default(false);
             $table->json('periods')->nullable(); // Para múltiples periodos dentro de la temporada
             $table->timestamps();
             
             $table->index(['is_active', 'is_current']);
+            $table->index(['status', 'is_active']);
+            $table->index(['status', 'is_current']);
         });
     }
 

@@ -121,6 +121,14 @@ Copia el codi
 </span>
 Després de modificar tailwind.config.js:
 
+Podem utilitzar botons reutilitzables estan ubicats en:
+resources/views/components/campus-button.blade.php
+o fer servir bi bi-trash-fill (Bootstrap Icons) 
+<i class="bi bi-trash-fill mr-1"></i>Eliminar
+ No usar fas fa-edit (Font Awesome).
+ <i class="fas fa-trash mr-1"></i>Eliminar
+
+
 bash
 Copia el codi
 npm run dev

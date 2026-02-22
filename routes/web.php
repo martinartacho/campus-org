@@ -495,12 +495,24 @@ Route::get('test-import', function() {
             ->name('registrations.list'); 
             
         // Re-Cursos - Resource Management
+        Route::get('resources', [ResourceController::class, 'index'])->name('resources.index');
         Route::get('resources/calendar', [ResourceController::class, 'calendar'])->name('resources.calendar');
         Route::post('resources/assign', [ResourceController::class, 'assign'])->name('resources.assign');
+        
+        // Spaces CRUD
         Route::get('resources/spaces', [ResourceController::class, 'spaces'])->name('resources.spaces');
         Route::post('resources/spaces', [ResourceController::class, 'storeSpace'])->name('resources.spaces.store');
+        Route::get('resources/spaces/{id}/edit', [ResourceController::class, 'editSpace'])->name('resources.spaces.edit');
+        Route::put('resources/spaces/{id}', [ResourceController::class, 'updateSpace'])->name('resources.spaces.update');
+        Route::delete('resources/spaces/{id}', [ResourceController::class, 'destroySpace'])->name('resources.spaces.destroy');
+        
+        // TimeSlots CRUD
         Route::get('resources/timeslots', [ResourceController::class, 'timeSlots'])->name('resources.timeslots');
         Route::post('resources/timeslots', [ResourceController::class, 'storeTimeSlot'])->name('resources.timeslots.store');
+        Route::get('resources/timeslots/{id}/edit', [ResourceController::class, 'editTimeSlot'])->name('resources.timeslots.edit');
+        Route::put('resources/timeslots/{id}', [ResourceController::class, 'updateTimeSlot'])->name('resources.timeslots.update');
+        Route::delete('resources/timeslots/{id}', [ResourceController::class, 'destroyTimeSlot'])->name('resources.timeslots.destroy');
+        
         Route::get('resources/teachers', [ResourceController::class, 'teachers'])->name('resources.teachers');
         Route::get('resources/getnextcode', [ResourceController::class, 'getNextCode'])->name('resources.getnextcode'); 
             
