@@ -482,7 +482,17 @@ Route::get('test-import', function() {
             ->name('teachers.template');
                 
         Route::resource('registrations', \App\Http\Controllers\Campus\RegistrationController::class)
-            ->middleware('can:campus.registrations.view'); 
+            ->middleware('can:campus.registrations.view');
+
+        // Registration Import/Export - Use different prefix to avoid conflicts
+        Route::get('registrations-import', [\App\Http\Controllers\Campus\ImportController::class, 'showImportForm'])
+            ->name('registrations.import.form');
+        Route::post('registrations-import', [\App\Http\Controllers\Campus\ImportController::class, 'import'])
+            ->name('registrations.import.store');
+        Route::get('registrations-export', [\App\Http\Controllers\Campus\ImportController::class, 'export'])
+            ->name('registrations.export');
+        Route::get('registrations-list', [\App\Http\Controllers\Campus\ImportController::class, 'index'])
+            ->name('registrations.list'); 
             
         // Re-Cursos - Resource Management
         Route::get('resources/calendar', [ResourceController::class, 'calendar'])->name('resources.calendar');

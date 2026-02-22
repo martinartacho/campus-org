@@ -27,7 +27,10 @@ return new class extends Migration
             $table->string('location')->nullable();
             $table->string('format')->nullable();
             $table->boolean('is_active')->default(true);
-            $table->boolean('is_public')->default(true);
+            $table->boolean('is_public')->default(true); 
+            $table->string('created_by')->nullable();
+            $table->string('source')->nullable();
+
             $table->json('requirements')->nullable();
             $table->json('objectives')->nullable();
             $table->json('metadata')->nullable();
@@ -35,11 +38,14 @@ return new class extends Migration
             
             $table->index(['season_id', 'is_active']);
             $table->index(['is_public']);
+            $table->index(['created_by']);
         });
     }
 
     public function down(): void
     {
         Schema::dropIfExists('campus_courses');
+        $table->dropIndex(['created_by']);
+        $table->dropColumn(['created_by', 'source']);
     }
 };

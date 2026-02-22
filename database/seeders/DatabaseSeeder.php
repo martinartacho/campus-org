@@ -13,17 +13,26 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-
-            $this->call([
-                RolesAndPermissionsSeeder::class,
-                UserSeeder::class,
-                CampusSeeder::class,
-                CampusSpaceSeeder::class,
-                CampusTimeSlotSeeder::class,
-                // NotificationSeeder::class,
-                CampusExempleSeeder::class,
-                // Otros seeders que tengas...
-            ]);
+        $this->call([
+            RolesAndPermissionsSeeder::class,  // 1
+            UserSeeder::class,                 // 2
+            CampusSeeder::class,               // 3
+            
+            // s'ha de executar per crear registres durant la primera temporada, que esta condicionada per les dades de ordres ja executada
+            StudentsCourseSeeder::class,       // 4
+            
+            // crea estructura minima de espais i horari per Re-Cursos
+            CampusSpaceSeeder::class,          // 5
+            CampusTimeSlotSeeder::class,       // 6
+            CampusCourseScheduleSeeder::class, // 7
+            
+            // Sistema de importación de registros (de import_registrations)
+            RegistrationImportSeeder::class,   // 8
+            
+            // NotificationSeeder::class,
+            CampusExempleSeeder::class,
+            // Otros seeders que tengas...
+        ]);
 
 
     
