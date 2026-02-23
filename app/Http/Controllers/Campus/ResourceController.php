@@ -29,12 +29,12 @@ class ResourceController extends Controller
         
         // Si hay temporada, filtrar por temporada, si no, usar semestre por defecto
         if ($selectedSeason) {
-            // Filtrar horarios por temporada
-            $timeSlots = CampusTimeSlot::with(['courseSchedules' => function($query) use ($selectedSeason) {
-                $query->whereHas('course', function($courseQuery) use ($selectedSeason) {
-                    $courseQuery->where('season_id', $selectedSeason->id);
-                })
-                ->with(['course', 'space']);
+            // Filtrar horarios por temporada usando cursos asignados directamente
+            $timeSlots = CampusTimeSlot::with(['courses' => function($query) use ($selectedSeason) {
+                $query->where('season_id', $selectedSeason->id)
+                      ->whereNotNull('space_id')
+                      ->whereNotNull('time_slot_id')
+                      ->with(['space']);
             }])
             ->where('is_active', true)
             ->orderBy('day_of_week')
@@ -47,9 +47,11 @@ class ResourceController extends Controller
             \Log::info('Default Season: ID=' . $selectedSeason->id . ', Name="' . $selectedSeason->name . '", Status="' . $selectedSeason->status . '", Courses=' . $coursesCount);
         } else {
             // Sin temporada, usar semestre
-            $timeSlots = CampusTimeSlot::with(['courseSchedules' => function($query) use ($semester) {
+            $timeSlots = CampusTimeSlot::with(['courses' => function($query) use ($semester) {
                 $query->where('semester', $semester)
-                      ->with(['course', 'space']);
+                      ->whereNotNull('space_id')
+                      ->whereNotNull('time_slot_id')
+                      ->with(['space']);
             }])
             ->where('is_active', true)
             ->orderBy('day_of_week')

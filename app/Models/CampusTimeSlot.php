@@ -41,7 +41,15 @@ class CampusTimeSlot extends Model
     ];
 
     /**
-     * Get the course schedules for this time slot.
+     * Get the courses assigned to this time slot.
+     */
+    public function courses(): HasMany
+    {
+        return $this->hasMany(CampusCourse::class, 'time_slot_id');
+    }
+
+    /**
+     * Get the course schedules for this time slot (legacy).
      */
     public function courseSchedules(): HasMany
     {

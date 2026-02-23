@@ -303,17 +303,14 @@ function filterBySeason() {
             @endif
         </div>
         <div class="flex gap-4">
-            <button onclick="openCreateCourseModal()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+            <button onclick="openQuickAddCourse()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
                 <i class="fas fa-plus mr-2"></i>Crear Curs
             </button>
-            <button onclick="openCreateSpaceModal()" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
+            <button onclick="openSpaceModal()" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
                 <i class="fas fa-door-open mr-2"></i>Afegir Espai
             </button>
-            <button onclick="openCreateTimeSlotModal()" class="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700">
+            <button onclick="openTimeSlotModal()" class="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700">
                 <i class="fas fa-clock mr-2"></i>Afegir Franja
-            </button>
-            <button onclick="openAssignModal()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-                Assignar Curs
             </button>
         </div>
     </div>
@@ -466,8 +463,8 @@ function filterBySeason() {
                         
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-2">
                             <div>
-                                <label class="text-xs font-medium text-gray-700">Sessions (minuts):</label>
-                                <input type="number" id="sessions" name="sessions" class="w-full border rounded px-2 py-1 text-sm" min="30" step="30" title="Duració de cada classe en minuts">
+                                <label class="text-xs font-medium text-gray-700">Sessions:</label>
+                                <input type="number" id="sessions" name="sessions" class="w-full border rounded px-2 py-1 text-sm" min="1" max="100" title="Nombre de sessions">
                             </div>
                             <div>
                                 <label class="text-xs font-medium text-gray-700">Hores totals:</label>
@@ -571,26 +568,27 @@ function filterBySeason() {
                          ondragleave="unhighlightDropZone(event)">
                         @php
                             $slot = $slots->firstWhere('day_of_week', $dayOfWeek);
-                            $schedule = $slot ? $slot->courseSchedules->first() : null;
+                            $course = $slot ? $slot->courses->first() : null;
                         @endphp
                         
-                        @if($schedule)
+                        @if($course)
                             <div class="p-2 rounded text-xs {{ 
-                                $schedule->status === 'assigned' ? 'bg-green-100 text-green-800' : 
-                                ($schedule->status === 'conflict' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800') 
+                                $course->status === 'planning' ? 'bg-blue-100 text-blue-800' : 
+                                ($course->status === 'in_progress' ? 'bg-green-100 text-green-800' : 
+                                ($course->status === 'completed' ? 'bg-gray-100 text-gray-800' : 'bg-yellow-100 text-yellow-800'))
                             }}">
-                                <div class="font-semibold">{{ $schedule->course->title }}</div>
-                                <div>{{ $schedule->space->code }}</div>
-                                <div>{{ $schedule->course->mainTeacher()?->first_name ?? 'Sense professor' }}</div>
-                                @if($schedule->status === 'conflict')
-                                    <div class="text-red-600 mt-1">⚠️ {{ $schedule->notes }}</div>
+                                <div class="font-semibold">{{ $course->title }}</div>
+                                <div>{{ $course->code }}</div>
+                                <div>{{ $course->space->code ?? 'Sense espai' }}</div>
+                                <div>{{ $course->mainTeacher()?->first_name ?? 'Sense professor' }}</div>
+                                @if($course->status === 'planning')
+                                    <div class="text-blue-600 mt-1">📋 Planificació</div>
                                 @endif
                             </div>
                         @else
-                           <button onclick="openAssignModal({{ $dayOfWeek }}, {{ $slot->id ?? 0 }})"
-                                    class="w-full h-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded p-2 text-xs">
-                                + Assignar
-                            </button>
+                            <div class="text-gray-400 text-xs h-full flex items-center justify-center">
+                                <span class="text-lg">+</span>
+                            </div>
                         @endif
                     </div>
                 @endforeach
@@ -606,8 +604,23 @@ function filterBySeason() {
                 <div class="border rounded p-4">
                     <h3 class="font-semibold mb-2">{{ \App\Models\CampusSpace::TYPES[$type] }}</h3>
                     @foreach($typeSpaces as $space)
-                        <div class="text-sm text-gray-600">
-                            {{ $space->code }} - {{ $space->formatted_capacity }}
+                        @php
+                            // Check if space has assigned courses
+                            $hasCourses = \App\Models\CampusCourse::where('space_id', $space->id)
+                                ->whereNotNull('time_slot_id')
+                                ->exists();
+                        @endphp
+                        <div class="text-sm text-gray-600 flex items-center justify-between">
+                            <span>{{ $space->code }} - {{ $space->formatted_capacity }}</span>
+                            @if($hasCourses)
+                                <span class="text-green-500" title="Disponible con cursos asignados">
+                                    <i class="fas fa-check-circle"></i>
+                                </span>
+                            @else
+                                <span class="text-gray-400" title="Disponible sin cursos asignados">
+                                    <i class="far fa-circle"></i>
+                                </span>
+                            @endif
                         </div>
                     @endforeach
                 </div>
@@ -784,25 +797,26 @@ function showAssignForm(courseId, courseTitle, courseCode) {
                 }
                 
                 // Load schedule data if available
-                if (course.schedules && course.schedules.length > 0) {
-                    const schedule = course.schedules[0]; // Get first schedule
-                    spaceSelect.value = schedule.space_id || '';
-                    timeSlotSelect.value = schedule.time_slot_id || '';
-                    
-                    // Find semester select and set value
-                    const semesterSelect = document.getElementById('semesterSelect');
-                    if (semesterSelect && schedule.semester) {
-                        semesterSelect.value = schedule.semester;
-                    }
-                    
-                    console.log('Schedule loaded:', {
-                        space_id: schedule.space_id,
-                        time_slot_id: schedule.time_slot_id,
-                        semester: schedule.semester
-                    });
-                } else {
-                    console.log('No schedule data found for course');
+                if (course.space_id) {
+                    spaceSelect.value = course.space_id;
+                    console.log('Space set to:', course.space_id);
                 }
+                if (course.time_slot_id) {
+                    timeSlotSelect.value = course.time_slot_id;
+                    console.log('Time slot set to:', course.time_slot_id);
+                }
+                
+                // Find semester select and set value (if needed)
+                const semesterSelect = document.getElementById('semesterSelect');
+                if (semesterSelect && course.semester) {
+                    semesterSelect.value = course.semester;
+                }
+                
+                console.log('Schedule loaded:', {
+                    space_id: course.space_id,
+                    time_slot_id: course.time_slot_id,
+                    semester: course.semester
+                });
             } else {
                 console.error('No course data received');
             }
@@ -900,54 +914,130 @@ function assignCourse() {
     // Send AJAX request to UPDATE course using method spoofing
     const formDataForPut = new FormData();
     
-    // Add all form fields
-    for (let [key, value] of formData.entries()) {
-        if (key !== '_method') {  // Skip the old _method if exists
-            formDataForPut.append(key, value);
+    // Check for conflicts before sending
+    if (spaceSelect.value && timeSlotSelect.value) {
+        // Show loading state
+        const submitBtn = form.querySelector('button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Verificant coincidències...';
         }
+        
+        // Check conflicts via AJAX
+        fetch(`/campus/courses/check-conflict`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                space_id: spaceSelect.value,
+                time_slot_id: timeSlotSelect.value,
+                exclude_course_id: courseId
+            })
+        })
+        .then(response => response.json())
+        .then(conflictData => {
+            // Re-enable submit button
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Assignar';
+            }
+            
+            if (conflictData.conflict) {
+                // Show conflict details
+                let message = 'Coincidència detectada:\n\n';
+                if (conflictData.conflicts && conflictData.conflicts.length > 0) {
+                    conflictData.conflicts.forEach(conflict => {
+                        message += `• ${conflict.title} (${conflict.code})\n`;
+                    });
+                }
+                message += '\nEl espai i franja ja estan ocupats.';
+                alert(message);
+                return;
+            }
+            
+            // No conflicts, proceed with update
+            submitUpdate();
+        })
+        .catch(error => {
+            // Re-enable submit button
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Assignar';
+            }
+            console.error('Conflict check failed:', error);
+            // Proceed anyway if conflict check fails
+            submitUpdate();
+        });
+    } else {
+        submitUpdate();
     }
     
-    // Add _method override as last field (Laravel requirement)
-    formDataForPut.append('_method', 'PUT');
-    
-    fetch(`/campus/courses/${courseId}`, {
-        method: 'POST',  // Always use POST with method spoofing
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-            'Accept': 'application/json',
-        },
-        body: formDataForPut
-    })
-    .then(response => {
-        console.log('PUT Response status:', response.status);
-        console.log('PUT Response headers:', response.headers);
-        
-        if (!response.ok) {
-            return response.text().then(text => {
-                console.error('PUT Error response:', text);
-                throw new Error(`HTTP ${response.status}: ${text}`);
-            });
+    function submitUpdate() {
+        // Add all form fields
+        for (let [key, value] of formData.entries()) {
+            if (key !== '_method') {  // Skip the old _method if exists
+                formDataForPut.append(key, value);
+            }
         }
         
-        return response.json();
-    })
-    .then(data => {
-        console.log('PUT Response data:', data);
+        // Add _method override as last field (Laravel requirement)
+        formDataForPut.append('_method', 'PUT');
         
-        if (data.success) {
-            alert('Curs actualizat correctament!');
-            hideAssignForm();
-            // Reload page to show updated calendar
-            window.location.reload();
-        } else {
-            console.error('PUT Error details:', data);
-            alert('Error: ' + (data.message || 'No s\'ha pogut actualitzar el curs'));
-        }
-    })
-    .catch(error => {
-        console.error('PUT Request failed:', error);
-        alert('Error de connexió: ' + error.message);
-    });
+        fetch(`/campus/courses/${courseId}`, {
+            method: 'POST',  // Always use POST with method spoofing
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Accept': 'application/json',
+            },
+            body: formDataForPut
+        })
+        .then(response => {
+            console.log('PUT Response status:', response.status);
+            console.log('PUT Response headers:', response.headers);
+            
+            if (!response.ok) {
+                return response.text().then(text => {
+                    console.error('PUT Error response:', text);
+                    throw new Error(`HTTP ${response.status}: ${text}`);
+                });
+            }
+            
+            return response.json();
+        })
+        .then(data => {
+            console.log('PUT Response data:', data);
+            
+            if (data.success) {
+                alert('Curs actualizat correctament!');
+                hideAssignForm();
+                // Reload page to show updated calendar
+                window.location.reload();
+            } else {
+                console.error('PUT Error details:', data);
+                
+                if (data.conflict) {
+                    // Show conflict details
+                    let message = 'Coincidencia detectada:\n\n';
+                    if (data.conflicts && data.conflicts.length > 0) {
+                        data.conflicts.forEach(conflict => {
+                            message += `• ${conflict.title} (${conflict.code})\n`;
+                        });
+                    }
+                    message += '\nEl espacio y franja ya están ocupados.';
+                    alert(message);
+                } else {
+                    alert('Error: ' + (data.message || 'No s\'ha pogut actualitzar el curs'));
+                }
+            }
+        })
+        .catch(error => {
+            console.error('PUT Request failed:', error);
+            alert('Error de connexió: ' + error.message);
+        });
+    }
 }
 
 // Semester select exists, add event listener

@@ -451,6 +451,11 @@ Route::get('test-import', function() {
             ->name('courses.data')
             ->middleware('can:campus.courses.view');
                 
+        // Check conflicts endpoint
+        Route::post('courses/check-conflict', [CourseController::class, 'checkConflict'])
+            ->name('courses.check-conflict')
+            ->middleware('can:campus.courses.view');
+                
         // Teachers assignment
         Route::middleware(['auth'])->group(function () {
 
