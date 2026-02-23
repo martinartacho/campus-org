@@ -445,6 +445,11 @@ Route::get('test-import', function() {
         // Courses
         Route::resource('courses', CourseController::class)
             ->middleware('can:campus.courses.view');
+        
+        // Course data for AJAX
+        Route::get('courses/{course}/data', [CourseController::class, 'getCourseData'])
+            ->name('courses.data')
+            ->middleware('can:campus.courses.view');
                 
         // Teachers assignment
         Route::middleware(['auth'])->group(function () {

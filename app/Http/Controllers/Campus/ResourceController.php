@@ -10,6 +10,7 @@ use App\Models\CampusCourseSchedule;
 use App\Models\CampusTeacherSchedule;
 use App\Models\CampusCourse;
 use App\Models\CampusTeacher;
+use App\Models\CampusSeason;
 
 class ResourceController extends Controller
 {
@@ -22,21 +23,49 @@ class ResourceController extends Controller
     {
         $semester = $request->get('semester', '1Q');
         
-        $timeSlots = CampusTimeSlot::with(['courseSchedules' => function($query) use ($semester) {
-            $query->where('semester', $semester)
-                  ->with(['course', 'space']);
-        }])
-        ->where('is_active', true)
-        ->orderBy('day_of_week')
-        ->orderBy('start_time')
-        ->get();
+        // Usar el nuevo método para obtener la temporada por defecto
+        $selectedSeason = CampusSeason::getDefaultForCalendar();
+        $selectedSeasonSlug = $selectedSeason ? $selectedSeason->slug : null;
+        
+        // Si hay temporada, filtrar por temporada, si no, usar semestre por defecto
+        if ($selectedSeason) {
+            // Filtrar horarios por temporada
+            $timeSlots = CampusTimeSlot::with(['courseSchedules' => function($query) use ($selectedSeason) {
+                $query->whereHas('course', function($courseQuery) use ($selectedSeason) {
+                    $courseQuery->where('season_id', $selectedSeason->id);
+                })
+                ->with(['course', 'space']);
+            }])
+            ->where('is_active', true)
+            ->orderBy('day_of_week')
+            ->orderBy('start_time')
+            ->get();
+            
+            // Contar todos los cursos de la temporada
+            $coursesCount = \App\Models\CampusCourse::where('season_id', $selectedSeason->id)->count();
+            
+            \Log::info('Default Season: ID=' . $selectedSeason->id . ', Name="' . $selectedSeason->name . '", Status="' . $selectedSeason->status . '", Courses=' . $coursesCount);
+        } else {
+            // Sin temporada, usar semestre
+            $timeSlots = CampusTimeSlot::with(['courseSchedules' => function($query) use ($semester) {
+                $query->where('semester', $semester)
+                      ->with(['course', 'space']);
+            }])
+            ->where('is_active', true)
+            ->orderBy('day_of_week')
+            ->orderBy('start_time')
+            ->get();
+            
+            $coursesCount = 0;
+            \Log::warning('No season found for calendar');
+        }
         
         $spaces = CampusSpace::where('is_active', true)
             ->orderBy('type')
             ->orderBy('capacity', 'desc')
             ->get();
             
-        return view('campus.resources.calendar', compact('timeSlots', 'spaces', 'semester'));
+        return view('campus.resources.calendar', compact('timeSlots', 'spaces', 'semester', 'selectedSeason', 'coursesCount'));
     }
     
     public function assign(Request $request)
@@ -47,6 +76,7 @@ class ResourceController extends Controller
             'time_slot_id' => 'required|exists:campus_time_slots,id',
             'semester' => 'required|in:1Q,2Q'
         ]);
+        // dd(($request->all()));
         
         $schedule = CampusCourseSchedule::create($validated);
         

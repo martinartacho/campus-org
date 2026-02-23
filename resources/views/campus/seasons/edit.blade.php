@@ -114,6 +114,19 @@
                             <p class="text-gray-500">{{ __('campus.season_current_help') }}</p>
                         </div>
                     </div>
+    
+                    <div class="flex items-start">
+                        <div class="flex items-center h-5">
+                            <input id="status" name="status" type="checkbox" 
+                                   class="rounded border-gray-300 text-blue-600 focus:ring-blue-500" 
+                                   value="1" {{ old('status', $season->status) ? 'checked' : '' }}>
+                        </div>
+                    <div class="ml-3 text-sm">
+                        <label for="status" class="font-medium text-gray-700">{{ __('campus.season_status') }}</label>
+                        <p class="text-gray-500">{{ __('campus.season_status_help') }}</p>
+                    </div>
+                    
+
                 </div>
             </div>
             

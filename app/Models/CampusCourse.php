@@ -22,6 +22,7 @@ class CampusCourse extends Model
         'description',
         'credits',
         'hours',
+        'sessions',
         'max_students',
         'price',
         'level',
@@ -38,6 +39,7 @@ class CampusCourse extends Model
     protected $casts = [
         'credits' => 'integer',
         'hours' => 'integer',
+        'sessions' => 'integer',
         'max_students' => 'integer',
         'price' => 'decimal:2',
         'start_date' => 'date',
@@ -45,8 +47,8 @@ class CampusCourse extends Model
         'is_active' => 'boolean',
         'is_public' => 'boolean',
         'schedule' => 'array',
-        'requirements' => 'array',
-        'objectives' => 'array',
+        'requirements' => 'string',
+        'objectives' => 'string',
         'metadata' => 'array'
     ];
 
@@ -65,11 +67,19 @@ class CampusCourse extends Model
     }
 
     /**
-     * Get the category that owns the course.
+     * Get category that owns the course.
      */
     public function category(): BelongsTo
     {
         return $this->belongsTo(CampusCategory::class, 'category_id');
+    }
+
+    /**
+     * Get schedules for the course.
+     */
+    public function schedules(): HasMany
+    {
+        return $this->hasMany(CampusCourseSchedule::class, 'course_id');
     }
 
     /**

@@ -127,8 +127,8 @@
                 </div>
             </a>
             
-            {{-- CALENDAR --}}
-            <a href="{{ route('campus.resources.calendar') }}" class="block">
+            {{-- Franjes Horàries --}}
+            <a href="{{ route('campus.resources.timeslots') }}" class="block">
                 <div class="bg-orange-50 border border-orange-200 hover:bg-orange-100 p-4 rounded-lg transition-colors">
                     <div class="flex items-center">
                         <div class="p-2 bg-orange-100 rounded-lg me-3">

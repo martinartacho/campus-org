@@ -69,6 +69,54 @@ class CourseController extends Controller
     }
 
     /**
+     * Get course data as JSON for AJAX requests.
+     */
+    public function getCourseData(CampusCourse $course)
+    {
+        \Log::info('getCourseData called for course ID: ' . $course->id);
+        
+        // Load course with relationships including schedules
+        $course->load(['season', 'category', 'schedules']);
+        
+        $courseData = [
+            'id' => $course->id,
+            'title' => $course->title,
+            'requirements' => $course->requirements,
+            'sessions' => $course->sessions,
+            'season_id' => $course->season_id,
+            'category_id' => $course->category_id,
+            'code' => $course->code,
+            'description' => $course->description,
+            'credits' => $course->credits,
+            'hours' => $course->hours,
+            'max_students' => $course->max_students,
+            'price' => $course->price,
+            'level' => $course->level,
+            'schedule' => $course->schedule,
+            'start_date' => $course->start_date,
+            'end_date' => $course->end_date,
+            'location' => $course->location,
+            'format' => $course->format,
+            'is_active' => $course->is_active,
+            'is_public' => $course->is_public,
+            'objectives' => $course->objectives,
+            'metadata' => $course->metadata,
+            'created_at' => $course->created_at,
+            'updated_at' => $course->updated_at,
+            'season' => $course->season,
+            'category' => $course->category,
+            'schedules' => $course->schedules, // Include schedules
+        ];
+        
+        \Log::info('Course data loaded:', $courseData);
+        
+        return response()->json([
+            'success' => true,
+            'course' => $courseData
+        ]);
+    }
+
+    /**
      * Show the form for editing the specified course.
      */
     public function edit(CampusCourse $course)
@@ -92,6 +140,38 @@ class CourseController extends Controller
 
         $course->update($data);
 
+        // Handle schedule assignment (space, time_slot, semester)
+        if ($request->has('space_id') && $request->has('time_slot_id') && $request->has('semester')) {
+            $spaceId = $request->input('space_id');
+            $timeSlotId = $request->input('time_slot_id');
+            $semester = $request->input('semester');
+
+            if ($spaceId && $timeSlotId && $semester) {
+                // Create or update course schedule
+                \App\Models\CampusCourseSchedule::updateOrCreate(
+                    [
+                        'course_id' => $course->id,
+                        'space_id' => $spaceId,
+                        'time_slot_id' => $timeSlotId,
+                        'semester' => $semester,
+                    ],
+                    [
+                        'status' => 'assigned'
+                    ]
+                );
+            }
+        }
+
+        // If AJAX request, return JSON response
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => __('campus.course_updated'),
+                'course' => $course->load(['season', 'category', 'schedules'])
+            ]);
+        }
+
+        // For regular form submissions, redirect as before
         return redirect()
             ->route('campus.courses.show', $course)
             ->with('success', __('campus.course_updated'));
@@ -114,7 +194,14 @@ class CourseController extends Controller
      */
     protected function validatedData(Request $request): array
     {
-        return $request->validate([
+        // Debug: Mostrar todos los datos recibidos antes de validar
+        \Log::info('Request received:', [
+            'all_data' => $request->all(),
+            'method' => $request->method(),
+            'content_type' => $request->header('Content-Type')
+        ]);
+        
+        $data = $request->validate([
             'season_id'     => ['required', 'exists:campus_seasons,id'],
             'category_id'   => ['nullable', 'exists:campus_categories,id'],
             'code'          => ['nullable', 'string', 'max:50'],
@@ -122,6 +209,7 @@ class CourseController extends Controller
             'description'   => ['nullable', 'string'],
             'credits'       => ['nullable', 'integer', 'min:0'],
             'hours'         => ['nullable', 'integer', 'min:0'],
+            'sessions'      => ['nullable', 'integer', 'min:30', 'max:480'],
             'max_students'  => ['nullable', 'integer', 'min:1'],
             'price'         => ['nullable', 'numeric', 'min:0'],
             'level'         => ['nullable', 'string', 'max:50'],
@@ -130,9 +218,32 @@ class CourseController extends Controller
             'end_date'      => ['nullable', 'date', 'after_or_equal:start_date'],
             'is_active'     => ['boolean'],
             'is_public'     => ['boolean'],
-            'requirements'  => ['nullable', 'array'],
-            'objectives'    => ['nullable', 'array'],
+            'requirements'  => ['nullable', 'string'],
+            'objectives'    => ['nullable', 'string'],
             'metadata'      => ['nullable', 'array'],
         ]);
+        
+        // Debug: Mostrar todos los datos recibidos y validados
+        \Log::info('Validation result:', [
+            'validated_data' => $data
+        ]);
+        
+        return $data;
+    }
+    
+    /**
+     * Handle validation errors for debugging
+     */
+    protected function handleValidationErrors(Request $request, array $errors)
+    {
+        \Log::error('Validation errors:', [
+            'errors' => $errors,
+            'request_data' => $request->all()
+        ]);
+        
+        return response()->json([
+            'message' => 'Validation failed',
+            'errors' => $errors
+        ], 422);
     }
 }

@@ -20,10 +20,15 @@ class CampusSeason extends Model
         'season_start',
         'season_end',
         'type',
-        'status', // Nuevo campo
+        'status',
         'is_active',
         'is_current',
-        'periods'
+        'periods',
+        'created_by',
+        'source',
+        'requirements',
+        'objectives',
+        'metadata',
     ];
 
     protected $casts = [
@@ -31,18 +36,80 @@ class CampusSeason extends Model
         'registration_end' => 'date',
         'season_start' => 'date',
         'season_end' => 'date',
-        'status' => 'string',
         'is_active' => 'boolean',
         'is_current' => 'boolean',
-        'periods' => 'array'
+        'periods' => 'array',
+        'requirements' => 'array',
+        'objectives' => 'array',
+        'metadata' => 'array',
     ];
 
-    /**
-     * Get the courses for the season.
-     */
     public function courses(): HasMany
     {
         return $this->hasMany(CampusCourse::class, 'season_id');
+    }
+
+    public function registrations(): HasMany
+    {
+        return $this->hasMany(CampusRegistration::class);
+    }
+
+    /**
+     * Establece esta temporada como la actual, asegurando que solo una temporada esté activa
+     */
+    public function setAsCurrent(): void
+    {
+        // Desactivar todas las demás temporadas
+        static::where('id', '!=', $this->id)->update(['is_current' => false]);
+        
+        // Activar esta temporada
+        $this->update(['is_current' => true]);
+    }
+
+    /**
+     * Obtiene la temporada actual (la que tiene is_current = 1)
+     */
+    public static function getCurrent(): ?self
+    {
+        return static::where('is_current', true)->first();
+    }
+
+    /**
+     * Obtiene la temporada en planning
+     */
+    public static function getPlanning(): ?self
+    {
+        return static::where('status', 'planning')->first();
+    }
+
+    /**
+     * Scope para obtener temporadas por status
+     */
+    public function scopeByStatus(Builder $query, string $status): Builder
+    {
+        return $query->where('status', $status);
+    }
+
+    /**
+     * Obtiene la temporada por defecto para el calendario
+     * Prioridad: 1. Planning, 2. Current, 3. Primera activa
+     */
+    public static function getDefaultForCalendar(): ?self
+    {
+        // 1. Buscar temporada en planning
+        $planning = static::getPlanning();
+        if ($planning) {
+            return $planning;
+        }
+
+        // 2. Buscar temporada actual
+        $current = static::getCurrent();
+        if ($current) {
+            return $current;
+        }
+
+        // 3. Buscar primera temporada activa
+        return static::where('is_active', true)->first();
     }
 
     /**
