@@ -129,6 +129,110 @@ class CampusCourse extends Model
     }
 
     /**
+     * Update status based on course completion.
+     */
+    public function updateStatus()
+    {
+        $requiredFields = [
+            'space_id' => $this->space_id,
+            'time_slot_id' => $this->time_slot_id,
+            'semester' => $this->semester ?? null, // From form data
+            'sessions' => $this->sessions,
+            'hours' => $this->hours,
+            'max_students' => $this->max_students,
+        ];
+
+        $filledFields = array_filter($requiredFields, function($value) {
+            return !is_null($value) && $value !== '';
+        });
+
+        $completionPercentage = (count($filledFields) / count($requiredFields)) * 100;
+
+        // Auto-update based on completion
+        if ($completionPercentage >= 85) {
+            // If course has space and time_slot assigned, mark as completed
+            if ($this->space_id && $this->time_slot_id) {
+                $this->status = self::STATUS_COMPLETED;
+            } else {
+                $this->status = self::STATUS_IN_PROGRESS;
+            }
+        } elseif ($completionPercentage >= 50) {
+            $this->status = self::STATUS_PLANNING;
+        } else {
+            $this->status = self::STATUS_DRAFT;
+        }
+
+        $this->save();
+    }
+
+    /**
+     * Mark course as completed when assigned to calendar.
+     */
+    public function markAsCompleted()
+    {
+        $this->status = self::STATUS_COMPLETED;
+        $this->save();
+    }
+
+    /**
+     * Check if space is occupied by any course.
+     */
+    public static function isSpaceOccupied($spaceId)
+    {
+        return self::where('space_id', $spaceId)
+                   ->whereNotNull('time_slot_id')
+                   ->where('status', '!=', self::STATUS_CLOSED)
+                   ->exists();
+    }
+
+    /**
+     * Get space availability status.
+     */
+    public static function getSpaceAvailability($spaceId)
+    {
+        $occupiedCourses = self::where('space_id', $spaceId)
+                              ->whereNotNull('time_slot_id')
+                              ->where('status', '!=', self::STATUS_CLOSED)
+                              ->count();
+
+        return [
+            'occupied' => $occupiedCourses > 0,
+            'courses_count' => $occupiedCourses,
+            'status' => $occupiedCourses > 0 ? 'occupied' : 'available'
+        ];
+    }
+
+    /**
+     * Get status color for display.
+     */
+    public function getStatusColor()
+    {
+        return match($this->status) {
+            self::STATUS_DRAFT => 'gray',
+            self::STATUS_PLANNING => 'blue',
+            self::STATUS_IN_PROGRESS => 'green',
+            self::STATUS_COMPLETED => 'gray',
+            self::STATUS_CLOSED => 'red',
+            default => 'yellow'
+        };
+    }
+
+    /**
+     * Get status label in Catalan.
+     */
+    public function getStatusLabel()
+    {
+        return match($this->status) {
+            self::STATUS_DRAFT => 'Esborrany',
+            self::STATUS_PLANNING => 'Planificació',
+            self::STATUS_IN_PROGRESS => 'En curs',
+            self::STATUS_COMPLETED => 'Assignat',
+            self::STATUS_CLOSED => 'Tancat',
+            default => $this->status
+        };
+    }
+
+    /**
      * Get space for the course.
      */
     public function space(): BelongsTo

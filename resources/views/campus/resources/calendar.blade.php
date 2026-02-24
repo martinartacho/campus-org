@@ -304,13 +304,13 @@ function filterBySeason() {
         </div>
         <div class="flex gap-4">
             <button onclick="openQuickAddCourse()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-                <i class="fas fa-plus mr-2"></i>Crear Curs
+                <i class="bi bi-mortarboard-fill mr-2"></i>Crear Curs
             </button>
             <button onclick="openSpaceModal()" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
-                <i class="fas fa-door-open mr-2"></i>Afegir Espai
+                <i class="bi bi-building mr-2"></i>Afegir Espai
             </button>
             <button onclick="openTimeSlotModal()" class="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700">
-                <i class="fas fa-clock mr-2"></i>Afegir Franja
+                <i class="bi bi-calendar-plus mr-2"></i>Afegir Franja
             </button>
         </div>
     </div>
@@ -331,17 +331,63 @@ function filterBySeason() {
             <!-- Cursos Disponibles -->
             @if($selectedSeason)
             <div class="border rounded p-3">
-                <h5 class="text-sm font-semibold mb-2">Cursos Disponibles ({{ $coursesCount }}):</h5>
+                <div class="flex justify-between items-center mb-2">
+                    <h5 class="text-sm font-semibold">Cursos Disponibles ({{ $coursesCount }}):</h5>
+                    <div class="flex items-center gap-3 text-xs">
+                        <span class="text-gray-600">Estados:</span>
+                        <div class="flex items-center gap-2">
+                            <span class="flex items-center">
+                                <i class="bi bi-check-circle-fill text-green-600 mr-1"></i>
+                                <span>Assignat</span>
+                            </span>
+                            <span class="flex items-center">
+                                <i class="bi bi-play-circle text-green-600 mr-1"></i>
+                                <span>En curs</span>
+                            </span>
+                            <span class="flex items-center">
+                                <i class="bi bi-calendar-week text-blue-600 mr-1"></i>
+                                <span>Planificació</span>
+                            </span>
+                            <span class="flex items-center">
+                                <i class="bi bi-file-earmark text-gray-600 mr-1"></i>
+                                <span>Esborrany</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
                 <div class="flex flex-wrap gap-1">
                     @php
                         $courses = \App\Models\CampusCourse::where('season_id', $selectedSeason->id)->get();
                     @endphp
                     @foreach($courses as $course)
+                        @php
+                            $safeTitle = Str::limit($course->title, 30);
+                            $safeCode = $course->code ?? Str::limit($course->title, 8);
+                        @endphp
                         <div class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs cursor-pointer hover:bg-blue-200" 
-                             title="{{ $course->title }}"
-                             onclick="showAssignForm('{{ $course->id }}', '{{ $course->title }}', '{{ $course->code ?? substr($course->title, 0, 3) }}')">
-                            {{ Str::limit($course->code ?? substr($course->title, 0, 3), 8) }}
+                             title="{{ $safeTitle }}"
+                             onclick="showAssignForm({{ $course->id }}, {{ Js::from($safeTitle) }}, {{ Js::from($safeCode) }})">
+                            {{ $safeCode }}  
                         </div>
+                        <span class="text-xs px-1 py-0.5 rounded-full bg-{{ $course->getStatusColor() }}-100 text-{{ $course->getStatusColor() }}-800">
+                            @switch($course->status)
+                                @case('completed')
+                                    <i class="bi bi-check-circle-fill mr-1"></i>
+                                    {{-- {{ $course->getStatusLabel() }} --}}
+                                @break
+                                @case('in_progress')
+                                    <i class="bi bi-play-circle mr-1"></i>
+                                    {{-- {{ $course->getStatusLabel() }} --}}
+                                @break
+                                @case('planning')
+                                    <i class="bi bi-calendar-week mr-1"></i>
+                                    {{-- {{ $course->getStatusLabel() }} --}}
+                                @break
+                                @default
+                                    <i class="bi bi-file-earmark mr-1"></i>
+                                    {{-- {{ $course->getStatusLabel() }} --}}
+                            @endswitch
+                        </span>
                     @endforeach
                 </div>
                 
@@ -422,18 +468,27 @@ function filterBySeason() {
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2">
                             <div>
-                                <label class="text-xs font-medium text-gray-700">Requeriments:</label>
+                                <label class="text-xs font-medium text-gray-700 flex items-center">
+                                    <i class="bi bi-list-check mr-1 text-gray-500"></i>
+                                    Requeriments:
+                                </label>
                                 <textarea id="requirements" name="requirements" rows="2" class="w-full border rounded px-2 py-1 text-sm"></textarea>
                             </div>
                             <div>
-                                <label class="text-xs font-medium text-gray-700">Objectius:</label>
+                                <label class="text-xs font-medium text-gray-700 flex items-center">
+                                    <i class="bi bi-bullseye mr-1 text-gray-500"></i>
+                                    Objectius:
+                                </label>
                                 <textarea id="objectives" name="objectives" rows="2" class="w-full border rounded px-2 py-1 text-sm"></textarea>
                             </div>
                         </div>
                         
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
                             <div>
-                                <label class="text-xs font-medium text-gray-700">Espai:</label>
+                                <label class="text-xs font-medium text-gray-700 flex items-center">
+                                    <i class="bi bi-door-open mr-1 text-gray-500"></i>
+                                    Espai:
+                                </label>
                                 <select id="spaceSelect" name="space_id" class="w-full border rounded px-2 py-1 text-sm">
                                     <option value="">Seleccionar espai...</option>
                                     @foreach($spaces as $space)
@@ -443,7 +498,10 @@ function filterBySeason() {
                             </div>
                             
                             <div>
-                                <label class="text-xs font-medium text-gray-700">Franja:</label>
+                                <label class="text-xs font-medium text-gray-700 flex items-center">
+                                    <i class="fas fa-clock mr-1 text-gray-500"></i>
+                                    Franja:
+                                </label>
                                 <select id="timeSlotSelect" name="time_slot_id" class="w-full border rounded px-2 py-1 text-sm">
                                     <option value="">Seleccionar franja...</option>
                                     @foreach($timeSlots as $timeSlot)
@@ -453,7 +511,10 @@ function filterBySeason() {
                             </div>
                             
                             <div>
-                                <label class="text-xs font-medium text-gray-700">Semestre:</label>
+                                <label class="text-xs font-medium text-gray-700 flex items-center">
+                                    <i class="bi bi-calendar-week mr-1 text-gray-500"></i>
+                                    Semestre:
+                                </label>
                                 <select name="semester" class="w-full border rounded px-2 py-1 text-sm">
                                     <option value="1Q">1r Quadrimestre</option>
                                     <option value="2Q">2n Quadrimestre</option>
@@ -463,25 +524,42 @@ function filterBySeason() {
                         
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-2">
                             <div>
-                                <label class="text-xs font-medium text-gray-700">Sessions:</label>
+                                <label class="text-xs font-medium text-gray-700 flex items-center">
+                                    <i class="bi bi-calendar-event mr-1 text-gray-500"></i>
+                                    Sessions:
+                                </label>
                                 <input type="number" id="sessions" name="sessions" class="w-full border rounded px-2 py-1 text-sm" min="1" max="100" title="Nombre de sessions">
                             </div>
                             <div>
-                                <label class="text-xs font-medium text-gray-700">Hores totals:</label>
+                                <label class="text-xs font-medium text-gray-700 flex items-center">
+                                    <i class="bi bi-clock-history mr-1 text-gray-500"></i>
+                                    Hores totals:
+                                </label>
                                 <input type="number" id="hours" name="hours" class="w-full border rounded px-2 py-1 text-sm" min="0">
                             </div>
                             <div>
-                                <label class="text-xs font-medium text-gray-700">Preu (€):</label>
+                                <label class="text-xs font-medium text-gray-700 flex items-center">
+                                    <i class="bi bi-currency-euro mr-1 text-gray-500"></i>
+                                    Preu (€):
+                                </label>
                                 <input type="number" id="price" name="price" class="w-full border rounded px-2 py-1 text-sm" min="0" step="0.01">
                             </div>
                         </div>
                         
+                        <div class="mb-2">
+                            <label class="flex items-center text-xs font-medium text-gray-700">
+                                <input type="checkbox" id="status_completed" name="status_completed" value="completed" class="mr-2">
+                                <i class="bi bi-check-circle-fill mr-1 text-green-500"></i>
+                                <span>Marcar como "Assignat" (completado y asignado al calendario)</span>
+                            </label>
+                        </div>
+                        
                         <div class="flex gap-2 mt-3">
                             <button type="button" onclick="assignCourse()" class="bg-blue-500 text-white px-3 py-1 text-sm rounded hover:bg-blue-600">
-                                <i class="fas fa-check"></i> Actualitzar
+                                <i class="bi bi-save mr-1"></i> Actualitzar
                             </button>
                             <button type="button" onclick="hideAssignForm()" class="bg-gray-300 text-gray-700 px-3 py-1 text-sm rounded hover:bg-gray-400">
-                                <i class="fas fa-times"></i> Cancelar
+                                <i class="bi bi-x-lg mr-1"></i> Cancelar
                             </button>
                         </div>
                     </form>
@@ -497,53 +575,12 @@ function filterBySeason() {
                     <input type="number" name="max_students" value="25" placeholder="Max. alumnes" class="border rounded px-2 py-1 text-sm w-20" title="Màxim d'alumnes per curs">
                     <input type="number" name="hours" value="18" placeholder="Hores" class="border rounded px-2 py-1 text-sm w-16" title="Hores totals del curs">
                     <button type="button" onclick="quickAddCourse()" class="bg-green-500 text-white px-3 py-1 text-sm rounded hover:bg-green-600">
-                        <i class="fas fa-plus"></i> Afegir
+                        <i class="bi bi-plus-lg"></i> Afegir
                     </button>
                 </form>
             </div>
         </div>
     </div>
-
-            <!-- Add Space -->
-            {{-- <div class="border rounded p-3">
-                <h4 class="font-semibold mb-2">Afegir Espai</h4>
-                <form id="quickSpaceForm" class="space-y-2">
-                    <input type="text" name="code" placeholder="Codi (SA, AM1...)" class="w-full border rounded px-2 py-1 text-sm">
-                    <input type="text" name="name" placeholder="Nom" class="w-full border rounded px-2 py-1 text-sm">
-                    <input type="number" name="capacity" placeholder="Capacitat" class="w-full border rounded px-2 py-1 text-sm">
-                    <select name="type" class="w-full border rounded px-2 py-1 text-sm">
-                        <option value="">Tipus...</option>
-                        @foreach(\App\Models\CampusSpace::TYPES as $value => $label)
-                            <option value="{{ $value }}">{{ $label }}</option>
-                        @endforeach
-                    </select>
-                    <button type="button" onclick="quickAddSpace()" class="w-full bg-purple-500 text-white px-2 py-1 text-sm rounded hover:bg-purple-600">
-                        <i class="fas fa-plus"></i> Afegir
-                    </button>
-                </form>
-            </div> --}}
-            
-            <!-- Add Time Slot -->
-            {{-- <div class="border rounded p-3">
-                <h4 class="font-semibold mb-2">Afegir Franja Horària</h4>
-                <form id="quickTimeSlotForm" class="space-y-2">
-                    <select name="day_of_week" class="w-full border rounded px-2 py-1 text-sm">
-                        <option value="">Dia...</option>
-                        @foreach(\App\Models\CampusTimeSlot::DAYS as $num => $day)
-                            <option value="{{ $num }}">{{ $day }}</option>
-                        @endforeach
-                    </select>
-                    <select name="code" class="w-full border rounded px-2 py-1 text-sm">
-                        <option value="">Franja...</option>
-                        <option value="M11">Matí 11:00-12:30</option>
-                        <option value="T16">Tarda 16:00-17:30</option>
-                        <option value="T18">Tarda 18:00-19:30</option>
-                    </select>
-                    <button type="button" onclick="quickAddTimeSlot()" class="w-full bg-orange-500 text-white px-2 py-1 text-sm rounded hover:bg-orange-600">
-                        <i class="fas fa-plus"></i> Afegir
-                    </button>
-                </form>
-            </div> --}}   
 
     <!-- Calendar Grid -->
     <div class="bg-white rounded-lg shadow overflow-hidden">
@@ -568,23 +605,49 @@ function filterBySeason() {
                          ondragleave="unhighlightDropZone(event)">
                         @php
                             $slot = $slots->firstWhere('day_of_week', $dayOfWeek);
-                            $course = $slot ? $slot->courses->first() : null;
+                            $courses = $slot ? $slot->courses : collect();
                         @endphp
                         
-                        @if($course)
-                            <div class="p-2 rounded text-xs {{ 
-                                $course->status === 'planning' ? 'bg-blue-100 text-blue-800' : 
-                                ($course->status === 'in_progress' ? 'bg-green-100 text-green-800' : 
-                                ($course->status === 'completed' ? 'bg-gray-100 text-gray-800' : 'bg-yellow-100 text-yellow-800'))
-                            }}">
-                                <div class="font-semibold">{{ $course->title }}</div>
-                                <div>{{ $course->code }}</div>
-                                <div>{{ $course->space->code ?? 'Sense espai' }}</div>
-                                <div>{{ $course->mainTeacher()?->first_name ?? 'Sense professor' }}</div>
-                                @if($course->status === 'planning')
-                                    <div class="text-blue-600 mt-1">📋 Planificació</div>
-                                @endif
-                            </div>
+                        @if($courses->count() > 0)
+                            @foreach($courses as $course)
+                                @php
+                                    $safeTitle = Str::limit($course->title, 30);
+                                    $safeCode = $course->code ?? Str::limit($course->title, 8);
+                                @endphp
+                                <div class="p-2 rounded text-xs mb-1 cursor-pointer hover:opacity-80 hover:shadow-md transition-all duration-200 transform hover:scale-105 {{ 
+                                    $course->status === 'planning' ? 'bg-blue-100 text-blue-800 hover:bg-blue-200' : 
+                                    ($course->status === 'in_progress' ? 'bg-green-100 text-green-800 hover:bg-green-200' : 
+                                    ($course->status === 'completed' ? 'bg-gray-100 text-gray-800 hover:bg-gray-200' : 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'))
+                                }}" 
+                                     title="📝 Click para editar: {{ $safeTitle }}"
+                                     onclick="showAssignForm({{ $course->id }}, {{ Js::from($safeTitle) }}, {{ Js::from($safeCode) }})">
+                                    <div class="font-semibold">{{ $safeTitle }}</div>
+                                    <div>{{ $safeCode }}</div>
+                                    <div>{{ $course->space->code ?? 'Sense espai' }}</div>
+                                    <div>{{ $course->mainTeacher()?->first_name ?? 'Sense professor' }}</div>
+                                    @switch($course->status)
+                                        @case('completed')
+                                            <div class="text-gray-600 mt-1">
+                                                <i class="bi bi-check-circle-fill"></i>
+                                            </div>
+                                        @break
+                                        @case('in_progress')
+                                            <div class="text-green-600 mt-1">
+                                                <i class="bi bi-play-circle"></i>
+                                            </div>
+                                        @break
+                                        @case('planning')
+                                            <div class="text-blue-600 mt-1">
+                                                <i class="bi bi-calendar-week"></i>
+                                            </div>
+                                        @break
+                                        @default
+                                            <div class="text-gray-600 mt-1">
+                                                <i class="bi bi-file-earmark"></i>
+                                            </div>
+                                    @endswitch
+                                </div>
+                            @endforeach
                         @else
                             <div class="text-gray-400 text-xs h-full flex items-center justify-center">
                                 <span class="text-lg">+</span>
@@ -606,22 +669,27 @@ function filterBySeason() {
                     @foreach($typeSpaces as $space)
                         @php
                             // Check if space has assigned courses
-                            $hasCourses = \App\Models\CampusCourse::where('space_id', $space->id)
-                                ->whereNotNull('time_slot_id')
-                                ->exists();
+                            $availability = \App\Models\CampusCourse::getSpaceAvailability($space->id);
+                            $hasCourses = $availability['occupied'];
+                            $coursesCount = $availability['courses_count'];
                         @endphp
-                        <div class="text-sm text-gray-600 flex items-center justify-between">
+                        <div class="text-sm text-gray-600 flex items-center justify-between mb-1">
                             <span>{{ $space->code }} - {{ $space->formatted_capacity }}</span>
                             @if($hasCourses)
-                                <span class="text-green-500" title="Disponible con cursos asignados">
-                                    <i class="fas fa-check-circle"></i>
+                                <span class="text-red-500" title="Ocupat ({{ $coursesCount }} cursos)">
+                                    <i class="bi bi-check-circle-fill mr-1"></i>
                                 </span>
                             @else
-                                <span class="text-gray-400" title="Disponible sin cursos asignados">
-                                    <i class="far fa-circle"></i>
+                                <span class="text-green-500" title="Disponible">
+                                    <i class="bi bi-file-earmark mr-1"></i>
                                 </span>
                             @endif
                         </div>
+                        @if($hasCourses)
+                            <div class="text-xs text-gray-500 ml-6">
+                                {{ $coursesCount }} {{ $coursesCount == 1 ? 'curs' : 'cursos' }} assignats
+                            </div>
+                        @endif
                     @endforeach
                 </div>
             @endforeach
@@ -633,18 +701,18 @@ function filterBySeason() {
         <h2 class="text-xl font-bold mb-4">Resum Cursos</h2>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div class="bg-gray-50 rounded-lg p-4 text-center">
-                <div class="text-2xl font-bold text-blue-600">{{ App\Models\CampusCourse::count() }}</div>
-                <div class="text-sm text-gray-600 mt-1">Cursos totals</div>
+                <div class="text-2xl font-bold text-blue-600">{{ App\Models\CampusCourse::count() }}/{{ $selectedSeason ? \App\Models\CampusCourse::where('season_id', $selectedSeason->id)->count() : 0 }}</div>
+                <div class="text-sm text-gray-600 mt-1">Cursos totals/temporada</div>
             </div>
-            <div class="bg-gray-50 rounded-lg p-4 text-center">
-                <div class="text-2xl font-bold text-green-600">{{ App\Models\CampusSpace::count() }}</div>
-                <div class="text-sm text-gray-600 mt-1">Espais totals</div>
+            <div class="bg-green-50 rounded-lg p-4 text-center">
+                <div class="text-2xl font-bold text-green-600">{{ App\Models\CampusSpace::count() }}/{{ $selectedSeason ? \App\Models\CampusCourse::where('season_id', $selectedSeason->id)->whereNotNull('space_id')->distinct('space_id')->count() : 0 }}</div>
+                <div class="text-sm text-gray-600 mt-1">Espais totals/ocupats</div>
             </div>
-            <div class="bg-gray-50 rounded-lg p-4 text-center">
+            <div class="bg-purple-50 rounded-lg p-4 text-center">
                 <div class="text-2xl font-bold text-purple-600">{{ App\Models\CampusTimeSlot::count() }}</div>
                 <div class="text-sm text-gray-600 mt-1">Franjes totals</div>
             </div>
-            <div class="bg-gray-50 rounded-lg p-4 text-center">
+            <div class="bg-orange-50 rounded-lg p-4 text-center">
                 <div class="text-2xl font-bold text-orange-600">{{ \App\Models\CampusCourseSchedule::where('semester', $semester)->count() }}</div>
                 <div class="text-sm text-gray-600 mt-1">Assignacions {{ $semester }}</div>
             </div>
@@ -817,6 +885,12 @@ function showAssignForm(courseId, courseTitle, courseCode) {
                     time_slot_id: course.time_slot_id,
                     semester: course.semester
                 });
+                
+                // Load status checkbox
+                const statusCompletedCheckbox = document.getElementById('status_completed');
+                if (statusCompletedCheckbox) {
+                    statusCompletedCheckbox.checked = course.status === 'completed';
+                }
             } else {
                 console.error('No course data received');
             }
@@ -900,6 +974,15 @@ function assignCourse() {
     
     // Create form data
     const formData = new FormData(form);
+    
+    // Handle checkbox for status_completed
+    const statusCompletedCheckbox = document.getElementById('status_completed');
+    if (statusCompletedCheckbox.checked) {
+        formData.append('status_completed', 'completed');
+    } else {
+        // Remove if unchecked
+        formData.delete('status_completed');
+    }
     
     // Debug: Mostrar datos que se enviarán
     console.log('=== PUT REQUEST DEBUG ===');
@@ -1012,6 +1095,19 @@ function assignCourse() {
             
             if (data.success) {
                 alert('Curs actualizat correctament!');
+                
+                // Update status display if provided
+                if (data.status_label && data.status_color) {
+                    // Find the course element and update status
+                    const courseElements = document.querySelectorAll('.course-status');
+                    courseElements.forEach(el => {
+                        if (el.textContent.includes(data.course.code)) {
+                            el.className = `text-xs px-1 py-0.5 rounded-full bg-${data.status_color}-100 text-${data.status_color}-800`;
+                            el.textContent = data.status_label;
+                        }
+                    });
+                }
+                
                 hideAssignForm();
                 // Reload page to show updated calendar
                 window.location.reload();
@@ -1046,6 +1142,19 @@ if (semesterSelect) {
     semesterSelect.addEventListener('change', function() {
         window.location.href = '?semester=' + this.value;
     });
+}
+
+// Quick Add Functions
+function openQuickAddCourse() {
+    window.location.href = '{{ route("campus.courses.create") }}';
+}
+
+function openSpaceModal() {
+    window.location.href = '{{ route("campus.resources.spaces") }}';
+}
+
+function openTimeSlotModal() {
+    window.location.href = '{{ route("campus.resources.timeslots") }}';
 }
 </script>
 </script>

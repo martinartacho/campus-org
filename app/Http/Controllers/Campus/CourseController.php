@@ -165,13 +165,25 @@ class CourseController extends Controller
         }
 
         $course->update($data);
+        
+        // Handle manual status completion
+        if ($request->has('status_completed') && $request->input('status_completed') === 'completed') {
+            $course->status = CampusCourse::STATUS_COMPLETED;
+            $course->save();
+        } else {
+            // Auto-update status based on completion (only if not manually set)
+            $course->updateStatus();
+        }
 
         // If AJAX request, return JSON response
         if ($request->expectsJson()) {
             return response()->json([
                 'success' => true,
                 'message' => __('campus.course_updated'),
-                'course' => $course->load(['season', 'category', 'space', 'timeSlot'])
+                'course' => $course->load(['season', 'category', 'space', 'timeSlot']),
+                'status' => $course->status,
+                'status_label' => $course->getStatusLabel(),
+                'status_color' => $course->getStatusColor()
             ]);
         }
 
@@ -231,6 +243,8 @@ class CourseController extends Controller
             'metadata'      => ['nullable', 'array'],
             'space_id'      => ['nullable', 'exists:campus_spaces,id'],
             'time_slot_id'  => ['nullable', 'exists:campus_time_slots,id'],
+            'semester'       => ['nullable', 'string', 'in:1Q,2Q'],
+            'status_completed' => ['nullable', 'string'],  // Agregar esta regla
         ]);
         
         // Debug: Mostrar todos los datos recibidos y validados
@@ -252,11 +266,21 @@ class CourseController extends Controller
             'exclude_course_id' => 'nullable|exists:campus_courses,id'
         ]);
 
+        // Debug: Mostrar qué estamos verificando
+        \Log::info('Checking conflict for:', [
+            'space_id' => $validated['space_id'],
+            'time_slot_id' => $validated['time_slot_id'],
+            'exclude_course_id' => $validated['exclude_course_id'] ?? null
+        ]);
+
         $hasConflict = CampusCourse::hasConflict(
             $validated['space_id'],
             $validated['time_slot_id'],
             $validated['exclude_course_id'] ?? null
         );
+
+        // Debug: Mostrar resultado
+        \Log::info('Conflict result:', ['has_conflict' => $hasConflict]);
 
         if ($hasConflict) {
             return response()->json([

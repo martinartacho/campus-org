@@ -112,20 +112,6 @@
     <div class="mb-6">
         <h2 class="text-xl font-semibold text-gray-800 mb-4">Accions Ràpides</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {{-- AGENDA --}}
-            <a href="{{ route('campus.resources.calendar') }}" class="block">
-                <div class="bg-blue-50 border border-blue-200 hover:bg-blue-100 p-4 rounded-lg transition-colors">
-                    <div class="flex items-center">
-                        <div class="p-2 bg-blue-100 rounded-lg me-3">
-                            <i class="bi bi-calendar-week text-blue-600 text-lg"></i>
-                        </div>
-                        <div>
-                            <h3 class="font-semibold text-blue-800">Agenda</h3>
-                            <p class="text-sm text-blue-600">Veure agenda d'activitats</p>
-                        </div>
-                    </div>
-                </div>
-            </a>
             
             {{-- Franjes Horàries --}}
             <a href="{{ route('campus.resources.timeslots') }}" class="block">
@@ -135,8 +121,8 @@
                             <i class="bi bi-calendar3 text-orange-600 text-lg"></i>
                         </div>
                         <div>
-                            <h3 class="font-semibold text-orange-800">Calendar</h3>
-                            <p class="text-sm text-orange-600">Gestionar calendar de recursos</p>
+                            <h3 class="font-semibold text-orange-800">Calendari</h3>
+                            <p class="text-sm text-orange-600">Gestionar propera temporada fent servir el model calendari de recursos</p>
                         </div>
                     </div>
                 </div>
