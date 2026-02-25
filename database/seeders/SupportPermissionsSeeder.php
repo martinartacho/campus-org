@@ -24,8 +24,6 @@ class SupportPermissionsSeeder extends Seeder
             Permission::firstOrCreate([
                 'name' => $name,
                 'guard_name' => 'web',
-            ], [
-                'description' => $description,
             ]);
         }
 
