@@ -67,8 +67,11 @@
                 {{ $slot }}
             </main>
             <div>
-               <!--  @include('debug.footer') -->
+                @include('debug.footer')
             </div>
+            
+            <!-- Footer con botón de soporte flotante -->
+            @include('components.footer')
         </div>
 
         <!-- SweetAlert2 JS -->
