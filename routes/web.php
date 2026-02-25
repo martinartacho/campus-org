@@ -31,6 +31,7 @@ use App\Http\Controllers\TreasuryController;
 
 use App\Http\Controllers\Admin\FeedbackController as AdminFeedbackController;
 use App\Http\Controllers\LocaleController;
+use App\Http\Controllers\SupportController;
 use Illuminate\Support\Facades\Route;
 
 // Ruta de prueba absoluta fuera de todo
@@ -573,3 +574,10 @@ Route::get('test-import', function() {
     });
 
 });
+
+// Rutas de Soporte (públicas)
+Route::get('suport', [SupportController::class, 'create'])
+    ->name('support.create');
+
+Route::post('suport', [SupportController::class, 'store'])
+    ->name('support.store');
