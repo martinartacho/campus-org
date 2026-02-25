@@ -73,6 +73,14 @@ class SupportRequest extends Model
     }
 
     /**
+     * Relación con el usuario que resolvió la solicitud
+     */
+    public function resolvedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'resolved_by');
+    }
+
+    /**
      * Obtener el tipo formateado
      */
     public function getTypeFormattedAttribute(): string
