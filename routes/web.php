@@ -21,6 +21,7 @@ use App\Http\Controllers\Campus\CourseTeacherController;
 use App\Http\Controllers\Campus\TeacherController;
 use App\Http\Controllers\Campus\CourseRegistrationController;
 use App\Http\Controllers\Campus\CampusImportController;
+use App\Http\Controllers\Campus\ResourceController;
 use App\Http\Controllers\TeacherAccess\TeacherAccessController;
 // use App\Http\Controllers\Manager\DashboardController; // Per ara inhabilitat
 use App\Http\Controllers\Manager\RegistrationController;
@@ -444,6 +445,16 @@ Route::get('test-import', function() {
         // Courses
         Route::resource('courses', CourseController::class)
             ->middleware('can:campus.courses.view');
+        
+        // Course data for AJAX
+        Route::get('courses/{course}/data', [CourseController::class, 'getCourseData'])
+            ->name('courses.data')
+            ->middleware('can:campus.courses.view');
+                
+        // Check conflicts endpoint
+        Route::post('courses/check-conflict', [CourseController::class, 'checkConflict'])
+            ->name('courses.check-conflict')
+            ->middleware('can:campus.courses.view');
                 
         // Teachers assignment
         Route::middleware(['auth'])->group(function () {
@@ -492,6 +503,28 @@ Route::get('test-import', function() {
             ->name('registrations.export');
         Route::get('registrations-list', [\App\Http\Controllers\Campus\ImportController::class, 'index'])
             ->name('registrations.list'); 
+            
+        // Re-Cursos - Resource Management
+        Route::get('resources', [ResourceController::class, 'index'])->name('resources.index');
+        Route::get('resources/calendar', [ResourceController::class, 'calendar'])->name('resources.calendar');
+        Route::post('resources/assign', [ResourceController::class, 'assign'])->name('resources.assign');
+        
+        // Spaces CRUD
+        Route::get('resources/spaces', [ResourceController::class, 'spaces'])->name('resources.spaces');
+        Route::post('resources/spaces', [ResourceController::class, 'storeSpace'])->name('resources.spaces.store');
+        Route::get('resources/spaces/{id}/edit', [ResourceController::class, 'editSpace'])->name('resources.spaces.edit');
+        Route::put('resources/spaces/{id}', [ResourceController::class, 'updateSpace'])->name('resources.spaces.update');
+        Route::delete('resources/spaces/{id}', [ResourceController::class, 'destroySpace'])->name('resources.spaces.destroy');
+        
+        // TimeSlots CRUD
+        Route::get('resources/timeslots', [ResourceController::class, 'timeSlots'])->name('resources.timeslots');
+        Route::post('resources/timeslots', [ResourceController::class, 'storeTimeSlot'])->name('resources.timeslots.store');
+        Route::get('resources/timeslots/{id}/edit', [ResourceController::class, 'editTimeSlot'])->name('resources.timeslots.edit');
+        Route::put('resources/timeslots/{id}', [ResourceController::class, 'updateTimeSlot'])->name('resources.timeslots.update');
+        Route::delete('resources/timeslots/{id}', [ResourceController::class, 'destroyTimeSlot'])->name('resources.timeslots.destroy');
+        
+        Route::get('resources/teachers', [ResourceController::class, 'teachers'])->name('resources.teachers');
+        Route::get('resources/getnextcode', [ResourceController::class, 'getNextCode'])->name('resources.getnextcode'); 
             
     });
     

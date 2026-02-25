@@ -64,13 +64,16 @@
                                 <div class="ml-4">
                                     <div class="text-sm font-medium text-gray-900">
                                         {{ $season->name }}
-                                        @if($season->is_current)
+                                       
+                                    </div>
+                                    <div class="text-sm text-gray-500">
+                                        {{ __('campus.id') }}: {{ $season->id }} 
+                                         @if($season->is_current)
                                             <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                                 <i class="bi bi-star-fill me-1"></i> {{ __('campus.current') }}
                                             </span>
                                         @endif
                                     </div>
-                                    <div class="text-sm text-gray-500">{{ __('campus.id') }}: {{ $season->id }}</div>
                                 </div>
                             </div>
                         </td>
@@ -87,15 +90,31 @@
                             </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            @if($season->is_active)
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                    <i class="bi bi-check-circle me-1"></i> {{ __('campus.active') }}
+                            <div class="space-y-1">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                                    @if($season->status === 'planning') bg-blue-100 text-blue-800 
+                                    @elseif($season->status === 'active') bg-green-100 text-green-800 
+                                    @elseif($season->status === 'completed') bg-purple-100 text-purple-800 
+                                    @elseif($season->status === 'archived') bg-gray-100 text-gray-800 
+                                    @else bg-red-100 text-red-800 @endif">
+                                    <i class="bi bi-activity me-1"></i>
+                                    {{ $season->getStatusLabel()['label'] ?? ucfirst($season->status) }}
                                 </span>
-                            @else
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                    <i class="bi bi-x-circle me-1"></i> {{ __('campus.inactive') }}
-                                </span>
-                            @endif
+                                
+                                <div class="flex gap-1 mt-1">
+
+                                    
+                                    @if($season->is_active)
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                                            <i class="bi bi-check-circle me-1"></i> {{ __('campus.active') }}
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                            <i class="bi bi-x-circle me-1"></i> {{ __('campus.inactive') }}
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800">

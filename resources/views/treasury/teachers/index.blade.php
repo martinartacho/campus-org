@@ -8,7 +8,7 @@
         <div class="flex items-center">
             <i class="bi bi-chevron-right text-gray-400 mx-1"></i>
             <a href="{{ route('campus.treasury.teachers.index') }}" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2">
-                {{ __('campus.teachers') }} / ({{ $season->name ?? 'Sense temporada' }}) ({{ $teachersWithCourses->count() }} prof.)
+                {{ __('campus.teachers') }} / {{ isset($season->name) ? $season->name : 'Sense temporada' }} ({{ $teachersWithCourses->count() }} prof.)
             </a>
         </div>
     </li>
@@ -38,7 +38,7 @@
 @endif
 
 <!-- Selector de temporada -->
-@if($seasons->count() > 0)
+@if(isset($seasons) && $seasons->count() > 0)
 <div class="mb-6 p-4 bg-white rounded-lg shadow">
     <form method="GET" action="{{ route('campus.treasury.teachers.index') }}" class="flex items-center space-x-4">
         <label for="season" class="font-medium">Filtrar per temporada:</label>
@@ -46,10 +46,8 @@
                 class="border rounded px-3 py-2 w-64"
                 onchange="this.form.submit()">
             @foreach($seasons as $s)
-                <option value="{{ $s->slug }}" 
-                        {{ ($selectedSeasonSlug == $s->slug) ? 'selected' : '' }}>
-                    {{ $s->name }} ({{ $s->slug }})
-                    @if($s->is_current) - ACTUAL @endif
+                <option value="{{ $s->slug ?? '' }}">
+                    Temporada {{ $s->id ?? 'sin id' }}
                 </option>
             @endforeach
         </select>

@@ -69,6 +69,9 @@
         <thead class="bg-gray-50">
         <tr>
             <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">
+                {{ __('campus.code') }}
+            </th>
+             <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">
                 {{ __('campus.title') }}
             </th>
             <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">
@@ -89,6 +92,9 @@
         <tbody class="bg-white divide-y divide-gray-200">
         @forelse ($courses as $course)
             <tr class="course-row">
+                <td class="px-4 py-3">
+                    {{ $course->code ?? '—' }}
+                </td>
                 <td class="px-4 py-3">
                     <a href="{{ route('campus.courses.show', $course) }}"
                        class="font-medium text-blue-600 hover:underline">

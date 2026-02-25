@@ -13,6 +13,21 @@ class CampusCourse extends Model
 {
     use HasFactory;
 
+    // Status constants
+    const STATUS_DRAFT = 'draft';
+    const STATUS_PLANNING = 'planning';
+    const STATUS_IN_PROGRESS = 'in_progress';
+    const STATUS_COMPLETED = 'completed';
+    const STATUS_CLOSED = 'closed';
+
+    public const STATUSES = [
+        self::STATUS_DRAFT => 'campus.status_draft',
+        self::STATUS_PLANNING => 'campus.status_planning',
+        self::STATUS_IN_PROGRESS => 'campus.status_in_progress',
+        self::STATUS_COMPLETED => 'campus.status_completed',
+        self::STATUS_CLOSED => 'campus.status_closed',
+    ];
+
     protected $fillable = [
         'season_id',
         'category_id',
@@ -22,22 +37,31 @@ class CampusCourse extends Model
         'description',
         'credits',
         'hours',
+        'sessions',
         'max_students',
         'price',
         'level',
         'schedule',
         'start_date',
         'end_date',
+        'location',
+        'format',
         'is_active',
         'is_public',
+        'status',
+        'created_by',
+        'source',
         'requirements',
         'objectives',
-        'metadata'
+        'metadata',
+        'space_id',
+        'time_slot_id',
     ];
 
     protected $casts = [
         'credits' => 'integer',
         'hours' => 'integer',
+        'sessions' => 'integer',
         'max_students' => 'integer',
         'price' => 'decimal:2',
         'start_date' => 'date',
@@ -45,8 +69,8 @@ class CampusCourse extends Model
         'is_active' => 'boolean',
         'is_public' => 'boolean',
         'schedule' => 'array',
-        'requirements' => 'array',
-        'objectives' => 'array',
+        'requirements' => 'string',
+        'objectives' => 'string',
         'metadata' => 'array'
     ];
 
@@ -65,11 +89,163 @@ class CampusCourse extends Model
     }
 
     /**
-     * Get the category that owns the course.
+     * Get category that owns course.
      */
     public function category(): BelongsTo
     {
         return $this->belongsTo(CampusCategory::class, 'category_id');
+    }
+
+    /**
+     * Check if there's a course conflict in the same space and time slot.
+     */
+    public static function hasConflict($spaceId, $timeSlotId, $excludeCourseId = null)
+    {
+        $query = self::where('space_id', $spaceId)
+                   ->where('time_slot_id', $timeSlotId);
+        
+        // Exclude current course when updating
+        if ($excludeCourseId) {
+            $query->where('id', '!=', $excludeCourseId);
+        }
+        
+        return $query->exists();
+    }
+
+    /**
+     * Get conflicting courses for a space and time slot.
+     */
+    public static function getConflicts($spaceId, $timeSlotId, $excludeCourseId = null)
+    {
+        $query = self::where('space_id', $spaceId)
+                   ->where('time_slot_id', $timeSlotId);
+        
+        // Exclude current course when updating
+        if ($excludeCourseId) {
+            $query->where('id', '!=', $excludeCourseId);
+        }
+        
+        return $query->get(['id', 'title', 'code', 'status']);
+    }
+
+    /**
+     * Update status based on course completion.
+     */
+    public function updateStatus()
+    {
+        $requiredFields = [
+            'space_id' => $this->space_id,
+            'time_slot_id' => $this->time_slot_id,
+            'semester' => $this->semester ?? null, // From form data
+            'sessions' => $this->sessions,
+            'hours' => $this->hours,
+            'max_students' => $this->max_students,
+        ];
+
+        $filledFields = array_filter($requiredFields, function($value) {
+            return !is_null($value) && $value !== '';
+        });
+
+        $completionPercentage = (count($filledFields) / count($requiredFields)) * 100;
+
+        // Auto-update based on completion
+        if ($completionPercentage >= 85) {
+            // If course has space and time_slot assigned, mark as completed
+            if ($this->space_id && $this->time_slot_id) {
+                $this->status = self::STATUS_COMPLETED;
+            } else {
+                $this->status = self::STATUS_IN_PROGRESS;
+            }
+        } elseif ($completionPercentage >= 50) {
+            $this->status = self::STATUS_PLANNING;
+        } else {
+            $this->status = self::STATUS_DRAFT;
+        }
+
+        $this->save();
+    }
+
+    /**
+     * Mark course as completed when assigned to calendar.
+     */
+    public function markAsCompleted()
+    {
+        $this->status = self::STATUS_COMPLETED;
+        $this->save();
+    }
+
+    /**
+     * Check if space is occupied by any course.
+     */
+    public static function isSpaceOccupied($spaceId)
+    {
+        return self::where('space_id', $spaceId)
+                   ->whereNotNull('time_slot_id')
+                   ->where('status', '!=', self::STATUS_CLOSED)
+                   ->exists();
+    }
+
+    /**
+     * Get space availability status.
+     */
+    public static function getSpaceAvailability($spaceId)
+    {
+        $occupiedCourses = self::where('space_id', $spaceId)
+                              ->whereNotNull('time_slot_id')
+                              ->where('status', '!=', self::STATUS_CLOSED)
+                              ->count();
+
+        return [
+            'occupied' => $occupiedCourses > 0,
+            'courses_count' => $occupiedCourses,
+            'status' => $occupiedCourses > 0 ? 'occupied' : 'available'
+        ];
+    }
+
+    /**
+     * Get status color for display.
+     */
+    public function getStatusColor()
+    {
+        return match($this->status) {
+            self::STATUS_DRAFT => 'gray',
+            self::STATUS_PLANNING => 'blue',
+            self::STATUS_IN_PROGRESS => 'green',
+            self::STATUS_COMPLETED => 'gray',
+            self::STATUS_CLOSED => 'red',
+            default => 'yellow'
+        };
+    }
+
+    /**
+     * Get status label in Catalan.
+     */
+    public function getStatusLabel()
+    {
+        return match($this->status) {
+            self::STATUS_DRAFT => 'Esborrany',
+            self::STATUS_PLANNING => 'Planificació',
+            self::STATUS_IN_PROGRESS => 'En curs',
+            self::STATUS_COMPLETED => 'Assignat',
+            self::STATUS_CLOSED => 'Tancat',
+            default => $this->status
+        };
+    }
+
+    /**
+     * Get space for the course.
+     */
+    public function space(): BelongsTo
+    {
+        return $this->belongsTo(CampusSpace::class, 'space_id');
+    }
+
+    /**
+     * Get time slot for the course.
+     */
+    public function timeSlot(): BelongsTo
+    {
+        return $this->belongsTo(CampusTimeSlot::class, 'time_slot_id');
     }
 
     /**
