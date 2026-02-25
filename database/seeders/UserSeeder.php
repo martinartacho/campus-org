@@ -35,7 +35,7 @@ class UserSeeder extends Seeder
 
         // Usuari TRESORERIA
         $tresoreria = User::firstorcreate([
-            'name' => 'Angels AA',
+            'name' => 'AAA',
             'email' => 'tresoreria@' . env('SEEDER_EMAIL_DOMAIN', 'test.local'),
             'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD', 'Campus2026!')),
             'email_verified_at' => Carbon::now(),
