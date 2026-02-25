@@ -66,9 +66,7 @@
             <main>
                 {{ $slot }}
             </main>
-            <div>
-                <!-- @include('debug.footer') -->
-            </div>
+
             
             <!-- Footer con botón de soporte flotante -->
             @include('components.footer')

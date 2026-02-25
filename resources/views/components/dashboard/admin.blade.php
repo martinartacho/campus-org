@@ -114,8 +114,8 @@
             
         </div>
         
-        {{-- Segunda fila --}}
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+        {{-- Segona fila --}}
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
             
             {{-- TEMPORADES --}}
             <a href="{{ route('campus.seasons.index') }}" class="block transition-transform hover:scale-[1.02]">
@@ -183,6 +183,30 @@
                     <div class="mt-3 pt-2 border-t border-emerald-200">
                         <span class="text-xs text-emerald-600 hover:text-emerald-800 flex items-center">
                             Gestionar feedback <i class="bi bi-arrow-right-short ms-1"></i>
+                        </span>
+                    </div>
+                </div>
+            </a>
+            
+            {{-- SUPORT --}}
+            <a href="{{ route('admin.support-requests.index') }}" class="block transition-transform hover:scale-[1.02]">
+                <div class="bg-gradient-to-br from-indigo-50 to-indigo-100 p-4 rounded-lg border border-indigo-200 hover:border-indigo-300">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-indigo-800">Suport</p>
+                            <p class="text-2xl font-bold text-indigo-900">{{ App\Models\SupportRequest::count() }}</p>
+                        </div>
+                        <div class="p-2 bg-indigo-200 rounded-lg">
+                            <i class="bi bi-headset text-indigo-600 text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="mt-2 grid grid-cols-2 gap-1 text-xs">
+                        <span class="text-indigo-700">Pendents: {{ App\Models\SupportRequest::where('status', 'pending')->count() }}</span>
+                        <span class="text-indigo-700">Crítics: {{ App\Models\SupportRequest::where('urgency', 'critical')->where('status', '!=', 'resolved')->count() }}</span>
+                    </div>
+                    <div class="mt-3 pt-2 border-t border-indigo-200">
+                        <span class="text-xs text-indigo-600 hover:text-indigo-800 flex items-center">
+                            Gestionar suport <i class="bi bi-arrow-right-short ms-1"></i>
                         </span>
                     </div>
                 </div>

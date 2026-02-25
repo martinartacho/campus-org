@@ -244,23 +244,35 @@
                         <h5 class="card-title">
                             <i class="bi bi-info-circle me-2"></i>Informació addicional
                         </h5>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h6>⏰ Temps de resposta estimat:</h6>
-                                <ul class="small mb-3">
-                                    <li><strong>Baixa:</strong> 24-48h</li>
-                                    <li><strong>Mitjana:</strong> 12-24h</li>
-                                    <li><strong>Alta:</strong> 4-8h</li>
-                                    <li><strong>Crítica:</strong> 1-2h</li>
-                                </ul>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Columna 1: Temps de resposta -->
+                            <div>
+                                <h6 class="mb-3">⏰ Temps de resposta estimat:</h6>
+                                <div class="alert alert-info">
+                                    <p class="mb-2">El temps de resposta varia en funció de la urgència de la sol·licitud i la complexitat de la mateixa.</p>
+                                    <p class="mb-0"><strong>ET</strong> (Equip Tècnic) està format per persones de voluntaries que resolten les sol·licituds de suport al seu temps personal sense cap tipus de compensació ecónomica.</p>
+                                </div>
                             </div>
-                            <div class="col-md-6">
-                                <h6>📧 Contacte directe:</h6>
-                                <ul class="small mb-0">
-                                    <li><strong>Email:</strong> support@upg.cat</li>
-                                    <li><strong>Telèfon:</strong> 93 123 45 67</li>
-                                    <li><strong>Horari:</strong> 9:00 - 18:00</li>
-                                </ul>
+
+                            <!-- Columna 2: Contacte directe -->
+                            <div>
+                                <h6 class="mb-3">📧 Contacte directe:</h6>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <ul class="space-y-2 mb-0">
+                                        <li class="flex items-center">
+                                            <i class="bi bi-envelope mr-2 text-blue-600"></i>
+                                            <strong>Email:</strong> support@upg.cat
+                                        </li>
+                                        <li class="flex items-center">
+                                            <i class="bi bi-telephone mr-2 text-blue-600"></i>
+                                            <strong>Telèfon:</strong> 93 123 45 67
+                                        </li>
+                                        <li class="flex items-center">
+                                            <i class="bi bi-clock mr-2 text-blue-600"></i>
+                                            <strong>Horari:</strong> 9:00 - 18:00
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div>
