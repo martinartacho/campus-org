@@ -27,124 +27,121 @@
                             @csrf
 
                             {{-- Información del usuario --}}
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                        <i class="bi bi-person mr-1"></i> Nom
-                                    </label>
-                                    <input type="text" 
-                                        name="name" 
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('name') border-red-500 @enderror"
-                                        value="{{ $user?->name ?? old('name') }}" 
-                                        placeholder="El teu nom complet"
-                                        required>
-                                    @error('name')
-                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                                
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                        <i class="bi bi-envelope mr-1"></i> Email
-                                    </label>
-                                    <input type="email" 
-                                        name="email" 
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('email') border-red-500 @enderror"
-                                        value="{{ $user?->email ?? old('email') }}" 
-                                        placeholder="teu.email@exemple.com"
-                                        required>
-                                    @error('email')
-                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                    @enderror
+                            <div class="border rounded-lg p-6 mb-6 bg-gray-50">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <!-- Nom -->
+                                    <div>
+                                        <label class="block font-medium">Nom *</label>
+                                        <input type="text" 
+                                            name="name"
+                                            value="{{ $user?->name ?? old('name') }}"
+                                            class="border p-2 w-full rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('name') border-red-500 @enderror"
+                                            placeholder="El teu nom complet"
+                                            required>
+                                        @error('name')
+                                            <span class="text-red-600 text-sm">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+
+                                    <!-- Email -->
+                                    <div>
+                                        <label class="block font-medium">Email *</label>
+                                        <input type="email" 
+                                            name="email"
+                                            value="{{ $user?->email ?? old('email') }}"
+                                            class="border p-2 w-full rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('email') border-red-500 @enderror"
+                                            placeholder="teu.email@exemple.com"
+                                            required>
+                                        @error('email')
+                                            <span class="text-red-600 text-sm">{{ $message }}</span>
+                                        @enderror
+                                    </div>
                                 </div>
                             </div>
 
                             @if($user?->department)
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">
-                                    <i class="bi bi-building me-1"></i> Departament
-                                </label>
-                                <input type="text" 
-                                    name="department" 
-                                    class="form-control"
-                                    value="{{ $user->department->name ?? old('department') }}" 
-                                    readonly
-                                    class="form-control-plaintext">
-                                <small class="text-muted">Departament detectat automàticament</small>
+                            <div class="border rounded-lg p-6 mb-6 bg-gray-50">
+                                <!-- Departament -->
+                                <div>
+                                    <label class="block font-medium">Departament</label>
+                                    <input type="text" 
+                                        name="department"
+                                        value="{{ $user->department->name ?? old('department') }}"
+                                        class="border p-2 w-full rounded-lg bg-gray-100"
+                                        readonly>
+                                    <small class="text-gray-600 text-sm">Departament detectat automàticament</small>
+                                </div>
                             </div>
                             @endif
 
                             {{-- Tipo de solicitud --}}
-                            <div class="mb-4">
-                                <label class="form-label fw-bold">
-                                    <i class="bi bi-tag me-1"></i> Tipus de sol·licitud
-                                </label>
-                                <select name="type" 
-                                        class="form-select @error('type') is-invalid @enderror"
-                                        required>
-                                    <option value="">Selecciona un tipus...</option>
-                                    <option value="service" {{ old('type') == 'service' ? 'selected' : '' }}>
-                                        🚀 Nou servei
-                                    </option>
-                                    <option value="incident" {{ old('type') == 'incident' ? 'selected' : '' }}>
-                                        ⚠️ Incidència
-                                    </option>
-                                    <option value="improvement" {{ old('type') == 'improvement' ? 'selected' : '' }}>
-                                        💡 Millora
-                                    </option>
-                                    <option value="consultation" {{ old('type') == 'consultation' ? 'selected' : '' }}>
-                                        ❓ Consulta
-                                    </option>
-                                </select>
-                                @error('type')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
+                            <div class="border rounded-lg p-6 mb-6 bg-gray-50">
+                                <!-- Tipus de sol·licitud -->
+                                <div>
+                                    <label class="block font-medium">Tipus de sol·licitud *</label>
+                                    <select name="type"
+                                            class="border p-2 w-full rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('type') border-red-500 @enderror"
+                                            required>
+                                        <option value="">Selecciona un tipus...</option>
+                                        <option value="service" {{ old('type') == 'service' ? 'selected' : '' }}>
+                                            🚀 Nou servei
+                                        </option>
+                                        <option value="incident" {{ old('type') == 'incident' ? 'selected' : '' }}>
+                                            ⚠️ Incidència
+                                        </option>
+                                        <option value="improvement" {{ old('type') == 'improvement' ? 'selected' : '' }}>
+                                            💡 Millora
+                                        </option>
+                                        <option value="consultation" {{ old('type') == 'consultation' ? 'selected' : '' }}>
+                                            ❓ Consulta
+                                        </option>
+                                    </select>
+                                    @error('type')
+                                        <span class="text-red-600 text-sm">{{ $message }}</span>
+                                    @enderror
+                                </div>
                             </div>
 
                             {{-- Descripción --}}
-                            <div class="mb-4">
-                                <label class="form-label fw-bold">
-                                    <i class="bi bi-text-left me-1"></i> Descripció
-                                </label>
-                                <textarea name="description" 
-                                        class="form-control @error('description') is-invalid @enderror"
-                                        rows="4" 
-                                        placeholder="Descriu detallament la teva sol·licitud..."
-                                        required>{{ old('description') }}</textarea>
-                                <small class="text-muted">Mínim 10 caràcters</small>
-                                @error('description')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
+                            <div class="border rounded-lg p-6 mb-6 bg-gray-50">
+                                <!-- Descripció -->
+                                <div>
+                                    <label class="block font-medium">Descripció *</label>
+                                    <textarea name="description"
+                                            class="border p-2 w-full rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('description') border-red-500 @enderror"
+                                            rows="4"
+                                            placeholder="Descriu detallament la teva sol·licitud..."
+                                            required>{{ old('description') }}</textarea>
+                                    <small class="text-gray-600 text-sm">Mínim 10 caràcters</small>
+                                    @error('description')
+                                        <span class="text-red-600 text-sm">{{ $message }}</span>
+                                    @enderror
+                                </div>
                             </div>
 
                             {{-- Módulo y URL --}}
-                            <div class="row mb-4">
-                                <div class="col-md-6">
-                                    <label class="form-label fw-bold">
-                                        <i class="bi bi-window me-1"></i> Pantalla / Mòdul afectat
-                                    </label>
-                                    <input type="text" 
-                                        name="module" 
-                                        class="form-control"
-                                        value="{{ $module ?? old('module') }}" 
-                                        placeholder="Ex: Taulell de control, Cursos...">
-                                </div>
-                                
-                                <div class="col-md-6">
-                                    <label class="form-label fw-bold">
-                                        <i class="bi bi-link-45deg me-1"></i> URL d'origen
-                                    </label>
-                                    <input type="url" 
-                                        name="url" 
-                                        class="form-control"
-                                        value="{{ $url ?? old('url') }}" 
-                                        readonly
-                                        class="form-control-plaintext">
-                                    <small class="text-muted">URL detectada automàticament</small>
+                            <div class="border rounded-lg p-6 mb-6 bg-gray-50">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <!-- Pantalla / Mòdul afectat -->
+                                    <div>
+                                        <label class="block font-medium">Pantalla / Mòdul afectat</label>
+                                        <input type="text" 
+                                            name="module"
+                                            value="{{ $module ?? old('module') }}"
+                                            class="border p-2 w-full rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                            placeholder="Ex: Taulell de control, Cursos...">
+                                    </div>
+
+                                    <!-- URL d'origen -->
+                                    <div>
+                                        <label class="block font-medium">URL d'origen</label>
+                                        <input type="url" 
+                                            name="url"
+                                            value="{{ $url ?? old('url') }}"
+                                            class="border p-2 w-full rounded-lg bg-gray-100"
+                                            readonly>
+                                        <small class="text-gray-600 text-sm">URL detectada automàticament</small>
+                                    </div>
                                 </div>
                             </div>
 
