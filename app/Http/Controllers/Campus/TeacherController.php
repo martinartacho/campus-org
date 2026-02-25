@@ -27,13 +27,92 @@ class TeacherController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $teachers = CampusTeacher::with(['user', 'courses'])
-            ->orderBy('last_name')
-            ->paginate(15);
-            
-        return view('campus.teachers.index', compact('teachers'));
+        $query = CampusTeacher::with(['user', 'courses']);
+        
+        // Filtro por nombre
+        if ($request->filled('search_name')) {
+            $query->where(function($q) use ($request) {
+                $q->where('first_name', 'like', '%' . $request->search_name . '%')
+                  ->orWhere('last_name', 'like', '%' . $request->search_name . '%')
+                  ->orWhereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ['%' . $request->search_name . '%']);
+            });
+        }
+        
+        // Filtro por email
+        if ($request->filled('search_email')) {
+            $query->where('email', 'like', '%' . $request->search_email . '%');
+        }
+        
+        // Filtro por teléfono
+        if ($request->filled('search_phone')) {
+            $query->where('phone', 'like', '%' . $request->search_phone . '%');
+        }
+        
+        // Filtro por DNI
+        if ($request->filled('search_dni')) {
+            $query->where('dni', 'like', '%' . $request->search_dni . '%')
+                  ->orWhere('fiscal_id', 'like', '%' . $request->search_dni . '%');
+        }
+        
+        // Filtro por ciudad
+        if ($request->filled('search_city')) {
+            $query->where('city', 'like', '%' . $request->search_city . '%');
+        }
+        
+        // Filtro por estado
+        if ($request->filled('search_status')) {
+            $query->where('status', $request->search_status);
+        }
+        
+        // Filtro por cursos asignados
+        if ($request->filled('search_courses_min')) {
+            $query->withCount(['courses as courses_count'])
+                  ->having('courses_count', '>=', $request->search_courses_min);
+        }
+        
+        if ($request->filled('search_courses_max')) {
+            if ($request->filled('search_courses_min')) {
+                $query->having('courses_count', '<=', $request->search_courses_max);
+            } else {
+                $query->withCount(['courses as courses_count'])
+                      ->having('courses_count', '<=', $request->search_courses_max);
+            }
+        }
+        
+        // Filtro por fecha de contratación
+        if ($request->filled('search_date_from')) {
+            $query->whereDate('hiring_date', '>=', $request->search_date_from);
+        }
+        
+        if ($request->filled('search_date_to')) {
+            $query->whereDate('hiring_date', '<=', $request->search_date_to);
+        }
+        
+        // Filtro por especialización/áreas
+        if ($request->filled('search_specialization')) {
+            $query->where('specialization', 'like', '%' . $request->search_specialization . '%')
+                  ->orWhere('areas', 'like', '%' . $request->search_specialization . '%');
+        }
+        
+        // Ordenamiento
+        $sortBy = $request->get('sort_by', 'last_name');
+        $sortOrder = $request->get('sort_order', 'asc');
+        
+        if (in_array($sortBy, ['first_name', 'last_name', 'email', 'hiring_date', 'created_at'])) {
+            $query->orderBy($sortBy, $sortOrder);
+        } elseif ($sortBy === 'courses_count') {
+            $query->withCount(['courses'])->orderBy('courses_count', $sortOrder);
+        }
+        
+        $teachers = $query->paginate(15)->withQueryString();
+        
+        // Obtener valores únicos para filtros
+        $cities = CampusTeacher::whereNotNull('city')->distinct()->pluck('city')->sort();
+        $specializations = CampusTeacher::whereNotNull('specialization')->distinct()->pluck('specialization')->sort();
+        
+        return view('campus.teachers.index', compact('teachers', 'cities', 'specializations'));
     }
 
     /**

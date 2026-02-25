@@ -7,7 +7,7 @@
     <h1>{{ __('Dades del professorat de la UPG') }}</h1>
     <div>
         <p>
-            {{ __('campus.treasury_mail_welcome', ['name' => $teacher->teacherProfile ? $teacher->teacherProfile->full_name : ($teacher->name ?? 'Docent')]) }}
+            {{ __('Hola', ['name' => $teacher->teacherProfile ? $teacher->teacherProfile->full_name : ($teacher->name ?? 'Docent')]) }}
         </p>
 
         @if ($purpose === 'payments')
@@ -16,7 +16,7 @@
                 {{ __('Et donem la benvinguda al grup de professorat de la Universitat Popular de Granollers (UPG) i agraïm  la teva participació en la confinaça que serà de mútua satisfacció.') }}
             </p>
                 @if(!empty($additionalData))
-                    <p>{{ __('campus.course') }}: {{ $additionalData['course_title'] ?? '' }}</p>
+                    <p>{{ __('Curs') }}: {{ $additionalData['course_title'] ?? '' }}</p>
                 @endif
             <p>
                 {{ __('Per tal de gestionar correctament la formació que imparteixes aquest curs, et donem seguidament l´enllaç al formulari per a completar les teves dades.') }}

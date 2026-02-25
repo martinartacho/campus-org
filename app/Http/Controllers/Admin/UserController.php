@@ -11,10 +11,48 @@ use App\Services\FCMService;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::with('roles')->paginate(10);
-        return view('admin.users.index', compact('users'));
+        $query = User::with('roles');
+        
+        // Filtro por nombre
+        if ($request->filled('search_name')) {
+            $query->where('name', 'like', '%' . $request->search_name . '%');
+        }
+        
+        // Filtro por email
+        if ($request->filled('search_email')) {
+            $query->where('email', 'like', '%' . $request->search_email . '%');
+        }
+        
+        // Filtro por rol
+        if ($request->filled('search_role')) {
+            $query->whereHas('roles', function($q) use ($request) {
+                $q->where('name', $request->search_role);
+            });
+        }
+        
+        // Filtro por fecha de registro
+        if ($request->filled('search_date_from')) {
+            $query->whereDate('created_at', '>=', $request->search_date_from);
+        }
+        
+        if ($request->filled('search_date_to')) {
+            $query->whereDate('created_at', '<=', $request->search_date_to);
+        }
+        
+        // Ordenamiento
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortOrder = $request->get('sort_order', 'desc');
+        
+        if (in_array($sortBy, ['name', 'email', 'created_at'])) {
+            $query->orderBy($sortBy, $sortOrder);
+        }
+        
+        $users = $query->paginate(10)->withQueryString();
+        $roles = \Spatie\Permission\Models\Role::all();
+        
+        return view('admin.users.index', compact('users', 'roles'));
     }
 
     public function create()

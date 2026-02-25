@@ -13,153 +13,140 @@
 @endsection
 
 @section('content')
-<div class="flex justify-between items-center mb-6">
-    <h1 class="text-2xl font-bold">
-        {{ __('campus.courses') }}
-    </h1>
-
-    <div class="flex space-x-3">
-        @can('campus.courses.create')
-            <a href="{{ route('campus.courses.create') }}"
-               class="campus-primary-button">
-                {{ __('campus.new_course') }}
-            </a>
-        @endcan
-        
-        @can('campus.courses.create')
-            <a href="{{ route('importar.cursos') }}"
-               class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
-                <i class="bi bi-upload mr-2"></i>{{ __('campus.import_courses') }}
-            </a>
-        @else
-            <span class="text-gray-400 text-sm px-4 py-2 bg-gray-200 rounded-md cursor-not-allowed">
-                <i class="bi bi-upload mr-2"></i>{{ __('campus.import_courses') }} (Sense permisos)
-            </span>
-        @endcan
-    </div>
-</div>
-
-<div class="bg-white shadow rounded-lg overflow-hidden">
-    <div class="p-6">
-        <div class="mb-4">
-            <div class="flex flex-col sm:flex-row gap-4">
-                <div class="flex-1">
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i class="bi bi-search text-gray-400"></i>
-                        </div>
-                        <input type="text" 
-                               id="searchCourse" 
-                               placeholder="{{ __('campus.search_course') }}" 
-                               class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-                </div>
-                <div class="flex items-center space-x-2">
-                    <button id="clearCourseSearch" 
-                            class="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition duration-200 hidden">
-                        <i class="bi bi-x-circle mr-2"></i>{{ __('campus.clear') }}
-                    </button>
-                    <span id="courseSearchResults" class="text-sm text-gray-500 py-2"></span>
-                </div>
-            </div>
+<div class="container mx-auto px-4 py-8">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-gray-900">{{ __('campus.courses') }}</h1>
+        <div class="flex space-x-3">
+            @can('campus.courses.create')
+                <a href="{{ route('campus.courses.create') }}"
+                   class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200">
+                    <i class="fas fa-plus mr-2"></i>{{ __('campus.new_course') }}
+                </a>
+            @endcan
+            
+            @can('campus.courses.create')
+                <a href="{{ route('importar.cursos') }}"
+                   class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+                    <i class="bi bi-upload mr-2"></i>{{ __('campus.import_courses') }}
+                </a>
+            @else
+                <span class="text-gray-400 text-sm px-4 py-2 bg-gray-200 rounded-md cursor-not-allowed">
+                    <i class="bi bi-upload mr-2"></i>{{ __('campus.import_courses') }} (Sense permisos)
+                </span>
+            @endcan
         </div>
+    </div>
 
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
-        <tr>
-            <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">
-                {{ __('campus.code') }}
-            </th>
-             <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">
-                {{ __('campus.title') }}
-            </th>
-            <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">
-                {{ __('campus.season') }}
-            </th>
-            <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">
-                {{ __('campus.category') }}
-            </th>
-            <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">
-                {{ __('campus.status') }}
-            </th>
-            <th class="px-4 py-3 text-right text-sm font-medium text-gray-500">
-                &nbsp;
-            </th>
-        </tr>
-        </thead>
+    @if(session('success'))
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
+            {{ session('success') }}
+        </div>
+    @endif
 
-        <tbody class="bg-white divide-y divide-gray-200">
-        @forelse ($courses as $course)
-            <tr class="course-row">
-                <td class="px-4 py-3">
-                    {{ $course->code ?? '—' }}
-                </td>
-                <td class="px-4 py-3">
-                    <a href="{{ route('campus.courses.show', $course) }}"
-                       class="font-medium text-blue-600 hover:underline">
-                        {{ $course->title }}
-                    </a>
-                </td>
-                <td class="px-4 py-3">
-                    {{ $course->season?->name ?? '—' }}
-                </td>
-                <td class="px-4 py-3">
-                    {{ $course->category?->name ?? '—' }}
-                </td>
-                <td class="px-4 py-3">
-                    @if($course->is_active)
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            <i class="bi bi-check-circle me-1"></i> {{ __('campus.active') }}
-                        </span>
-                    @else
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                            <i class="bi bi-x-circle me-1"></i> {{ __('campus.inactive') }}
-                        </span>
-                    @endif
-                </td>
-                <td class="px-4 py-3 text-right space-x-2">
-                    <div class="flex space-x-2">
-                    @can('campus.courses.edit')
-                            <a href="{{ route('campus.courses.edit', $course) }}" 
-                                class="text-blue-600 hover:text-blue-900"
-                                title="{{ __('campus.edit') }}">
-                                <i class="bi bi-pencil"></i>
-                            </a>
-                    @endcan
+    <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+        <div class="p-6">
+            <!-- Filtros avanzados -->
+            <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+                <h3 class="text-lg font-semibold mb-4 text-gray-700">
+                    <i class="bi bi-funnel mr-2"></i>{{ __('Filters') }}
+                </h3>
+                
+                <form method="GET" action="{{ route('campus.courses.index') }}" class="space-y-4">
+                    <!-- Primera fila de filtros -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <!-- Filtro por código -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                {{ __('campus.code') }}
+                            </label>
+                            <input type="text" 
+                                   name="search_code" 
+                                   value="{{ request('search_code') }}"
+                                   placeholder="{{ __('Search by code') }}"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
 
-                    @can('campus.courses.view')
-                            <a href="{{ route('campus.courses.show', $course) }}" 
-                                class="text-blue-600 hover:text-blue-900"
-                                title="{{ __('campus.view') }}">
-                                <i class="bi bi-eye"></i>
-                            </a>
-                    @endcan
+                        <!-- Filtro por título -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                {{ __('campus.title') }}
+                            </label>
+                            <input type="text" 
+                                   name="search_title" 
+                                   value="{{ request('search_title') }}"
+                                   placeholder="{{ __('Search by title') }}"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
 
-                    @can('campus.courses.delete')
-                        <form action="{{ route('campus.courses.destroy', $course) }}" 
-                                      method="POST" 
-                                      class="inline"
-                                      onsubmit="return confirm('{{ __('campus.course_delete_confirmation') }}')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" 
-                                            class="text-red-600 hover:text-red-900"
-                                            title="{{ __('campus.delete') }}">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </form>
-                    @endcan
+                        <!-- Filtro por temporada -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                {{ __('campus.season') }}
+                            </label>
+                            <select name="search_season" 
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">{{ __('All seasons') }}</option>
+                                @foreach($seasons as $season)
+                                    <option value="{{ $season->id }}" 
+                                            {{ request('search_season') == $season->id ? 'selected' : '' }}>
+                                        {{ $season->name ?? $season->season_start . ' - ' . $season->season_end }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
-                </td>
-            </tr>
-        @empty
-            <tr>
-                <td colspan="5" class="px-4 py-6 text-center text-gray-500">
-                    {{ __('campus.no_courses') }}
-                </td>
-            </tr>
-        @endforelse
+
+                    <!-- Botones de acción y ordenamiento -->
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mt-6">
+                        <div class="flex flex-wrap gap-2">
+                            <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <i class="bi bi-search mr-2"></i>{{ __('Search') }}
+                            </button>
+                            <a href="{{ route('campus.courses.index') }}" 
+                               class="px-6 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500">
+                                <i class="bi bi-x-circle mr-2"></i>{{ __('Clear') }}
+                            </a>
+                        </div>
+                        
+                        <!-- Ordenamiento -->
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                            <label class="text-sm font-medium text-gray-700 whitespace-nowrap">{{ __('Sort by') }}:</label>
+                            <select name="sort_by" 
+                                    onchange="this.form.submit()"
+                                    class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="start_date" {{ request('sort_by') == 'start_date' ? 'selected' : '' }}>
+                                    {{ __('campus.start_date') }}
+                                </option>
+                                <option value="title" {{ request('sort_by') == 'title' ? 'selected' : '' }}>
+                                    {{ __('campus.title') }}
+                                </option>
+                                <option value="code" {{ request('sort_by') == 'code' ? 'selected' : '' }}>
+                                    {{ __('campus.code') }}
+                                </option>
+                                <option value="price" {{ request('sort_by') == 'price' ? 'selected' : '' }}>
+                                    {{ __('campus.price') }}
+                                </option>
+                                <option value="hours" {{ request('sort_by') == 'hours' ? 'selected' : '' }}>
+                                    {{ __('campus.hours') }}
+                                </option>
+                                <option value="max_students" {{ request('sort_by') == 'max_students' ? 'selected' : '' }}>
+                                    {{ __('campus.max_students') }}
+                                </option>
+                            </select>
+                            <select name="sort_order" 
+                                    onchange="this.form.submit()"
+                                    class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="desc" {{ request('sort_order') == 'desc' ? 'selected' : '' }}>
+                                    {{ __('Desc') }}
+                                </option>
+                                <option value="asc" {{ request('sort_order') == 'asc' ? 'selected' : '' }}>
+                                    {{ __('Asc') }}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </tbody>
     </table>
 </div>

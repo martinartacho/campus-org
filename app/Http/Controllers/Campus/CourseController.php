@@ -22,13 +22,96 @@ class CourseController extends Controller
     /**
      * Display a listing of the courses.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $courses = CampusCourse::with(['season', 'category'])
-            ->orderByDesc('start_date')
-            ->paginate(15);
-
-        return view('campus.courses.index', compact('courses'));
+        $query = CampusCourse::with(['season', 'category']);
+        
+        // Filtro por código
+        if ($request->filled('search_code')) {
+            $query->where('code', 'like', '%' . $request->search_code . '%');
+        }
+        
+        // Filtro por título
+        if ($request->filled('search_title')) {
+            $query->where('title', 'like', '%' . $request->search_title . '%');
+        }
+        
+        // Filtro por temporada
+        if ($request->filled('search_season')) {
+            $query->where('season_id', $request->search_season);
+        }
+        
+        // Filtro por categoría
+        if ($request->filled('search_category')) {
+            $query->where('category_id', $request->search_category);
+        }
+        
+        // Filtro por estado
+        if ($request->filled('search_status')) {
+            $query->where('is_active', $request->search_status === 'active');
+        }
+        
+        // Filtro por nivel
+        if ($request->filled('search_level')) {
+            $query->where('level', $request->search_level);
+        }
+        
+        // Filtro por formato
+        if ($request->filled('search_format')) {
+            $query->where('format', $request->search_format);
+        }
+        
+        // Filtro por precio mínimo
+        if ($request->filled('search_price_min')) {
+            $query->where('price', '>=', $request->search_price_min);
+        }
+        
+        // Filtro por precio máximo
+        if ($request->filled('search_price_max')) {
+            $query->where('price', '<=', $request->search_price_max);
+        }
+        
+        // Filtro por horas mínimas
+        if ($request->filled('search_hours_min')) {
+            $query->where('hours', '>=', $request->search_hours_min);
+        }
+        
+        // Filtro por horas máximas
+        if ($request->filled('search_hours_max')) {
+            $query->where('hours', '<=', $request->search_hours_max);
+        }
+        
+        // Filtro por fecha de inicio
+        if ($request->filled('search_date_from')) {
+            $query->whereDate('start_date', '>=', $request->search_date_from);
+        }
+        
+        if ($request->filled('search_date_to')) {
+            $query->whereDate('start_date', '<=', $request->search_date_to);
+        }
+        
+        // Filtro por ubicación
+        if ($request->filled('search_location')) {
+            $query->where('location', 'like', '%' . $request->search_location . '%');
+        }
+        
+        // Ordenamiento
+        $sortBy = $request->get('sort_by', 'start_date');
+        $sortOrder = $request->get('sort_order', 'desc');
+        
+        if (in_array($sortBy, ['title', 'code', 'start_date', 'end_date', 'price', 'hours', 'max_students'])) {
+            $query->orderBy($sortBy, $sortOrder);
+        }
+        
+        $courses = $query->paginate(15)->withQueryString();
+        
+        // Obtener valores únicos para filtros
+        $seasons = CampusSeason::orderByDesc('season_start')->get();
+        $categories = CampusCategory::orderBy('name')->get();
+        $levels = ['beginner', 'intermediate', 'advanced'];
+        $formats = ['presencial', 'online', 'hybrid'];
+        
+        return view('campus.courses.index', compact('courses', 'seasons', 'categories', 'levels', 'formats'));
     }
 
     /**
