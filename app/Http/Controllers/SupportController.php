@@ -19,9 +19,14 @@ class SupportController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'type' => 'required|string',
-            'description' => 'required|string|min:10',
+            'name' => 'required|string|max:255',
             'email' => 'required|email',
+            'type' => 'required|in:service,incident,improvement,consultation',
+            'description' => 'required|string|min:10',
+            'urgency' => 'required|in:low,medium,high,critical',
+            'module' => 'nullable|string|max:255',
+            'url' => 'nullable|url',
+            'department' => 'nullable|string|max:255',
         ]);
 
         SupportRequest::create([
@@ -34,7 +39,9 @@ class SupportController extends Controller
             'module'     => $request->module,
             'url'        => $request->url,
             'urgency'    => $request->urgency,
-            'status'     => 'open',
+            'status'     => 'pending',
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
         ]);
 
         return back()->with('success', 'Sol·licitud enviada correctament.');
