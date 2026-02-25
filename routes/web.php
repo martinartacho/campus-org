@@ -35,9 +35,9 @@ use App\Http\Controllers\SupportController;
 use Illuminate\Support\Facades\Route;
 
 // Ruta de prueba absoluta fuera de todo
-Route::get('test-import-absoluto', function() {
+/* Route::get('test-import-absoluto', function() {
     return 'RUTA ABSOLUTA FUNCIONA - ' . date('Y-m-d H:i:s');
-});
+}); */
 
 // Rutas de importación (acceso público para pruebas)
 Route::get('importar-cursos', [CampusImportController::class, 'create'])
@@ -545,6 +545,28 @@ Route::get('test-import', function() {
             ->name('courses.students');
     });
 
+    // Admin Support Routes
+    Route::middleware(['auth', 'permission:support-requests.view'])
+    ->prefix('admin/support-requests')
+    ->name('admin.support-requests.')
+    ->group(function () {
+        
+        Route::get('/', [App\Http\Controllers\Admin\SupportRequestController::class, 'index'])
+            ->name('index');
+            
+        Route::get('/{supportRequest}', [App\Http\Controllers\Admin\SupportRequestController::class, 'show'])
+            ->name('show');
+            
+        Route::put('/{supportRequest}/status', [App\Http\Controllers\Admin\SupportRequestController::class, 'updateStatus'])
+            ->name('update-status');
+            
+        Route::delete('/{supportRequest}', [App\Http\Controllers\Admin\SupportRequestController::class, 'destroy'])
+            ->name('destroy');
+            
+        Route::post('/bulk-update', [App\Http\Controllers\Admin\SupportRequestController::class, 'bulkUpdate'])
+            ->name('bulk-update');
+    });
+
     // Treasury Routes
     Route::middleware(['auth', 'role:treasury'])
     ->prefix('treasury')
@@ -577,7 +599,7 @@ Route::get('test-import', function() {
 
 // Rutas de Soporte (públicas)
 Route::get('suport', [SupportController::class, 'create'])
-    ->name('support.create');
+    ->name('support.form');
 
 Route::post('suport', [SupportController::class, 'store'])
     ->name('support.store');

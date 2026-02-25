@@ -67,7 +67,7 @@
                 {{ $slot }}
             </main>
             <div>
-                @include('debug.footer')
+               <!--  @include('debug.footer') -->
             </div>
         </div>
 

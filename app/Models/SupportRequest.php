@@ -141,6 +141,48 @@ class SupportRequest extends Model
     }
 
     /**
+     * Get type label in Catalan
+     */
+    public function getTypeLabelAttribute()
+    {
+        return match($this->type) {
+            'service' => '🚀 Nou servei',
+            'incident' => '⚠️ Incidència',
+            'improvement' => '💡 Millora',
+            'consultation' => '❓ Consulta',
+            default => $this->type,
+        };
+    }
+
+    /**
+     * Get urgency label in Catalan
+     */
+    public function getUrgencyLabelAttribute()
+    {
+        return match($this->urgency) {
+            'low' => 'Baixa',
+            'medium' => 'Mitjana',
+            'high' => 'Alta',
+            'critical' => 'Crítica',
+            default => $this->urgency,
+        };
+    }
+
+    /**
+     * Get status label in Catalan
+     */
+    public function getStatusLabelAttribute()
+    {
+        return match($this->status) {
+            'pending' => 'Pendent',
+            'in_progress' => 'En procés',
+            'resolved' => 'Resolt',
+            'closed' => 'Tancat',
+            default => $this->status,
+        };
+    }
+
+    /**
      * Scope para solicitudes de un usuario
      */
     public function scopeFromUser($query, $userId)
