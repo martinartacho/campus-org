@@ -40,7 +40,7 @@
             <p>
                 <span>{{ __('o copia i enganxa aquest enllaç al teu navegador:') }}</span>
                 <code>
-                    https://campus.upg.cat/teacher/access/{{ $token->token }}/payments/{{ $courseCode }}
+                    {{ config('app.url') }}/teacher/access/{{ $token->token }}/payments/{{ $courseCode }}
                 </code>
             </p>
         @else
@@ -70,7 +70,7 @@
             <p>
                 <span>{{ __('o copia i enganxa aquest enllaç al teu navegador:') }}</span>
                 <code>
-                    https://campus.upg.cat/teacher/access/{{ $token->token }}/consent/{{ $courseCode }}
+                    {{ config('app.url') }}/teacher/access/{{ $token->token }}/consent/{{ $courseCode }}
                 </code>
             </p>
         @endif
