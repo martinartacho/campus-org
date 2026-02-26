@@ -32,17 +32,29 @@ class TreasuryController extends Controller
             ->latest('accepted_at')
             ->paginate(20);
         
-        // Estadísticas mejoradas - filtrar por temporada actual
+        // Estadísticas según propuesta: Professors totals/RGPD acceptat i Dades Bancàries
+        $totalTeachers = CampusTeacher::count();
+        $teachersWithConsent = ConsentHistory::where('season', $currentSeason)
+            ->whereNotNull('document_path')
+            ->distinct('teacher_id')
+            ->count('teacher_id');
+            
+        // Calcular total d'assignacions de cursos (dades bancàries)
+        $totalCourseAssignments = CampusCourseTeacher::whereHas('course', function($query) use ($currentSeason) {
+            $query->whereHas('season', function($seasonQuery) use ($currentSeason) {
+                $seasonQuery->where('slug', $currentSeason);
+            });
+        })->count();
+        
         $stats = [
-            'total_consents' => ConsentHistory::where('season', $currentSeason)->count(),
-            'completed_consents' => ConsentHistory::where('season', $currentSeason)->whereNotNull('document_path')->count(),
-            'pending_consents' => ConsentHistory::where('season', $currentSeason)->whereNull('document_path')->count(),
+            'total_teachers' => $totalTeachers,
+            'teachers_with_consent' => $teachersWithConsent,
+            'total_course_assignments' => $totalCourseAssignments,
+            'updated_course_assignments' => $teachersWithConsent, // Han acceptat consentiment i PDF creat
             'this_month_consents' => ConsentHistory::where('season', $currentSeason)
                 ->whereMonth('accepted_at', now()->month)
                 ->whereYear('accepted_at', now()->year)
                 ->count(),
-            'total_teachers' => CampusTeacher::count(),
-            'active_teachers' => CampusTeacher::where('status', 'active')->count(),
         ];
         
         return view('treasury.dashboard', compact('consentments', 'stats'));

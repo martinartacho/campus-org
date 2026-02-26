@@ -121,23 +121,24 @@
     
     {{-- Estadísticas Existentes --}}
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-        <div class="p-4 bg-white shadow rounded">
-            <div class="text-gray-500 text-sm">Professors totals</div>
-            <div class="text-2xl font-bold">{{ $data['teachers_total'] }}</div>
+    {{-- Estadísticas según propuesta --}}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+        {{-- Professors totals / RGPD acceptat --}}
+        <div class="p-6 bg-white shadow rounded-lg">
+            <div class="text-gray-500 text-sm mb-2">Professors totals / RGPD acceptat</div>
+            <div class="text-3xl font-bold text-blue-600">
+                {{ $data['teachers_total'] }} / {{ $data['teachers_with_rgpd'] }}
+            </div>
+            <div class="text-xs text-gray-400 mt-1">Temporada {{ $data['season'] ?? '' }}</div>
         </div>
 
-        <div class="p-4 bg-red-50 shadow rounded">
-            <div class="text-gray-500 text-sm">RGPD pendent (temporada actual)</div>
-            <div class="text-2xl font-bold text-red-600">
-                {{ $data['teachers_pending_rgpd'] }}
+        {{-- Dades Bancàries --}}
+        <div class="p-6 bg-white shadow rounded-lg">
+            <div class="text-gray-500 text-sm mb-2">Dades Bancàries (Total / Actualitzades)</div>
+            <div class="text-3xl font-bold text-green-600">
+                {{ $data['course_assignments_total'] }} / {{ $data['course_assignments_updated'] }}
             </div>
-        </div>
-
-        <div class="p-4 bg-green-50 shadow rounded">
-            <div class="text-gray-500 text-sm">RGPD acceptat</div>
-            <div class="text-2xl font-bold text-green-700">
-                {{ $data['teachers_with_rgpd'] }}
-            </div>
+            <div class="text-xs text-gray-400 mt-1">Assignacions de cursos</div>
         </div>
     </div>
 
