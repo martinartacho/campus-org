@@ -7,7 +7,8 @@
     <h1>{{ __('Dades del professorat de la UPG') }}</h1>
     <div>
         <p>
-            {{ __('Hola', ['name' => $teacher->teacherProfile ? $teacher->teacherProfile->full_name : ($teacher->name ?? 'Docent')]) }}
+           {{ __('Hola') }} {{ $teacher->teacherProfile ? $teacher->teacherProfile->full_name : ($teacher->name ?? 'Docent') }}
+
         </p>
 
         @if ($purpose === 'payments')
@@ -39,7 +40,7 @@
             <p>
                 <span>{{ __('o copia i enganxa aquest enllaç al teu navegador:') }}</span>
                 <code>
-                    https://campus.upg.cat/teacher.access.form?token={{ $token->token }}&purpose=payments&courseCode={{ $courseCode }}
+                    https://campus.upg.cat/teacher/access/{{ $token->token }}/payments/{{ $courseCode }}
                 </code>
             </p>
         @else
@@ -69,7 +70,7 @@
             <p>
                 <span>{{ __('o copia i enganxa aquest enllaç al teu navegador:') }}</span>
                 <code>
-                    https://campus.upg.cat/teacher.access.form?token={{ $token->token }}&purpose=consent&courseCode={{ $courseCode }}
+                    https://campus.upg.cat/teacher/access/{{ $token->token }}/consent/{{ $courseCode }}
                 </code>
             </p>
         @endif
@@ -79,19 +80,17 @@
         </p>
         <p>
             @if(!empty($additionalData))
-                <strong>{{  __( 'campus.treasury_team') }}</strong> per <em>{{ $additionalData['autoria'] ?? '' }}</em>
+                <strong>{{  __( 'Equip de tresoreria') }}</strong> per <em>{{ $additionalData['autoria'] ?? '' }}</em>
             @else
-                {{ __('Missatge enviat per:') }} {{  __( 'campus.treasury_team') }}
+                {{ __('Missatge enviat per:') }} {{  __( 'Equip de tresoreria') }}
             @endif
         </p>
 
         <p>
-           {{  __( 'campus.denominacio_AIEP') }} 
+           {{  __( 'Associació per l\'impuls d\'Estudis Populars (AIEP) - CIF G-66314998 -Carrer Mare de Deu de Montserrat, edifici Roca Umbert, 36 - 08401 Granollers') }} 
         </p>
 
         
-
-
         <p>
             {{ config('app.name') }}
         </p>
