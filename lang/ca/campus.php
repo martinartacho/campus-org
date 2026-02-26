@@ -415,5 +415,24 @@ return [
     'reminder_status' => 'Estat Recordatori',
     'invoice' => 'Factura',
     'actions' => 'Accions',
+    
+    // Treasury Dashboard
+    'treasury_dashboard' => 'Dashboard de Tresoreria',
+    'total_consents' => 'Total RGPD',
+    'completed_consents' => 'RGPD acceptat',
+    'pending_consents' => 'RGPD pendent (temporada actual)',
+    'this_month_consents' => 'Consentiments aquest mes',
+    'total_teachers' => 'Total professors',
+    'active_teachers' => 'Professors actius',
+    'consents_list' => 'Llista de Consentiments',
+    'filter_season' => 'Filtrar per temporada',
+    'filter_status' => 'Filtrar per estat',
+    'all_seasons' => 'Totes les temporades',
+    'all_status' => 'Tots els estats',
+    'search' => 'Cercar',
+    'search_placeholder' => 'Cercar professor o curs...',
+    'export_excel' => 'Exportar a Excel',
+    'download_pdf' => 'Descarregar PDF',
+    'view_details' => 'Veure detalls',
 
 ];

@@ -25,24 +25,27 @@ class TreasuryController extends Controller
     {
         $this->authorize('campus.teachers.view');
         
-        // Obtener todos los consentimientos con relaciones
+        // Obtener consentimientos de la temporada actual con relaciones
+        $currentSeason = config('campus.current_season', '2024-25');
         $consentments = ConsentHistory::with(['teacher.user', 'course', 'season'])
+            ->where('season', $currentSeason)
             ->latest('accepted_at')
             ->paginate(20);
         
-        // Estadísticas mejoradas
+        // Estadísticas mejoradas - filtrar por temporada actual
         $stats = [
-            'total_consents' => ConsentHistory::count(),
-            'completed_consents' => ConsentHistory::whereNotNull('document_path')->count(),
-            'pending_consents' => ConsentHistory::whereNull('document_path')->count(),
-            'this_month_consents' => ConsentHistory::whereMonth('accepted_at', now()->month)
+            'total_consents' => ConsentHistory::where('season', $currentSeason)->count(),
+            'completed_consents' => ConsentHistory::where('season', $currentSeason)->whereNotNull('document_path')->count(),
+            'pending_consents' => ConsentHistory::where('season', $currentSeason)->whereNull('document_path')->count(),
+            'this_month_consents' => ConsentHistory::where('season', $currentSeason)
+                ->whereMonth('accepted_at', now()->month)
                 ->whereYear('accepted_at', now()->year)
                 ->count(),
             'total_teachers' => CampusTeacher::count(),
             'active_teachers' => CampusTeacher::where('status', 'active')->count(),
         ];
         
-        return view('dashboard.treasury', compact('consentments', 'stats'));
+        return view('treasury.dashboard', compact('consentments', 'stats'));
     }
 
     /**

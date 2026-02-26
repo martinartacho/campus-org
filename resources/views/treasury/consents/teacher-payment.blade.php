@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document de Pagament - {{ $teacher->first_name }} {{ $teacher->last_name }}</title>
+    <title>Document de Dades Bancàries - {{ $teacher->first_name }} {{ $teacher->last_name }}</title>
     <style>
         body { 
             font-family: 'DejaVu Sans', sans-serif; 
@@ -121,10 +121,10 @@
     <div class="header">
         @if(isset($isFinalConsent) && $isFinalConsent)
         <div style="background-color: #28a745; color: white; padding: 8px; margin-bottom: 10px; text-align: center; font-weight: bold;">
-            🎯 CONSENTIMENT FINAL COMPLET - PROCÉS FINALITZAT
+            🎯 DOCUMENT COMPLETAT - PROCÉS FINALITZAT
         </div>
         @endif
-        <h1>DOCUMENT DE DADES DE PAGAMENT</h1>
+        <h1>DOCUMENT DE DADES PERSONALS</h1>
         <p>Universitat Popular de Granollers - Tresoreria</p>
         <p>Temporada: {{ $season->name ?? 'N/A' }} </p>
         <p>ID: PAY-{{ $teacher->id }}-{{ $course->id ?? 'N/A' }}-{{ $acceptedAt->format('YmdHis') }}</p>
@@ -135,26 +135,23 @@
         <div class="section-title">1. INFORMACIÓ PROFESSOR/A</div>
         <div class="info-grid">
             <div class="info-item">
-                <div class="label">Nom complet:{{ $teacher->first_name }} {{ $teacher->last_name }}</div>
+                <span class="label">Nom complet:</span> <span class="value">{{ $teacher->first_name }} {{ $teacher->last_name }}</span>
             </div>
+
             <div class="info-item">
                 <span class="label">Email:</span> <span class="value">{{ $teacher->email }}</span>
             </div>
             <div class="info-item">
-                <div class="label">Telèfon:</div>
-                <div class="value">{{ $teacher->phone ?? 'No especificat' }}</div>
+                <span class="label">Telèfon:</span> <span class="value">{{ $teacher->phone ?? 'No especificat' }}</span>
             </div>
             <div class="info-item">
-                <div class="label">DNI/NIF:</div>
-                <div class="value">{{ $teacher->dni ?? 'No especificat' }}</div>
+                <span class="label">DNI/NIF:</span> <span class="value">{{ $teacher->dni ?? 'No especificat' }}</span>
             </div>
             <div class="info-item">
-                <div class="label">Codi Professor:</div>
-                <div class="value">{{ $teacher->teacher_code ?? 'N/A' }}</div>
+                <span class="label">Codi Professor:</span> <span class="value">{{ $teacher->teacher_code ?? 'N/A' }}</span>
             </div>
             <div class="info-item">
-                <div class="label">Data registre:</div>
-                <div class="value">{{ $acceptedAt->format('d/m/Y H:i:s') }}</div>
+                <span class="label">Data registre:</span> <span class="value">{{ $acceptedAt->format('d/m/Y H:i:s') }}</span>
             </div>
         </div>
     </div>
@@ -165,16 +162,13 @@
         <div class="course-info">
             <div class="info-grid">
                 <div class="info-item">
-                    <div class="label">ID Curs:</div>
-                    <div class="value">{{ $course->id ?? 'N/A' }}</div>
+                    <span class="label">ID Curs:</span> <span class="value">{{ $course->id ?? 'N/A' }}</span>
                 </div>
                 <div class="info-item">
-                    <div class="label">Títol del curs:</div>
-                    <div class="value">{{ $course->title ?? 'No assignat' }}</div>
+                    <span class="label">Títol del curs:</span> <span class="value">{{ $course->title ?? 'No assignat' }}</span>
                 </div>
                 <div class="info-item">
-                    <div class="label">Temporada:</div>
-                    <div class="value">[{{ $season->slug ?? 'N/A' }}] {{ $season->name ?? 'N/A' }}</div>
+                    <span class="label">Temporada:</span> <span class="value">[{{ $season->slug ?? 'N/A' }}] {{ $season->name ?? 'N/A' }}</span>
                 </div>
                 
             </div>
@@ -203,44 +197,38 @@
         <div class="info-grid">
             @if($fiscalId)
             <div class="info-item">
-                <div class="label">Identificació fiscal:</div>
-                <div class="value">{{ $fiscalId }}</div>
+                <span class="label">Identificació fiscal:</span> <span class="value">{{ $fiscalId }}</span>
             </div>
             @endif
             
             @if($address)
             <div class="info-item">
-                <div class="label">Adreça fiscal:</div>
-                <div class="value">{{ $address }}</div>
+                <span class="label">Adreça fiscal:</span> <span class="value">{{ $address }}</span>
             </div>
             @endif
             
             @if($postalCode)
             <div class="info-item">
-                <div class="label">Codi postal:</div>
-                <div class="value">{{ $postalCode }}</div>
+                <span class="label">Codi postal:</span> <span class="value">{{ $postalCode }}</span>
             </div>
             @endif
             
             @if($city)
             <div class="info-item">
-                <div class="label">Població i província:</div>
-                <div class="value">{{ $city }}</div>
+                <span class="label">Població i província:</span> <span class="value">{{ $city }}</span>
             </div>
             @endif
             
             @if($iban)
             <div class="info-item">
-                <div class="label">IBAN:</div>
-                <div class="value">{{ $iban }}</div>
+                <span class="label">IBAN:</span> <span class="value">{{ $iban }}</span>
             </div>
             @endif
             
             
             @if($fiscalSituation)
             <div class="info-item">
-                <div class="label">Situació fiscal declarada:</div>
-                <div class="value">{{ $fiscalSituation }}</div>
+                <span class="label">Situació fiscal declarada:</span> <span class="value">{{ $fiscalSituation }}</span>
             </div>
             @endif
         </div>
@@ -252,16 +240,14 @@
         <div class="section-title">5. DECLARACIONS I AUTORITZACIONS</div>
         <div class="declaration">
             @if(isset($declaracioFiscal) && $declaracioFiscal)
-            <p><strong>✅ Declaració fiscal:</strong> El beneficiari declara sota la seva responsabilitat que les dades facilitades són certes 
+            <p><strong>✅ Situaciació fiscal:</strong> El beneficiari declara sota la seva responsabilitat que les dades facilitades són certes 
             i que es troba en alguna de les següents situacions fiscals:</p>
             <ul style="margin-left: 20px; font-size: 11px;">
                 <li>Soc autònom i presento declaracions trimestrals d'IVA</li>
                 <li>Soc pensionista i els meus ingressos estan exempts d'IRPF</li>
                 <li>Soc aturat i no tinc ingressos subjectes a retenció</li>
                 <li>Altres situacions exentes o amb retencions específiques</li>
-            </ul>
-            @else
-            <p><strong>❌ Declaració fiscal:</strong> No s'ha registrat la declaració fiscal del beneficiari.</p>
+            </ul>            
             @endif
             
             @if(isset($autoritzacioDades) && $autoritzacioDades)
