@@ -114,14 +114,14 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             
             {{-- Franjes Horàries --}}
-            <a href="{{ route('campus.resources.timeslots') }}" class="block">
+            <a href="{{ route('campus.resources.calendar') }}" class="block">
                 <div class="bg-orange-50 border border-orange-200 hover:bg-orange-100 p-4 rounded-lg transition-colors">
                     <div class="flex items-center">
                         <div class="p-2 bg-orange-100 rounded-lg me-3">
                             <i class="bi bi-calendar3 text-orange-600 text-lg"></i>
                         </div>
                         <div>
-                            <h3 class="font-semibold text-orange-800">Calendari</h3>
+                            <h3 class="font-semibold text-orange-800">Gestió de Calendari</h3>
                             <p class="text-sm text-orange-600">Gestionar propera temporada fent servir el model calendari de recursos</p>
                         </div>
                     </div>

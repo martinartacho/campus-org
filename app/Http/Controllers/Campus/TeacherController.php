@@ -152,9 +152,9 @@ class TeacherController extends Controller
             'hiring_date' => 'nullable|date',
             'status' => 'nullable|string|in:active,inactive,on_leave',
             'courses' => 'nullable|array',
-            'courses.*' => 'nullable|string|in:new',
+            'courses.*' => 'nullable|string',
             'hours_assigned' => 'nullable|array',
-            'hours_assigned.*' => 'nullable|integer|min:1',
+            'hours_assigned.*' => 'nullable|integer|min:0',
             'role' => 'nullable|array',
             'role.*' => 'nullable|string|in:teacher,assistant',
         ]);
@@ -290,14 +290,19 @@ class TeacherController extends Controller
 
         // Asignar cursos si se proporcionaron
         if (!empty($validated['courses'])) {
-            // Filtrar cursos que no sean null
+            // Filtrar cursos que no sean null ni empty strings
             $validCourses = array_filter($validated['courses'], function($courseId) {
-                return $courseId !== null;
+                return $courseId !== null && $courseId !== '';
             });
             
             if (!empty($validCourses)) {
                 \Log::info('Assigning courses:', ['courses' => $validCourses]);
                 foreach ($validCourses as $index => $courseId) {
+                    // Skip if course doesn't exist and it's not 'new'
+                    if ($courseId !== 'new' && !CampusCourse::find($courseId)) {
+                        continue;
+                    }
+                    
                     $teacher->courses()->attach($courseId, [
                         'hours_assigned' => $validated['hours_assigned'][$index] ?? 0,
                         'role' => $validated['role'][$index] ?? 'teacher',
@@ -414,9 +419,9 @@ class TeacherController extends Controller
             'hiring_date' => 'nullable|date',
             'status' => 'nullable|string|in:active,inactive,on_leave',
             'courses' => 'nullable|array',
-            'courses.*' => 'nullable|string|in:new',
+            'courses.*' => 'nullable|string',
             'hours_assigned' => 'nullable|array',
-            'hours_assigned.*' => 'nullable|integer|min:1',
+            'hours_assigned.*' => 'nullable|integer|min:0',
             'role' => 'nullable|array',
             'role.*' => 'nullable|string|in:teacher,assistant',
         ]);
@@ -475,12 +480,25 @@ class TeacherController extends Controller
         if (!empty($validated['courses'])) {
             $syncData = [];
             foreach ($validated['courses'] as $index => $courseId) {
-                if (!in_array($courseId, $restrictedCourses)) {
-                    $syncData[$courseId] = [
-                        'hours_assigned' => $validated['hours_assigned'][$index] ?? 0,
-                        'role' => $validated['role'][$index] ?? 'teacher',
-                    ];
+                // Skip empty or null course IDs
+                if (empty($courseId) || $courseId === '') {
+                    continue;
                 }
+                
+                // Skip restricted courses
+                if (in_array($courseId, $restrictedCourses)) {
+                    continue;
+                }
+                
+                // Validate that course exists (unless it's 'new')
+                if ($courseId !== 'new' && !CampusCourse::find($courseId)) {
+                    continue;
+                }
+                
+                $syncData[$courseId] = [
+                    'hours_assigned' => $validated['hours_assigned'][$index] ?? 0,
+                    'role' => $validated['role'][$index] ?? 'teacher',
+                ];
             }
             
             // Obtener cursos actuales que no están restringidos
