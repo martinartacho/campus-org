@@ -20,34 +20,27 @@
             
             {{-- Estadísticas principales --}}
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div class="bg-white p-6 rounded-lg shadow text-center">
-                    <div class="text-3xl font-bold text-blue-600">{{ $stats['total_consents'] ?? 0 }}</div>
-                    <div class="text-sm text-gray-500">{{ __('campus.total_consents') }} </div>
+                {{-- Professors totals / RGPD acceptat --}}
+                <div class="bg-white p-6 rounded-lg shadow text-center lg:col-span-2">
+                    <div class="text-2xl font-bold text-blue-600">
+                        {{ $stats['total_teachers'] ?? 0 }} / {{ $stats['teachers_with_consent'] ?? 0 }}
+                    </div>
+                    <div class="text-sm text-gray-500">Professors totals / RGPD acceptat</div>
                 </div>
                 
-                <div class="bg-white p-6 rounded-lg shadow text-center">
-                    <div class="text-3xl font-bold text-green-600">{{ $stats['completed_consents'] ?? 0 }}</div>
-                    <div class="text-sm text-gray-500">{{ __('campus.completed_consents') }}</div>
+                {{-- Dades Bancaries --}}
+                <div class="bg-white p-6 rounded-lg shadow text-center lg:col-span-2">
+                    <div class="text-2xl font-bold text-green-600">
+                        {{ $stats['total_course_assignments'] ?? 0 }} / {{ $stats['updated_course_assignments'] ?? 0 }}
+                    </div>
+                    <div class="text-sm text-gray-500">Dades Bancaries (Total / Actualitzades)</div>
+                    <div class="text-xs text-gray-400 mt-1">Temporada actual</div>
                 </div>
                 
-                <div class="bg-white p-6 rounded-lg shadow text-center">
-                    <div class="text-3xl font-bold text-orange-600">{{ $stats['pending_consents'] ?? 0 }}</div>
-                    <div class="text-sm text-gray-500">{{ __('campus.pending_consents') }}</div>
-                </div>
-                
+                {{-- Aquest mes (opcional) --}}
                 <div class="bg-white p-6 rounded-lg shadow text-center">
                     <div class="text-3xl font-bold text-purple-600">{{ $stats['this_month_consents'] ?? 0 }}</div>
                     <div class="text-sm text-gray-500">{{ __('campus.this_month_consents') }}</div>
-                </div>
-                
-                <div class="bg-white p-6 rounded-lg shadow text-center">
-                    <div class="text-3xl font-bold text-gray-600">{{ $stats['total_teachers'] ?? 0 }}</div>
-                    <div class="text-sm text-gray-500">{{ __('campus.total_teachers') }}</div>
-                </div>
-                
-                <div class="bg-white p-6 rounded-lg shadow text-center">
-                    <div class="text-3xl font-bold text-teal-600">{{ $stats['active_teachers'] ?? 0 }}</div>
-                    <div class="text-sm text-gray-500">{{ __('campus.active_teachers') }}</div>
                 </div>
             </div>
         </div>

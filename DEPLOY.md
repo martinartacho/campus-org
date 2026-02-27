@@ -1,16 +1,35 @@
 ````markdown
-# 🚀 Puesta en marcha de `dev.artacho.org` (Laravel 11)
+# 🚀 Puesta en marcha de `campus.upg.cat` (Laravel 12)
 
-Este documento describe paso a paso cómo desplegar el entorno de desarrollo `dev.artacho.org` en un VPS con Ubuntu 24.04 y Apache, usando el repositorio [martinartacho/artacho](https://github.com/martinartacho/artacho). Incluye las incidencias encontradas y sus soluciones.
+Este documento describe paso a paso cómo desplegar el entorno de desarrollo `campus.upg.cat` en un VPS con Ubuntu 24.04 y Apache, usando el repositorio [martinartacho/campus-org ](https://github.com/martinartacho/campus-org ). Incluye las incidencias encontradas y sus soluciones.
 
 ---
+ATENCIÓ
+
+ Eliminar TODO el contenido interno
+
+ Mantener la carpeta /var/www/campus.upg.cat
+
+ Mantener VirtualHost intacto
+
+Ejecuta:
+
+sudo rm -rf /var/www/campus.upg.cat/*
+sudo rm -rf /var/www/campus.upg.cat/.[!.]*
+
+Esto elimina:
+
+Archivos normales
+
+Archivos ocultos (incluido .git)
+
+Pero mantiene la carpeta principal
 
 ## ✅ 1. Clonar el repositorio
 
 ```bash
-cd /var/www/dev.artacho.org
-sudo rm -rf *
-sudo git clone https://github.com/martinartacho/artacho.git .
+cd /var/www/campus.upg.cat
+sudo git clone https://github.com/martinartacho/campus-org.git .
 ````
 
 ---
@@ -32,9 +51,9 @@ sudo mysql -u root -p
 ```
 
 ```sql
-CREATE DATABASE dev_artacho CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-CREATE USER 'artacho'@'localhost' IDENTIFIED BY 'contraseña_segura';
-GRANT ALL PRIVILEGES ON dev_artacho.* TO 'artacho'@'localhost';
+CREATE DATABASE campus_upg CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER 'usuari'@'localhost' IDENTIFIED BY 'contraseña_segura';
+GRANT ALL PRIVILEGES ON campus_upg.* TO 'usuari'@'localhost';
 FLUSH PRIVILEGES;
 EXIT;
 ```
@@ -44,15 +63,15 @@ EXIT;
 ## ✅ 4. Configurar el archivo `.env`
 
 ```env
-APP_NAME=ArtachoDev
+APP_NAME=CampusUPG
 APP_ENV=local
-APP_URL=http://dev.artacho.org
+APP_URL=http://campus.upg.cat
 
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=dev_artacho
-DB_USERNAME=artacho
+DB_DATABASE=campus_upg
+DB_USERNAME=usuari
 DB_PASSWORD=contraseña_segura
 ```
 
@@ -61,7 +80,7 @@ DB_PASSWORD=contraseña_segura
 ## ✅ 5. Establecer permisos correctos
 
 ```bash
-cd /var/www/dev.artacho.org
+cd /var/www/campus.upg.cat
 sudo chown -R $USER:www-data .
 sudo chmod -R 775 storage bootstrap/cache
 ```
@@ -75,6 +94,10 @@ php artisan migrate --seed
 ```
 
 Esto creará usuarios de ejemplo con contraseñas públicas, por seguridad cambia las contraseñas (indicaciones mas abajo) 
+Para el caso de campus.upg.cat
+
+
+
 
 ---
 
@@ -146,7 +169,7 @@ sudo systemctl reload apache2
 Abrir en el navegador:
 
 ```
-http://dev.artacho.org
+https://campus.upg.cat
 ```
 
 ---

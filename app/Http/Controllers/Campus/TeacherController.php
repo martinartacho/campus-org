@@ -255,7 +255,7 @@ class TeacherController extends Controller
                 $user = \App\Models\User::create([
             'name' => $validated['first_name'] . ' ' . $validated['last_name'],
             'email' => $validated['email'],
-            'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD', 'Campus2026!')), // Contraseña temporal
+            'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD')), // Contraseña temporal
         ]);
         
         // Asignar rol de profesor

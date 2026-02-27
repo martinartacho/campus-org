@@ -215,7 +215,7 @@ class IniciTeachersCSVSeeder extends Seeder
                 'id' => $userId, // Forzar ID del CSV
                 'name' => trim($firstName . ' ' . $lastName),
                 'email' => $email,
-                'password' => Hash::make('Campus2026!'), // Contraseña por defecto
+                'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD')), // Contraseña por defecto
                 'email_verified_at' => Carbon::now(),
                 'locale' => 'ca',
             ]);
