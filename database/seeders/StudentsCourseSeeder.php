@@ -272,7 +272,7 @@ class StudentsCourseSeeder extends Seeder
             $nuevoCodigo = 'EST' . ($ultimoId + 1);
             
             // Generar email único
-            $email = strtolower("{$nombre}.{$apellido1}." . uniqid() . "@" . env('SEEDER_EMAIL_DOMAIN', 'test.local'));
+            $email = strtolower("{$nombre}.{$apellido1}." . uniqid() . "@" . env('SEEDER_EMAIL_DOMAIN'));
             
             // Crear usuario
             $user = User::firstOrCreate(
@@ -280,7 +280,7 @@ class StudentsCourseSeeder extends Seeder
                 [
                     'name' => $nombreCompleto,
                     'email' => $email,
-                    'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD', 'Campus2026!')),
+                    'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD')),
                     'email_verified_at' => Carbon::now(),
                     'locale' => 'ca',
                 ]

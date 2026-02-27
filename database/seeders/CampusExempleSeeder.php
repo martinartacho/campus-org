@@ -144,8 +144,8 @@ class CampusExempleSeeder extends Seeder
                 ['email' => 'anna.estape@' . env('SEEDER_EMAIL_DOMAIN', 'test.local')],
                 [
                     'name' => 'Anna Estapé',
-                    'email' => 'anna.estape@' . env('SEEDER_EMAIL_DOMAIN', 'test.local'),
-                    'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD', 'Campus2026!')),
+                    'email' => 'anna.estape@' . env('SEEDER_EMAIL_DOMAIN'),
+                    'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD')),
                     'email_verified_at' => Carbon::now(),
                     'locale' => 'ca',
                 ]
@@ -160,7 +160,7 @@ class CampusExempleSeeder extends Seeder
                     'first_name' => 'Anna',
                     'last_name' => 'Estapé',
                     'dni' => '44555666E',
-                    'email' => 'anna.estape@' . env('SEEDER_EMAIL_DOMAIN', 'test.local'),
+                    'email' => 'anna.estape@' . env('SEEDER_EMAIL_DOMAIN'),
                     'phone' => '+34 600 123 456',
                     'specialization' => 'Pediatria',
                     'title' => 'Dra.',
@@ -176,8 +176,8 @@ class CampusExempleSeeder extends Seeder
                 ['email' => 'marta.soler@' . env('SEEDER_EMAIL_DOMAIN', 'test.local')],
                 [
                     'name' => 'Marta Soler',
-                    'email' => 'marta.soler@' . env('SEEDER_EMAIL_DOMAIN', 'test.local'),
-                    'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD', 'Campus2026!')),
+                    'email' => 'marta.soler@' . env('SEEDER_EMAIL_DOMAIN'),
+                    'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD')),
                     'email_verified_at' => Carbon::now(),
                     'locale' => 'ca',
                 ]
@@ -192,7 +192,7 @@ class CampusExempleSeeder extends Seeder
                     'first_name' => 'Marta',
                     'last_name' => 'Soler',
                     'dni' => '55667788F',
-                    'email' => 'marta.soler@' . env('SEEDER_EMAIL_DOMAIN', 'test.local'),
+                    'email' => 'marta.soler@' . env('SEEDER_EMAIL_DOMAIN'),
                     'phone' => '+34 600 234 567',
                     'specialization' => 'Educació Especial',
                     'title' => 'Dra.',
@@ -220,8 +220,8 @@ class CampusExempleSeeder extends Seeder
                 ['email' => 'estudiant1@' . env('SEEDER_EMAIL_DOMAIN', 'test.local')],
                 [
                     'name' => 'Laura García i Martí',
-                    'email' => 'estudiant1@' . env('SEEDER_EMAIL_DOMAIN', 'test.local'),
-                    'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD', 'Campus2026!')),
+                    'email' => 'estudiant1@' . env('SEEDER_EMAIL_DOMAIN'),
+                    'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD')),
                     'email_verified_at' => Carbon::now(),
                     'locale' => 'ca',
                 ]
@@ -239,7 +239,7 @@ class CampusExempleSeeder extends Seeder
                     'birth_date' => '1995-08-12',
                     'phone' => '+34 600 345 678',
                     'address' => 'Carrer Major 45, Sant Cugat',
-                    'email' => 'estudiant1@' . env('SEEDER_EMAIL_DOMAIN', 'test.local'),
+                    'email' => 'estudiant1@' . env('SEEDER_EMAIL_DOMAIN'),
                     'emergency_contact' => 'Pare - Joan García',
                     'emergency_phone' => '+34 600 456 789',
                     'status' => 'active',
@@ -253,8 +253,8 @@ class CampusExempleSeeder extends Seeder
                 ['email' => 'estudiant2@' . env('SEEDER_EMAIL_DOMAIN', 'test.local')],
                 [
                     'name' => 'Marc Rodríguez i López',
-                    'email' => 'estudiant2@' . env('SEEDER_EMAIL_DOMAIN', 'test.local'),
-                    'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD', 'Campus2026!')),
+                    'email' => 'estudiant2@' . env('SEEDER_EMAIL_DOMAIN'),
+                    'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD')),
                     'email_verified_at' => Carbon::now(),
                     'locale' => 'ca',
                 ]
@@ -272,7 +272,7 @@ class CampusExempleSeeder extends Seeder
                     'birth_date' => '1998-03-25',
                     'phone' => '+34 600 567 890',
                     'address' => 'Avinguda dels Pins 12, Rubí',
-                    'email' => 'estudiant2@' . env('SEEDER_EMAIL_DOMAIN', 'test.local'),
+                    'email' => 'estudiant2@' . env('SEEDER_EMAIL_DOMAIN'),
                     'emergency_contact' => 'Mare - Anna López',
                     'emergency_phone' => '+34 600 678 901',
                     'status' => 'active',
@@ -497,7 +497,7 @@ class CampusExempleSeeder extends Seeder
                     [
                         'name' => $professorName,
                         'email' => $email,
-                        'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD', 'Campus2026!')),
+                        'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD')),
                         'email_verified_at' => Carbon::now(),
                         'locale' => 'ca',
                     ]

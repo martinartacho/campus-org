@@ -16,8 +16,8 @@ class UserSeeder extends Seeder
         // Usuari ADMINISTRADOR
         $admin = User::firstorcreate([
             'name' => 'Administrador Centre',
-            'email' => 'admin@' . env('SEEDER_EMAIL_DOMAIN', 'test.local'),
-            'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD', 'Campus2026!')),
+            'email' => 'admin@' . env('SEEDER_EMAIL_DOMAIN'),
+            'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD')),
             'email_verified_at' => Carbon::now(),
             'locale' => 'ca',
         ]);
@@ -26,8 +26,8 @@ class UserSeeder extends Seeder
         // Usuari GESTOR
         $gestor = User::firstorcreate([
             'name' => 'Gemma Gestió',
-            'email' => 'gestio@' . env('SEEDER_EMAIL_DOMAIN', 'test.local'),
-            'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD', 'Campus2026!')),
+            'email' => 'gestio@' . env('SEEDER_EMAIL_DOMAIN'),
+            'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD')),
             'email_verified_at' => Carbon::now(),
             'locale' => 'ca',
         ]);
@@ -36,8 +36,8 @@ class UserSeeder extends Seeder
         // Usuari TRESORERIA
         $tresoreria = User::firstorcreate([
             'name' => 'AAA',
-            'email' => 'tresoreria@' . env('SEEDER_EMAIL_DOMAIN', 'test.local'),
-            'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD', 'Campus2026!')),
+            'email' => 'tresoreria@' . env('SEEDER_EMAIL_DOMAIN'),
+            'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD')),
             'email_verified_at' => Carbon::now(),
             'locale' => 'ca',
         ]);
@@ -47,8 +47,8 @@ class UserSeeder extends Seeder
         // Usuari EDITOR 1
         $editor1 = User::firstorcreate([
             'name' => 'Eduard Editor',
-            'email' => 'editor@' . env('SEEDER_EMAIL_DOMAIN', 'test.local'),
-            'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD', 'Campus2026!')),
+            'email' => 'editor@' . env('SEEDER_EMAIL_DOMAIN'),
+            'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD')),
             'email_verified_at' => Carbon::now(),
             'locale' => 'ca',
         ]);
@@ -57,8 +57,8 @@ class UserSeeder extends Seeder
         // Usuari EDITOR 2
         $editor2 = User::firstorcreate([
             'name' => 'Elisabet Edició',
-            'email' => 'editora@' . env('SEEDER_EMAIL_DOMAIN', 'test.local'),
-            'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD', 'Campus2026!')),
+            'email' => 'editora@' . env('SEEDER_EMAIL_DOMAIN'),
+            'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD')),
             'locale' => 'ca',
         ]);
         $editor2->assignRole('editor');
@@ -66,8 +66,8 @@ class UserSeeder extends Seeder
         // PROFESSOR 1
         $teacher1 = User::firstorcreate([
             'name' => 'Joan Prat i Soler',
-            'email' => 'teacher@' . env('SEEDER_EMAIL_DOMAIN', 'test.local'),
-            'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD', 'Campus2026!')),
+            'email' => 'teacher@' . env('SEEDER_EMAIL_DOMAIN'),
+            'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD')),
             'email_verified_at' => Carbon::now(),
             'locale' => 'ca',
             
@@ -81,7 +81,7 @@ class UserSeeder extends Seeder
             'first_name' => 'Joan',
             'last_name' => 'Prat i Soler',
             'dni' => '12345678A',
-            'email' => 'teacher@' . env('SEEDER_EMAIL_DOMAIN', 'test.local'),
+            'email' => 'teacher@' . env('SEEDER_EMAIL_DOMAIN'),
             'phone' => '+34 600 111 222',
             'address' => 'Carrer Major 1, Sant Cugat',
             'postal_code' => '08001',
@@ -98,8 +98,8 @@ class UserSeeder extends Seeder
         // PROFESSORA 2
         $teacher2 = User::firstorcreate([
             'name' => 'Maria García i López',
-            'email' => 'teacher2@' . env('SEEDER_EMAIL_DOMAIN', 'test.local'),
-            'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD', 'Campus2026!')),
+            'email' => 'teacher2@' . env('SEEDER_EMAIL_DOMAIN'),
+            'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD')),
             'locale' => 'ca',
         ]);
         $teacher2->assignRole('teacher');
@@ -110,7 +110,7 @@ class UserSeeder extends Seeder
             'first_name' => 'Maria',
             'last_name' => 'García i López',
             'dni' => '87654321B',
-            'email' => 'profe@' . env('SEEDER_EMAIL_DOMAIN', 'test.local'),
+            'email' => 'profe@' . env('SEEDER_EMAIL_DOMAIN'),
             'phone' => '+34 600 333 444',
             'address' => 'Carrer del Poble 2, 2-3',
             'postal_code' => '08401',
@@ -127,8 +127,8 @@ class UserSeeder extends Seeder
         // ESTUDIANT 1
         $student1 = User::firstorcreate([
             'name' => 'Anna Martínez i Roca',
-            'email' => 'alumne@' . env('SEEDER_EMAIL_DOMAIN', 'test.local'),
-            'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD', 'Campus2026!')),
+            'email' => 'alumne@' . env('SEEDER_EMAIL_DOMAIN'),
+            'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD')),
             'email_verified_at' => Carbon::now(),
             'locale' => 'ca',
         ]);
@@ -143,7 +143,7 @@ class UserSeeder extends Seeder
             'birth_date' => '2000-05-15',
             'phone' => '+34 600 555 666',
             'address' => 'Carrer Principal 123, Barcelona',
-            'email' => 'alumne@' . env('SEEDER_EMAIL_DOMAIN', 'test.local'),
+            'email' => 'alumne@' . env('SEEDER_EMAIL_DOMAIN'),
             'emergency_contact' => 'Pare - Josep Martínez',
             'emergency_phone' => '+34 600 777 888',
             'status' => 'active',
@@ -153,8 +153,8 @@ class UserSeeder extends Seeder
         // ESTUDIANT 2
         $student2 = User::firstorcreate([
             'name' => 'Carles Ruiz i Navarro',
-            'email' => 'student@' . env('SEEDER_EMAIL_DOMAIN', 'test.local'),
-            'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD', 'Campus2026!')),
+            'email' => 'student@' . env('SEEDER_EMAIL_DOMAIN'),
+            'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD')),
             'locale' => 'ca',
         ]);
         $student2->assignRole('student');
@@ -168,7 +168,7 @@ class UserSeeder extends Seeder
             'birth_date' => '2001-03-22',
             'phone' => '+34 600 999 000',
             'address' => 'Avinguda Central 456, L\'Hospitalet',
-            'email' => 'student@' . env('SEEDER_EMAIL_DOMAIN', 'test.local'),
+            'email' => 'student@' . env('SEEDER_EMAIL_DOMAIN'),
             'emergency_contact' => 'Mare - Laura Navarro',
             'emergency_phone' => '+34 600 111 222',
             'status' => 'active',
@@ -178,8 +178,8 @@ class UserSeeder extends Seeder
         // USUARI BÀSIC 1
         $user1 = User::firstorcreate([
             'name' => 'Usuari Bàsic',
-            'email' => 'usuari@' . env('SEEDER_EMAIL_DOMAIN', 'test.local'),
-            'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD', 'Campus2026!')),
+            'email' => 'usuari@' . env('SEEDER_EMAIL_DOMAIN'),
+            'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD')),
             'email_verified_at' => Carbon::now(),
             'locale' => 'ca',
         ]);
@@ -188,8 +188,8 @@ class UserSeeder extends Seeder
         // USUARI BÀSIC 2
         $user2 = User::firstorcreate([
             'name' => 'Usuari Secundari',
-            'email' => 'usuari2@' . env('SEEDER_EMAIL_DOMAIN', 'test.local'),
-            'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD', 'Campus2026!')),
+            'email' => 'usuari2@' . env('SEEDER_EMAIL_DOMAIN'),
+            'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD')),
             'locale' => 'ca',
         ]);
         $user2->assignRole('user');
@@ -197,8 +197,8 @@ class UserSeeder extends Seeder
         // CONVIDAT 1
         $invited1 = User::firstorcreate([
             'name' => 'Convidat Extern',
-            'email' => 'convidat@' . env('SEEDER_EMAIL_DOMAIN', 'test.local'),
-            'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD', 'Campus2026!')),
+            'email' => 'convidat@' . env('SEEDER_EMAIL_DOMAIN'),
+            'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD')),
             'email_verified_at' => Carbon::now(),
             'locale' => 'ca',
         ]);
@@ -207,8 +207,8 @@ class UserSeeder extends Seeder
         // CONVIDAT 2
         $invited2 = User::firstorcreate([
             'name' => 'Col·laborador Temporal',
-            'email' => 'collaborador@' . env('SEEDER_EMAIL_DOMAIN', 'test.local'),
-            'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD', 'Campus2026!')),
+            'email' => 'collaborador@' . env('SEEDER_EMAIL_DOMAIN'),
+            'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD')),
             'locale' => 'ca',
         ]);
         $invited2->assignRole('invited');

@@ -217,7 +217,7 @@ class CampusRegistrationImportSeeder extends Seeder
         $user = User::create([
             'name' => trim("$firstName $lastName"),
             'email' => $email,
-            'password' => Hash::make('Campus2026!'),
+            'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD')),
             'locale' => 'ca',
             'status' => 'active',
             'email_verified_at' => now(),

@@ -151,7 +151,7 @@ class CampusUsersCSVSeeder extends Seeder
         $parsed = $this->parseValue($password);
         
         if ($parsed === null) {
-            return Hash::make('Campus2026!'); // Contraseña por defecto
+            return Hash::make(env('SEEDER_DEFAULT_PASSWORD')); // Contraseña por defecto
         }
         
         // Si ya está hasheada, devolverla tal cual
