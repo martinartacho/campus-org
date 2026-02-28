@@ -6,11 +6,11 @@ Este documento describe paso a paso cómo desplegar el entorno de desarrollo `ca
 ---
 ATENCIÓ
 
- Eliminar TODO el contenido interno
+Eliminar TODO el contenido interno
 
- Mantener la carpeta /var/www/campus.upg.cat
+Salvo la carpeta /var/www/campus.upg.cat
 
- Mantener VirtualHost intacto
+Para mantener el VirtualHost intacto
 
 Ejecuta:
 

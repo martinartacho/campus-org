@@ -12,24 +12,26 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            RolesAndPermissionsSeeder::class,  // 1
-            /* UserSeeder::class,                 // 2
-            CampusSeeder::class,               // 3
+            RolesAndPermissionsSeeder::class,              // 1
+            UserSeeder::class,                           // 2
             
-            // s'ha de executar per crear registres durant la primera temporada, que esta condicionada per les dades de ordres ja executada
-            // StudentsCourseSeeder::class,       // 4
+            // Estructura base del campus
+            IniciCategoriesSeasonSeeder::class,            // 3 - Categories i Temporades
+            IniciSeasonsUpdateSeeder::class,              // 4 - Actualitzar a 3 temporades
+            IniciTeachersCSVSeeder::class,                 // 5 - Teachers
+            IniciCoursesMapeadoCSVSeeder::class,           // 6 - Cursos
+            IniciCourseTeacherSeeder::class,                // 7 - Relacions Course-Teacher
+            CampusSpaceSeeder::class,                       // 8 - Espais
+            CampusTimeSlotSeeder::class,                    // 9 - Franges horàries
+            CampusCourseScheduleSeeder::class,              // 10 - Horaris
             
-            // crea estructura minima de espais i horari per Re-Cursos
-            CampusSpaceSeeder::class,          // 5
-            CampusTimeSlotSeeder::class,       // 6
-            CampusCourseScheduleSeeder::class, // 7
+            // Importació d'estudiants (només estudiants, sense matrícules)
+            IniciStudentsOnlySeeder::class,                // 11 - Students
             
-            // Sistema de importación de registros (de import_registrations)
-            RegistrationImportSeeder::class,   // 8
-             */
-            // NotificationSeeder::class,
-            // CampusExempleSeeder::class,
-            // Otros seeders que tengas...
+            // Seeders comentats (no farem servir)
+            // IniciStudentsImprovedSeeder::class,         // (amb matrícules - no usar)
+            // IniciSetupCompleteSeeder::class,             // (versió antiga)
         ]);
     }
 }
+
