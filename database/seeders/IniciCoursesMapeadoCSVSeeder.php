@@ -45,27 +45,27 @@ class IniciCoursesMapeadoCSVSeeder extends Seeder
         
         // Mapeo de IDs del CSV a nuestros IDs
         $seasonMapping = [
-            1 => 5,  // 2024-25 -> ID: 5
-            3 => 6,  // 2025-26 -> ID: 6
-            4 => 6,  // 2025-26 -> ID: 6
+            1 => 1,  // 2024-25 -> ID: 1 (Curs 2025-26)
+            3 => 2,  // 2025-26 -> ID: 2 (Curs 2025-26 - 1r Trimestre)
+            4 => 2,  // 2025-26 -> ID: 2 (Curs 2025-26 - 1r Trimestre)
         ];
         
         $categoryMapping = [
-            1 => 12,  // Sense Categoria (ID: 12)
-            2 => 13,  // Salut i Benestar (ID: 13)
-            3 => 14,  // Educació i Pedagogia (ID: 14)
-            4 => 15,  // Ciències Socials i Humanitats (ID: 15)
-            5 => 16,  // Tecnologia i Informàtica (ID: 16)
-            6 => 17,  // Gestió i Administració (ID: 17)
-            7 => 18,  // Idiomes i Llengües (ID: 18)
-            8 => 19,  // Arts i Disseny (ID: 19)
-            9 => 20,  // Ciències i Investigació (ID: 20)
-            10 => 21, // Esports i Benestar (ID: 21)
-            11 => 22, // Dret i Seguretat (ID: 22)
-            12 => 23, // Formació Continua (ID: 23)
-            13 => 24, // Desenvolupament Personal (ID: 24)
-            14 => 25, // Benestar i Salut (ID: 25)
-            16 => 12, // CSV 16 -> Sense Categoria (ID: 12)
+            1 => 1,   // Sense Categoria (ID: 1)
+            2 => 2,   // Salut i Benestar (ID: 2)
+            3 => 3,   // Educació i Pedagogia (ID: 3)
+            4 => 4,   // Ciències Socials i Humanitats (ID: 4)
+            5 => 5,   // Tecnologia i Informàtica (ID: 5)
+            6 => 6,   // Gestió i Administració (ID: 6)
+            7 => 7,   // Idiomes i Llengües (ID: 7)
+            8 => 8,   // Arts i Disseny (ID: 8)
+            9 => 9,   // Ciències i Investigació (ID: 9)
+            10 => 10, // Esports i Benestar (ID: 10)
+            11 => 11, // Dret i Seguretat (ID: 11)
+            12 => 12, // Formació Continua (ID: 12)
+            13 => 13, // Desenvolupament Personal (ID: 13)
+            14 => 14, // Benestar i Salut (ID: 14)
+            16 => 1,  // CSV 16 -> Sense Categoria (ID: 1)
         ];
         
         // Leer CSV
