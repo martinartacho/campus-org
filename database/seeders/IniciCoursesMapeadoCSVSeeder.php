@@ -43,30 +43,9 @@ class IniciCoursesMapeadoCSVSeeder extends Seeder
         $this->command->info('✅ Temporadas encontradas: ' . implode(', ', $seasons));
         $this->command->info('✅ Categorías encontradas: ' . implode(', ', $categories));
         
-        // Mapeo de IDs del CSV a nuestros IDs
-        $seasonMapping = [
-            1 => 5,  // 2024-25 -> ID: 5
-            3 => 6,  // 2025-26 -> ID: 6
-            4 => 6,  // 2025-26 -> ID: 6
-        ];
-        
-        $categoryMapping = [
-            1 => 12,  // Sense Categoria (ID: 12)
-            2 => 13,  // Salut i Benestar (ID: 13)
-            3 => 14,  // Educació i Pedagogia (ID: 14)
-            4 => 15,  // Ciències Socials i Humanitats (ID: 15)
-            5 => 16,  // Tecnologia i Informàtica (ID: 16)
-            6 => 17,  // Gestió i Administració (ID: 17)
-            7 => 18,  // Idiomes i Llengües (ID: 18)
-            8 => 19,  // Arts i Disseny (ID: 19)
-            9 => 20,  // Ciències i Investigació (ID: 20)
-            10 => 21, // Esports i Benestar (ID: 21)
-            11 => 22, // Dret i Seguretat (ID: 22)
-            12 => 23, // Formació Continua (ID: 23)
-            13 => 24, // Desenvolupament Personal (ID: 24)
-            14 => 25, // Benestar i Salut (ID: 25)
-            16 => 12, // CSV 16 -> Sense Categoria (ID: 12)
-        ];
+        // Mapeo de IDs del CSV a nuestros IDs (dinámico para producción)
+        $seasonMapping = $this->getSeasonMapping();
+        $categoryMapping = $this->getCategoryMapping();
         
         // Leer CSV
         $csvData = $this->readCSV($csvPath);
@@ -369,5 +348,75 @@ class IniciCoursesMapeadoCSVSeeder extends Seeder
         
         $this->command->info('');
         $this->command->info('=== FIN DEL PROCESO ===');
+    }
+    
+    /**
+     * Obtener mapeo de temporadas dinámicamente
+     */
+    private function getSeasonMapping(): array
+    {
+        // Si hay configuración de producción, usarla
+        if (config('seeders.production.season_ids')) {
+            $seasonIds = config('seeders.production.season_ids');
+            return [
+                1 => $seasonIds['curs-2025-26'] ?? 1,      // 2024-25 -> temporada principal
+                3 => $seasonIds['curs-2025-26-1q'] ?? 2,  // 2025-26 -> 1r trimestre
+                4 => $seasonIds['curs-2025-26-1q'] ?? 2,  // 2025-26 -> 1r trimestre
+            ];
+        }
+        
+        // Mapeo por defecto (hardcoded para compatibilidad)
+        return [
+            1 => 1,  // 2024-25 -> ID: 1 (Curs 2025-26)
+            3 => 2,  // 2025-26 -> ID: 2 (Curs 2025-26 - 1r Trimestre)
+            4 => 2,  // 2025-26 -> ID: 2 (Curs 2025-26 - 1r Trimestre)
+        ];
+    }
+    
+    /**
+     * Obtener mapeo de categorías dinámicamente
+     */
+    private function getCategoryMapping(): array
+    {
+        // Si hay configuración de producción, usarla
+        if (config('seeders.production.category_ids')) {
+            $categoryIds = config('seeders.production.category_ids');
+            return [
+                1 => $categoryIds['sense'] ?? 1,           // Sense Categoria
+                2 => $categoryIds['salut-benestar'] ?? 2,  // Salut i Benestar
+                3 => $categoryIds['educacio-pedagogia'] ?? 3, // Educació i Pedagogia
+                4 => $categoryIds['ciencies-socials-humanitats'] ?? 4, // Ciències Socials i Humanitats
+                5 => $categoryIds['tecnologia-informatica'] ?? 5, // Tecnologia i Informàtica
+                6 => $categoryIds['gestio-administracio'] ?? 6, // Gestió i Administració
+                7 => $categoryIds['llengues-idiomes'] ?? 7, // Idiomes i Llengües
+                8 => $categoryIds['arts-disseny'] ?? 8,     // Arts i Disseny
+                9 => $categoryIds['ciencies-investigacio'] ?? 9, // Ciències i Investigació
+                10 => $categoryIds['esports-benestar'] ?? 10, // Esports i Benestar
+                11 => $categoryIds['dret-seguretat'] ?? 11, // Dret i Seguretat
+                12 => $categoryIds['formacio-continua'] ?? 12, // Formació Continua
+                13 => $categoryIds['desenvolupament-personal'] ?? 13, // Desenvolupament Personal
+                14 => $categoryIds['benestar-salut'] ?? 14, // Benestar i Salut
+                16 => $categoryIds['sense'] ?? 1,          // CSV 16 -> Sense Categoria
+            ];
+        }
+        
+        // Mapeo por defecto (hardcoded para compatibilidad)
+        return [
+            1 => 1,   // Sense Categoria (ID: 1)
+            2 => 2,   // Salut i Benestar (ID: 2)
+            3 => 3,   // Educació i Pedagogia (ID: 3)
+            4 => 4,   // Ciències Socials i Humanitats (ID: 4)
+            5 => 5,   // Tecnologia i Informàtica (ID: 5)
+            6 => 6,   // Gestió i Administració (ID: 6)
+            7 => 7,   // Idiomes i Llengües (ID: 7)
+            8 => 8,   // Arts i Disseny (ID: 8)
+            9 => 9,   // Ciències i Investigació (ID: 9)
+            10 => 10, // Esports i Benestar (ID: 10)
+            11 => 11, // Dret i Seguretat (ID: 11)
+            12 => 12, // Formació Continua (ID: 12)
+            13 => 13, // Desenvolupament Personal (ID: 13)
+            14 => 14, // Benestar i Salut (ID: 14)
+            16 => 1,  // CSV 16 -> Sense Categoria (ID: 1)
+        ];
     }
 }
