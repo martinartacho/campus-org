@@ -101,7 +101,7 @@
                             <i class="bi bi-plus-circle text-blue-600 text-xl"></i>
                         </div>
                         <div>
-                            <h4 class="font-semibold text-blue-800 mb-1">Crear Article</h4>
+                            <h4 class="text-lg font-semibold text-blue-800 mb-1">Crear Article</h4>
                             <p class="text-sm text-blue-600">Afegir nou article d'ajuda</p>
                         </div>
                     </div>
@@ -115,7 +115,7 @@
                             <i class="bi bi-list-ul text-green-600 text-xl"></i>
                         </div>
                         <div>
-                            <h4 class="font-semibold text-green-800 mb-1">Gestionar Articles</h4>
+                            <h4 class="text-lg font-semibold text-green-800 mb-1">Gestionar Articles</h4>
                             <p class="text-sm text-green-600">Llistar i editar articles</p>
                         </div>
                     </div>
@@ -129,7 +129,7 @@
                             <i class="bi bi-folder-plus text-purple-600 text-xl"></i>
                         </div>
                         <div>
-                            <h4 class="font-semibold text-purple-800 mb-1">Crear Categoria</h4>
+                            <h4 class="text-lg font-semibold text-purple-800 mb-1">Crear Categoria</h4>                           
                             <p class="text-sm text-purple-600">Organitzar categories</p>
                         </div>
                     </div>
@@ -143,7 +143,7 @@
                             <i class="bi bi-folder text-orange-600 text-xl"></i>
                         </div>
                         <div>
-                            <h4 class="font-semibold text-orange-800 mb-1">Gestionar Categories</h4>
+                            <h4 class="text-lg font-semibold text-orange-800 mb-1">Gestionar Categories</h4>
                             <p class="text-sm text-orange-600">Administrar categories</p>
                         </div>
                     </div>

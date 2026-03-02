@@ -17,25 +17,6 @@
         </p>
     </div>
 
-    <!-- Search Bar -->
-<!--     <div class="max-w-2xl mx-auto mb-12">
-        <div class="relative">
-            <input
-                type="text"
-                id="help-search"
-                placeholder="{{ __('campus.search_help') }}"
-                class="w-full px-12 py-4 text-lg border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-            <i class="bi bi-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-xl"></i>
-            <button
-                onclick="searchHelp()"
-                class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors"
-            >
-                {{ __('campus.search') }}
-            </button>
-        </div>
-    </div> -->
-
     <!-- Filtros de búsqueda -->
     <div class="mb-6 p-4 bg-gray-50 rounded-lg">
         <h3 class="text-lg font-semibold mb-4 text-gray-700">
@@ -102,6 +83,7 @@
     <!-- Recent Articles -->
     <div class="mb-12">
         <h2 class="text-2xl font-bold text-gray-900 mb-6">
+            <h4 class="text-lg font-semibold 
             @if(request('area'))
                 {{ __('campus.articles_in_area') }}: {{ $areas[request('area')]['name'] ?? request('area') }}
             @elseif(request('search'))
@@ -120,7 +102,7 @@
                         <i class="bi bi-file-text text-gray-600"></i>
                     </div>
                     <div class="flex-1">
-                        <h3 class="font-semibold text-gray-900 mb-2">{{ $article->title }}</h3>
+                        <h4 class="text-lg font-semibold text-gray-900 mb-1">{{ $article->title }}</h4>
                         <p class="text-sm text-gray-600 mb-3">{{ Str::limit(strip_tags($article->content), 100) }}...</p>
                         <div class="flex items-center justify-between">
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
