@@ -14,9 +14,9 @@
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+        <link rel="stylesheet" href="{{ asset('vendor/bootstrap-icons/bootstrap-icons.css') }}">
         <!-- SweetAlert2 CSS -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+        <link rel="stylesheet" href="{{ asset('vendor/sweetalert2/sweetalert2.min.css') }}">
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
@@ -67,13 +67,30 @@
                 {{ $slot }}
             </main>
 
-            
+            <!-- Botó d'ajuda flotant minimalista -->
+            <a href="{{ url('/help') }}" class="fixed bottom-6 left-6 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg transition-all duration-300 hover:scale-110 z-50" target="_help">
+                <i class="bi bi-question-lg text-xl"></i>
+            </a>
+
+
             <!-- Footer con botón de soporte flotante -->
             @include('components.footer')
         </div>
 
         <!-- SweetAlert2 JS -->
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="{{ asset('vendor/sweetalert2/sweetalert2.min.js') }}"></script>
+        
+        <!-- jQuery (required for Summernote) -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        
+        <!-- Summernote Editor CSS -->
+        <link href="{{ asset('vendor/summernote/summernote.min.css') }}" rel="stylesheet">
+        
+        <!-- Summernote Editor JS -->
+        <script src="{{ asset('vendor/summernote/summernote.min.js') }}"></script>
+        
+
+        
         <script>
             // Función global para mostrar loader
             window.showLoader = function(form) {
@@ -91,6 +108,8 @@
                     }
                 });
             };
-        </script>        
+        </script>
+        
+        @stack('scripts')
     </body>
 </html>

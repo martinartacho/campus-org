@@ -18,6 +18,7 @@ use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\Campus\CategoryController;
 use App\Http\Controllers\Campus\CourseController;
 use App\Http\Controllers\Campus\CourseTeacherController;
+use App\Http\Controllers\WebHelpController;
 use App\Http\Controllers\Campus\TeacherController;
 use App\Http\Controllers\Campus\CourseRegistrationController;
 use App\Http\Controllers\Campus\CampusImportController;
@@ -529,6 +530,50 @@ Route::get('test-import', function() {
             
     });
     
+    // Help System Routes - Admin
+    Route::middleware(['auth', 'role:admin'])
+    ->prefix('campus/help')
+    ->name('campus.help.')
+    ->group(function () {
+        Route::get('/', function() {
+            return redirect()->route('campus.help.dashboard');
+        });
+        
+        Route::get('/dashboard', [App\Http\Controllers\Admin\HelpDashboardController::class, 'index'])
+            ->name('dashboard');
+        
+        Route::get('/articles', [App\Http\Controllers\Admin\HelpArticleController::class, 'index'])
+            ->name('articles.index');
+        Route::get('/articles/create', [App\Http\Controllers\Admin\HelpArticleController::class, 'create'])
+            ->name('articles.create');
+        Route::post('/articles', [App\Http\Controllers\Admin\HelpArticleController::class, 'store'])
+            ->name('articles.store');
+        Route::get('/articles/{helpArticle}', [App\Http\Controllers\Admin\HelpArticleController::class, 'show'])
+            ->name('articles.show');
+        Route::get('/articles/{helpArticle}/edit', [App\Http\Controllers\Admin\HelpArticleController::class, 'edit'])
+            ->name('articles.edit');
+        Route::put('/articles/{helpArticle}', [App\Http\Controllers\Admin\HelpArticleController::class, 'update'])
+            ->name('articles.update');
+        Route::delete('/articles/{helpArticle}', [App\Http\Controllers\Admin\HelpArticleController::class, 'destroy'])
+            ->name('articles.destroy');
+        Route::post('/articles/{helpArticle}/toggle-status', [App\Http\Controllers\Admin\HelpArticleController::class, 'toggleStatus'])
+            ->name('articles.toggle-status');
+            
+        Route::get('/categories', [App\Http\Controllers\Admin\HelpCategoryController::class, 'index'])
+            ->name('categories.index');
+        Route::get('/categories/create', [App\Http\Controllers\Admin\HelpCategoryController::class, 'create'])
+            ->name('categories.create');
+        Route::post('/categories', [App\Http\Controllers\Admin\HelpCategoryController::class, 'store'])
+            ->name('categories.store');
+        Route::get('/categories/{helpCategory}/edit', [App\Http\Controllers\Admin\HelpCategoryController::class, 'edit'])
+            ->name('categories.edit');
+        Route::put('/categories/{helpCategory}', [App\Http\Controllers\Admin\HelpCategoryController::class, 'update'])
+            ->name('categories.update');
+        Route::delete('/categories/{helpCategory}', [App\Http\Controllers\Admin\HelpCategoryController::class, 'destroy'])
+            ->name('categories.destroy');
+        Route::post('/categories/{helpCategory}/toggle-active', [App\Http\Controllers\Admin\HelpCategoryController::class, 'toggleActive'])
+            ->name('categories.toggle-active');
+    });
 
     Route::middleware(['auth', 'role:teacher'])
     ->prefix('campus/teacher')
@@ -592,14 +637,24 @@ Route::get('test-import', function() {
             ->name('teachers.index');
             
         Route::get('/reports', [TreasuryController::class, 'reports'])
-            ->name('reports.index');
+            ->name('reports');
     });
 
-});
+// Rutas de Ayuda (públicas)
+Route::get('help', [WebHelpController::class, 'index'])
+    ->name('help.index');
+
+Route::get('help/{slug}', [WebHelpController::class, 'show'])
+    ->name('help.show');
+
+Route::post('help/feedback', [WebHelpController::class, 'feedback'])
+    ->name('help.feedback');
 
 // Rutas de Soporte (públicas)
-Route::get('suport', [SupportController::class, 'create'])
+Route::get('support', [SupportController::class, 'create'])
     ->name('support.form');
 
-Route::post('suport', [SupportController::class, 'store'])
+Route::post('support', [SupportController::class, 'store'])
     ->name('support.store');
+
+});

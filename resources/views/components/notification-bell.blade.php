@@ -100,8 +100,8 @@
                 });
         }
 
-        // Actualizar cada 30 segundos y al cargar
-        setInterval(updateUnreadCount, 30000);
+        // Actualizar cada 60 segundos y al cargar
+        setInterval(updateUnreadCount, 60000);
         updateUnreadCount();
     });
 </script>

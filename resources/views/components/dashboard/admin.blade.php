@@ -285,6 +285,35 @@
                 </div>
             </a>
             
+            {{-- HELP --}}
+            <a href="{{ url('/campus/help') }}" class="block">
+                <div class="bg-green-50 border border-green-200 hover:bg-green-100 p-4 rounded-lg transition-colors">
+                    <div class="flex items-center">
+                        <div class="p-2 bg-green-100 rounded-lg me-3">
+                            <i class="bi bi-question-circle text-green-600"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-green-800">{{ __('Gestió d\'Ajuda') }}</h3>
+                            <p class="text-sm text-green-600">Crear, editar, eliminar documents d'Ajuda</p>
+                        </div>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="{{ url('/help') }}" class="block">
+                <div class="bg-blue-50 border border-blue-200 hover:bg-blue-100 p-4 rounded-lg transition-colors">
+                    <div class="flex items-center">
+                        <div class="p-2 bg-blue-100 rounded-lg me-3">
+                            <i class="bi bi-question-circle text-blue-600"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-blue-800">{{ __('Centre d\'Ajuda') }}</h3>
+                            <p class="text-sm text-blue-600">Guies i assistència del campus</p>
+                        </div>
+                    </div>
+                </div>
+            </a>
+            
         </div>
     </div>
 </div>

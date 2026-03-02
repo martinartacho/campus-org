@@ -25,3 +25,18 @@ window.showLoader = function(form) {
         }
     });
 };
+
+// Importar y montar el componente de ayuda clásico
+import ClassicHelpButton from './components/Help/ClassicHelpButton.vue';
+
+// Crear aplicación Vue para el botón de ayuda
+import { createApp } from 'vue';
+
+const helpApp = createApp({
+    components: {
+        ClassicHelpButton
+    }
+});
+
+// Montar el botón de ayuda
+helpApp.mount('#help-button-container');

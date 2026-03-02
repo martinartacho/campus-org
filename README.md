@@ -111,7 +111,9 @@ php artisan serve
 Accedeix a:
 👉 http://localhost:8000
 
-🎨 Tailwind (colors semàntics)
+🎨 Uso de COMPLETA A TAILWIND CSS 
+
+Tailwind (colors semàntics) 
 Exemple d’ús:
 
 html

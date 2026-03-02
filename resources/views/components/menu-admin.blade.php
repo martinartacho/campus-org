@@ -18,6 +18,14 @@
             ];
         }
         
+        // Help System
+        $adminItems[] = [
+            'href' => route('campus.help.dashboard'),
+            'active' => request()->routeIs('campus.help.*'),
+            'label' => 'Ajuda',
+            'icon' => 'question-circle',
+        ];
+        
         // Usuaris
         if (Auth::user()->can('users.view')) {
             $adminItems[] = [

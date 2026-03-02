@@ -10,7 +10,8 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Log;
 use App\Models\FcmToken;
 use App\Http\Controllers\Api\FeedbackController;
-use App\Http\Controllers\Api\CalendarController;
+use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\HelpController;
 
 use App\Models\Notification;
 use App\Services\FCMService;
@@ -64,4 +65,13 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('/answers/{id}', [CalendarController::class, 'destroyAnswer']);    // Eliminar respuesta
     Route::get('/events/{event}/user-responses', [CalendarController::class, 'getUserResponses']);  //Obtener respuestas
 
+});
+
+// Rutas de ayuda - API pública
+Route::prefix('help')->group(function () {
+    Route::get('/contextual', [HelpController::class, 'contextual']);
+    Route::get('/areas', [HelpController::class, 'areas']);
+    Route::get('/search', [HelpController::class, 'search']);
+    Route::get('/area/{area}', [HelpController::class, 'byArea']);
+    Route::get('/{slug}', [HelpController::class, 'show']);
 });

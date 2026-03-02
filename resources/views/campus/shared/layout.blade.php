@@ -58,4 +58,29 @@
             </div>
         </div>
     </div>
+    
+    <!-- Help Button Container -->
+    <div id="help-button-container"></div>
+    
+    <!-- jQuery (required for Summernote) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- Bootstrap CSS (required for Summernote tooltips) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap JS (required for tooltips) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Summernote Editor CSS -->
+    <link href="{{ asset('vendor/summernote/summernote.min.css') }}" rel="stylesheet">
+    
+    <!-- Summernote Editor JS -->
+    <script src="{{ asset('vendor/summernote/summernote.min.js') }}"></script>
+    
+    <!-- Verificació de càrrega -->
+    <script>
+        console.log('jQuery carregat:', typeof $ !== 'undefined');
+        console.log('Bootstrap carregat:', typeof bootstrap !== 'undefined');
+        console.log('Summernote carregat:', typeof $.summernote !== 'undefined');
+    </script>
 </x-app-layout>
