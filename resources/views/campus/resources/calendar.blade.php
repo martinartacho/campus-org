@@ -322,9 +322,12 @@ function filterBySeason() {
             <div class="flex items-center gap-2">
                 <h4 class="font-semibold">Temporada:</h4>
                 <select id="seasonFilter" class="border rounded px-2 py-1 text-sm">
-                    @if($selectedSeason)
-                        <option value="{{ $selectedSeason->id }}" selected>{{ $selectedSeason->name }}</option>
-                    @endif
+                    <option value="">Totes les temporades</option>
+                    @foreach(App\Models\CampusSeason::withCount('courses')->orderByDesc('season_start')->get() as $season)
+                        <option value="{{ $season->id }}" {{ $selectedSeason && $selectedSeason->id == $season->id ? 'selected' : '' }}>
+                            {{ $season->name }} ({{ $season->courses_count }} cursos)
+                        </option>
+                    @endforeach
                 </select>
             </div>
             
@@ -357,7 +360,16 @@ function filterBySeason() {
                 </div>
                 <div class="flex flex-wrap gap-1">
                     @php
-                        $courses = \App\Models\CampusCourse::where('season_id', $selectedSeason->id)->get();
+                        // Obtenir cursos de la temporada seleccionada i els seus fills (jerarquia)
+                        $seasonIds = [$selectedSeason->id];
+                        
+                        // Si és un any acadèmic, incloure els cursos dels quadrimestres fills
+                        if ($selectedSeason->type === 'annual') {
+                            $childSeasons = \App\Models\CampusSeason::where('parent_id', $selectedSeason->id)->pluck('id')->toArray();
+                            $seasonIds = array_merge($seasonIds, $childSeasons);
+                        }
+                        
+                        $courses = \App\Models\CampusCourse::whereIn('season_id', $seasonIds)->get();
                     @endphp
                     @foreach($courses as $course)
                         @php
@@ -1253,8 +1265,11 @@ function openTimeSlotModal() {
             <div class="mb-4">
                 <label class="block text-sm font-medium mb-1">Temporada</label>
                 <select name="season_id" class="w-full border rounded px-3 py-2" required>
-                    @foreach(App\Models\CampusSeason::where('is_active', true)->get() as $season)
-                        <option value="{{ $season->id }}">{{ $season->name }}</option>
+                    <option value="">Selecciona una temporada</option>
+                    @foreach(App\Models\CampusSeason::withCount('courses')->orderByDesc('season_start')->get() as $season)
+                        <option value="{{ $season->id }}">
+                            {{ $season->name }} ({{ $season->courses_count }} cursos)
+                        </option>
                     @endforeach
                 </select>
             </div>
