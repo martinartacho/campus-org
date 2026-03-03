@@ -86,10 +86,11 @@
                             <select name="search_season" 
                                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                                 <option value="">{{ __('All seasons') }}</option>
+                                {{-- Debug: {{ count($seasons) }} seasons found --}}
                                 @foreach($seasons as $season)
                                     <option value="{{ $season->id }}" 
                                             {{ request('search_season') == $season->id ? 'selected' : '' }}>
-                                        {{ $season->name ?? $season->season_start . ' - ' . $season->season_end }}
+                                        {{ $season->name }} ({{ $season->courses_count ?? 0 }})
                                     </option>
                                 @endforeach
                             </select>
@@ -147,12 +148,115 @@
                     </div>
                 </form>
             </div>
-        </tbody>
-    </table>
-</div>
+        </div>
+    </div>
 
-<div class="mt-6">
-    {{ $courses->links() }}
+    <!-- Results table -->
+    <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            {{ __('campus.code') }}
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            {{ __('campus.title') }}
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            {{ __('campus.category') }}
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            {{ __('campus.season') }}
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            {{ __('campus.start_date') }}
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            {{ __('campus.end_date') }}
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            {{ __('campus.status') }}
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            {{ __('Actions') }}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @forelse($courses as $course)
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                {{ $course->code }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {{ $course->title }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ $course->category->name ?? 'N/A' }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ $course->season->name ?? 'N/A' }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ $course->start_date->format('d/m/Y') }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ $course->end_date->format('d/m/Y') }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                @if($course->is_active)
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                        {{ __('Active') }}
+                                    </span>
+                                @else
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                        {{ __('Inactive') }}
+                                    </span>
+                                @endif
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                @can('campus.courses.view')
+                                    <a href="{{ route('campus.courses.show', $course) }}" 
+                                       class="text-indigo-600 hover:text-indigo-900 mr-3">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                @endcan
+                                @can('campus.courses.edit')
+                                    <a href="{{ route('campus.courses.edit', $course) }}" 
+                                       class="text-indigo-600 hover:text-indigo-900 mr-3">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                @endcan
+                                @can('campus.courses.delete')
+                                    <form action="{{ route('campus.courses.destroy', $course) }}" method="POST" class="inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-red-600 hover:text-red-900"
+                                                onclick="return confirm('{{ __('Are you sure?') }}')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                @endcan
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="8" class="px-6 py-4 text-center text-gray-500">
+                                {{ __('No courses found') }}
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    @if($courses->hasPages())
+        <div class="mt-6">
+            {{ $courses->links() }}
+        </div>
+    @endif
 </div>
 <div class="p-6 bg-white border-b border-gray-200">
     <h2 class="text-lg font-medium text-gray-900">

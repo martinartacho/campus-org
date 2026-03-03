@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Builder;
 
 class CampusSeason extends Model
@@ -15,20 +16,22 @@ class CampusSeason extends Model
         'name',
         'slug',
         'academic_year',
+        'parent_id',
+        'type',
+        'semester_number',
         'registration_start',
         'registration_end',
         'season_start',
         'season_end',
-        'type',
         'status',
         'is_active',
         'is_current',
         'periods',
-        'created_by',
-        'source',
         'requirements',
         'objectives',
         'metadata',
+        'created_by',
+        'source',
     ];
 
     protected $casts = [
@@ -213,5 +216,97 @@ class CampusSeason extends Model
     public function teacherPayments()
     {
         return $this->hasMany(CampusTeacherPayment::class, 'season_id');
+    }
+
+    /**
+     * Get the parent season (academic year).
+     */
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(CampusSeason::class, 'parent_id');
+    }
+
+    /**
+     * Get the child seasons (semesters/trimesters).
+     */
+    public function children(): HasMany
+    {
+        return $this->hasMany(CampusSeason::class, 'parent_id')
+                   ->orderBy('semester_number');
+    }
+
+    /**
+     * Get academic years only (parent seasons).
+     */
+    public function scopeAcademicYears(Builder $query): Builder
+    {
+        return $query->where('type', 'annual')->whereNull('parent_id');
+    }
+
+    /**
+     * Get semesters only.
+     */
+    public function scopeSemesters(Builder $query): Builder
+    {
+        return $query->where('type', 'semester')->whereNotNull('parent_id');
+    }
+
+    /**
+     * Get first semester.
+     */
+    public function firstSemester()
+    {
+        return $this->children()->where('semester_number', 1)->first();
+    }
+
+    /**
+     * Get second semester.
+     */
+    public function secondSemester()
+    {
+        return $this->children()->where('semester_number', 2)->first();
+    }
+
+    /**
+     * Check if this is an academic year.
+     */
+    public function isAcademicYear(): bool
+    {
+        return $this->type === 'annual' && is_null($this->parent_id);
+    }
+
+    /**
+     * Check if this is a semester.
+     */
+    public function isSemester(): bool
+    {
+        return $this->type === 'semester' && !is_null($this->parent_id);
+    }
+
+    /**
+     * Get the academic year for this semester.
+     */
+    public function getAcademicYear()
+    {
+        if ($this->isAcademicYear()) {
+            return $this;
+        }
+        
+        return $this->parent;
+    }
+
+    /**
+     * Get all courses in this season and its children.
+     */
+    public function getAllCourses()
+    {
+        if ($this->isAcademicYear()) {
+            // Get courses from all semesters
+            $seasonIds = $this->children()->pluck('id')->push($this->id);
+            return CampusCourse::whereIn('season_id', $seasonIds)->get();
+        } else {
+            // Get courses from this semester only
+            return $this->courses;
+        }
     }
 }

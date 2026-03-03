@@ -15,6 +15,7 @@ class CampusRegistration extends Model
     protected $fillable = [
         'student_id',
         'course_id',
+        'season_id',
         'registration_code',
         'registration_date',
         'status',
@@ -52,6 +53,14 @@ class CampusRegistration extends Model
     public function course(): BelongsTo
     {
         return $this->belongsTo(CampusCourse::class, 'course_id');
+    }
+
+    /**
+     * Get the season that owns the registration.
+     */
+    public function season(): BelongsTo
+    {
+        return $this->belongsTo(CampusSeason::class, 'season_id');
     }
 
     /**

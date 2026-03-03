@@ -106,7 +106,7 @@ class CourseController extends Controller
         $courses = $query->paginate(15)->withQueryString();
         
         // Obtener valores únicos para filtros
-        $seasons = CampusSeason::orderByDesc('season_start')->get();
+        $seasons = CampusSeason::withCount("courses")->orderByDesc('season_start')->get();
         $categories = CampusCategory::orderBy('name')->get();
         $levels = ['beginner', 'intermediate', 'advanced'];
         $formats = ['presencial', 'online', 'hybrid'];
@@ -119,7 +119,7 @@ class CourseController extends Controller
      */
     public function create()
     {
-        $seasons = CampusSeason::orderByDesc('season_start')->get();
+        $seasons = CampusSeason::withCount("courses")->orderByDesc('season_start')->get();
         $categories = CampusCategory::orderBy('name')->get();
 
         return view('campus.courses.create', compact('seasons', 'categories'));
@@ -208,7 +208,7 @@ class CourseController extends Controller
      */
     public function edit(CampusCourse $course)
     {
-        $seasons = CampusSeason::orderByDesc('season_start')->get();
+        $seasons = CampusSeason::withCount("courses")->orderByDesc('season_start')->get();
         $categories = CampusCategory::orderBy('name')->get();
 
         return view('campus.courses.edit', compact('course', 'seasons', 'categories'));
