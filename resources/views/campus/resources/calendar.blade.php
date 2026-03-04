@@ -288,6 +288,13 @@ function filterBySeason() {
 </script>
 
 <div class="container mx-auto px-4 py-8">
+    <!-- Tarjeta de temporada actual -->
+    <div class="mb-6">
+        <x-dashboard-season-card 
+            title="Temporada Actual" 
+            color="green" 
+            :season="\App\Models\CampusSeason::getCurrent()" />
+    </div>
 
     <div class="flex justify-between items-center mb-6">
         <div>

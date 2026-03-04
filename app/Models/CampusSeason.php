@@ -78,6 +78,60 @@ class CampusSeason extends Model
     }
 
     /**
+     * Obtiene temporadas visibles según el usuario y permisos
+     */
+    public static function getVisibleForUser($user = null): Builder
+    {
+        $query = static::query();
+        
+        if (!$user) {
+            $user = auth()->user();
+        }
+        
+        // Si es admin o tiene permisos especiales, ve todas
+        if ($user && ($user->hasRole('admin') || $user->can('manage_seasons'))) {
+            return $query;
+        }
+        
+        // Para otros roles, aplicar reglas de visibilidad
+        return $query->where(function($q) {
+            // Temporada actual siempre visible
+            $q->where('is_current', true)
+              // Temporadas pasadas con status 'completed'
+              ->orWhere(function($subQ) {
+                  $subQ->where('season_end', '<', now())
+                       ->where('status', 'completed');
+              })
+              // Temporadas futuras no visibles para roles básicos
+              ->where('season_start', '<=', now());
+        });
+    }
+
+    /**
+     * Verifica si la temporada es futura
+     */
+    public function isFuture(): bool
+    {
+        return $this->season_start > now();
+    }
+
+    /**
+     * Verifica si la temporada es pasada
+     */
+    public function isPast(): bool
+    {
+        return $this->season_end < now();
+    }
+
+    /**
+     * Verifica si la temporada es actual
+     */
+    public function isPresent(): bool
+    {
+        return !$this->isFuture() && !$this->isPast();
+    }
+
+    /**
      * Obtiene la temporada en planning
      */
     public static function getPlanning(): ?self

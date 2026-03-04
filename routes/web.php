@@ -448,6 +448,11 @@ Route::get('test-import', function() {
         Route::resource('courses', CourseController::class)
             ->middleware('can:campus.courses.view');
         
+        // Clear season session
+        Route::get('courses/clear-season', [CourseController::class, 'clearSeason'])
+            ->name('courses.clear-season')
+            ->middleware('can:campus.courses.view');
+        
         // Course data for AJAX
         Route::get('courses/{course}/data', [CourseController::class, 'getCourseData'])
             ->name('courses.data')

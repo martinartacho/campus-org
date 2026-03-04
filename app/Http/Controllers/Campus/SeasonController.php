@@ -189,14 +189,37 @@ class SeasonController extends Controller
      */
     public function setAsCurrent(CampusSeason $season)
     {
-        // Desmarcar todas las temporadas como actuales
-        CampusSeason::where('is_current', true)->update(['is_current' => false]);
-        
-        // Marcar esta temporada como actual
-        $season->update(['is_current' => true]);
-        
-        return redirect()->route('campus.seasons.index')
-            ->with('success', "Temporada '{$season->name}' marcada com a actual.");
+        try {
+            // Desmarcar todas las temporadas como actuales
+            CampusSeason::where('is_current', true)->update(['is_current' => false]);
+            
+            // Marcar esta temporada como actual
+            $season->update(['is_current' => true]);
+            
+            // Responder según el tipo de solicitud
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => "Temporada '{$season->name}' marcada com a actual.",
+                    'season' => $season->fresh()
+                ]);
+            }
+            
+            return redirect()->route('campus.seasons.index')
+                ->with('success', "Temporada '{$season->name}' marcada com a actual.");
+                
+        } catch (\Exception $e) {
+            // Manejar errores
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Error al cambiar la temporada: ' . $e->getMessage()
+                ], 500);
+            }
+            
+            return redirect()->back()
+                ->with('error', 'Error al cambiar la temporada.');
+        }
     }
     
     /**

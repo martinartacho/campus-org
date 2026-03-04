@@ -24,6 +24,17 @@ class CourseController extends Controller
      */
     public function index(Request $request)
     {
+        // Guardar temporada seleccionada en sesión (vida larga: 1 año)
+        if ($request->filled('search_season')) {
+            session(['selected_season' => $request->search_season]);
+            if (!session()->has('selected_season_set_at')) {
+                session(['selected_season_set_at' => now()->addYear()]);
+            }
+        }
+        
+        // Usar temporada de sesión si no hay parámetro
+        $seasonFilter = $request->get('search_season', session('selected_season'));
+        
         $query = CampusCourse::with(['season', 'category']);
         
         // Filtro por código
@@ -36,9 +47,9 @@ class CourseController extends Controller
             $query->where('title', 'like', '%' . $request->search_title . '%');
         }
         
-        // Filtro por temporada
-        if ($request->filled('search_season')) {
-            $query->where('season_id', $request->search_season);
+        // Filtro por temporada (usar sesión si no hay parámetro)
+        if ($seasonFilter) {
+            $query->where('season_id', $seasonFilter);
         }
         
         // Filtro por categoría
@@ -105,8 +116,14 @@ class CourseController extends Controller
         
         $courses = $query->paginate(15)->withQueryString();
         
-        // Obtener valores únicos para filtros
-        $seasons = CampusSeason::withCount("courses")->orderByDesc('season_start')->get();
+        // Obtener valores únicos para filtros según permisos de usuario
+        if (auth()->user()->hasRole('admin') || auth()->user()->can('manage_seasons')) {
+            // Admin/Manager: ve todas las temporadas
+            $seasons = CampusSeason::withCount("courses")->orderByDesc('season_start')->get();
+        } else {
+            // Otros roles: solo temporadas visibles según reglas
+            $seasons = CampusSeason::getVisibleForUser()->withCount("courses")->orderByDesc('season_start')->get();
+        }
         $categories = CampusCategory::orderBy('name')->get();
         $levels = ['beginner', 'intermediate', 'advanced'];
         $formats = ['presencial', 'online', 'hybrid'];
@@ -115,11 +132,28 @@ class CourseController extends Controller
     }
 
     /**
+     * Clear the saved season from session.
+     */
+    public function clearSeason()
+    {
+        session()->forget(['selected_season', 'selected_season_set_at']);
+        
+        return redirect()->route('campus.courses.index')
+            ->with('success', 'Temporada guardada eliminada correctament.');
+    }
+
+    /**
      * Show the form for creating a new course.
      */
     public function create()
     {
-        $seasons = CampusSeason::withCount("courses")->orderByDesc('season_start')->get();
+        // Obtener temporadas según permisos
+        if (auth()->user()->hasRole('admin') || auth()->user()->can('manage_seasons')) {
+            $seasons = CampusSeason::withCount("courses")->orderByDesc('season_start')->get();
+        } else {
+            $seasons = CampusSeason::getVisibleForUser()->withCount("courses")->orderByDesc('season_start')->get();
+        }
+        
         $categories = CampusCategory::orderBy('name')->get();
 
         return view('campus.courses.create', compact('seasons', 'categories'));
@@ -208,7 +242,13 @@ class CourseController extends Controller
      */
     public function edit(CampusCourse $course)
     {
-        $seasons = CampusSeason::withCount("courses")->orderByDesc('season_start')->get();
+        // Obtener temporadas según permisos
+        if (auth()->user()->hasRole('admin') || auth()->user()->can('manage_seasons')) {
+            $seasons = CampusSeason::withCount("courses")->orderByDesc('season_start')->get();
+        } else {
+            $seasons = CampusSeason::getVisibleForUser()->withCount("courses")->orderByDesc('season_start')->get();
+        }
+        
         $categories = CampusCategory::orderBy('name')->get();
 
         return view('campus.courses.edit', compact('course', 'seasons', 'categories'));
