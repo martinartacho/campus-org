@@ -366,14 +366,14 @@ Route::get('test-import', function() {
 });
 
     // Rutas de importación (acceso público para pruebas)
-    Route::get('campus/courses/import', [CampusImportController::class, 'create'])
+/*     Route::get('campus/courses/import', [CampusImportController::class, 'create'])
         ->name('campus.courses.import');
 
     Route::post('campus/courses/import', [CampusImportController::class, 'store'])
         ->name('campus.courses.import.store');
 
     Route::get('campus/courses/import/template', [CampusImportController::class, 'downloadTemplate'])
-        ->name('campus.courses.import.template');
+        ->name('campus.courses.import.template'); */
 
     // Rutas públicas del calendario
     Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
@@ -510,7 +510,15 @@ Route::get('test-import', function() {
             ->name('registrations.export');
         Route::get('registrations-list', [\App\Http\Controllers\Campus\ImportController::class, 'index'])
             ->name('registrations.list'); 
+        
+        
+        Route::get('campus/courses/import', [CampusImportController::class, 'create'])
+            ->name('campus.courses.import');
+        
+        Route::post('campus/courses/import', [CampusImportController::class, 'store'])
+            ->name('campus.courses.import.store');
             
+
         // Re-Cursos - Resource Management
         Route::get('resources', [ResourceController::class, 'index'])->name('resources.index');
         Route::get('resources/calendar', [ResourceController::class, 'calendar'])->name('resources.calendar');

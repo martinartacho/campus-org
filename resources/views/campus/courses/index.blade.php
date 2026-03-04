@@ -30,7 +30,7 @@
             @endcan
             
             @can('campus.courses.create')
-                <a href="{{ route('importar.cursos') }}"
+                <a href="{{ route('campus.campus.courses.import') }}"
                    class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
                     <i class="bi bi-upload mr-2"></i>{{ __('campus.import_courses') }}
                 </a>
@@ -178,10 +178,7 @@
                             {{ __('campus.season') }}
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            {{ __('campus.start_date') }}
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            {{ __('campus.end_date') }}
+                            {{ __('campus.dates') }}
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             {{ __('campus.status') }}
@@ -197,31 +194,52 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                 {{ $course->code }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                {{ $course->title }}
+                            <td class="px-6 py-4 text-sm text-gray-900" style="max-width: 200px; width: 200px;">
+                                <div class="space-y-1">
+                                    <div class="truncate" title="{{ $course->title }}">
+                                        {{ Str::limit($course->title, 100) }}
+                                    </div>
+                                    @if(strlen($course->title) > 100)
+                                        <div class="text-xs text-gray-400 truncate" title="{{ $course->title }}">
+                                            {{ Str::substr($course->title, 100, 100) }}
+                                        </div>
+                                    @endif
+                                </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 {{ $course->category->name ?? 'N/A' }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ $course->season->name ?? 'N/A' }}
+                            <td class="px-6 py-4 text-sm text-gray-500">
+                                <div class="max-w-xs">
+                                    @if($course->season)
+                                        <div class="font-medium">{{ $course->season->academic_year }}</div>
+                                        <div class="text-xs text-gray-400">{{ $course->season->name }}</div>
+                                    @else
+                                        <span>N/A</span>
+                                    @endif
+                                </div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ $course->start_date->format('d/m/Y') }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ $course->end_date->format('d/m/Y') }}
+                            <td class="px-6 py-4 text-sm text-gray-500">
+                                <div class="max-w-xs">
+                                    <div class="font-medium">{{ $course->start_date->format('d/m/Y') }}</div>
+                                    <div class="text-xs text-gray-400">{{ $course->end_date->format('d/m/Y') }}</div>
+                                </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                @if($course->is_active)
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                        {{ __('Active') }}
-                                    </span>
-                                @else
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                        {{ __('Inactive') }}
-                                    </span>
-                                @endif
+                                <div class="flex items-center space-x-2">
+                                    @if($course->is_active)
+                                        <i class="bi bi-check-circle-fill text-green-500" title="{{ __('Active') }}"></i>
+                                        <span class="text-xs text-green-600">{{ __('Active') }}</span>
+                                    @else
+                                        <i class="bi bi-x-circle-fill text-red-500" title="{{ __('Inactive') }}"></i>
+                                        <span class="text-xs text-red-600">{{ __('Inactive') }}</span>
+                                    @endif
+                                    @if($course->is_public)
+                                        <i class="bi bi-globe text-blue-500" title="{{ __('Public') }}"></i>
+                                    @else
+                                        <i class="bi bi-lock text-gray-400" title="{{ __('Private') }}"></i>
+                                    @endif
+                                </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 @can('campus.courses.view')
@@ -299,12 +317,11 @@
 
 <script>
 window.downloadTemplate = function() {
-    const template = `category,code,title,slug,description,credits,hours,max_students,price,level,schedule_days,schedule_times,start_date,end_date,requirements,objectives,professor,location,calendar_dates,registration_price,format
-Salut i Infermeria,SAN101,PEDIATRIA,pediatria,"Curs de pediatria per a professionals de la salut",4,30,25,20.00,intermediate,Dilluns,10:00-11:30,2026-02-16,2026-03-16,"Titol d'infermeria o medicina","Actualització de coneixements en pediatria","Anna Estapé","CTUG. ROCA UMBERT","16/2, 23/2, 2/3, 9/3, 16/3",20.00,Presencial
-Educació i Pedagogia,EDU201,TDAH,tdah,"Estratègies educatives per al TDAH",3,25,30,25.00,beginner,Dimecres,16:00-18:00,2026-02-19,2026-04-02,"Interès en educació especial","Estratègies pràctiques per a l'aula","Marta Soler","UPC VALLÈS","19/2, 26/2, 5/3, 12/3, 19/3, 26/3",25.00,Semipresencial
-Ciències Socials i Humanitats,,INTEL·LIGÈNCIA EMOCIONAL,intelligencia-emocional,"Desenvolupament d'habilitats emocionals",2,20,35,15.00,beginner,Dijous,18:00-20:00,2026-02-20,2026-03-20,"Cap requeriment previ","Millora de competències emocionals","Laura Martínez","ONLINE","20/2, 27/2, 6/3, 13/3, 20/3",15.00,Online
-Tecnologia,Nova Categoria,PROGRAMACIÓ WEB,programacio-web,"Curs complet de desenvolupament web",5,40,20,30.00,intermediate,Dimarts,Dilluns,18:00-21:00,2026-02-25,2026-05-20,"Coneixements bàsics d'informàtica","Full stack development amb HTML, CSS, JavaScript","Carlos Rodríguez","Campus Digital","25/2, 4/3, 11/3, 18/3, 25/3, 1/4, 8/4, 15/4, 22/4, 29/4",30.00,Híbrid
-Arts i Disseny,Disseny Gràfic,DISENY UX/UI,disseny-ux-ui,"Disseny d'experiències d'usuari i interfícies",3,35,25,35.00,intermediate,Divendres,17:00-20:00,2026-02-28,2026-04-25,"Coneixements bàsics de disseny","Creació de prototips i disseny visual","Sofia López","Escola d'Art","28/2, 7/3, 14/3, 21/3, 28/3, 4/4, 11/4, 18/4, 25/4",35.00,Presencial`;
+    const template = `first_name,last_name,email,code,title,slug,description,credits,hours,sessions,max_students,price,level,schedule,start_date,end_date,location,format,is_active,is_public,requirements,objectives,metadata,created_at,updated_at
+Pepito,Grillo,CREACIO@campus.test,CREACIO,Creació literària: el microrelat,creacio-literaria-el-microrelat,"Creació literària: el microrelat","7","7","7","30","50.00","beginner",,"2025-09-16","2026-01-31",,,"1","1",,,,,
+Chi,Kung,CHIKUNG@campus.test,CHIKUNG1,Chi Kung dilluns,chi-kung-dilluns,"Chi Kung (grups dilluns)","27","27","27","30","50.00","beginner",,"2025-09-16","2026-01-31",,,"1","1",,,,,
+,,COMFUNC@campus.test,COMFUNC,Com funciona la terra que trepitgem,com-funciona-la-terra-que-trepitgem-1771350937,"Com funciona la terra que trepitgem","8","8","8","30","50.00",,,,,,,,,,,,
+,,NUTRICIO@campus.test,NUTRICIO,Nutrició i dietoteràpia,nutricio-i-dietoterapia-1771350937,"Nutrició i dietoteràpia",,,,,,,,,,,,,,,,,,`;
     
     const blob = new Blob([template], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
