@@ -32,6 +32,10 @@ class CampusCourse extends Model
         'season_id',
         'category_id',
         'code',
+        'base_code',
+        'instance_code',
+        'is_base_course',
+        'parent_base_id',
         'title',
         'slug',
         'description',
@@ -68,6 +72,7 @@ class CampusCourse extends Model
         'end_date' => 'date',
         'is_active' => 'boolean',
         'is_public' => 'boolean',
+        'is_base_course' => 'boolean',
         'schedule' => 'array',
         'requirements' => 'string',
         'objectives' => 'string',
@@ -97,8 +102,58 @@ class CampusCourse extends Model
     }
 
     /**
-     * Check if there's a course conflict in the same space and time slot.
+     * Get base course if this is an instance.
      */
+    public function baseCourse(): BelongsTo
+    {
+        return $this->belongsTo(CampusCourse::class, 'parent_base_id');
+    }
+
+    /**
+     * Get instances of this base course.
+     */
+    public function instances(): HasMany
+    {
+        return $this->hasMany(CampusCourse::class, 'parent_base_id');
+    }
+
+    /**
+     * Get the appropriate code (base or instance).
+     */
+    public function getEffectiveCodeAttribute(): string
+    {
+        return $this->base_code ?? $this->instance_code ?? $this->code ?? '';
+    }
+
+    /**
+     * Generate base course code.
+     */
+    public static function generateBaseCode($title, $category)
+    {
+        // Obtenir prefix de categoria
+        $categoryPrefix = strtoupper(substr($category->slug, 0, 3));
+        
+        // Obtenir següent número per categoria
+        $lastNumber = self::where('base_code', 'like', 'BASE-' . $categoryPrefix . '%')
+            ->orderByRaw('CAST(SUBSTRING(base_code, -3) AS UNSIGNED) DESC')
+            ->value('base_code');
+        
+        $nextNumber = $lastNumber ? intval(substr($lastNumber, -3)) + 1 : 1;
+        $suffix = str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+        
+        return 'BASE-' . $categoryPrefix . '-' . $suffix;
+    }
+
+    /**
+     * Generate instance course code.
+     */
+    public static function generateInstanceCode($baseCode, $season, $schedule)
+    {
+        $seasonCode = str_replace('-', '', $season->academic_year); // 202526
+        $scheduleCode = strtoupper(substr($schedule, 0, 3)); // MAT, NIT, CAP, VES
+        
+        return $baseCode . '-' . $seasonCode . '-' . $scheduleCode;
+    }
     public static function hasConflict($spaceId, $timeSlotId, $excludeCourseId = null)
     {
         $query = self::where('space_id', $spaceId)

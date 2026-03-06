@@ -37,9 +37,14 @@ class CourseController extends Controller
         
         $query = CampusCourse::with(['season', 'category']);
         
-        // Filtro por código
+        // Filtro por código (mejorado para base/instance)
         if ($request->filled('search_code')) {
-            $query->where('code', 'like', '%' . $request->search_code . '%');
+            $searchCode = $request->search_code;
+            $query->where(function($q) use ($searchCode) {
+                $q->where('code', 'like', '%' . $searchCode . '%')
+                  ->orWhere('base_code', 'like', '%' . $searchCode . '%')
+                  ->orWhere('instance_code', 'like', '%' . $searchCode . '%');
+            });
         }
         
         // Filtro por título
@@ -165,6 +170,34 @@ class CourseController extends Controller
     public function store(Request $request)
     {
         $data = $this->validatedData($request);
+
+        // Determinar si és base o instància
+        $isBase = $data['is_base_course'] ?? true;
+
+        if ($isBase) {
+            // Generar codi base automàticament
+            if (empty($data['base_code'])) {
+                $category = \App\Models\CampusCategory::find($data['category_id']);
+                $data['base_code'] = \App\Models\CampusCourse::generateBaseCode($data['title'], $category);
+            }
+            $data['is_base_course'] = true;
+            $data['parent_base_id'] = null;
+            $data['instance_code'] = null;
+        } else {
+            // Generar codi d'instància
+            if (!empty($data['parent_base_id'])) {
+                $baseCourse = \App\Models\CampusCourse::find($data['parent_base_id']);
+                $season = \App\Models\CampusSeason::find($data['season_id']);
+                $schedule = $data['schedule_type'] ?? 'MAT'; // MAT, NIT, CAP, VES
+                $data['instance_code'] = \App\Models\CampusCourse::generateInstanceCode(
+                    $baseCourse->base_code, 
+                    $season, 
+                    $schedule
+                );
+            }
+            $data['is_base_course'] = false;
+            $data['base_code'] = null;
+        }
 
         $data['slug'] = Str::slug($data['title']);
 
@@ -344,6 +377,10 @@ class CourseController extends Controller
             'season_id'     => ['required', 'exists:campus_seasons,id'],
             'category_id'   => ['nullable', 'exists:campus_categories,id'],
             'code'          => ['nullable', 'string', 'max:50'],
+            'base_code'      => ['nullable', 'string', 'max:50', 'unique:campus_courses,base_code'],
+            'instance_code'  => ['nullable', 'string', 'max:100', 'unique:campus_courses,instance_code'],
+            'is_base_course' => ['boolean'],
+            'parent_base_id' => ['nullable', 'exists:campus_courses,id'],
             'title'         => ['required', 'string', 'max:255'],
             'slug'          => ['nullable', 'string', 'max:255'],
             'description'   => ['nullable', 'string'],
