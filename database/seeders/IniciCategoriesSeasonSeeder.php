@@ -149,11 +149,11 @@ class IniciCategoriesSeasonSeeder extends Seeder
                 'season_start' => '2024-09-16',
                 'season_end' => '2025-06-30',
                 'type' => 'annual',
-                'is_current' => true,
+                'is_current' => false,  // HISTÒRIC
                 'is_active' => true,
                 'periods' => [
-                    ['name' => 'Primer Quadrimestre', 'start' => '2024-09-16', 'end' => '2025-01-31'],
-                    ['name' => 'Segon Quadrimestre', 'start' => '2025-02-01', 'end' => '2025-06-30'],
+                    ['name' => 'Primer Semestre', 'start' => '2024-09-16', 'end' => '2025-01-31'],
+                    ['name' => 'Segon Semestre', 'start' => '2025-02-01', 'end' => '2025-06-30'],
                 ],
             ],
             [
@@ -165,8 +165,28 @@ class IniciCategoriesSeasonSeeder extends Seeder
                 'season_start' => '2025-09-15',
                 'season_end' => '2026-06-30',
                 'type' => 'annual',
-                'is_current' => false,
+                'is_current' => true,   // ACTUAL
                 'is_active' => true,
+                'periods' => [
+                    ['name' => 'Primer Semestre', 'start' => '2025-09-15', 'end' => '2026-01-31'],
+                    ['name' => 'Segon Semestre', 'start' => '2026-02-01', 'end' => '2026-06-30'],
+                ],
+            ],
+            [
+                'name' => 'Curs 2026-27',
+                'slug' => '2026-27',
+                'academic_year' => '2026-2027',
+                'registration_start' => '2026-08-01',
+                'registration_end' => '2026-09-30',
+                'season_start' => '2026-09-15',
+                'season_end' => '2027-06-30',
+                'type' => 'annual',
+                'is_current' => false,  // FUTURA
+                'is_active' => true,
+                'periods' => [
+                    ['name' => 'Primer Semestre', 'start' => '2026-09-15', 'end' => '2027-01-31'],
+                    ['name' => 'Segon Semestre', 'start' => '2027-02-01', 'end' => '2027-06-30'],
+                ],
             ],
         ];
 
