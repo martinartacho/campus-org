@@ -9,7 +9,6 @@
     'stats' => [],
     'consentments' => collect(),
     'currentSeason' => null,
-    'debug' => null,
     'error' => null,
 ])
 
@@ -19,16 +18,6 @@
 
     {{-- CARDS SUPERIORES --}}
     @include('components.dashboard-teacher-cards')
-
-    {{-- DEBUG --}}
-   {{--  @if(config('app.debug'))
-        <pre class="bg-gray-100 p-3 text-xs rounded border">{{ var_export([
-            'teacher' => optional($teacher)->teacher_code,
-            'courses' => $teacherCourses->count(),
-            'stats' => $stats,
-        ], true) }}
-        </pre>
-    @endif --}}
 
     {{-- ERROR GLOBAL --}}
     @if($error)

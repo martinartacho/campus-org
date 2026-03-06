@@ -189,7 +189,7 @@
                                 <input type="text" name="iban" 
                                     value="{{ old('iban', $payment?->iban ?? '') }}"
                                     class="border p-2 w-full" 
-                                    placeholder="ESXX XXXX XXXX XXXX XXXX XXXX"
+                                    placeholder="ES0000000000000000000000"
                                     pattern="[A-Z]{2}[0-9]{22}"
                                     title="Format: 2 lletres + 22 dígits">
                                 <p class="text-xs text-gray-500 mt-1">Format: ES + 22 dígits</p>
@@ -369,7 +369,7 @@
                                 <input type="text" name="beneficiary_iban" 
                                     value="{{ old('beneficiary_iban', $payment?->iban ?? '') }}"
                                     class="border p-2 w-full" 
-                                    placeholder="ESXX XXXX XXXX XXXX XXXX XXXX"
+                                    placeholder="ES0000000000000000000000"
                                     pattern="[A-Z]{2}[0-9]{22}"
                                     title="Format: 2 lletres + 22 dígits">
                                 <p class="text-xs text-gray-500 mt-1">Format: ES + 22 dígits</p>

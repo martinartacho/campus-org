@@ -448,6 +448,10 @@ Route::get('test-import', function() {
         Route::resource('courses', CourseController::class)
             ->middleware('can:campus.courses.view');
         
+        // API per cursos (web, no Flutter) - Rutes separades per evitar conflicte
+        Route::get('api/courses', [\App\Http\Controllers\Campus\CourseApiController::class, 'index'])->name('courses.api');
+        Route::get('api/courses/search', [\App\Http\Controllers\Campus\CourseApiController::class, 'search'])->name('courses.search');
+        
         // Clear season session
         Route::get('courses/clear-season', [CourseController::class, 'clearSeason'])
             ->name('courses.clear-season')
@@ -540,6 +544,20 @@ Route::get('test-import', function() {
         
         Route::get('resources/teachers', [ResourceController::class, 'teachers'])->name('resources.teachers');
         Route::get('resources/getnextcode', [ResourceController::class, 'getNextCode'])->name('resources.getnextcode'); 
+        
+        // Importació d'Ordres WordPress
+        Route::prefix('ordres')->name('ordres.')->group(function () {
+            Route::get('/import', [\App\Http\Controllers\Campus\OrdreImportController::class, 'index'])->name('import');
+            Route::post('/import', [\App\Http\Controllers\Campus\OrdreImportController::class, 'import'])->name('import.store');
+            Route::get('/validate', [\App\Http\Controllers\Campus\OrdreImportController::class, 'validateOrdres'])->name('validate');
+            Route::post('/auto-match', [\App\Http\Controllers\Campus\OrdreImportController::class, 'autoMatch'])->name('auto-match');
+            Route::post('/process', [\App\Http\Controllers\Campus\OrdreImportController::class, 'process'])->name('process');
+            
+            // Rutes per accions massives
+            Route::post('/bulk-assign-code', [\App\Http\Controllers\Campus\OrdreImportController::class, 'bulkAssignCode'])->name('bulk-assign-code');
+            Route::post('/bulk-change-payment', [\App\Http\Controllers\Campus\OrdreImportController::class, 'bulkChangePayment'])->name('bulk-change-payment');
+            Route::post('/bulk-delete', [\App\Http\Controllers\Campus\OrdreImportController::class, 'bulkDelete'])->name('bulk-delete');
+        });
             
     });
     
@@ -669,5 +687,8 @@ Route::get('support', [SupportController::class, 'create'])
 
 Route::post('support', [SupportController::class, 'store'])
     ->name('support.store');
+
+// Include ordres routes
+require __DIR__.'/ordres_web.php';
 
 });

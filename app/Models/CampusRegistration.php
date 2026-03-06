@@ -117,11 +117,11 @@ class CampusRegistration extends Model
     public function getFormattedStatusAttribute(): string
     {
         $statuses = [
-            'pending' => 'Pendiente',
-            'confirmed' => 'Confirmado',
-            'cancelled' => 'Cancelado',
-            'completed' => 'Completado',
-            'failed' => 'Fallido'
+            'pending' => 'Pendent',
+            'confirmed' => 'Confirmat',
+            'cancelled' => 'Cancel·lat',
+            'completed' => 'Completat',
+            'failed' => 'Fallit'
         ];
         
         return $statuses[$this->status] ?? $this->status;
@@ -133,10 +133,10 @@ class CampusRegistration extends Model
     public function getFormattedPaymentStatusAttribute(): string
     {
         $statuses = [
-            'pending' => 'Pendiente de pago',
-            'paid' => 'Pagado',
-            'partial' => 'Pago parcial',
-            'cancelled' => 'Pago cancelado'
+            'pending' => 'Pendent de pagament',
+            'paid' => 'Pagat',
+            'partial' => 'Pagament parcial',
+            'cancelled' => 'Pagament cancel·lat'
         ];
         
         return $statuses[$this->payment_status] ?? $this->payment_status;
@@ -189,5 +189,38 @@ class CampusRegistration extends Model
     public function getRemainingAmountAttribute(): float
     {
         return max(0, $this->amount - $this->total_paid);
+    }
+
+    /**
+     * Create from WP ordre.
+     */
+    public static function createFromOrdreTemp(CampusOrdreTemp $ordre, int $studentId, int $seasonId): self
+    {
+        return self::create([
+            'student_id' => $studentId,
+            'season_id' => $seasonId,
+            'course_id' => $ordre->course_id,
+            'registration_code' => 'REG-' . date('Y') . '-' . str_pad($studentId, 4, '0', STR_PAD_LEFT) . '-' . str_pad($ordre->course_id, 4, '0', STR_PAD_LEFT),
+            'registration_date' => now(),
+            'amount' => $ordre->wp_price ?? 0,
+            'payment_status' => $ordre->wp_quantity > 0 ? 'paid' : 'pending',
+            'payment_history' => $ordre->wp_quantity > 0 ? [
+                [
+                    'date' => now()->toDateTimeString(),
+                    'amount' => $ordre->wp_price ?? 0,
+                    'method' => 'wordpress',
+                    'reference' => $ordre->wp_code,
+                    'notes' => 'Importat des de WordPress'
+                ]
+            ] : [],
+            'status' => 'confirmed', // Canviat de 'active' a 'confirmed'
+            'metadata' => [
+                'source' => 'wordpress_import',
+                'wp_ordre_id' => $ordre->id,
+                'wp_code' => $ordre->wp_code,
+                'wp_status' => $ordre->wp_status,
+                'imported_at' => now()->toDateTimeString()
+            ]
+        ]);
     }
 }

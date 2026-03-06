@@ -11,6 +11,8 @@ class CampusCourseStudent extends Model
 {
     use HasFactory;
 
+    protected $table = 'campus_course_student'; // Forçar nom singular
+
     const STATUS_ENROLLED = 'enrolled';
     const STATUS_ACTIVE = 'active';
     const STATUS_COMPLETED = 'completed';
@@ -224,5 +226,117 @@ class CampusCourseStudent extends Model
             'attendance_percentage' => $percentage,
             'attendance_status' => $status,
         ]);
+    }
+
+    /**
+     * Create from WP ordre.
+     */
+    public static function createFromOrdreTemp(CampusOrdreTemp $ordre, int $seasonId): self
+    {
+        // Find or create student
+        $student = CampusStudent::firstOrCreate(
+            ['email' => $ordre->wp_email],
+            [
+                'user_id' => User::firstOrCreate(['email' => $ordre->wp_email])->id,
+                'student_code' => self::generateStudentCode($ordre->wp_first_name, $ordre->wp_last_name),
+                'first_name' => $ordre->wp_first_name,
+                'last_name' => $ordre->wp_last_name,
+                'phone' => $ordre->wp_phone,
+                'email' => $ordre->wp_email,
+                'status' => 'active',
+                'enrollment_date' => now(),
+            ]
+        );
+
+        // Crear campus_registration també
+        self::createRegistrationFromOrdre($ordre, $student->id);
+
+        return self::create([
+            'student_id' => $student->id,
+            'course_id' => $ordre->course_id,
+            'season_id' => $seasonId,
+            'enrollment_date' => now(),
+            'academic_status' => self::STATUS_ENROLLED,
+            'start_date' => now(),
+            'metadata' => [
+                'source' => 'wp_ordre',
+                'wp_ordre_id' => $ordre->id,
+                'wp_code' => $ordre->wp_code,
+                'wp_status' => $ordre->wp_status,
+                'wp_price' => $ordre->wp_price,
+                'wp_quantity' => $ordre->wp_quantity,
+                'imported_at' => now()->toISOString(),
+            ]
+        ]);
+    }
+
+    /**
+     * Crear campus_registration a partir de WP ordre.
+     */
+    private static function createRegistrationFromOrdre(CampusOrdreTemp $ordre, int $studentId): void
+    {
+        // Determinar estat segons Quantity
+        $quantity = (int) $ordre->wp_quantity;
+        $status = $quantity === 1 ? 'completed' : 'pending';
+        $paymentStatus = $quantity === 1 ? 'paid' : 'pending';
+
+        CampusRegistration::create([
+            'student_id' => $studentId,
+            'course_id' => $ordre->course_id,
+            'season_id' => CampusSeason::where('is_current', true)->first()?->id ?? 1,
+            'registration_code' => self::generateRegistrationCode(),
+            'registration_date' => now(),
+            'status' => $status,
+            'amount' => $ordre->wp_price ?? 0,
+            'payment_status' => $paymentStatus,
+            'payment_method' => 'wordpress',
+            'metadata' => [
+                'source' => 'wp_ordre',
+                'wp_ordre_id' => $ordre->id,
+                'wp_quantity' => $ordre->wp_quantity,
+                'imported_at' => now()->toISOString(),
+            ]
+        ]);
+    }
+
+    /**
+     * Generate registration code.
+     */
+    private static function generateRegistrationCode(): string
+    {
+        do {
+            $code = 'REG-' . date('Y') . '-' . str_pad(rand(1, 99999), 5, '0', STR_PAD_LEFT);
+        } while (CampusRegistration::where('registration_code', $code)->exists());
+        
+        return $code;
+    }
+
+    /**
+     * Generate student code.
+     */
+    private static function generateStudentCode(string $firstName, string $lastName): string
+    {
+        $initials = strtoupper(substr($firstName, 0, 1) . substr($lastName, 0, 1));
+        $random = str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT);
+        $code = $initials . $random;
+
+        // Ensure uniqueness
+        while (CampusStudent::where('student_code', $code)->exists()) {
+            $random = str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT);
+            $code = $initials . $random;
+        }
+
+        return $code;
+    }
+
+    /**
+     * Check if student exists in course.
+     */
+    public static function existsInCourse(int $studentId, int $courseId, int $seasonId): bool
+    {
+        return self::where('student_id', $studentId)
+            ->where('course_id', $courseId)
+            ->where('season_id', $seasonId)
+            ->exists();
     }
 }

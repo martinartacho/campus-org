@@ -122,6 +122,12 @@ class RolesAndPermissionsSeeder extends Seeder
             'campus.registrations.approve',
             'campus.registrations.manage',
             
+            // Importació d'Ordres WordPress
+            'campus.ordres.import',
+            'campus.ordres.validate',
+            'campus.ordres.process',
+            'campus.ordres.auto-match',
+            
             // Pagaments
             'campus.payments.view',
             'campus.payments.manage',
@@ -183,6 +189,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'campus.registrations.index', 'campus.registrations.view', 'campus.registrations.create',
             'campus.registrations.edit', 'campus.registrations.delete', 'campus.registrations.manage',
             'campus.payments.view', 'campus.payments.manage',
+            'campus.ordres.import', 'campus.ordres.validate', 'campus.ordres.process',
         ];
         $gestor->syncPermissions($gestorPermissions);
 

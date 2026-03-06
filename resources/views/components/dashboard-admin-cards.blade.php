@@ -265,6 +265,22 @@
             </a>
             @endcan
             
+            {{-- Importar Ordres WordPress --}}
+            @can('campus.ordres.import')
+            <a href="{{ route('campus.ordres.import') }}" 
+               class="bg-gray-50 hover:bg-gray-100 p-4 rounded-lg border border-gray-200 transition duration-150">
+                <div class="flex items-center">
+                    <div class="p-2 bg-blue-100 rounded-lg me-3">
+                        <i class="bi bi-cloud-upload text-blue-600 text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-800">{{ __('Importar Ordres') }}</h3>
+                        <p class="text-sm text-gray-600">{{ __('Importació des de WordPress') }}</p>
+                    </div>
+                </div>
+            </a>
+            @endcan
+            
         </div>
     </div>
     @endif

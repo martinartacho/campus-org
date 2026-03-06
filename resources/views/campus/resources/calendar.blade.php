@@ -272,8 +272,6 @@ function filterBySeason() {
     const seasonSelect = document.getElementById('semesterSelect');
     const selectedSeason = seasonSelect ? seasonSelect.value : null;
     
-    console.log('Selected season:', selectedSeason); // Debug
-    
     const url = new URL(window.location);
     
     if (selectedSeason && selectedSeason !== '') {
@@ -282,7 +280,6 @@ function filterBySeason() {
         url.searchParams.delete('season');
     }
     
-    console.log('Navigating to:', url.toString()); // Debug
     window.location.href = url.toString();
 }
 </script>
@@ -1003,8 +1000,7 @@ function assignCourse() {
         formData.delete('status_completed');
     }
     
-    // Debug: Mostrar datos que se enviarán
-    console.log('=== PUT REQUEST DEBUG ===');
+    // Mostrar datos que se enviarán
     console.log('Course ID:', courseId);
     console.log('Space ID:', spaceId);
     console.log('Time Slot ID:', timeSlotId);
