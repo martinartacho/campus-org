@@ -450,7 +450,7 @@ Route::get('test-import', function() {
         
         // Clear season session
         Route::get('courses/clear-season', [CourseController::class, 'clearSeason'])
-            ->name('courses.clear-season')
+            ->name("campus.courses.clear-season")
             ->middleware('can:campus.courses.view');
         
         // Course data for AJAX

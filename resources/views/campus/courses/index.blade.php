@@ -111,10 +111,10 @@
                             <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
                                 <i class="bi bi-search mr-2"></i>{{ __('Search') }}
                             </button>
-                            <a href="{{ route('campus.courses.index') }}" 
-                               class="px-6 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500">
+                            <!-- <a href="{{ route('campus.campus.courses.clear-season') }}" 
+                                class="px-6 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500">
                                 <i class="bi bi-x-circle mr-2"></i>{{ __('Clear') }}
-                            </a>
+                            </a> -->
                         </div>
                         
                         <!-- Ordenamiento -->
