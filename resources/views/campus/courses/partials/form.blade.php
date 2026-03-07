@@ -134,7 +134,7 @@
             @foreach(\App\Models\CampusCourse::LEVELS as $value => $label)
                 <option value="{{ $value }}"
                     @selected(old('level', $defaultData['level'] ?? $course?->level) == $value)>
-                    {{ $label }}
+                    {{ __('campus.level_' . $value) }}
                 </option>
             @endforeach
         </select>
