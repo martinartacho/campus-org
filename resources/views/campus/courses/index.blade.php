@@ -165,26 +165,55 @@
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            {{ __('campus.code') }}
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'code', 'sort_order' => request('sort_by') == 'code' && request('sort_order') == 'asc' ? 'desc' : 'asc']) }}" class="text-gray-700 hover:text-blue-600 flex items-center">
+                                {{ __('campus.code') }}
+                                @if(request('sort_by') == 'code')
+                                    <i class="bi bi-chevron-{{ request('sort_order') == 'asc' ? 'up' : 'down' }} ml-1"></i>
+                                @else 
+                                <i class="bi bi-chevron-{{ request('sort_order') == 'asc' ? 'down' : 'up' }} ml-1"></i>
+                                @endif
+                            </a>
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            {{ __('campus.title') }}
+                            <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'title', 'sort_order' => request('sort_by') == 'title' && request('sort_order') == 'asc' ? 'desc' : 'asc']) }}" class="text-gray-700 hover:text-blue-600 flex items-center">
+                                {{ __('campus.title') }}
+                                @if(request('sort_by') == 'title')
+                                    <i class="bi bi-chevron-{{ request('sort_order') == 'asc' ? 'up' : 'down' }} ml-1"></i>
+                                @else 
+                                    <i class="bi bi-chevron-{{ request('sort_order') == 'asc' ? 'down' : 'up' }} ml-1"></i>
+                                @endif
+                            </a>
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            {{ __('campus.category') }}
+                            <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'category', 'sort_order' => request('sort_by') == 'category' && request('sort_order') == 'asc' ? 'desc' : 'asc']) }}" class="text-gray-700 hover:text-blue-600 flex items-center">
+                                {{ __('campus.category') }}
+                                @if(request('sort_by') == 'category')
+                                    <i class="bi bi-chevron-{{ request('sort_order') == 'asc' ? 'up' : 'down' }} ml-1"></i>
+                                @else 
+                                    <i class="bi bi-chevron-{{ request('sort_order') == 'asc' ? 'down' : 'up' }} ml-1"></i>
+                                @endif
+                            </a>
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            {{ __('campus.season') }}
+                            <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'season', 'sort_order' => request('sort_by') == 'season' && request('sort_order') == 'asc' ? 'desc' : 'asc']) }}" class="text-gray-700 hover:text-blue-600 flex items-center">
+                                {{ __('campus.season') }}
+                                @if(request('sort_by') == 'season')
+                                    <i class="bi bi-chevron-{{ request('sort_order') == 'asc' ? 'up' : 'down' }} ml-1"></i>
+                                @else 
+                                    <i class="bi bi-chevron-{{ request('sort_order') == 'asc' ? 'down' : 'up' }} ml-1"></i>
+                                @endif
+                            </a>
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            {{ __('campus.dates') }}
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            {{ __('campus.status') }}
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            {{ __('Actions') }}
+                            <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'dates', 'sort_order' => request('sort_by') == 'dates' && request('sort_order') == 'asc' ? 'desc' : 'asc']) }}" class="text-gray-700 hover:text-blue-600 flex items-center">
+                                {{ __('campus.dates') }}
+                                @if(request('sort_by') == 'dates')
+                                    <i class="bi bi-chevron-{{ request('sort_order') == 'asc' ? 'up' : 'down' }} ml-1"></i>
+                                @else 
+                                    <i class="bi bi-chevron-{{ request('sort_order') == 'asc' ? 'down' : 'up' }} ml-1"></i>
+                                @endif
+                            </a>
                         </th>
                     </tr>
                 </thead>

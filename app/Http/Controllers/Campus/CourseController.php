@@ -112,9 +112,32 @@ class CourseController extends Controller
         $sortBy = $request->get('sort_by', 'start_date');
         $sortOrder = $request->get('sort_order', 'desc');
         
-        if (in_array($sortBy, ['title', 'code', 'start_date', 'end_date', 'price', 'hours', 'max_students'])) {
-            $query->orderBy($sortBy, $sortOrder);
+        
+       // Columnes permeses per ordenar
+    $allowedColumns = ['code', 'title', 'category', 'season', 'dates'];
+
+    // Mapeig de columnes a camps de la base de dades
+        $columnMapping = [
+            'code' => 'code',
+            'title' => 'title',
+            'category' => 'category_id',
+            'season' => 'season_id',
+            'dates' => 'start_date'
+        ];
+                
+        // Verificar que la columna sigui permesa
+        if (in_array($sortBy, $allowedColumns)) {
+            $dbColumn = $columnMapping[$sortBy];
+                    
+            // Per a category i season, ordenar per nom
+            if (in_array($sortBy, ['category', 'season'])) {
+            $query->with([$sortBy => function($query) {
+                $query->orderBy('name');
+            }]);
         }
+                
+        $query->orderBy($dbColumn, $sortOrder);
+    }
         
         $courses = $query->paginate(15)->withQueryString();
         
