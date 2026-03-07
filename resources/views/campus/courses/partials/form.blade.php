@@ -8,12 +8,12 @@
     <div class="space-y-2">
         <label class="flex items-center">
             <input type="radio" name="is_base_course" value="1" 
-                   @checked(old('is_base_course', $course?->is_base_course ?? true)>
+                   @checked(old('is_base_course', $course?->is_base_course ?? true))>
             <span class="ml-2">Curs Base (Plantilla)</span>
         </label>
         <label class="flex items-center">
             <input type="radio" name="is_base_course" value="0" 
-                   @checked(old('is_base_course', $course?->is_base_course ?? false)>
+                   @checked(old('is_base_course', $course?->is_base_course ?? false))>
             <span class="ml-2">Curs Impartit (Instància)</span>
         </label>
     </div>
@@ -112,6 +112,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const scheduleTypeSection = document.getElementById('schedule_type_section');
     const baseCodeSection = document.getElementById('base_code_section');
     const instanceCodeSection = document.getElementById('instance_code_section');
+    const parentBaseSelect = document.getElementById('parent_base_id');
     
     function toggleFormFields() {
         const isBase = baseRadio.checked;
@@ -121,16 +122,186 @@ document.addEventListener('DOMContentLoaded', function() {
             scheduleTypeSection.classList.add('hidden');
             baseCodeSection.classList.remove('hidden');
             instanceCodeSection.classList.add('hidden');
+            // Quitar required de campos de instancia
+            document.getElementById('parent_base_id').removeAttribute('required');
+            document.getElementById('schedule_type').removeAttribute('required');
         } else {
             parentBaseSection.classList.remove('hidden');
             scheduleTypeSection.classList.remove('hidden');
             baseCodeSection.classList.add('hidden');
             instanceCodeSection.classList.remove('hidden');
+            // Añadir required a campos de instancia
+            document.getElementById('parent_base_id').setAttribute('required', '');
+            document.getElementById('schedule_type').setAttribute('required', '');
         }
     }
     
+    function loadBaseCourseData() {
+        const baseCourseId = parentBaseSelect.value;
+        console.log('Base course ID seleccionat:', baseCourseId);
+        
+        if (!baseCourseId) {
+            console.log('No hay base course ID, limpiando formulario');
+            clearFormFields();
+            return;
+        }
+        
+        console.log('Cargando datos del curso base:', baseCourseId);
+        
+        fetch(`/campus/courses/${baseCourseId}/data`)
+            .then(response => {
+                console.log('Response status:', response.status);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Datos recibidos del curso base:', data);
+                fillFormWithBaseData(data);
+            })
+            .catch(error => {
+                console.error('Error carregant dades del curs base:', error);
+                console.error('Error completo:', error);
+            });
+    }
+    
+    function fillFormWithBaseData(baseCourse) {
+        console.log('Intentando rellenar formulario con datos:', baseCourse);
+        
+        // Les dades estan dins de 'course' object
+        const courseData = baseCourse.course || baseCourse;
+        console.log('Datos del curso extraídos:', courseData);
+        
+        // Omplir camps amb dades del curs base
+        const titleField = document.getElementById('title');
+        const descriptionField = document.getElementById('description');
+        const creditsField = document.getElementById('credits');
+        const hoursField = document.getElementById('hours');
+        const sessionsField = document.getElementById('sessions');
+        const maxStudentsField = document.getElementById('max_students');
+        const priceField = document.getElementById('price');
+        const levelField = document.getElementById('level');
+        const startDateField = document.getElementById('start_date');
+        const endDateField = document.getElementById('end_date');
+        const locationField = document.getElementById('location');
+        const formatField = document.getElementById('format');
+        
+        console.log('Campos encontrados:', {
+            title: !!titleField,
+            description: !!descriptionField,
+            credits: !!creditsField,
+            hours: !!hoursField,
+            sessions: !!sessionsField,
+            max_students: !!maxStudentsField,
+            price: !!priceField,
+            level: !!levelField,
+            start_date: !!startDateField,
+            end_date: !!endDateField,
+            location: !!locationField,
+            format: !!formatField
+        });
+        
+        // Verificar que els camps existeixin abans d'assignar valors
+        if (titleField) {
+            titleField.value = courseData.title ? courseData.title + ' (Instància)' : '';
+            console.log('Title asignado:', titleField.value);
+        }
+        if (descriptionField) {
+            descriptionField.value = courseData.description || '';
+            console.log('Description asignada:', descriptionField.value);
+        }
+        if (creditsField) {
+            creditsField.value = courseData.credits || '';
+            console.log('Credits asignados:', creditsField.value);
+        }
+        if (hoursField) {
+            hoursField.value = courseData.hours || '';
+            console.log('Hours asignadas:', hoursField.value);
+        }
+        if (sessionsField) {
+            sessionsField.value = courseData.sessions || '';
+            console.log('Sessions asignadas:', sessionsField.value);
+        }
+        if (maxStudentsField) {
+            maxStudentsField.value = courseData.max_students || '';
+            console.log('Max students asignados:', maxStudentsField.value);
+        }
+        if (priceField) {
+            priceField.value = courseData.price || '';
+            console.log('Price asignado:', priceField.value);
+        }
+        if (levelField) {
+            levelField.value = courseData.level || '';
+            console.log('Level asignado:', levelField.value);
+        }
+        if (startDateField) {
+            const startDate = courseData.start_date ? courseData.start_date.split('T')[0] : '';
+            startDateField.value = startDate;
+            console.log('Start date asignado:', startDate);
+        }
+        if (endDateField) {
+            const endDate = courseData.end_date ? courseData.end_date.split('T')[0] : '';
+            endDateField.value = endDate;
+            console.log('End date asignado:', endDate);
+        }
+        if (locationField) {
+            locationField.value = courseData.location || '';
+            console.log('Location asignada:', locationField.value);
+        }
+        if (formatField) {
+            formatField.value = courseData.format || '';
+            console.log('Format asignado:', formatField.value);
+        }
+        
+        // Mantenir checkboxes de base
+        const activeCheckbox = document.querySelector('input[name="is_active"]');
+        const publicCheckbox = document.querySelector('input[name="is_public"]');
+        if (activeCheckbox) {
+            activeCheckbox.checked = courseData.is_active || false;
+            console.log('Is active asignado:', activeCheckbox.checked);
+        }
+        if (publicCheckbox) {
+            publicCheckbox.checked = courseData.is_public || false;
+            console.log('Is public asignado:', publicCheckbox.checked);
+        }
+        
+        // Assignar season_id i category_id
+        const seasonSelect = document.getElementById('season_id');
+        const categorySelect = document.getElementById('category_id');
+        
+        if (seasonSelect && courseData.season_id) {
+            seasonSelect.value = courseData.season_id;
+            console.log('Season ID asignado:', courseData.season_id);
+        }
+        
+        if (categorySelect && courseData.category_id) {
+            categorySelect.value = courseData.category_id;
+            console.log('Category ID asignado:', courseData.category_id);
+        }
+        
+        console.log('Formulario rellenado completamente');
+    }
+    
+    function clearFormFields() {
+        // Netejar camps (excepte els que ja estiguin omplerts)
+        const fieldsToClear = ['title', 'description', 'credits', 'hours', 'sessions', 'max_students', 'price', 'level', 'start_date', 'end_date', 'location', 'format'];
+        fieldsToClear.forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            if (field) field.value = '';
+        });
+        
+        // Resetear checkboxes
+        const activeCheckbox = document.querySelector('input[name="is_active"]');
+        const publicCheckbox = document.querySelector('input[name="is_public"]');
+        if (activeCheckbox) activeCheckbox.checked = true; // Valor per defecte
+        if (publicCheckbox) publicCheckbox.checked = true; // Valor per defecte
+    }
+    
+    // Event listeners
     baseRadio.addEventListener('change', toggleFormFields);
     instanceRadio.addEventListener('change', toggleFormFields);
+    parentBaseSelect.addEventListener('change', loadBaseCourseData);
     
     // Initialize
     toggleFormFields();
@@ -175,28 +346,48 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
 </div>
 
-{{-- Numbers --}}
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-    <div>
-        <x-input-label for="credits" :value="__('campus.credits')" />
-        <x-text-input id="credits" name="credits" type="number"
-            class="mt-1 block w-full"
-            :value="old('credits', $course?->credits)" />
-    </div>
+{{-- Credits --}}
+<div>
+    <x-input-label for="credits" :value="__('campus.credits')" />
+    <x-text-input id="credits" name="credits" type="number"
+        class="mt-1 block w-full"
+        placeholder="Ex: 1 (crèdits ECTS)"
+        :value="old('credits', $course?->credits ?? 1)" />
+    <x-input-error :messages="$errors->get('credits')" class="mt-2" />
+    <small class="text-gray-500 text-xs">Mínim: 1, Màxim: 240</small>
+</div>
 
-    <div>
-        <x-input-label for="hours" :value="__('campus.hours')" />
-        <x-text-input id="hours" name="hours" type="number"
-            class="mt-1 block w-full"
-            :value="old('hours', $course?->hours)" />
-    </div>
+{{-- Hours --}}
+<div>
+    <x-input-label for="hours" :value="__('campus.hours')" />
+    <x-text-input id="hours" name="hours" type="number"
+        class="mt-1 block w-full"
+        placeholder="Ex: 25 (hores totals)"
+        :value="old('hours', $course?->hours ?? 25)" />
+    <x-input-error :messages="$errors->get('hours')" class="mt-2" />
+    <small class="text-gray-500 text-xs">Mínim: 1, Màxim: 1000</small>
+</div>
 
-    <div>
-        <x-input-label for="max_students" :value="__('campus.max_students')" />
-        <x-text-input id="max_students" name="max_students" type="number"
-            class="mt-1 block w-full"
-            :value="old('max_students', $course?->max_students)" />
-    </div>
+{{-- Sessions --}}
+<div>
+    <x-input-label for="sessions" :value="__('campus.sessions')" />
+    <x-text-input id="sessions" name="sessions" type="number"
+        class="mt-1 block w-full"
+        placeholder="Ex: 15 (sessions totals)"
+        :value="old('sessions', $course?->sessions ?? 15)" />
+    <x-input-error :messages="$errors->get('sessions')" class="mt-2" />
+    <small class="text-gray-500 text-xs">Mínim: 1, Màxim: 100</small>
+</div>
+
+{{-- Max Students --}}
+<div>
+    <x-input-label for="max_students" :value="__('campus.max_students')" />
+    <x-text-input id="max_students" name="max_students" type="number"
+        class="mt-1 block w-full"
+        placeholder="Ex: 20 (màxim alumnes)"
+        :value="old('max_students', $course?->max_students ?? 20)" />
+    <x-input-error :messages="$errors->get('max_students')" class="mt-2" />
+    <small class="text-gray-500 text-xs">Mínim: 1 alumne</small>
 </div>
 
 {{-- Price & Level --}}
@@ -210,9 +401,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
     <div>
         <x-input-label for="level" :value="__('campus.level')" />
-        <x-text-input id="level" name="level" type="text"
-            class="mt-1 block w-full"
-            :value="old('level', $course?->level)" />
+        <select name="level" id="level"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+            <option value="">{{ __('Selecciona un nivell') }}</option>
+            @foreach(\App\Models\CampusCourse::LEVELS as $value => $label)
+                <option value="{{ $value }}"
+                    @selected(old('level', $course?->level) == $value)>
+                    {{ $label }}
+                </option>
+            @endforeach
+        </select>
+        <x-input-error :messages="$errors->get('level')" class="mt-2" />
     </div>
 </div>
 

@@ -1,3 +1,4 @@
+{{-- resources/views/campus/couses/create.blade.php --}}
 @extends('campus.shared.layout')
 
 @section('title', __('campus.new_course'))
@@ -88,7 +89,6 @@
         </button>
     </div>
 </form>
-@endif
 
 @push('scripts')
 <script>

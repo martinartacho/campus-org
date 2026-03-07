@@ -192,7 +192,15 @@
                     @forelse($courses as $course)
                         <tr class="hover:bg-gray-50">
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                {{ $course->code }}
+                                <div class="flex items-center space-x-2">
+                                    @if($course->is_base_course)
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                            <i class="bi bi-star-fill mr-1"></i>
+                                            Base
+                                        </span>
+                                    @endif
+                                    {{ $course->code }}
+                                </div>
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-900" style="max-width: 200px; width: 200px;">
                                 <div class="space-y-1">
@@ -248,6 +256,17 @@
                                         <i class="bi bi-eye"></i>
                                     </a>
                                 @endcan
+                                
+                                @if($course->is_base_course)
+                                    @can('campus.courses.create')
+                                        <a href="{{ route('campus.courses.create') }}?base_id={{ $course->id }}" 
+                                           class="text-green-600 hover:text-green-900 mr-3"
+                                           title="Crear instància d'aquest curs base">
+                                            <i class="bi bi-plus-circle"></i>
+                                        </a>
+                                    @endcan
+                                @endif
+                                
                                 @can('campus.courses.edit')
                                     <a href="{{ route('campus.courses.edit', $course) }}" 
                                        class="text-indigo-600 hover:text-indigo-900 mr-3">

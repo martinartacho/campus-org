@@ -28,6 +28,19 @@ class CampusCourse extends Model
         self::STATUS_CLOSED => 'campus.status_closed',
     ];
 
+    // Level constants
+    const LEVEL_BEGINNER = 'beginner';
+    const LEVEL_INTERMEDIATE = 'intermediate';
+    const LEVEL_ADVANCED = 'advanced';
+    const LEVEL_EXPERT = 'expert';
+
+    public const LEVELS = [
+        self::LEVEL_BEGINNER => 'Principiant',
+        self::LEVEL_INTERMEDIATE => 'Intermedi',
+        self::LEVEL_ADVANCED => 'Avançat',
+        self::LEVEL_EXPERT => 'Expert',
+    ];
+
     protected $fillable = [
         'season_id',
         'category_id',

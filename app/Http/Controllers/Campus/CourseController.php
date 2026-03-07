@@ -150,18 +150,30 @@ class CourseController extends Controller
     /**
      * Show the form for creating a new course.
      */
-    public function create()
+    public function create(Request $request)
     {
-        // Obtener temporadas según permisos
-        if (auth()->user()->hasRole('admin') || auth()->user()->can('manage_seasons')) {
-            $seasons = CampusSeason::withCount("courses")->orderByDesc('season_start')->get();
+        // Comprovar si venim des del botó "Crear Instància"
+        $baseId = $request->get('base_id');
+        $baseCourse = null;
+        
+        if ($baseId) {
+            $baseCourse = CampusCourse::find($baseId);
+            if (!$baseCourse || !$baseCourse->is_base_course) {
+                return redirect()
+                    ->route('campus.courses.index')
+                    ->with('error', 'Curs base no vàlid');
+            }
+        }
+        
+        if (auth()->user()->hasRole('superadmin')) {
+            $seasons = CampusSeason::orderBy('season_start', 'desc')->get();
         } else {
             $seasons = CampusSeason::getVisibleForUser()->withCount("courses")->orderByDesc('season_start')->get();
         }
         
         $categories = CampusCategory::orderBy('name')->get();
 
-        return view('campus.courses.create', compact('seasons', 'categories'));
+        return view('campus.courses.create', compact('seasons', 'categories', 'baseCourse'));
     }
 
     /**
@@ -169,43 +181,130 @@ class CourseController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $this->validatedData($request);
+        try {
+            $data = $this->validatedData($request);
 
-        // Determinar si és base o instància
-        $isBase = $data['is_base_course'] ?? true;
+            // Aplicar valors per defecte si són null
+            $data = $this->applyDefaultValues($data);
 
-        if ($isBase) {
-            // Generar codi base automàticament
-            if (empty($data['base_code'])) {
-                $category = \App\Models\CampusCategory::find($data['category_id']);
-                $data['base_code'] = \App\Models\CampusCourse::generateBaseCode($data['title'], $category);
-            }
-            $data['is_base_course'] = true;
-            $data['parent_base_id'] = null;
-            $data['instance_code'] = null;
-        } else {
-            // Generar codi d'instància
-            if (!empty($data['parent_base_id'])) {
+            // Determinar si és base o instància
+            $isBase = $data['is_base_course'] ?? true;
+
+            if ($isBase) {
+                // Generar codi base automàticament
+                if (empty($data['base_code'])) {
+                    $category = \App\Models\CampusCategory::find($data['category_id']);
+                    $data['base_code'] = \App\Models\CampusCourse::generateBaseCode($data['title'], $category);
+                }
+                // Asignar el mateix valor a code per compatibilitat
+                $data['code'] = $data['base_code'];
+                $data['is_base_course'] = true;
+                $data['parent_base_id'] = null;
+                $data['instance_code'] = null;
+            } else {
+                // Validar que s'hagi seleccionat un curs base
+                if (empty($data['parent_base_id'])) {
+                    return redirect()
+                        ->back()
+                        ->withInput()
+                        ->withErrors(['parent_base_id' => 'Has de seleccionar un curs base per crear una instància.']);
+                }
+                
+                // Generar codi d'instància
                 $baseCourse = \App\Models\CampusCourse::find($data['parent_base_id']);
                 $season = \App\Models\CampusSeason::find($data['season_id']);
                 $schedule = $data['schedule_type'] ?? 'MAT'; // MAT, NIT, CAP, VES
-                $data['instance_code'] = \App\Models\CampusCourse::generateInstanceCode(
+                
+                // Generar codi únic
+                $instanceCode = \App\Models\CampusCourse::generateInstanceCode(
                     $baseCourse->base_code, 
                     $season, 
                     $schedule
                 );
+                
+                // Verificar que no existeixi
+                $existingCourse = \App\Models\CampusCourse::where('instance_code', $instanceCode)->first();
+                if ($existingCourse) {
+                    return redirect()
+                        ->back()
+                        ->withInput()
+                        ->withErrors(['error' => "El codi d'instància '{$instanceCode}' ja existeix. Si us plau, selecciona un altre horari o temporada."]);
+                }
+                
+                $data['instance_code'] = $instanceCode;
+                // Asignar el instance_code a code per compatibilitat
+                $data['code'] = $data['instance_code'];
+                $data['is_base_course'] = false;
+                $data['base_code'] = null;
             }
-            $data['is_base_course'] = false;
-            $data['base_code'] = null;
+
+            $data['slug'] = Str::slug($data['title']);
+
+            $course = CampusCourse::create($data);
+
+            // Si és instància, redirigir a edit amb missatge
+            if (!$isBase) {
+                return redirect()
+                    ->route('campus.courses.edit', $course)
+                    ->with('success', __('Curs instància creat correctament! Pots modificar les dades específiques des d\'aquesta pàgina.'));
+            }
+
+            return redirect()
+                ->route('campus.courses.show', $course)
+                ->with('success', __('campus.course_created'));
+                
+        } catch (\Exception $e) {
+            \Log::error('Error creant curs: ' . $e->getMessage());
+            return redirect()
+                ->back()
+                ->withInput()
+                ->withErrors(['error' => 'Error creant el curs: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Aplicar valors per defecte als camps nullable
+     */
+    private function applyDefaultValues(array $data): array
+    {
+        // Valors per defecte segons lògica de negoci
+        $defaults = [
+            'credits' => 1,           // Mínim 1 crèdit ECTS
+            'hours' => 25,             // Mínim 25 hores
+            'sessions' => 15,          // Mínim 15 sessions
+            'max_students' => 20,       // Mínim 20 alumnes
+            'price' => 0,              // Gratuït per defecte
+            'level' => 'beginner',      // Nivell principiant per defecte
+            'is_active' => true,        // Actiu per defecte
+            'is_public' => true,        // Públic per defecte
+        ];
+        
+        // Per instàncies, si no tenim season_id, agafar el de la sessió actual
+        if (!isset($data['season_id']) || $data['season_id'] === null) {
+            $currentSeason = \App\Models\CampusSeason::where('is_current', true)->first();
+            if ($currentSeason) {
+                $defaults['season_id'] = $currentSeason->id;
+            }
+        }
+        
+        // Per instàncies, si no tenim category_id, agafar el del curs base
+        if (!isset($data['category_id']) || $data['category_id'] === null) {
+            if (isset($data['parent_base_id']) && $data['parent_base_id']) {
+                $baseCourse = \App\Models\CampusCourse::find($data['parent_base_id']);
+                if ($baseCourse && $baseCourse->category_id) {
+                    $defaults['category_id'] = $baseCourse->category_id;
+                }
+            }
         }
 
-        $data['slug'] = Str::slug($data['title']);
+        // Aplicar valors per defecte només si són null
+        foreach ($defaults as $field => $default) {
+            if (!isset($data[$field]) || $data[$field] === null || $data[$field] === '') {
+                $data[$field] = $default;
+            }
+        }
 
-        $course = CampusCourse::create($data);
-
-        return redirect()
-            ->route('campus.courses.show', $course)
-            ->with('success', __('campus.course_created'));
+        return $data;
     }
 
     /**
@@ -385,11 +484,11 @@ class CourseController extends Controller
             'slug'          => ['nullable', 'string', 'max:255'],
             'description'   => ['nullable', 'string'],
             'credits'       => ['nullable', 'integer', 'min:0', 'max:240'],
-            'hours'         => ['nullable', 'integer', 'min:1', 'max:1000'],
-            'sessions'      => ['nullable', 'integer', 'min:1', 'max:100'],
-            'max_students'  => ['nullable', 'integer', 'min:1'],
+            'hours'         => ['nullable', 'integer', 'min:0', 'max:1000'],
+            'sessions'      => ['nullable', 'integer', 'min:0', 'max:100'],
+            'max_students'  => ['nullable', 'integer', 'min:0'],
             'price'         => ['nullable', 'numeric', 'min:0'],
-            'level'         => ['nullable', 'string', 'max:50'],
+            'level'         => ['nullable', 'string', 'in:beginner,intermediate,advanced,expert'],
             'schedule'      => ['nullable', 'array'],
             'start_date'    => ['nullable', 'date'],
             'end_date'      => ['nullable', 'date', 'after_or_equal:start_date'],
