@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Campus;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Validation\Rule;
 use App\Models\CampusCourse;
 use App\Models\CampusSeason;
 use App\Models\CampusCategory;
@@ -461,7 +460,7 @@ class CourseController extends Controller
     /**
      * Validation rules shared by store & update.
      */
-    protected function validatedData(Request $request, CampusCourse $course = null): array
+    protected function validatedData(Request $request): array
     {
         // Debug: Mostrar todos los datos recibidos antes de validar
         \Log::info('Request received:', [
@@ -473,7 +472,7 @@ class CourseController extends Controller
         $data = $request->validate([
             'season_id'     => ['required', 'exists:campus_seasons,id'],
             'category_id'   => ['nullable', 'exists:campus_categories,id'],
-            'code' => ['nullable', 'string', 'max:50', Rule::unique("campus_courses", "code")->ignore($course?->id)],
+            'code'          => ['nullable', 'string', 'max:50', 'unique:campus_courses,code'],
             'title'         => ['required', 'string', 'max:255'],
             'slug'          => ['nullable', 'string', 'max:255'],
             'description'   => ['nullable', 'string'],
