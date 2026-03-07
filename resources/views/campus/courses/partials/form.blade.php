@@ -1,5 +1,6 @@
 @php
     $course ??= null;
+    $defaultData ??= [];
 @endphp
 
 {{-- Code --}}
@@ -7,8 +8,8 @@
     <x-input-label for="code" :value="__('campus.code')" />
     <x-text-input id="code" name="code" type="text"
         class="mt-1 block w-full"
-        placeholder="Es generarà automàticament (ex: CK-001)"
-        :value="old('code', $course?->code)" />
+        placeholder="Es generarà automàticament (ex: PA-002)"
+        :value="old('code', $defaultData['code'] ?? $course?->code)" />
     <x-input-error :messages="$errors->get('code')" class="mt-2" />
     <small class="text-gray-500 text-xs">Deixa en blanc per generar automàticament</small>
 </div>
@@ -22,7 +23,7 @@
         <option value="">{{ __('campus.select_season') }}</option>
         @foreach($seasons as $season)
             <option value="{{ $season->id }}"
-                @selected(old('season_id', $course?->season_id) == $season->id)">
+                @selected(old('season_id', $defaultData['season_id'] ?? $course?->season_id) == $season->id)>
                 {{ $season->name }}
             </option>
         @endforeach
@@ -38,7 +39,7 @@
         <option value="">{{ __('campus.select_category') }}</option>
         @foreach($categories as $category)
             <option value="{{ $category->id }}"
-                @selected(old('category_id', $course?->category_id) == $category->id)">
+                @selected(old('category_id', $defaultData['category_id'] ?? $course?->category_id) == $category->id)>
                 {{ $category->name }}
             </option>
         @endforeach
@@ -52,7 +53,7 @@
     <x-text-input id="title" name="title" type="text"
         class="mt-1 block w-full"
         required
-        :value="old('title', $course?->title)" />
+        :value="old('title', $defaultData['title'] ?? $course?->title)" />
     <x-input-error :messages="$errors->get('title')" class="mt-2" />
 </div>
 
@@ -60,7 +61,7 @@
 <div>
     <x-input-label for="description" :value="__('campus.description')" />
     <textarea id="description" name="description" rows="4"
-        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">{{ old('description', $course?->description) }}</textarea>
+        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">{{ old('description', $defaultData['description'] ?? $course?->description) }}</textarea>
     <x-input-error :messages="$errors->get('description')" class="mt-2" />
 </div>
 
@@ -70,7 +71,7 @@
         <x-input-label for="start_date" :value="__('campus.start_date')" />
         <x-text-input id="start_date" name="start_date" type="date"
             class="mt-1 block w-full"
-            :value="old('start_date', $course?->start_date?->format('Y-m-d'))" />
+            :value="old('start_date', $defaultData['start_date'] ?? $course?->start_date?->format('Y-m-d'))" />
         <x-input-error :messages="$errors->get('start_date')" class="mt-2" />
     </div>
 
@@ -78,7 +79,7 @@
         <x-input-label for="end_date" :value="__('campus.end_date')" />
         <x-text-input id="end_date" name="end_date" type="date"
             class="mt-1 block w-full"
-            :value="old('end_date', $course?->end_date?->format('Y-m-d'))" />
+            :value="old('end_date', $defaultData['end_date'] ?? $course?->end_date?->format('Y-m-d'))" />
         <x-input-error :messages="$errors->get('end_date')" class="mt-2" />
     </div>
 </div>
@@ -89,7 +90,7 @@
     <x-text-input id="hours" name="hours" type="number"
         class="mt-1 block w-full"
         placeholder="Ex: 25 (hores totals)"
-        :value="old('hours', $course?->hours ?? 25)" />
+        :value="old('hours', $defaultData['hours'] ?? $course?->hours ?? 25)" />
     <x-input-error :messages="$errors->get('hours')" class="mt-2" />
     <small class="text-gray-500 text-xs">Mínim: 1, Màxim: 1000</small>
 </div>
@@ -100,7 +101,7 @@
     <x-text-input id="max_students" name="max_students" type="number"
         class="mt-1 block w-full"
         placeholder="Ex: 20 (màxim alumnes)"
-        :value="old('max_students', $course?->max_students ?? 20)" />
+        :value="old('max_students', $defaultData['max_students'] ?? $course?->max_students ?? 20)" />
     <x-input-error :messages="$errors->get('max_students')" class="mt-2" />
     <small class="text-gray-500 text-xs">Mínim: 1 alumne</small>
 </div>
@@ -111,7 +112,7 @@
         <x-input-label for="price" :value="__('campus.price')" />
         <x-text-input id="price" name="price" type="number" step="0.01"
             class="mt-1 block w-full"
-            :value="old('price', $course?->price)" />
+            :value="old('price', $defaultData['price'] ?? $course?->price)" />
     </div>
 
     <div>
@@ -121,7 +122,7 @@
             <option value="">{{ __('Selecciona un nivell') }}</option>
             @foreach(\App\Models\CampusCourse::LEVELS as $value => $label)
                 <option value="{{ $value }}"
-                    @selected(old('level', $course?->level) == $value)>
+                    @selected(old('level', $defaultData['level'] ?? $course?->level) == $value)>
                     {{ $label }}
                 </option>
             @endforeach
@@ -136,7 +137,7 @@
     <x-text-input id="location" name="location" type="text"
         class="mt-1 block w-full"
         placeholder="Ex: Aula 101, Centre Cívic"
-        :value="old('location', $course?->location)" />
+        :value="old('location', $defaultData['location'] ?? $course?->location)" />
     <x-input-error :messages="$errors->get('location')" class="mt-2" />
 </div>
 
@@ -146,7 +147,7 @@
     <x-text-input id="format" name="format" type="text"
         class="mt-1 block w-full"
         placeholder="Ex: Presencial, Online, Híbrid"
-        :value="old('format', $course?->format)" />
+        :value="old('format', $defaultData['format'] ?? $course?->format)" />
     <x-input-error :messages="$errors->get('format')" class="mt-2" />
 </div>
 
@@ -154,13 +155,13 @@
 <div class="flex items-center gap-6">
     <label class="flex items-center gap-2">
         <input type="checkbox" name="is_active" value="1"
-            @checked(old('is_active', $course?->is_active ?? true))>
+            @checked(old('is_active', $defaultData['is_active'] ?? $course?->is_active ?? true))>
         <span>{{ __('campus.active') }}</span>
     </label>
 
     <label class="flex items-center gap-2">
         <input type="checkbox" name="is_public" value="1"
-            @checked(old('is_public', $course?->is_public ?? true))>
+            @checked(old('is_public', $defaultData['is_public'] ?? $course?->is_public ?? true))>
         <span>{{ __('campus.public') }}</span>
     </label>
 </div>

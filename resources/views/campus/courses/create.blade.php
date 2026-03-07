@@ -76,7 +76,7 @@
         <input type="hidden" name="parent_id" value="{{ $parentCourse->id }}">
     @endif
 
-    @include('campus.courses.partials.form')
+    @include('campus.courses.partials.form', ['defaultData' => $defaultData ?? []])
 
     <div class="flex justify-end gap-2">
         <a href="{{ route('campus.courses.index') }}"

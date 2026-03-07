@@ -196,7 +196,7 @@
                                     @if($course->isBaseCourse())
                                         <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
                                             <i class="bi bi-star-fill mr-1"></i>
-                                            Base
+                                            
                                         </span>
                                     @endif
                                     {{ $course->code }}

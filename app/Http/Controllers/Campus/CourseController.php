@@ -170,7 +170,62 @@ class CourseController extends Controller
         
         $categories = CampusCategory::orderBy('name')->get();
         
-        return view('campus.courses.create', compact('seasons', 'categories', 'parentCourse'));
+        // Pre-omplir dades per a instàncies
+        $defaultData = [];
+        if ($parentCourse) {
+            // Obtenir temporada actual per generar dates
+            $currentSeason = CampusSeason::where('is_current', true)->first();
+            if (!$currentSeason) {
+                $currentSeason = CampusSeason::orderBy('season_start', 'desc')->first();
+            }
+            
+            // Generar codi d'instància (següent número de la mateixa família)
+            $instanceCode = $this->generateInstanceCode($parentCourse->code);
+            
+            // Comptar instàncies existents per determinar el número d'edició
+            $instanceCount = CampusCourse::where('parent_id', $parentCourse->id)->count();
+            $editionNumber = $instanceCount + 1;
+            
+            $defaultData = [
+                'code' => $instanceCode,
+                'season_id' => $currentSeason?->id,
+                'category_id' => $parentCourse->category_id,
+                'title' => $parentCourse->title . ' - Edició ' . $editionNumber,
+                'description' => $parentCourse->description,
+                'start_date' => $currentSeason?->season_start?->format('Y-m-d'),
+                'end_date' => $currentSeason?->season_end?->format('Y-m-d'),
+                'price' => $parentCourse->price,
+                'level' => $parentCourse->level,
+                'location' => $parentCourse->location,
+                'format' => $parentCourse->format,
+                'hours' => $parentCourse->hours,
+                'max_students' => $parentCourse->max_students,
+                'is_active' => true,
+                'is_public' => true,
+            ];
+        }
+        
+        return view('campus.courses.create', compact('seasons', 'categories', 'parentCourse', 'defaultData'));
+    }
+    
+    /**
+     * Generate instance code based on parent course code
+     */
+    public function generateInstanceCode($parentCode)
+    {
+        // Extreure les lletres del codi pare (ex: PA de PA-001)
+        $letters = substr($parentCode, 0, strpos($parentCode, '-'));
+        
+        // Buscar el màxim número existent per aquestes lletres
+        $lastCode = CampusCourse::where('code', 'like', $letters . '-%')
+            ->orderByRaw('CAST(SUBSTRING(code, -3) AS UNSIGNED) DESC')
+            ->value('code');
+        
+        // Calcular el següent número
+        $nextNumber = $lastCode ? intval(substr($lastCode, -3)) + 1 : 1;
+        $suffix = str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+        
+        return $letters . '-' . $suffix;
     }
 
     /**
