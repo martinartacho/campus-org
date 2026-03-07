@@ -148,6 +148,19 @@ class CourseController extends Controller
      */
     public function create(Request $request)
     {
+        // Comprovar si venim des del botó "Crear Instància"
+        $parentId = $request->get('parent_id');
+        $parentCourse = null;
+        
+        if ($parentId) {
+            $parentCourse = CampusCourse::find($parentId);
+            if (!$parentCourse) {
+                return redirect()
+                    ->route('campus.courses.index')
+                    ->with('error', 'Curs pare no vàlid');
+            }
+        }
+        
         // Obtenir totes les temporades per al select
         if (auth()->user()->hasRole('superadmin')) {
             $seasons = CampusSeason::orderBy('season_start', 'desc')->get();
@@ -157,7 +170,7 @@ class CourseController extends Controller
         
         $categories = CampusCategory::orderBy('name')->get();
         
-        return view('campus.courses.create', compact('seasons', 'categories'));
+        return view('campus.courses.create', compact('seasons', 'categories', 'parentCourse'));
     }
 
     /**
@@ -426,6 +439,7 @@ class CourseController extends Controller
             'metadata'      => ['nullable', 'array'],
             'space_id'      => ['nullable', 'exists:campus_spaces,id'],
             'time_slot_id'  => ['nullable', 'exists:campus_time_slots,id'],
+            'parent_id'     => ['nullable', 'exists:campus_courses,id'],
         ]);
         
         // Debug: Mostrar todos los datos recibidos y validados
