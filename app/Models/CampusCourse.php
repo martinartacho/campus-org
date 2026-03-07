@@ -45,10 +45,6 @@ class CampusCourse extends Model
         'season_id',
         'category_id',
         'code',
-        'base_code',
-        'instance_code',
-        'is_base_course',
-        'parent_base_id',
         'title',
         'slug',
         'description',
@@ -131,43 +127,47 @@ class CampusCourse extends Model
     }
 
     /**
-     * Get the appropriate code (base or instance).
+     * Get the appropriate code.
      */
     public function getEffectiveCodeAttribute(): string
     {
-        return $this->base_code ?? $this->instance_code ?? $this->code ?? '';
+        return $this->code ?? '';
     }
 
     /**
-     * Generate base course code.
+     * Generate course code from title.
      */
-    public static function generateBaseCode($title, $category)
+    public static function generateCourseCode($title)
     {
-        // Obtenir prefix de categoria
-        $categoryPrefix = strtoupper(substr($category->slug, 0, 3));
+        // 1. Netejar títol: només lletres i espais
+        $cleanTitle = preg_replace('/[^a-zA-Z\s]/', '', $title);
         
-        // Obtenir següent número per categoria
-        $lastNumber = self::where('base_code', 'like', 'BASE-' . $categoryPrefix . '%')
-            ->orderByRaw('CAST(SUBSTRING(base_code, -3) AS UNSIGNED) DESC')
-            ->value('base_code');
+        // 2. Separar paraules i obtenir primeres lletres
+        $words = explode(' ', $cleanTitle);
+        $letters = '';
         
-        $nextNumber = $lastNumber ? intval(substr($lastNumber, -3)) + 1 : 1;
+        foreach ($words as $word) {
+            if (!empty($word)) {
+                $letters .= strtoupper(substr($word, 0, 1));
+            }
+        }
+        
+        // 3. Limitar a 5 lletres
+        $letters = substr($letters, 0, 5);
+        
+        // 4. Obtenir següent número
+        $lastCode = self::where('code', 'like', $letters . '%')
+            ->orderByRaw('CAST(SUBSTRING(code, -3) AS UNSIGNED) DESC')
+            ->value('code');
+        
+        $nextNumber = $lastCode ? intval(substr($lastCode, -3)) + 1 : 1;
         $suffix = str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
         
-        return 'BASE-' . $categoryPrefix . '-' . $suffix;
+        // 5. Retornar codi
+        return $letters . '-' . $suffix;
     }
 
-    /**
-     * Generate instance course code.
-     */
-    public static function generateInstanceCode($baseCode, $season, $schedule)
-    {
-        $seasonCode = str_replace('-', '', $season->academic_year); // 202526
-        $scheduleCode = strtoupper(substr($schedule, 0, 3)); // MAT, NIT, CAP, VES
-        
-        return $baseCode . '-' . $seasonCode . '-' . $scheduleCode;
-    }
-    public static function hasConflict($spaceId, $timeSlotId, $excludeCourseId = null)
+        public static function hasConflict($spaceId, $timeSlotId, $excludeCourseId = null)
     {
         $query = self::where('space_id', $spaceId)
                    ->where('time_slot_id', $timeSlotId);
