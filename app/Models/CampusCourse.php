@@ -48,9 +48,7 @@ class CampusCourse extends Model
         'title',
         'slug',
         'description',
-        'credits',
         'hours',
-        'sessions',
         'max_students',
         'price',
         'level',
@@ -72,16 +70,13 @@ class CampusCourse extends Model
     ];
 
     protected $casts = [
-        'credits' => 'integer',
         'hours' => 'integer',
-        'sessions' => 'integer',
         'max_students' => 'integer',
         'price' => 'decimal:2',
         'start_date' => 'date',
         'end_date' => 'date',
         'is_active' => 'boolean',
         'is_public' => 'boolean',
-        'is_base_course' => 'boolean',
         'schedule' => 'array',
         'requirements' => 'string',
         'objectives' => 'string',
