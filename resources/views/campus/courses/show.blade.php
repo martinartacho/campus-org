@@ -59,6 +59,11 @@
 
 <div class="bg-white shadow rounded-lg p-6 space-y-4 max-w-3xl">
     <div>
+        <strong>{{ __('campus.code') }}:</strong>
+        {{ $course->code }}
+    </div>
+
+    <div>
         <strong>{{ __('campus.season') }}:</strong>
         {{ $course->season?->name ?? '—' }}
     </div>
@@ -73,6 +78,46 @@
         <p class="mt-1 text-gray-700">
             {{ $course->description ?? '—' }}
         </p>
+    </div>
+
+    <div>
+        <strong>{{ __('campus.hours') }}:</strong>
+        {{ $course->hours ?? '—' }} h
+    </div>
+
+    <div>
+        <strong>{{ __('campus.max_students') }}:</strong>
+        {{ $course->max_students ?? '—' }}
+    </div>
+
+    <div>
+        <strong>{{ __('campus.price') }}:</strong>
+        {{ $course->price ? '€' . number_format($course->price, 2) : '—' }}
+    </div>
+
+    <div>
+        <strong>{{ __('campus.level') }}:</strong>
+        {{ $course->level ? __('campus.level_' . $course->level) : '—' }}
+    </div>
+
+    <div>
+        <strong>{{ __('campus.start_date') }}:</strong>
+        {{ $course->start_date?->format('d/m/Y') ?? '—' }}
+    </div>
+
+    <div>
+        <strong>{{ __('campus.end_date') }}:</strong>
+        {{ $course->end_date?->format('d/m/Y') ?? '—' }}
+    </div>
+
+    <div>
+        <strong>{{ __('campus.location') }}:</strong>
+        {{ $course->location ?? '—' }}
+    </div>
+
+    <div>
+        <strong>{{ __('campus.format') }}:</strong>
+        {{ $course->format ?? '—' }}
     </div>
 
     <div>
