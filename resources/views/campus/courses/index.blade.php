@@ -263,13 +263,16 @@
                                         </a>
                                     @endcan
                                 @endif
+                               
+                                    @can('campus.courses.edit')
+                                        <a href="{{ route('campus.courses.edit', $course) }}" 
+                                           class="text-indigo-600 hover:text-indigo-900 mr-3">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                    @endcan
                                 
-                                @can('campus.courses.edit')
-                                    <a href="{{ route('campus.courses.edit', $course) }}" 
-                                       class="text-indigo-600 hover:text-indigo-900 mr-3">
-                                        <i class="bi bi-pencil"></i>
-                                    </a>
-                                @endcan
+                                
+                              
                                 @can('campus.courses.delete')
                                     <form action="{{ route('campus.courses.destroy', $course) }}" method="POST" class="inline">
                                         @csrf

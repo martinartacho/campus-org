@@ -26,6 +26,22 @@
     {{ __('campus.edit_course') }}
 </h1>
 
+@if($course->isBaseCourse())
+    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <i class="bi bi-exclamation-triangle-fill text-yellow-400" style="font-size: 1.5rem;"></i>
+            </div>
+            <div class="ml-3">
+                <p class="text-sm text-yellow-700">
+                    <strong> {{ __('campus.base_course_warning') }}:</strong>
+                    {{ __('campus.base_course_edit_warning') }}
+                </p>
+            </div>
+        </div>
+    </div>
+@endif
+
 <form method="POST"
       action="{{ route('campus.courses.update', $course) }}"
       class="space-y-6 max-w-3xl">
