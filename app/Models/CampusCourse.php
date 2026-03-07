@@ -45,6 +45,7 @@ class CampusCourse extends Model
         'season_id',
         'category_id',
         'code',
+        'parent_id',
         'title',
         'slug',
         'description',
@@ -106,19 +107,63 @@ class CampusCourse extends Model
     }
 
     /**
-     * Get base course if this is an instance.
+     * Get the parent course.
      */
-    public function baseCourse(): BelongsTo
+    public function parent(): BelongsTo
     {
-        return $this->belongsTo(CampusCourse::class, 'parent_base_id');
+        return $this->belongsTo(CampusCourse::class, 'parent_id');
     }
 
     /**
-     * Get instances of this base course.
+     * Get the child courses.
+     */
+    public function children(): HasMany
+    {
+        return $this->hasMany(CampusCourse::class, 'parent_id');
+    }
+
+    /**
+     * Get the root parent course.
+     */
+    public function root(): BelongsTo
+    {
+        return $this->belongsTo(CampusCourse::class, 'parent_id')->with('parent');
+    }
+
+    /**
+     * Check if this is a base course (no parent).
+     */
+    public function isBaseCourse(): bool
+    {
+        return is_null($this->parent_id);
+    }
+
+    /**
+     * Check if this is an instance course (has parent).
+     */
+    public function isInstanceCourse(): bool
+    {
+        return !is_null($this->parent_id);
+    }
+
+    /**
+     * Get all courses in the same family.
+     */
+    public function getFamilyAttribute(): Collection
+    {
+        if ($this->isBaseCourse()) {
+            return $this->children;
+        } else {
+            return $this->parent->children;
+        }
+    }
+
+    /**
+     * Get instances of this course.
      */
     public function instances(): HasMany
     {
-        return $this->hasMany(CampusCourse::class, 'parent_base_id');
+        return $this->hasMany(CampusCourse::class, 'parent_id');
     }
 
     /**
