@@ -50,6 +50,7 @@ class CampusCourse extends Model
         'slug',
         'description',
         'hours',
+        'sessions',
         'max_students',
         'price',
         'level',

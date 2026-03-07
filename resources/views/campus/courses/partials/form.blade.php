@@ -95,6 +95,17 @@
     <small class="text-gray-500 text-xs">Mínim: 1, Màxim: 1000</small>
 </div>
 
+{{-- Sessions --}}
+<div>
+    <x-input-label for="sessions" :value="__('campus.sessions')" />
+    <x-text-input id="sessions" name="sessions" type="number"
+        class="mt-1 block w-full"
+        placeholder="Ex: 15 (sessions totals)"
+        :value="old('sessions', $defaultData['sessions'] ?? $course?->sessions ?? 15)" />
+    <x-input-error :messages="$errors->get('sessions')" class="mt-2" />
+    <small class="text-gray-500 text-xs">Mínim: 1, Màxim: 100</small>
+</div>
+
 {{-- Max Students --}}
 <div>
     <x-input-label for="max_students" :value="__('campus.max_students')" />
@@ -144,10 +155,30 @@
 {{-- Format --}}
 <div>
     <x-input-label for="format" :value="__('campus.format')" />
-    <x-text-input id="format" name="format" type="text"
-        class="mt-1 block w-full"
-        placeholder="Ex: Presencial, Online, Híbrid"
-        :value="old('format', $defaultData['format'] ?? $course?->format)" />
+    <select name="format" id="format"
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+        <option value="">{{ __('Selecciona un format') }}</option>
+        <option value="Presencial" 
+            @selected(old('format', $defaultData['format'] ?? $course?->format) == 'Presencial')>
+            Presencial
+        </option>
+        <option value="Online" 
+            @selected(old('format', $defaultData['format'] ?? $course?->format) == 'Online')>
+            Online
+        </option>
+        <option value="Híbrid" 
+            @selected(old('format', $defaultData['format'] ?? $course?->format) == 'Híbrid')>
+            Híbrid
+        </option>
+        <option value="Semipresencial" 
+            @selected(old('format', $defaultData['format'] ?? $course?->format) == 'Semipresencial')>
+            Semipresencial
+        </option>
+        <option value="A distància" 
+            @selected(old('format', $defaultData['format'] ?? $course?->format) == 'A distància')>
+            A distància
+        </option>
+    </select>
     <x-input-error :messages="$errors->get('format')" class="mt-2" />
 </div>
 

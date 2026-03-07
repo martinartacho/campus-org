@@ -173,12 +173,6 @@ class CourseController extends Controller
         // Pre-omplir dades per a instàncies
         $defaultData = [];
         if ($parentCourse) {
-            // Obtenir temporada actual per generar dates
-            $currentSeason = CampusSeason::where('is_current', true)->first();
-            if (!$currentSeason) {
-                $currentSeason = CampusSeason::orderBy('season_start', 'desc')->first();
-            }
-            
             // Generar codi d'instància (següent número de la mateixa família)
             $instanceCode = $this->generateInstanceCode($parentCourse->code);
             
@@ -186,20 +180,25 @@ class CourseController extends Controller
             $instanceCount = CampusCourse::where('parent_id', $parentCourse->id)->count();
             $editionNumber = $instanceCount + 1;
             
+            // Obtenir temporada seleccionada (per defecte l'actual)
+            $selectedSeasonId = $parentCourse->season_id;
+            $selectedSeason = CampusSeason::find($selectedSeasonId);
+            
             $defaultData = [
                 'code' => $instanceCode,
-                'season_id' => $currentSeason?->id,
+                'season_id' => $selectedSeasonId,
                 'category_id' => $parentCourse->category_id,
                 'title' => $parentCourse->title . ' - Edició ' . $editionNumber,
                 'description' => $parentCourse->description,
-                'start_date' => $currentSeason?->season_start?->format('Y-m-d'),
-                'end_date' => $currentSeason?->season_end?->format('Y-m-d'),
+                'start_date' => $selectedSeason?->season_start?->format('Y-m-d'),
+                'end_date' => $selectedSeason?->season_end?->format('Y-m-d'),
                 'price' => $parentCourse->price,
                 'level' => $parentCourse->level,
                 'location' => $parentCourse->location,
                 'format' => $parentCourse->format,
                 'hours' => $parentCourse->hours,
                 'max_students' => $parentCourse->max_students,
+                'sessions' => $parentCourse->sessions ?? 15,
                 'is_active' => true,
                 'is_public' => true,
             ];
@@ -478,6 +477,7 @@ class CourseController extends Controller
             'slug'          => ['nullable', 'string', 'max:255'],
             'description'   => ['nullable', 'string'],
             'hours'         => ['nullable', 'integer', 'min:0', 'max:1000'],
+            'sessions'      => ['nullable', 'integer', 'min:0', 'max:100'],
             'max_students'  => ['nullable', 'integer', 'min:0'],
             'price'         => ['nullable', 'numeric', 'min:0'],
             'level'         => ['nullable', 'string', 'in:beginner,intermediate,advanced,expert'],
