@@ -148,19 +148,7 @@ class CourseController extends Controller
      */
     public function create(Request $request)
     {
-        // Comprovar si venim des del botó "Crear Instància"
-        $baseId = $request->get('base_id');
-        $baseCourse = null;
-        
-        if ($baseId) {
-            $baseCourse = CampusCourse::find($baseId);
-            if (!$baseCourse || !$baseCourse->is_base_course) {
-                return redirect()
-                    ->route('campus.courses.index')
-                    ->with('error', 'Curs base no vàlid');
-            }
-        }
-        
+        // Obtenir totes les temporades per al select
         if (auth()->user()->hasRole('superadmin')) {
             $seasons = CampusSeason::orderBy('season_start', 'desc')->get();
         } else {
@@ -168,8 +156,8 @@ class CourseController extends Controller
         }
         
         $categories = CampusCategory::orderBy('name')->get();
-
-        return view('campus.courses.create', compact('seasons', 'categories', 'baseCourse'));
+        
+        return view('campus.courses.create', compact('seasons', 'categories'));
     }
 
     /**
@@ -239,16 +227,6 @@ class CourseController extends Controller
             }
         }
         
-        // Per instàncies, si no tenim category_id, agafar el del curs base
-        if (!isset($data['category_id']) || $data['category_id'] === null) {
-            if (isset($data['parent_base_id']) && $data['parent_base_id']) {
-                $baseCourse = \App\Models\CampusCourse::find($data['parent_base_id']);
-                if ($baseCourse && $baseCourse->category_id) {
-                    $defaults['category_id'] = $baseCourse->category_id;
-                }
-            }
-        }
-
         // Aplicar valors per defecte només si són null
         foreach ($defaults as $field => $default) {
             if (!isset($data[$field]) || $data[$field] === null || $data[$field] === '') {
