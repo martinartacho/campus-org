@@ -287,21 +287,71 @@ class CampusUPGSeeder extends Seeder
         }
     }
     
+    
     private function generateCourseCode($title)
     {
-        // Generar codi a partir del títol
-        $code = strtoupper(substr(Str::slug($title), 0, 8));
-        $code = preg_replace('/[^A-Z0-9]/', '', $code);
-        
-        // Assegurar que sigui únic
-        $originalCode = $code;
-        $counter = 1;
-        
-        while (CampusCourse::where('code', $code)->exists()) {
-            $code = $originalCode . str_pad($counter, 2, '0', STR_PAD_LEFT);
-            $counter++;
+        // 1. Normalitzar text (accents i caràcters especials)
+        $normalized = Str::ascii($title);
+        $normalized = strtoupper($normalized);
+        $normalized = preg_replace('/[^A-Z\s]/', '', $normalized);
+
+        // 2. Separar paraules
+        $words = array_values(array_filter(explode(' ', $normalized)));
+        $count = count($words);
+
+        $base = '';
+
+        if ($count == 1) {
+            $base = substr($words[0], 0, 6);
         }
-        
+
+        elseif ($count == 2) {
+            $base =
+                substr($words[0], 0, 3) .
+                substr($words[1], 0, 3);
+        }
+
+        elseif ($count == 3) {
+            foreach ($words as $w) {
+                $base .= substr($w, 0, 2);
+            }
+        }
+
+        elseif ($count == 4) {
+            $base =
+                substr($words[0], 0, 3) .
+                substr($words[1], 0, 1) .
+                substr($words[2], 0, 1) .
+                substr($words[3], 0, 1);
+        }
+
+        elseif ($count == 5) {
+            $base =
+                substr($words[0], 0, 2) .
+                substr($words[1], 0, 2) .
+                substr($words[2], 0, 1) .
+                substr($words[3], 0, 1);
+        }
+
+        else { // 6 o més
+            foreach ($words as $w) {
+                $base .= substr($w, 0, 1);
+                if (strlen($base) >= 6) break;
+            }
+        }
+
+        // Assegurar 6 caràcters
+        $base = substr(str_pad($base, 6, 'X'), 0, 6);
+
+        // 3. Generar número incremental
+        $counter = 1;
+
+        do {
+            $code = $base . '-' . str_pad($counter, 3, '0', STR_PAD_LEFT);
+            $exists = CampusCourse::where('code', $code)->exists();
+            $counter++;
+        } while ($exists);
+
         return $code;
     }
     
