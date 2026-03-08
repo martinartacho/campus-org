@@ -469,5 +469,17 @@ return [
     'export_excel' => 'Exportar a Excel',
     'download_pdf' => 'Descarregar PDF',
     'view_details' => 'Veure detalls',
-
+    // Traduccions faltants per a funcionalitats noves
+    'base_course_warning' => 'Atenció: Estàs editant un curs base. Si tens instàncies associades, els canvis podrien afectar-les. Revisa els abans de continuar.',
+    'no_dates' => 'Sense dates',
+    'no_courses_found' => 'No s\'han trobat cursos',
+    'create_instance' => 'Crear instància',
+    'instance' => 'Instància',
+    'parent_course' => 'Curs pare',
+    'All seasons' => 'Totes les temporades',
+    'Search by title' => 'Cercar per títol',
+    'Search by code' => 'Cercar per codi',
+    'Search' => 'Cercar',
+    'Filter' => 'Filtrar',
+    'Clear' => 'Netejar',
 ];
