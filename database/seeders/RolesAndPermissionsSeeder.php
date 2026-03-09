@@ -153,6 +153,10 @@ class RolesAndPermissionsSeeder extends Seeder
             Permission::firstOrCreate(['name' => $perm]);
         }
 
+        // ROL: SUPER-ADMIN (Super Administrador)
+        $superAdmin = Role::firstOrCreate(['name' => 'super-admin']);
+        $superAdmin->givePermissionTo(Permission::all());
+
         // ROL: ADMINISTRADOR (TOT)
         $admin = Role::firstOrCreate(['name' => 'admin']);
         $admin->givePermissionTo(Permission::all());
@@ -263,6 +267,111 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // ROL: CONVIDAT (convidat - sense permisos específics)
         Role::firstOrCreate(['name' => 'invited']);
+
+        // ROL: COORDINACIO (Coordinació - permisos de gestió)
+        $coordinacio = Role::firstOrCreate(['name' => 'coordinacio']);
+        $coordinacioPermissions = [
+            'users.index', 'users.view', 'users.create', 'users.edit',
+            'campus.categories.index', 'campus.categories.view',
+            'campus.seasons.index', 'campus.seasons.view',
+            'campus.courses.index', 'campus.courses.view', 'campus.courses.create',
+            'campus.courses.edit', 'campus.courses.manage',
+            'campus.students.index', 'campus.students.view', 'campus.students.create',
+            'campus.students.edit', 'campus.students.manage',
+            'campus.teachers.index', 'campus.teachers.view', 'campus.teachers.create',
+            'campus.teachers.edit', 'campus.teachers.assign',
+            'campus.registrations.index', 'campus.registrations.view', 'campus.registrations.create',
+            'campus.registrations.edit', 'campus.registrations.manage',
+            'notifications.index', 'notifications.create', 'notifications.edit', 'notifications.view',
+        ];
+        $coordinacio->syncPermissions($coordinacioPermissions);
+
+        // ROL: SECRETARIA (Secretaria - gestió administrativa)
+        $secretaria = Role::firstOrCreate(['name' => 'secretaria']);
+        $secretariaPermissions = [
+            'campus.students.index', 'campus.students.view', 'campus.students.create',
+            'campus.students.edit', 'campus.students.manage',
+            'campus.registrations.index', 'campus.registrations.view', 'campus.registrations.create',
+            'campus.registrations.edit', 'campus.registrations.manage',
+            'campus.courses.index', 'campus.courses.view',
+            'campus.teachers.index', 'campus.teachers.view',
+            'notifications.index', 'notifications.create', 'notifications.edit', 'notifications.view',
+        ];
+        $secretaria->syncPermissions($secretariaPermissions);
+
+        // ROL: GESTIO (Equip Tècnic - gestió operativa)
+        $gestio = Role::firstOrCreate(['name' => 'gestio']);
+        $gestioPermissions = [
+            'campus.categories.index', 'campus.categories.view', 'campus.categories.create',
+            'campus.categories.edit',
+            'campus.seasons.index', 'campus.seasons.view', 'campus.seasons.create',
+            'campus.seasons.edit',
+            'campus.courses.index', 'campus.courses.view', 'campus.courses.create',
+            'campus.courses.edit', 'campus.courses.manage',
+            'campus.students.index', 'campus.students.view', 'campus.students.edit',
+            'campus.teachers.index', 'campus.teachers.view', 'campus.teachers.edit',
+            'campus.registrations.index', 'campus.registrations.view', 'campus.registrations.manage',
+            'notifications.index', 'notifications.create', 'notifications.edit', 'notifications.view',
+        ];
+        $gestio->syncPermissions($gestioPermissions);
+
+        // ROL: DIRECTOR (Director - permisos complets de campus)
+        $director = Role::firstOrCreate(['name' => 'director']);
+        $directorPermissions = [
+            'users.index', 'users.view', 'users.create', 'users.edit', 'users.delete',
+            'campus.categories.index', 'campus.categories.view', 'campus.categories.create',
+            'campus.categories.edit', 'campus.categories.delete',
+            'campus.seasons.index', 'campus.seasons.view', 'campus.seasons.create',
+            'campus.seasons.edit', 'campus.seasons.delete',
+            'campus.courses.index', 'campus.courses.view', 'campus.courses.create',
+            'campus.courses.edit', 'campus.courses.delete', 'campus.courses.manage',
+            'campus.students.index', 'campus.students.view', 'campus.students.create',
+            'campus.students.edit', 'campus.students.delete', 'campus.students.manage',
+            'campus.teachers.index', 'campus.teachers.view', 'campus.teachers.create',
+            'campus.teachers.edit', 'campus.teachers.delete', 'campus.teachers.assign',
+            'campus.registrations.index', 'campus.registrations.view', 'campus.registrations.create',
+            'campus.registrations.edit', 'campus.registrations.delete', 'campus.registrations.manage',
+            'campus.payments.view', 'campus.payments.manage', 'campus.payments.approve',
+            'notifications.index', 'notifications.create', 'notifications.edit', 'notifications.delete', 'notifications.view',
+            'events.index', 'events.view', 'events.create', 'events.edit', 'events.delete',
+        ];
+        $director->syncPermissions($directorPermissions);
+
+        // ROL: MANAGER (Manager - agrupa subroles de gestión)
+        $manager = Role::firstOrCreate(['name' => 'manager']);
+        $managerPermissions = [
+            'users.index', 'users.view', 'users.create', 'users.edit',
+            'campus.categories.index', 'campus.categories.view', 'campus.categories.create',
+            'campus.categories.edit',
+            'campus.seasons.index', 'campus.seasons.view', 'campus.seasons.create',
+            'campus.seasons.edit',
+            'campus.courses.index', 'campus.courses.view', 'campus.courses.create',
+            'campus.courses.edit', 'campus.courses.manage',
+            'campus.students.index', 'campus.students.view', 'campus.students.create',
+            'campus.students.edit', 'campus.students.manage',
+            'campus.teachers.index', 'campus.teachers.view', 'campus.teachers.create',
+            'campus.teachers.edit', 'campus.teachers.assign',
+            'campus.registrations.index', 'campus.registrations.view', 'campus.registrations.create',
+            'campus.registrations.edit', 'campus.registrations.manage',
+            'campus.payments.view', 'campus.payments.manage',
+            'notifications.index', 'notifications.create', 'notifications.edit', 'notifications.delete', 'notifications.view',
+            'events.index', 'events.view', 'events.create', 'events.edit', 'events.delete',
+        ];
+        $manager->syncPermissions($managerPermissions);
+
+        // ROL: COMUNICACIO (Comunicació - gestió de comunicació i edició)
+        $comunicacio = Role::firstOrCreate(['name' => 'comunicacio']);
+        $comunicacioPermissions = [
+            'notifications.index', 'notifications.create', 'notifications.edit',
+            'notifications.delete', 'notifications.view',
+            'events.index', 'events.view', 'events.create', 'events.edit', 'events.delete',
+            'event_questions.index', 'event_questions.view', 'event_questions.create',
+            'event_questions.edit', 'event_questions.delete',
+            'campus.courses.index', 'campus.courses.view',
+            'campus.students.index', 'campus.students.view',
+            'campus.teachers.index', 'campus.teachers.view',
+        ];
+        $comunicacio->syncPermissions($comunicacioPermissions);
 
         // Assignar administrador a l'usuari amb ID = 1
         $user1 = \App\Models\User::find(1);

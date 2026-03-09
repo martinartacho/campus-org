@@ -13,6 +13,17 @@ class UserSeeder extends Seeder
 {
     public function run()
     {
+
+        // Usuari SUPERADMIN
+        $superadmin = User::firstorcreate([
+            'name' => 'Superadmin',
+            'email' => 'campus@' . env('SEEDER_EMAIL_DOMAIN'),
+            'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD')),
+            'email_verified_at' => Carbon::now(),
+            'locale' => 'ca',
+        ]);
+        $superadmin->assignRole('super-admin');
+
         // Usuari ADMINISTRADOR
         $admin = User::firstorcreate([
             'name' => 'Administrador Centre',
@@ -23,36 +34,56 @@ class UserSeeder extends Seeder
         ]);
         $admin->assignRole('admin');
 
-        // Usuari GESTOR
-        $gestor = User::firstorcreate([
-            'name' => 'Gemma Gestió',
-            'email' => 'gestio@' . env('SEEDER_EMAIL_DOMAIN'),
+        // Usuari Coordinacio
+        $coordinacio = User::firstorcreate([
+            'name' => 'Coordinacio',
+            'email' => 'coordinacio@' . env('SEEDER_EMAIL_DOMAIN'),
             'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD')),
             'email_verified_at' => Carbon::now(),
             'locale' => 'ca',
         ]);
-        $gestor->assignRole('gestor');
+        $coordinacio->assignRole('coordinacio');
 
-        // Usuari TRESORERIA
+        // Usuari Secretaria
+        $secretaria = User::firstorcreate([
+            'name' => 'Secretaria',
+            'email' => 'secretaria@' . env('SEEDER_EMAIL_DOMAIN'),
+            'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD')),
+            'email_verified_at' => Carbon::now(),
+            'locale' => 'ca',
+        ]);
+        $secretaria->assignRole('secretaria');
+
+        // Usuari Tresoreria
         $tresoreria = User::firstorcreate([
-            'name' => 'AAA',
+            'name' => 'Tresoreria',
             'email' => 'tresoreria@' . env('SEEDER_EMAIL_DOMAIN'),
             'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD')),
             'email_verified_at' => Carbon::now(),
             'locale' => 'ca',
         ]);
         $tresoreria->assignRole('treasury');
- 
 
-        // Usuari EDITOR 1
-        $editor1 = User::firstorcreate([
-            'name' => 'Eduard Editor',
-            'email' => 'editor@' . env('SEEDER_EMAIL_DOMAIN'),
+        // Usuari Equip Tècnic
+        $gestio = User::firstorcreate([
+            'name' => 'Equip Tècnic',
+            'email' => 'gestio@' . env('SEEDER_EMAIL_DOMAIN'),
             'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD')),
             'email_verified_at' => Carbon::now(),
             'locale' => 'ca',
         ]);
-        $editor1->assignRole('editor');
+        $gestio->assignRole('gestio');
+
+
+        // Usuari COMUNICACIO 1
+        $comunicacio1 = User::firstorcreate([
+            'name' => 'Comunicació i Edició',
+            'email' => 'comunicacio@' . env('SEEDER_EMAIL_DOMAIN'),
+            'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD')),
+            'email_verified_at' => Carbon::now(),
+            'locale' => 'ca',
+        ]);
+        $comunicacio1->assignRole('comunicacio');
 
         // Usuari EDITOR 2
         $editor2 = User::firstorcreate([
@@ -185,14 +216,6 @@ class UserSeeder extends Seeder
         ]);
         $user1->assignRole('user');
 
-        // USUARI BÀSIC 2
-        $user2 = User::firstorcreate([
-            'name' => 'Usuari Secundari',
-            'email' => 'usuari2@' . env('SEEDER_EMAIL_DOMAIN'),
-            'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD')),
-            'locale' => 'ca',
-        ]);
-        $user2->assignRole('user');
 
         // CONVIDAT 1
         $invited1 = User::firstorcreate([
@@ -204,13 +227,5 @@ class UserSeeder extends Seeder
         ]);
         $invited1->assignRole('invited');
 
-        // CONVIDAT 2
-        $invited2 = User::firstorcreate([
-            'name' => 'Col·laborador Temporal',
-            'email' => 'collaborador@' . env('SEEDER_EMAIL_DOMAIN'),
-            'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD')),
-            'locale' => 'ca',
-        ]);
-        $invited2->assignRole('invited');
     }
 }

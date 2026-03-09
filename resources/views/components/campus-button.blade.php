@@ -65,10 +65,36 @@
             hover:bg-red-700 focus:bg-red-700 active:bg-red-800
             focus:ring-red-500
         ',
+
         'success' => '
             bg-green-500 text-white
             hover:bg-green-700 focus:bg-green-700 active:bg-green-800
             focus:ring-green-500
+        ',
+
+        // Variantes específicas para roles del sistema manager
+        'manager' => '
+            bg-manager-600 text-white
+            hover:bg-manager-700 focus:bg-manager-700 active:bg-manager-800
+            focus:ring-manager-500
+        ',
+
+        'comunicacio' => '
+            bg-comunicacio-500 text-white
+            hover:bg-comunicacio-600 focus:bg-comunicacio-600 active:bg-comunicacio-700
+            focus:ring-comunicacio-400
+        ',
+
+        'coordinacio' => '
+            bg-coordinacio-500 text-white
+            hover:bg-coordinacio-600 focus:bg-coordinacio-600 active:bg-coordinacio-700
+            focus:ring-coordinacio-400
+        ',
+
+        'gestio' => '
+            bg-gestio-500 text-white
+            hover:bg-gestio-600 focus:bg-gestio-600 active:bg-gestio-700
+            focus:ring-gestio-400
         ',
     ];
 

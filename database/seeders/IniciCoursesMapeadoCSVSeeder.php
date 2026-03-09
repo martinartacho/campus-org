@@ -60,6 +60,14 @@ class IniciCoursesMapeadoCSVSeeder extends Seeder
         
         foreach ($csvData as $rowIndex => $row) {
             $processed++;
+            
+            // Verificar que el número de columnas coincida con el header
+            if (count($headers) !== count($row)) {
+                $errors[] = "Fila {$processed}: Número de columnes incorrecte (esperat " . count($headers) . ", trobades " . count($row) . ")";
+                $this->command->error("❌ Error en fila {$processed}: " . $errors[count($errors) - 1]);
+                continue;
+            }
+            
             $rowData = array_combine($headers, $row);
             
             try {
@@ -123,7 +131,6 @@ class IniciCoursesMapeadoCSVSeeder extends Seeder
             'title' => $this->validateString($rowData['title'], 'title', $errors, $rowNumber, true),
             'slug' => $this->validateString($rowData['slug'], 'slug', $errors, $rowNumber, true),
             'description' => $this->validateString($rowData['description'], 'description', $errors, $rowNumber),
-            'credits' => $this->validateInteger($rowData['credits'], 'credits', $errors, $rowNumber, 1),
             'hours' => $this->validateInteger($rowData['hours'], 'hours', $errors, $rowNumber, 1),
             'sessions' => $this->validateInteger($rowData['sessions'] ?? null, 'sessions', $errors, $rowNumber, 1),
             'max_students' => $this->validateInteger($rowData['max_students'], 'max_students', $errors, $rowNumber, 1),

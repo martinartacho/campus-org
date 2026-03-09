@@ -28,6 +28,9 @@ class DatabaseSeeder extends Seeder
             // Importació d'estudiants (només estudiants, sense matrícules)
             IniciStudentsOnlySeeder::class,                // 11 - Students
             
+            // Articles d'ajuda sobre el sistema
+            HelpArticlesSeeder::class,                      // 12 - Articles d'ajuda
+            
             // Seeders comentats (no farem servir)
             // IniciStudentsImprovedSeeder::class,         // (amb matrícules - no usar)
             // IniciSetupCompleteSeeder::class,             // (versió antiga)

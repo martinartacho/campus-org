@@ -28,7 +28,7 @@ class SupportPermissionsSeeder extends Seeder
         }
 
         // Asignar permisos a roles administrativos
-        $adminRoles = ['admin', 'superadmin', 'director'];
+        $adminRoles = ['admin', 'super-admin', 'director', 'manager', 'coordinacio', 'gestio'];
         
         foreach ($adminRoles as $roleName) {
             $role = Role::where('name', $roleName)->first();
@@ -44,7 +44,7 @@ class SupportPermissionsSeeder extends Seeder
         }
 
         // Asignar permisos básicos a otros roles
-        $basicRoles = ['secretaria', 'gestor'];
+        $basicRoles = ['secretaria', 'gestor', 'treasury', 'comunicacio'];
         
         foreach ($basicRoles as $roleName) {
             $role = Role::where('name', $roleName)->first();

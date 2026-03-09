@@ -14,7 +14,7 @@ class DashboardController extends Controller
         $user = auth()->user();
         $stats = [];
 
-        if ($user->hasRole('gestor')) {
+        if ($user->hasAnyRole(['manager', 'coordinacio', 'gestio', 'comunicacio', 'secretaria', 'editor'])) {
             $stats = app(\App\Services\Dashboard\ManagerDashboardData::class)
                 ->build($user);
         }

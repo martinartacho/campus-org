@@ -291,7 +291,7 @@ class CampusImportService
         if (!empty($csvCode)) {
             $courseCode = $csvCode;
         } else {
-            // Generar código automáticamente
+            // Generar código automáticamente usando el mismo algoritmo que el modelo
             $courseCode = $this->generateCourseCode($courseTitle);
         }
         

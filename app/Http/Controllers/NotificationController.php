@@ -32,7 +32,7 @@ class NotificationController extends Controller
     public function index()
     {
         // Usuarios con permiso pueden ver todas, los demás solo las propias o asignadas
-        if (Auth::user()->hasRole(['admin', 'gestor', 'editor'])) {
+        if (Auth::user()->hasRole(['admin', 'manager', 'coordinacio', 'gestio', 'comunicacio', 'secretaria', 'editor'])) {
             $notifications = Notification::latest()->paginate(10);
         } else {
             // Otros ven solo las suyas (relación muchos a muchos)
@@ -183,7 +183,7 @@ class NotificationController extends Controller
     // Publicar
     public function publish(Notification $notification)
     {
-        if (!Auth::user()->hasAnyRole(['admin', 'gestor', 'editor']) &&
+        if (!Auth::user()->hasAnyRole(['admin', 'manager', 'coordinacio', 'gestio', 'comunicacio', 'secretaria', 'editor']) &&
             !Auth::user()->can('notifications.publish')) {
             abort(403);
         }
