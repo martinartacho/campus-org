@@ -51,8 +51,21 @@ class HelpArticleController extends Controller
         $areas = [
             'cursos' => 'Cursos',
             'matricula' => 'Matrícula',
-            'materiales' => 'Materiales',
-            'configuracion' => 'Configuración'
+            'materials' => 'Materials',
+            'configuracio' => 'Configuració',
+            'super-admin' => 'Super Admin',
+            'admin' => 'Admin',
+            'director' => 'Director',
+            'manager' => 'Manager',
+            'comunicacio' => 'Comunicació',
+            'coordinacio' => 'Coordinació',
+            'secretaria' => 'Secretaria',
+            'gestio' => 'Gestió',
+            'treasury' => 'Treasury',
+            'editor' => 'Editor',
+            'teacher' => 'Professor/a',
+            'student' => 'Estudiant',
+            'user' => 'Usuari',
         ];
         $statuses = [
             'draft' => 'Borrador',
@@ -71,7 +84,7 @@ class HelpArticleController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required|string',
-            'area' => ['required', Rule::in(['cursos', 'matricula', 'materiales', 'configuracion'])],
+            'area' => ['required', Rule::in(['cursos', 'matricula', 'materials', 'configuracio', 'super-admin', 'admin', 'director', 'manager', 'comunicacio', 'coordinacio', 'secretaria', 'gestio', 'treasury', 'editor', 'teacher', 'student', 'user'])],
             'context' => 'nullable|string|max:255',
             'type' => 'nullable|string|max:100',
             'status' => ['required', Rule::in(['draft', 'validated', 'obsolete'])],
@@ -121,8 +134,21 @@ class HelpArticleController extends Controller
         $areas = [
             'cursos' => 'Cursos',
             'matricula' => 'Matrícula',
-            'materiales' => 'Materiales',
-            'configuracion' => 'Configuración'
+            'materials' => 'Materials',
+            'configuracio' => 'Configuració',
+            'super-admin' => 'Super Admin',
+            'admin' => 'Admin',
+            'director' => 'Director',
+            'manager' => 'Manager',
+            'comunicacio' => 'Comunicació',
+            'coordinacio' => 'Coordinació',
+            'secretaria' => 'Secretaria',
+            'gestio' => 'Gestió',
+            'treasury' => 'Treasury',
+            'editor' => 'Editor',
+            'teacher' => 'Professor/a',
+            'student' => 'Estudiant',
+            'user' => 'Usuari',
         ];
         $statuses = [
             'draft' => 'Borrador',
@@ -141,7 +167,7 @@ class HelpArticleController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required|string',
-            'area' => ['required', Rule::in(['cursos', 'matricula', 'materiales', 'configuracion'])],
+            'area' => ['required', Rule::in(['cursos', 'matricula', 'materials', 'configuracio', 'super-admin', 'admin', 'director', 'manager', 'comunicacio', 'coordinacio', 'secretaria', 'gestio', 'treasury', 'editor', 'teacher', 'student', 'user'])],
             'context' => 'nullable|string|max:255',
             'type' => 'nullable|string|max:100',
             'status' => ['required', Rule::in(['draft', 'validated', 'obsolete'])],

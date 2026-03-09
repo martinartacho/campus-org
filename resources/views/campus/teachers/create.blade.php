@@ -1,7 +1,7 @@
 @extends('campus.shared.layout')
 
-@section('title', __('Nou Professor'))
-@section('subtitle', __('Crear nou professor'))
+@section('title', __('Nou Professor/a'))
+@section('subtitle', __('Crear nou professor/a'))
 
 @section('breadcrumbs')
     <li>
@@ -16,7 +16,7 @@
         <div class="flex items-center">
             <i class="bi bi-chevron-right text-gray-400 mx-1"></i>
             <a href="{{ route('campus.teachers.index') }}" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2">
-                {{ __('Professors') }}
+                {{ __('Professorat') }}
             </a>
         </div>
     </li>
@@ -24,7 +24,7 @@
         <div class="flex items-center">
             <i class="bi bi-chevron-right text-gray-400 mx-1"></i>
             <span class="ms-1 text-sm font-medium text-gray-500 md:ms-2">
-                {{ __('Nou Professor') }}
+                {{ __('Nou Professor/a') }}
             </span>
         </div>
     </li>
@@ -33,7 +33,7 @@
 @section('content')
 <div class="container mx-auto px-4 py-8">
     <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold text-gray-900">Nou Professor</h1>
+        <h1 class="text-3xl font-bold text-gray-900">Nou Professor/a</h1>
         <a href="{{ route('campus.teachers.index') }}" 
            class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200">
             <i class="fas fa-arrow-left mr-2"></i>Tornar
@@ -333,7 +333,7 @@
                                         Rol
                                     </label>
                                     <select name="role[]" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                        <option value="teacher">Professor</option>
+                                        <option value="teacher">Professor/a</option>
                                         <option value="assistant">Assistent</option>
                                     </select>
                                 </div>
@@ -350,7 +350,7 @@
                                                 <li>• <strong>Codi del curs</strong>: ha de ser únic i no pot existir</li>
                                                 <li>• <strong>Nom del curs</strong>: obligatori</li>
                                                 <li>• <strong>Hores assignades</strong>: seran les hores totals del curs</li>
-                                                <li>• Si el codi ja existeix, no es podrà crear el professor</li>
+                                                <li>• Si el codi ja existeix, no es podrà crear el professor/a</li>
                                             </ul>
                                         </div>
                                     </div>
@@ -410,7 +410,7 @@
                     </a>
                     <button type="submit" 
                             class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200">
-                        <i class="fas fa-save mr-2"></i>Crear Professor
+                        <i class="fas fa-save mr-2"></i>Crear Professor/a
                     </button>
                 </div>
             </form>
@@ -462,7 +462,7 @@ function addCourseField() {
                 </label>
                 <div class="flex space-x-2">
                     <select name="role[]" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="teacher">Professor</option>
+                        <option value="teacher">Professor/a</option>
                         <option value="assistant">Assistent</option>
                     </select>
                     <button type="button" 
@@ -484,7 +484,7 @@ function addCourseField() {
                                 <li>• <strong>Codi del curs</strong>: ha de ser únic i no pot existir</li>
                                 <li>• <strong>Nom del curs</strong>: obligatori</li>
                                 <li>• <strong>Hores assignades</strong>: seran les hores totals del curs</li>
-                                <li>• Si el codi ja existeix, no es podrà crear el professor</li>
+                                <li>• Si el codi ja existeix, no es podrà crear el professor/a</li>
                             </ul>
                         </div>
                     </div>

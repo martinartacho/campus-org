@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RolesAndPermissionsSeeder::class,              // 1
             UserSeeder::class,                           // 2
+            InitialUsersSeeder::class,                    // 2.5 - Usuarios iniciales desde CSV
             
             // Estructura base del campus
             IniciCategoriesSeasonSeeder::class,            // 3 - Categories i Temporades

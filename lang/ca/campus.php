@@ -204,7 +204,7 @@ return [
     'cancel' => 'Cancel·lar',
 
     // Teachers
-    'teachers' => 'Professors/es',
+    'teachers' => 'Professorat',
     'teacher' => 'Professor/a',
     'add' => 'Afegir',
     'add_teacher' => 'Afegir professor/a',
@@ -213,12 +213,12 @@ return [
     'teacher_assigned' => 'Professor assignat correctament',
     'teacher_removed' => 'Professor desassignat correctament',
     'teacher_remove_confirmation' => 'Segur que vols treure aquest professor?',
-    'no_teachers_assigned' => 'No hi ha professors assignats',
+    'no_teachers_assigned' => 'No hi ha professorat assignats',
     'role' => 'Rol',
     'assign' => 'Assignar',
     
     // Teachers / Courses
-    'assigned_teachers' => 'Professors assignats',
+    'assigned_teachers' => 'Professorat assignats',
     'confirm_remove_teacher' => 'Vols eliminar aquest professor del curs?',
     
     // Teacher roles
@@ -256,8 +256,8 @@ return [
     'view_students' => 'Veure alumnes',
     'view_materials' => 'Veure materials',
     'materials_pending' => 'Materials (pendent de desenvolupar)',
-    'other_teachers' => 'Altres professors',
-    'no_other_teachers' => 'No hi ha altres professors assignats',
+    'other_teachers' => 'Altres professorat',
+    'no_other_teachers' => 'No hi ha altres professorat assignats',
     'class_today' => 'Classe avui',
     'class_next' => 'Pròxima classe',
     'course_status_active' => 'Actiu',
@@ -336,7 +336,7 @@ return [
     
 // Import functionality
     'import_courses' => 'Importar cursos',
-    'import_courses_description' => 'Importar cursos i professors des d\'un fitxer CSV',
+    'import_courses_description' => 'Importar cursos i professorat des d\'un fitxer CSV',
     'import_file_label' => 'Selecciona un fitxer (Excel o CSV)',
     'import_format_expected' => 'Format esperat:',
     'import_format_columns' => '• Columnes: Nom, Cognoms, Correu electrònic, DNI, Telèfon, Adreça',
@@ -361,7 +361,7 @@ return [
     'import_another' => 'Importar un altre',
     'try_again' => 'Tornar a provar',
     'close' => 'Tancar',
-    'Professors creats' => 'Professors creats',
+    'Professors creats' => 'Professorat creats',
     'Cursos creats' => 'Cursos creats',
     'Errors' => 'Errors',
     'view_courses' => 'Veure cursos',
@@ -400,7 +400,7 @@ return [
     'no_course_results' => 'No s\'han trobat cursos que coincideixin amb la teva cerca',
     'no_student_results' => 'No s\'han trobat estudiants que coincideixin amb la teva cerca',
     'no_active_season' => 'No hi ha temporada activa actualment. Activa una temporada a la configuració.',
-    'no_teachers_in_season' => 'No hi ha professors assignats a cursos en la temporada :season.',
+    'no_teachers_in_season' => 'No hi ha professorat assignats a cursos en la temporada :season.',
     'name' => 'Nom',
     'email' => 'Email',
     'courses_and_hours' => 'Cursos i hores',
@@ -457,8 +457,8 @@ return [
     'connection_error' => 'Error de connexió',
     'pending_consents' => 'RGPD pendent (temporada actual)',
     'this_month_consents' => 'Consentiments aquest mes',
-    'total_teachers' => 'Total professors',
-    'active_teachers' => 'Professors actius',
+    'total_teachers' => 'Total professorat',
+    'active_teachers' => 'Professorat actius',
     'consents_list' => 'Llista de Consentiments',
     'filter_season' => 'Filtrar per temporada',
     'filter_status' => 'Filtrar per estat',

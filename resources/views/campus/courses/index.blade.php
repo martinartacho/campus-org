@@ -29,7 +29,8 @@
                 </a>
             @endcan
             
-            @can('campus.courses.create')
+           {{--  @can('campus.courses.create')
+                // No funciona per ara no esta accessible Copiat a import.blade.php.backup
                 <a href="{{ route('campus.campus.courses.import') }}"
                    class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
                     <i class="bi bi-upload mr-2"></i>{{ __('campus.import_courses') }}
@@ -38,7 +39,7 @@
                 <span class="text-gray-400 text-sm px-4 py-2 bg-gray-200 rounded-md cursor-not-allowed">
                     <i class="bi bi-upload mr-2"></i>{{ __('campus.import_courses') }} (Sense permisos)
                 </span>
-            @endcan
+            @endcan --}}
         </div>
     </div>
 
@@ -332,10 +333,14 @@
         </div>
     @endif
 </div>
-@if($user->hasRole('superadmin'))
+ @php
+        $user = Auth::user();
+@endphp
+@if($user->hasRole('super-admin')) 
     <div class="p-6 bg-white border-b border-gray-200">
+
         <h2 class="text-lg font-medium text-gray-900">
-            {{ __('campus.import_information') }}
+            {{ __('campus.import_information') }} (DEV)
         </h2>
         <p class="text-xs text-gray-500 mt-1">
             {{ __('campus.import_information_alert') }}
@@ -368,11 +373,11 @@
 
 <script>
 window.downloadTemplate = function() {
-    const template = `first_name,last_name,email,code,title,slug,description,credits,hours,sessions,max_students,price,level,schedule,start_date,end_date,location,format,is_active,is_public,requirements,objectives,metadata,created_at,updated_at
-Pepito,Grillo,CREACIO@campus.test,CREACIO,Creació literària: el microrelat,creacio-literaria-el-microrelat,"Creació literària: el microrelat","7","7","7","30","50.00","beginner",,"2025-09-16","2026-01-31",,,"1","1",,,,,
-Chi,Kung,CHIKUNG@campus.test,CHIKUNG1,Chi Kung dilluns,chi-kung-dilluns,"Chi Kung (grups dilluns)","27","27","27","30","50.00","beginner",,"2025-09-16","2026-01-31",,,"1","1",,,,,
-,,COMFUNC@campus.test,COMFUNC,Com funciona la terra que trepitgem,com-funciona-la-terra-que-trepitgem-1771350937,"Com funciona la terra que trepitgem","8","8","8","30","50.00",,,,,,,,,,,,
-,,NUTRICIO@campus.test,NUTRICIO,Nutrició i dietoteràpia,nutricio-i-dietoterapia-1771350937,"Nutrició i dietoteràpia",,,,,,,,,,,,,,,,,,`;
+    const template = `first_name,last_name,email,title,slug,description,credits,hours,sessions,max_students,price,level,schedule,start_date,end_date,location,format,is_active,is_public,requirements,objectives,metadata,created_at,updated_at
+Pepito,Grillo,CREACIO@campus.test,Creació literària: el microrelat,creacio-literaria-el-microrelat,"Creació literària: el microrelat","7","7","7","30","50.00","beginner",,"2025-09-16","2026-01-31",,,"1","1",,,,,
+Chi,Kung,CHIKUNG@campus.test,Chi Kung dilluns,chi-kung-dilluns,"Chi Kung (grups dilluns)","27","27","27","30","50.00","beginner",,"2025-09-16","2026-01-31",,,"1","1",,,,,
+,,COMFUNC@campus.test,Com funciona la terra que trepitgem,com-funciona-la-terra-que-trepitgem-1771350937,"Com funciona la terra que trepitgem","8","8","8","30","50.00",,,,,,,,,,,,
+,,NUTRICIO@campus.test,Nutrició i dietoteràpia,nutricio-i-dietoterapia-1771350937,"Nutrició i dietoteràpia",,,,,,,,,,,,,,,,,,`;
     
     const blob = new Blob([template], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);

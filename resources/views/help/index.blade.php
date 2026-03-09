@@ -17,16 +17,16 @@
         </p>
     </div>
 
-    <!-- Filtros de búsqueda -->
+    <!-- Filtres de cerca -->
     <div class="mb-6 p-4 bg-gray-50 rounded-lg">
         <h3 class="text-lg font-semibold mb-4 text-gray-700">
             <i class="bi bi-funnel mr-2"></i>{{ __('campus.search') }} Articles
         </h3>
         
         <form method="GET" action="{{ url('/help') }}" class="space-y-4">
-            <!-- Primera fila de filtros -->
+            <!-- Primera fila de filtres -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <!-- Filtro por búsqueda -->
+                <!-- Filtre per cerca -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">
                         {{ __('campus.search_help') }}
@@ -38,7 +38,7 @@
                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
 
-                <!-- Filtro por área -->
+                <!-- Filtre per àrea -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">
                         {{ __('campus.area') }}
@@ -54,7 +54,7 @@
                     </select>
                 </div>
 
-                <!-- Botón de búsqueda -->
+                <!-- Botó de cerca -->
                 <div class="flex items-end">
                     <button type="submit" 
                             class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors">
@@ -63,7 +63,7 @@
                 </div>
             </div>
             
-            <!-- Botones de filtro rápido por área -->
+            <!-- Botons de filtre ràpid per àrea -->
             <div class="flex flex-wrap gap-2 mt-4">
                 <a href="{{ url('/help') }}" 
                    class="inline-flex items-center px-3 py-1 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-full text-sm transition-colors">
@@ -80,7 +80,7 @@
         </form>
     </div>
 
-    <!-- Recent Articles -->
+    <!-- Articles Recents -->
     <div class="mb-12">
         <h2 class="text-2xl font-bold text-gray-900 mb-6">
             <h4 class="text-lg font-semibold 
@@ -134,7 +134,7 @@
     </div>
 
 
-    <!-- Quick Actions -->
+    <!-- Accions Ràpides -->
     <div class="bg-blue-50 rounded-xl p-8 text-center">
         <h2 class="text-2xl font-bold text-gray-900 mb-4">{{ __('campus.cannot_find_what_looking') }}</h2>
         <p class="text-gray-600 mb-6">{{ __('campus.support_team_ready') }}</p>

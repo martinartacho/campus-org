@@ -16,7 +16,7 @@ class TreasuryDashboardData
         $seasonCode = "2024-25";
         $season = CampusSeason::where("slug", $seasonCode)->first();
 
-        // Professors totals / RGPD acceptat
+        // professorat totals / RGPD acceptat
         $totalTeachers = CampusTeacher::count();
         $teachersWithConsent = ConsentHistory::where("season", $seasonCode)
             ->whereNotNull("document_path")
@@ -31,7 +31,7 @@ class TreasuryDashboardData
         return [
             "season" => $seasonCode,
             
-            // Professors totals / RGPD acceptat
+            // professorat totals / RGPD acceptat
             "teachers_total" => $totalTeachers,
             "teachers_with_rgpd" => $teachersWithConsent,
             

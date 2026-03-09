@@ -670,9 +670,5 @@ Route::get('support', [SupportController::class, 'create'])
 Route::post('support', [SupportController::class, 'store'])
     ->name('support.store');
 
-// Ruta de ejemplo para colores de roles
-Route::get('ejemplo-colores', function() {
-    return view('examples.role-colors');
-})->name('ejemplo-colores');
 
 });
