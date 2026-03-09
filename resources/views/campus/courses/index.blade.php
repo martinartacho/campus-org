@@ -333,14 +333,13 @@
         </div>
     @endif
 </div>
- @php
-        $user = Auth::user();
+@php
+    $user = Auth::user();
 @endphp
-@if($user->hasRole('super-admin')) 
+@if($user->hasRole('superadmin'))
     <div class="p-6 bg-white border-b border-gray-200">
-
         <h2 class="text-lg font-medium text-gray-900">
-            {{ __('campus.import_information') }} (DEV)
+            {{ __('campus.import_information') }}
         </h2>
         <p class="text-xs text-gray-500 mt-1">
             {{ __('campus.import_information_alert') }}
