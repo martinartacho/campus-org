@@ -332,33 +332,37 @@
         </div>
     @endif
 </div>
-<div class="p-6 bg-white border-b border-gray-200">
-    <h2 class="text-lg font-medium text-gray-900">
-        {{ __('campus.import_information') }}
-    </h2>
-    <p class="text-xs text-gray-500 mt-1">
-        {{ __('campus.import_information_alert') }}
-    <a href="#" onclick="return downloadTemplate();" class="text-indigo-600 hover:underline">
-        📥 {{ __('campus.download_template') }}
-    </a>
-</p>
-<div class="mt-2 p-3 bg-blue-50 rounded text-xs text-blue-800">
-    <strong>{{ __('campus.code_protocol') }}:</strong><br>
-    {{ __('campus.code_protocol_description') }}<br>
-    &nbsp;&nbsp;- {{ __('campus.code_protocol_prefix') }}<br>
-    &nbsp;&nbsp;- {{ __('campus.code_protocol_suffix') }}<br>
-    &nbsp;&nbsp;- {{ __('campus.code_protocol_result') }}
-</div>
-<div class="mt-2 p-3 bg-green-50 rounded text-xs text-green-800">
-    <strong>{{ __('campus.category_protocol') }}:</strong><br>
-    {{ __('campus.category_protocol_description') }}<br>
-    &nbsp;&nbsp;- {{ __('campus.category_protocol_name') }}<br>
-    &nbsp;&nbsp;- {{ __('campus.category_protocol_slug') }}<br>
-    &nbsp;&nbsp;- {{ __('campus.category_protocol_description') }}<br>
-    &nbsp;&nbsp;- {{ __('campus.category_protocol_order') }}<br>
-    • {{ __('campus.category_protocol_report') }}
-</div>
-</div>
+
+@if($user->hasRole('superadmin'))
+    <div class="p-6 bg-white border-b border-gray-200">
+        <h2 class="text-lg font-medium text-gray-900">
+            {{ __('campus.import_information') }}
+        </h2>
+        <p class="text-xs text-gray-500 mt-1">
+            {{ __('campus.import_information_alert') }}
+            <a href="#" onclick="return downloadTemplate();" class="text-indigo-600 hover:underline">
+                📥 {{ __('campus.download_template') }}
+            </a>
+        </p>
+
+        <div class="mt-2 p-3 bg-blue-50 rounded text-xs text-blue-800">
+            <strong>{{ __('campus.code_protocol') }}:</strong><br>
+            {{ __('campus.code_protocol_description') }}<br>
+            &nbsp;&nbsp;- {{ __('campus.code_protocol_prefix') }}<br>
+            &nbsp;&nbsp;- {{ __('campus.code_protocol_suffix') }}<br>
+            &nbsp;&nbsp;- {{ __('campus.code_protocol_result') }}
+        </div>
+        <div class="mt-2 p-3 bg-green-50 rounded text-xs text-green-800">
+            <strong>{{ __('campus.category_protocol') }}:</strong><br>
+            {{ __('campus.category_protocol_description') }}<br>
+            &nbsp;&nbsp;- {{ __('campus.category_protocol_name') }}<br>
+            &nbsp;&nbsp;- {{ __('campus.category_protocol_slug') }}<br>
+            &nbsp;&nbsp;- {{ __('campus.category_protocol_description') }}<br>
+            &nbsp;&nbsp;- {{ __('campus.category_protocol_order') }}<br>
+            • {{ __('campus.category_protocol_report') }}
+        </div>
+    </div>
+@endif
 
 
 @endsection
