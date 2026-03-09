@@ -99,6 +99,11 @@
             <div class="text-xs text-gray-500">@lang('campus.pending_registrations_teacher')</div>
         </div>
 
+        <div class="bg-white p-4 rounded shadow text-center">
+            <div class="text-2xl font-bold text-blue-600">{{ \App\Models\Notification::where('is_published', true)->where('recipient_type', 'all')->orWhere('recipient_type', 'role')->where('recipient_role', 'teacher')->orWhereHas('recipients', function($query) { $query->where('user_id', auth()->id()); })->count() }}</div>
+            <div class="text-xs text-gray-500">@lang('site.Notifications')</div>
+        </div>
+
         {{-- <div class="bg-white p-4 rounded shadow text-center">
             <div class="text-2xl font-bold text-purple-600">{{ $stats['completed_consents'] ?? 0 }}</div>
             <div class="text-xs text-gray-500">Consentiments completats</div>

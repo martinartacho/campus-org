@@ -23,19 +23,34 @@ class NotificationSeeder extends Seeder
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 */
         // Obtener usuarios con roles específicos
-        $admin = User::role('admin')->firstOrFail();
-        $gestor = User::role('gestor')->firstOrFail();
-        $treasury = User::role('treasury')->firstOrFail();
+        $admin = User::role('admin')->first();
+        $gestor = User::role('gestio')->first(); // Cambiado de 'manager' a 'gestio'
+        $treasury = User::role('treasury')->first();
+
+        if (!$admin) {
+            $this->command->error('No se encontró usuario con rol admin');
+            return;
+        }
+
+        if (!$gestor) {
+            $this->command->error('No se encontró usuario con rol gestio');
+            return;
+        }
+
+        if (!$treasury) {
+            $this->command->error('No se encontró usuario con rol treasury');
+            return;
+        }
 
         $editors = User::role('editor')->take(2)->get();
-        if ($editors->count() < 2) {
-            $this->command->error('Se necesitan al menos 2 usuarios con rol editor');
+        if ($editors->count() < 1) { // Cambiado de 2 a 1
+            $this->command->error('Se necesitan al menos 1 usuario con rol editor');
             return;
         }
 
         $regularUsers = User::role('user')->take(2)->get();
-        if ($regularUsers->count() < 2) {
-            $this->command->error('Se necesitan al menos 2 usuarios con rol user');
+        if ($regularUsers->count() < 1) { // Cambiado de 2 a 1
+            $this->command->error('Se necesitan al menos 1 usuario con rol user');
             return;
         }
 
@@ -54,8 +69,8 @@ class NotificationSeeder extends Seeder
 */
         // 2. Notificación pública
         Notification::create([
-            'title' => 'Mantenimiento programado',
-            'content' => 'El sistema estará inactivo el próximo sábado',
+            'title' => 'Manteniment programat',
+            'content' => 'El sistema estarà inactiu el proper dissabte',
             'sender_id' => $admin->id,
             'recipient_type' => 'all',
             'is_published' => true,
@@ -65,8 +80,8 @@ class NotificationSeeder extends Seeder
 
         // 3. Por rol
         Notification::create([
-            'title' => 'Nuevas directrices editoriales',
-            'content' => 'Por favor revisen las nuevas normas',
+            'title' => 'Noves directrius editorials',
+            'content' => 'Si us plau, reviseu les noves normes',
             'sender_id' => $gestor->id,
             'recipient_type' => 'role',
             'recipient_role' => 'editor',
@@ -77,27 +92,27 @@ class NotificationSeeder extends Seeder
 
         // 4. Específica
         $specificNotification = Notification::create([
-            'title' => 'Tu artículo ha sido aprobado',
-            'content' => 'Felicitaciones por tu publicación',
+            'title' => 'El teu article ha estat aprovat',
+            'content' => 'Felicitacions per la teva publicació',
             'sender_id' => $editors[0]->id,
             'recipient_type' => 'specific',
-            'recipient_ids' => [$regularUsers[0]->id, $regularUsers[1]->id],
+            'recipient_ids' => [$regularUsers[0]->id], // Solo un usuario
             'is_published' => true,
             'published_at' => now()->subHours(3),
             'web_sent' => true
         ]);
-        $specificNotification->recipients()->attach([$regularUsers[0]->id, $regularUsers[1]->id]);
+        $specificNotification->recipients()->attach([$regularUsers[0]->id]); // Solo un usuario
 
         // 5. Borrador
         Notification::create([
-            'title' => 'Borrador: Cambios en políticas',
-            'content' => 'Esta notificación está pendiente de revisión',
-            'sender_id' => $editors[1]->id,
+            'title' => 'Esborrany: Canvis en polítiques',
+            'content' => 'Aquesta notificació està pendent de revisió',
+            'sender_id' => $editors[0]->id, // Usar el primer editor disponible
             'recipient_type' => 'all',
             'is_published' => false,
             'published_at' => null
         ]);
 
-        $this->command->info('Notificaciones de prueba creadas exitosamente');
+        $this->command->info('Notificacions de prova creades correctament');
     }
 }

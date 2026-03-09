@@ -22,7 +22,7 @@
 
                     <x-dashboard.card title="{{ __('site.Notifications') }}" color="blue">
                         <i class="bi bi-bell-fill"></i> {{ __('site.assigned_notifications') }}
-                        <p class="text-2xl font-semibold text-gray-900">{{ \App\Models\Notification::count() }}</p>
+                        <p class="text-2xl font-semibold text-gray-900">{{ \App\Models\Notification::where('is_published', true)->where('recipient_type', 'all')->orWhereHas('recipients', function($query) { $query->where('user_id', auth()->id()); })->count() }}</p>
                     </x-dashboard.card>
                 </div>      
 

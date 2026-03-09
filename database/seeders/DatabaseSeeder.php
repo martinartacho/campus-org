@@ -26,15 +26,19 @@ class DatabaseSeeder extends Seeder
             CampusTimeSlotSeeder::class,                    // 9 - Franges horàries
             CampusCourseScheduleSeeder::class,              // 10 - Horaris
             
+            SupportPermissionsSeeder::class,                // 11 - Permisos per gestió de suport
+            IniciUsersDirSeeder::class,                     // 12 - Usuaris diretori UPGdesde CSV
             // Importació d'estudiants (només estudiants, sense matrícules)
-            IniciStudentsOnlySeeder::class,                // 11 - Students
+            // IniciStudentsOnlySeeder::class,                // 11 - Students
             
             // Articles d'ajuda sobre el sistema
             HelpArticlesSeeder::class,                      // 12 - Articles d'ajuda
+            HelpArticlesSeeder::class,                      // 13 - Articles d'ajuda
+            
             
             // Seeders comentats (no farem servir)
             // IniciStudentsImprovedSeeder::class,         // (amb matrícules - no usar)
-            // IniciSetupCompleteSeeder::class,             // (versió antiga)
+
         ]);
     }
 }

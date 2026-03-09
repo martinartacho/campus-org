@@ -7,7 +7,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 
-class InitialUsersSeeder extends Seeder
+class IniciUsersDirSeeder extends Seeder
 {
     public function run()
     {

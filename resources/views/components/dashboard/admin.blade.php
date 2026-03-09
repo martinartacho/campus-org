@@ -212,6 +212,14 @@
                 </div>
             </a>
             
+            {{-- NOTIFICACIONS --}}
+            <a href="{{ route('admin.notifications.index') }}" class="block transition-transform hover:scale-[1.02]">
+                <x-dashboard.card title="{{ __('site.Notifications') }}" color="blue">
+                    <i class="bi bi-bell-fill"></i> {{ __('site.assigned_notifications') }}
+                    <p class="text-2xl font-semibold text-gray-900">{{ \App\Models\Notification::where('is_published', true)->count() }}</p>
+                </x-dashboard.card>
+            </a>
+            
         </div>
     </div>
     @endif
