@@ -1,6 +1,6 @@
 @extends('campus.shared.layout')
 
-@section('title', __('Professors'))
+@section('title', __('Professorats'))
 @section('subtitle', __('Gestió del professorat'))
 
 @section('breadcrumbs')
@@ -16,7 +16,7 @@
         <div class="flex items-center">
             <i class="bi bi-chevron-right text-gray-400 mx-1"></i>
             <span class="ms-1 text-sm font-medium text-gray-500 md:ms-2">
-                {{ __('Professors') }}
+                {{ __('Professorats') }}
             </span>
         </div>
     </li>
@@ -25,11 +25,11 @@
 @section('content')
 <div class="container mx-auto px-4 py-8">
     <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold text-gray-900">Professors</h1>
+        <h1 class="text-3xl font-bold text-gray-900">Professorats</h1>
         @can('campus.teachers.create')
             <a href="{{ route('campus.teachers.create') }}" 
                class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200">
-                <i class="fas fa-plus mr-2"></i>Nou Professor
+                <i class="fas fa-plus mr-2"></i>Nou Professor/a
             </a>
         @endcan
     </div>
@@ -345,7 +345,7 @@
                                         @can('campus.teachers.delete')
                                             <form action="{{ route('campus.teachers.destroy', $teacher) }}" 
                                                   method="POST" 
-                                                  onsubmit="return confirm('Estàs segur que vols eliminar aquest professor?');"
+                                                  onsubmit="return confirm('Estàs segur que vols eliminar aquest professor/a?');"
                                                   class="inline">
                                                 @csrf
                                                 @method('DELETE')

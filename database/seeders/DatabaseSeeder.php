@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RolesAndPermissionsSeeder::class,              // 1
             UserSeeder::class,                           // 2
+            InitialUsersSeeder::class,                    // 2.5 - Usuarios iniciales desde CSV
             
             // Estructura base del campus
             IniciCategoriesSeasonSeeder::class,            // 3 - Categories i Temporades
@@ -27,6 +28,9 @@ class DatabaseSeeder extends Seeder
             
             // Importació d'estudiants (només estudiants, sense matrícules)
             IniciStudentsOnlySeeder::class,                // 11 - Students
+            
+            // Articles d'ajuda sobre el sistema
+            HelpArticlesSeeder::class,                      // 12 - Articles d'ajuda
             
             // Seeders comentats (no farem servir)
             // IniciStudentsImprovedSeeder::class,         // (amb matrícules - no usar)

@@ -10,20 +10,20 @@ use Illuminate\Http\JsonResponse;
 class HelpController extends Controller
 {
     /**
-     * Obtener ayuda contextual según la página actual
+     * Obtindre ajuda contextual segons la pàgina actual
      */
     public function contextual(Request $request): JsonResponse
     {
         $currentPath = $request->get('current_path', '');
         $area = $this->getAreaFromPath($currentPath);
         
-        // Obtener categorías del área actual
+        // Obtenir categories de l'àrea actual
         $categories = HelpCategory::active()
             ->byArea($area)
             ->ordered()
             ->get();
         
-        // Obtener artículos relevantes para el contexto actual
+        // Obtenir articles rellevants per al context actual
         $articles = HelpArticle::validated()
             ->byArea($area)
             ->when($currentPath, function ($query) use ($currentPath) {
@@ -56,7 +56,7 @@ class HelpController extends Controller
     }
     
     /**
-     * Obtener todos los artículos de un área
+     * Obtenir tots els articles d'una àrea
      */
     public function byArea(Request $request, string $area): JsonResponse
     {
@@ -81,7 +81,7 @@ class HelpController extends Controller
     }
     
     /**
-     * Buscar artículos de ayuda
+     * Buscar articles d'ajuda
      */
     public function search(Request $request): JsonResponse
     {
@@ -117,7 +117,7 @@ class HelpController extends Controller
     }
     
     /**
-     * Obtener un artículo específico
+     * Obtenir un article específic
      */
     public function show(string $slug): JsonResponse
     {
@@ -141,7 +141,7 @@ class HelpController extends Controller
     }
     
     /**
-     * Obtener todas las áreas disponibles
+     * Obtenir totes les àrees disponibles
      */
     public function areas(): JsonResponse
     {
@@ -149,22 +149,87 @@ class HelpController extends Controller
             'cursos' => [
                 'name' => 'Cursos',
                 'icon' => 'bi-book',
-                'description' => 'Ayuda sobre gestión de cursos',
+                'description' => 'Ajuda sobre gestió de cursos',
             ],
             'matricula' => [
                 'name' => 'Matrícula',
                 'icon' => 'bi-person-plus',
-                'description' => 'Ayuda sobre matriculación',
+                'description' => 'Ajuda sobre matriculació',
             ],
-            'materiales' => [
-                'name' => 'Materiales',
+            'materials' => [
+                'name' => 'Materials',
                 'icon' => 'bi-folder',
-                'description' => 'Ayuda sobre materiales didácticos',
+                'description' => 'Ajuda sobre materials didàctics',
             ],
-            'configuracion' => [
-                'name' => 'Configuración',
+            'configuracio' => [
+                'name' => 'Configuració',
                 'icon' => 'bi-gear',
-                'description' => 'Ayuda sobre configuración del sistema',
+                'description' => 'Ajuda sobre configuració del sistema',
+            ],
+            'super-admin' => [
+                'name' => 'Super Admin',
+                'icon' => 'bi-shield-fill',
+                'description' => 'Ajuda sobre el rol Super Admin',
+            ],
+            'admin' => [
+                'name' => 'Admin',
+                'icon' => 'bi-person-badge-fill',
+                'description' => 'Ajuda sobre el rol Admin',
+            ],
+            'director' => [
+                'name' => 'Director',
+                'icon' => 'bi-mortarboard-fill',
+                'description' => 'Ajuda sobre el rol Director',
+            ],
+            'manager' => [
+                'name' => 'Manager',
+                'icon' => 'bi-people-fill',
+                'description' => 'Ajuda sobre el rol Manager',
+            ],
+            'comunicacio' => [
+                'name' => 'Comunicació',
+                'icon' => 'bi-chat-dots-fill',
+                'description' => 'Ajuda sobre el rol Comunicació',
+            ],
+            'coordinacio' => [
+                'name' => 'Coordinació',
+                'icon' => 'bi-diagram-3-fill',
+                'description' => 'Ajuda sobre el rol Coordinació',
+            ],
+            'secretaria' => [
+                'name' => 'Secretaria',
+                'icon' => 'bi-building',
+                'description' => 'Ajuda sobre el rol Secretaria',
+            ],
+            'gestio' => [
+                'name' => 'Gestió',
+                'icon' => 'bi-gear-fill',
+                'description' => 'Ajuda sobre el rol Gestió',
+            ],
+            'treasury' => [
+                'name' => 'Treasury',
+                'icon' => 'bi-cash-stack',
+                'description' => 'Ajuda sobre el rol Treasury',
+            ],
+            'editor' => [
+                'name' => 'Editor',
+                'icon' => 'bi-pencil-square',
+                'description' => 'Ajuda sobre el rol Editor',
+            ],
+            'teacher' => [
+                'name' => 'Professor/a',
+                'icon' => 'bi-person-video3',
+                'description' => 'Ajuda sobre el rol Professor/a',
+            ],
+            'student' => [
+                'name' => 'Estudiant',
+                'icon' => 'bi-mortarboard',
+                'description' => 'Ajuda sobre el rol Estudiant',
+            ],
+            'user' => [
+                'name' => 'Usuari',
+                'icon' => 'bi-person',
+                'description' => 'Ajuda sobre el rol Usuari',
             ],
         ];
         
@@ -172,7 +237,7 @@ class HelpController extends Controller
     }
     
     /**
-     * Determinar el área a partir de la ruta actual
+     * Determinar l'àrea a partir de la ruta actual
      */
     private function getAreaFromPath(string $path): string
     {
@@ -182,12 +247,35 @@ class HelpController extends Controller
             'registration' => 'matricula',
             'matricula' => 'matricula',
             'registrations' => 'matricula',
-            'materials' => 'materiales',
-            'materiales' => 'materiales',
-            'settings' => 'configuracion',
-            'configuracion' => 'configuracion',
-            'profile' => 'configuracion',
-            'perfil' => 'configuracion',
+            'materials' => 'materials',
+            'settings' => 'configuracio',
+            'configuracio' => 'configuracio',
+            'profile' => 'configuracio',
+            'perfil' => 'configuracio',
+            'roles' => 'super-admin',
+            'super-admin' => 'super-admin',
+            'superadmin' => 'super-admin',
+            'admin' => 'admin',
+            'administrator' => 'admin',
+            'director' => 'director',
+            'manager' => 'manager',
+            'comunicacion' => 'comunicacio',
+            'comunicacio' => 'comunicacio',
+            'coordinacion' => 'coordinacio',
+            'coordinacio' => 'coordinacio',
+            'secretaria' => 'secretaria',
+            'gestion' => 'gestio',
+            'gestio' => 'gestio',
+            'treasury' => 'treasury',
+            'tesoreria' => 'treasury',
+            'editor' => 'editor',
+            'teacher' => 'teacher',
+            'professor' => 'teacher',
+            'student' => 'student',
+            'estudiante' => 'student',
+            'user' => 'user',
+            'usuario' => 'user',
+            'usuaris' => 'user',
         ];
         
         foreach ($areaMapping as $keyword => $area) {
@@ -196,6 +284,6 @@ class HelpController extends Controller
             }
         }
         
-        return 'cursos'; // Por defecto
+        return 'cursos'; // Per defecte
     }
 }

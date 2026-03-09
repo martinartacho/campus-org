@@ -29,7 +29,8 @@
                 </a>
             @endcan
             
-            @can('campus.courses.create')
+           {{--  @can('campus.courses.create')
+                // No funciona per ara no esta accessible Copiat a import.blade.php.backup
                 <a href="{{ route('campus.campus.courses.import') }}"
                    class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
                     <i class="bi bi-upload mr-2"></i>{{ __('campus.import_courses') }}
@@ -38,7 +39,7 @@
                 <span class="text-gray-400 text-sm px-4 py-2 bg-gray-200 rounded-md cursor-not-allowed">
                     <i class="bi bi-upload mr-2"></i>{{ __('campus.import_courses') }} (Sense permisos)
                 </span>
-            @endcan
+            @endcan --}}
         </div>
     </div>
 
@@ -111,10 +112,10 @@
                             <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
                                 <i class="bi bi-search mr-2"></i>{{ __('Search') }}
                             </button>
-                            <a href="{{ route('campus.courses.index') }}" 
-                               class="px-6 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500">
+                            <!-- <a href="{{ route('campus.campus.courses.clear-season') }}" 
+                                class="px-6 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500">
                                 <i class="bi bi-x-circle mr-2"></i>{{ __('Clear') }}
-                            </a>
+                            </a> -->
                         </div>
                         
                         <!-- Ordenamiento -->
@@ -165,26 +166,55 @@
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            {{ __('campus.code') }}
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'code', 'sort_order' => request('sort_by') == 'code' && request('sort_order') == 'asc' ? 'desc' : 'asc']) }}" class="text-gray-700 hover:text-blue-600 flex items-center">
+                                {{ __('campus.code') }}
+                                @if(request('sort_by') == 'code')
+                                    <i class="bi bi-chevron-{{ request('sort_order') == 'asc' ? 'up' : 'down' }} ml-1"></i>
+                                @else 
+                                <i class="bi bi-chevron-{{ request('sort_order') == 'asc' ? 'down' : 'up' }} ml-1"></i>
+                                @endif
+                            </a>
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            {{ __('campus.title') }}
+                            <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'title', 'sort_order' => request('sort_by') == 'title' && request('sort_order') == 'asc' ? 'desc' : 'asc']) }}" class="text-gray-700 hover:text-blue-600 flex items-center">
+                                {{ __('campus.title') }}
+                                @if(request('sort_by') == 'title')
+                                    <i class="bi bi-chevron-{{ request('sort_order') == 'asc' ? 'up' : 'down' }} ml-1"></i>
+                                @else 
+                                    <i class="bi bi-chevron-{{ request('sort_order') == 'asc' ? 'down' : 'up' }} ml-1"></i>
+                                @endif
+                            </a>
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            {{ __('campus.category') }}
+                            <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'category', 'sort_order' => request('sort_by') == 'category' && request('sort_order') == 'asc' ? 'desc' : 'asc']) }}" class="text-gray-700 hover:text-blue-600 flex items-center">
+                                {{ __('campus.category') }}
+                                @if(request('sort_by') == 'category')
+                                    <i class="bi bi-chevron-{{ request('sort_order') == 'asc' ? 'up' : 'down' }} ml-1"></i>
+                                @else 
+                                    <i class="bi bi-chevron-{{ request('sort_order') == 'asc' ? 'down' : 'up' }} ml-1"></i>
+                                @endif
+                            </a>
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            {{ __('campus.season') }}
+                            <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'season', 'sort_order' => request('sort_by') == 'season' && request('sort_order') == 'asc' ? 'desc' : 'asc']) }}" class="text-gray-700 hover:text-blue-600 flex items-center">
+                                {{ __('campus.season') }}
+                                @if(request('sort_by') == 'season')
+                                    <i class="bi bi-chevron-{{ request('sort_order') == 'asc' ? 'up' : 'down' }} ml-1"></i>
+                                @else 
+                                    <i class="bi bi-chevron-{{ request('sort_order') == 'asc' ? 'down' : 'up' }} ml-1"></i>
+                                @endif
+                            </a>
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            {{ __('campus.dates') }}
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            {{ __('campus.status') }}
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            {{ __('Actions') }}
+                            <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'dates', 'sort_order' => request('sort_by') == 'dates' && request('sort_order') == 'asc' ? 'desc' : 'asc']) }}" class="text-gray-700 hover:text-blue-600 flex items-center">
+                                {{ __('campus.dates') }}
+                                @if(request('sort_by') == 'dates')
+                                    <i class="bi bi-chevron-{{ request('sort_order') == 'asc' ? 'up' : 'down' }} ml-1"></i>
+                                @else 
+                                    <i class="bi bi-chevron-{{ request('sort_order') == 'asc' ? 'down' : 'up' }} ml-1"></i>
+                                @endif
+                            </a>
                         </th>
                     </tr>
                 </thead>
@@ -192,7 +222,12 @@
                     @forelse($courses as $course)
                         <tr class="hover:bg-gray-50">
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                {{ $course->code }}
+                                <div class="flex items-center space-x-2">
+                                    @if($course->isBaseCourse())
+                                        <i class="bi bi-star-fill mr-1"></i>
+                                    @endif
+                                    {{ $course->code }}
+                                </div>
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-900" style="max-width: 200px; width: 200px;">
                                 <div class="space-y-1">
@@ -248,12 +283,26 @@
                                         <i class="bi bi-eye"></i>
                                     </a>
                                 @endcan
-                                @can('campus.courses.edit')
-                                    <a href="{{ route('campus.courses.edit', $course) }}" 
-                                       class="text-indigo-600 hover:text-indigo-900 mr-3">
-                                        <i class="bi bi-pencil"></i>
-                                    </a>
-                                @endcan
+                                
+                                @if($course->isBaseCourse())
+                                    @can('campus.courses.create')
+                                        <a href="{{ route('campus.courses.create') }}?parent_id={{ $course->id }}" 
+                                           class="text-green-600 hover:text-green-900 mr-3"
+                                           title="Crear instància d'aquest curs base">
+                                            <i class="bi bi-plus-circle"></i>
+                                        </a>
+                                    @endcan
+                                @endif
+                               
+                                    @can('campus.courses.edit')
+                                        <a href="{{ route('campus.courses.edit', $course) }}" 
+                                           class="text-indigo-600 hover:text-indigo-900 mr-3">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                    @endcan
+                                
+                                
+                              
                                 @can('campus.courses.delete')
                                     <form action="{{ route('campus.courses.destroy', $course) }}" method="POST" class="inline">
                                         @csrf
@@ -284,44 +333,51 @@
         </div>
     @endif
 </div>
-<div class="p-6 bg-white border-b border-gray-200">
-    <h2 class="text-lg font-medium text-gray-900">
-        {{ __('campus.import_information') }}
-    </h2>
-    <p class="text-xs text-gray-500 mt-1">
-        {{ __('campus.import_information_alert') }}
-    <a href="#" onclick="return downloadTemplate();" class="text-indigo-600 hover:underline">
-        📥 {{ __('campus.download_template') }}
-    </a>
-</p>
-<div class="mt-2 p-3 bg-blue-50 rounded text-xs text-blue-800">
-    <strong>{{ __('campus.code_protocol') }}:</strong><br>
-    {{ __('campus.code_protocol_description') }}<br>
-    &nbsp;&nbsp;- {{ __('campus.code_protocol_prefix') }}<br>
-    &nbsp;&nbsp;- {{ __('campus.code_protocol_suffix') }}<br>
-    &nbsp;&nbsp;- {{ __('campus.code_protocol_result') }}
-</div>
-<div class="mt-2 p-3 bg-green-50 rounded text-xs text-green-800">
-    <strong>{{ __('campus.category_protocol') }}:</strong><br>
-    {{ __('campus.category_protocol_description') }}<br>
-    &nbsp;&nbsp;- {{ __('campus.category_protocol_name') }}<br>
-    &nbsp;&nbsp;- {{ __('campus.category_protocol_slug') }}<br>
-    &nbsp;&nbsp;- {{ __('campus.category_protocol_description') }}<br>
-    &nbsp;&nbsp;- {{ __('campus.category_protocol_order') }}<br>
-    • {{ __('campus.category_protocol_report') }}
-</div>
-</div>
+ @php
+        $user = Auth::user();
+@endphp
+@if($user->hasRole('super-admin')) 
+    <div class="p-6 bg-white border-b border-gray-200">
+
+        <h2 class="text-lg font-medium text-gray-900">
+            {{ __('campus.import_information') }} (DEV)
+        </h2>
+        <p class="text-xs text-gray-500 mt-1">
+            {{ __('campus.import_information_alert') }}
+            <a href="#" onclick="return downloadTemplate();" class="text-indigo-600 hover:underline">
+                📥 {{ __('campus.download_template') }}
+            </a>
+        </p>
+
+        <div class="mt-2 p-3 bg-blue-50 rounded text-xs text-blue-800">
+            <strong>{{ __('campus.code_protocol') }}:</strong><br>
+            {{ __('campus.code_protocol_description') }}<br>
+            &nbsp;&nbsp;- {{ __('campus.code_protocol_prefix') }}<br>
+            &nbsp;&nbsp;- {{ __('campus.code_protocol_suffix') }}<br>
+            &nbsp;&nbsp;- {{ __('campus.code_protocol_result') }}
+        </div>
+        <div class="mt-2 p-3 bg-green-50 rounded text-xs text-green-800">
+            <strong>{{ __('campus.category_protocol') }}:</strong><br>
+            {{ __('campus.category_protocol_description') }}<br>
+            &nbsp;&nbsp;- {{ __('campus.category_protocol_name') }}<br>
+            &nbsp;&nbsp;- {{ __('campus.category_protocol_slug') }}<br>
+            &nbsp;&nbsp;- {{ __('campus.category_protocol_description') }}<br>
+            &nbsp;&nbsp;- {{ __('campus.category_protocol_order') }}<br>
+            • {{ __('campus.category_protocol_report') }}
+        </div>
+    </div>
+@endif
 
 
 @endsection
 
 <script>
 window.downloadTemplate = function() {
-    const template = `first_name,last_name,email,code,title,slug,description,credits,hours,sessions,max_students,price,level,schedule,start_date,end_date,location,format,is_active,is_public,requirements,objectives,metadata,created_at,updated_at
-Pepito,Grillo,CREACIO@campus.test,CREACIO,Creació literària: el microrelat,creacio-literaria-el-microrelat,"Creació literària: el microrelat","7","7","7","30","50.00","beginner",,"2025-09-16","2026-01-31",,,"1","1",,,,,
-Chi,Kung,CHIKUNG@campus.test,CHIKUNG1,Chi Kung dilluns,chi-kung-dilluns,"Chi Kung (grups dilluns)","27","27","27","30","50.00","beginner",,"2025-09-16","2026-01-31",,,"1","1",,,,,
-,,COMFUNC@campus.test,COMFUNC,Com funciona la terra que trepitgem,com-funciona-la-terra-que-trepitgem-1771350937,"Com funciona la terra que trepitgem","8","8","8","30","50.00",,,,,,,,,,,,
-,,NUTRICIO@campus.test,NUTRICIO,Nutrició i dietoteràpia,nutricio-i-dietoterapia-1771350937,"Nutrició i dietoteràpia",,,,,,,,,,,,,,,,,,`;
+    const template = `first_name,last_name,email,title,slug,description,credits,hours,sessions,max_students,price,level,schedule,start_date,end_date,location,format,is_active,is_public,requirements,objectives,metadata,created_at,updated_at
+Pepito,Grillo,CREACIO@campus.test,Creació literària: el microrelat,creacio-literaria-el-microrelat,"Creació literària: el microrelat","7","7","7","30","50.00","beginner",,"2025-09-16","2026-01-31",,,"1","1",,,,,
+Chi,Kung,CHIKUNG@campus.test,Chi Kung dilluns,chi-kung-dilluns,"Chi Kung (grups dilluns)","27","27","27","30","50.00","beginner",,"2025-09-16","2026-01-31",,,"1","1",,,,,
+,,COMFUNC@campus.test,Com funciona la terra que trepitgem,com-funciona-la-terra-que-trepitgem-1771350937,"Com funciona la terra que trepitgem","8","8","8","30","50.00",,,,,,,,,,,,
+,,NUTRICIO@campus.test,Nutrició i dietoteràpia,nutricio-i-dietoterapia-1771350937,"Nutrició i dietoteràpia",,,,,,,,,,,,,,,,,,`;
     
     const blob = new Blob([template], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);

@@ -80,7 +80,7 @@
                     </div>
                     <div>
                         <h3 class="font-semibold text-gray-800">Professorat</h3>
-                        <p class="text-sm text-gray-600">Gestió de professors</p>
+                        <p class="text-sm text-gray-600">Gestió del professorat</p>
                     </div>
                 </div>
             </a>

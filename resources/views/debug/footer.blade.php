@@ -18,7 +18,7 @@
         
         // Determinar tipo de usuario para CRM
         $userType = 'desconocido';
-        if ($user->hasRole('admin') || $user->hasRole('superadmin')) {
+        if ($user->hasRole('admin') || $user->hasRole('super-admin')) {
             $userType = 'administrador';
         } elseif ($user->hasRole('director')) {
             $userType = 'director';
@@ -89,10 +89,14 @@
                                 @php
                                     $roleColors = [
                                         'admin' => 'bg-red-500',
-                                        'superadmin' => 'bg-red-700',
+                                        'super-admin' => 'bg-red-700',
                                         'director' => 'bg-blue-500',
-                                        'profesor' => 'bg-green-500',
+                                        'manager' => 'bg-manager-600',
+                                        'coordinacio' => 'bg-coordinacio-500',
+                                        'comunicacio' => 'bg-comunicacio-500',
                                         'secretaria' => 'bg-purple-500',
+                                        'gestio' => 'bg-gestio-500',
+                                        'profesor' => 'bg-green-500',
                                         'alumno' => 'bg-yellow-500',
                                         'gestor' => 'bg-indigo-500',
                                         'treasury' => 'bg-pink-500',

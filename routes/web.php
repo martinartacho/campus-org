@@ -449,8 +449,8 @@ Route::get('test-import', function() {
             ->middleware('can:campus.courses.view');
         
         // Clear season session
-        Route::get('courses/clear-season', [CourseController::class, 'clearSeason'])
-            ->name('courses.clear-season')
+        Route::get('courses/clear-season', [\App\Http\Controllers\Campus\CourseController::class, 'clearSeason'])
+            ->name("campus.courses.clear-season")
             ->middleware('can:campus.courses.view');
         
         // Course data for AJAX
@@ -669,5 +669,6 @@ Route::get('support', [SupportController::class, 'create'])
 
 Route::post('support', [SupportController::class, 'store'])
     ->name('support.store');
+
 
 });

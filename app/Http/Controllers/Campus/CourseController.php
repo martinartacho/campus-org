@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Campus;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Validation\Rule;
 use App\Models\CampusCourse;
 use App\Models\CampusSeason;
 use App\Models\CampusCategory;
@@ -39,7 +40,8 @@ class CourseController extends Controller
         
         // Filtro por código
         if ($request->filled('search_code')) {
-            $query->where('code', 'like', '%' . $request->search_code . '%');
+            $searchCode = $request->search_code;
+            $query->where('code', 'like', '%' . $searchCode . '%');
         }
         
         // Filtro por título
@@ -110,9 +112,32 @@ class CourseController extends Controller
         $sortBy = $request->get('sort_by', 'start_date');
         $sortOrder = $request->get('sort_order', 'desc');
         
-        if (in_array($sortBy, ['title', 'code', 'start_date', 'end_date', 'price', 'hours', 'max_students'])) {
-            $query->orderBy($sortBy, $sortOrder);
+        
+       // Columnes permeses per ordenar
+    $allowedColumns = ['code', 'title', 'category', 'season', 'dates'];
+
+    // Mapeig de columnes a camps de la base de dades
+        $columnMapping = [
+            'code' => 'code',
+            'title' => 'title',
+            'category' => 'category_id',
+            'season' => 'season_id',
+            'dates' => 'start_date'
+        ];
+                
+        // Verificar que la columna sigui permesa
+        if (in_array($sortBy, $allowedColumns)) {
+            $dbColumn = $columnMapping[$sortBy];
+                    
+            // Per a category i season, ordenar per nom
+            if (in_array($sortBy, ['category', 'season'])) {
+            $query->with([$sortBy => function($query) {
+                $query->orderBy('name');
+            }]);
         }
+                
+        $query->orderBy($dbColumn, $sortOrder);
+    }
         
         $courses = $query->paginate(15)->withQueryString();
         
@@ -145,18 +170,85 @@ class CourseController extends Controller
     /**
      * Show the form for creating a new course.
      */
-    public function create()
+    public function create(Request $request)
     {
-        // Obtener temporadas según permisos
-        if (auth()->user()->hasRole('admin') || auth()->user()->can('manage_seasons')) {
-            $seasons = CampusSeason::withCount("courses")->orderByDesc('season_start')->get();
+        // Comprovar si venim des del botó "Crear Instància"
+        $parentId = $request->get('parent_id');
+        $parentCourse = null;
+        
+        if ($parentId) {
+            $parentCourse = CampusCourse::find($parentId);
+            if (!$parentCourse) {
+                return redirect()
+                    ->route('campus.courses.index')
+                    ->with('error', 'Curs pare no vàlid');
+            }
+        }
+        
+        // Obtenir totes les temporades per al select
+        if (auth()->user()->hasRole('superadmin')) {
+            $seasons = CampusSeason::orderBy('season_start', 'desc')->get();
         } else {
             $seasons = CampusSeason::getVisibleForUser()->withCount("courses")->orderByDesc('season_start')->get();
         }
         
         $categories = CampusCategory::orderBy('name')->get();
-
-        return view('campus.courses.create', compact('seasons', 'categories'));
+        
+        // Pre-omplir dades per a instàncies
+        $defaultData = [];
+        if ($parentCourse) {
+            // Generar codi d'instància (següent número de la mateixa família)
+            $instanceCode = $this->generateInstanceCode($parentCourse->code);
+            
+            // Comptar instàncies existents per determinar el número d'edició
+            $instanceCount = CampusCourse::where('parent_id', $parentCourse->id)->count();
+            $editionNumber = $instanceCount + 1;
+            
+            // Obtenir temporada seleccionada (per defecte l'actual)
+            $selectedSeasonId = $parentCourse->season_id;
+            $selectedSeason = CampusSeason::find($selectedSeasonId);
+            
+            $defaultData = [
+                'code' => $instanceCode,
+                'season_id' => $selectedSeasonId,
+                'category_id' => $parentCourse->category_id,
+                'title' => $parentCourse->title . ' - Edició ' . $editionNumber,
+                'description' => $parentCourse->description,
+                'start_date' => $selectedSeason?->season_start?->format('Y-m-d'),
+                'end_date' => $selectedSeason?->season_end?->format('Y-m-d'),
+                'price' => $parentCourse->price,
+                'level' => $parentCourse->level,
+                'location' => $parentCourse->location,
+                'format' => $parentCourse->format,
+                'hours' => $parentCourse->hours,
+                'max_students' => $parentCourse->max_students,
+                'sessions' => $parentCourse->sessions ?? 15,
+                'is_active' => true,
+                'is_public' => true,
+            ];
+        }
+        
+        return view('campus.courses.create', compact('seasons', 'categories', 'parentCourse', 'defaultData'));
+    }
+    
+    /**
+     * Generate instance code based on parent course code
+     */
+    public function generateInstanceCode($parentCode)
+    {
+        // Extreure les lletres del codi pare (ex: PA de PA-001)
+        $letters = substr($parentCode, 0, strpos($parentCode, '-'));
+        
+        // Buscar el màxim número existent per aquestes lletres
+        $lastCode = CampusCourse::where('code', 'like', $letters . '-%')
+            ->orderByRaw('CAST(SUBSTRING(code, -3) AS UNSIGNED) DESC')
+            ->value('code');
+        
+        // Calcular el següent número
+        $nextNumber = $lastCode ? intval(substr($lastCode, -3)) + 1 : 1;
+        $suffix = str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+        
+        return $letters . '-' . $suffix;
     }
 
     /**
@@ -164,15 +256,76 @@ class CourseController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $this->validatedData($request);
+        try {
+            $data = $this->validatedData($request);
 
-        $data['slug'] = Str::slug($data['title']);
+            // Aplicar valors per defecte si són null
+            $data = $this->applyDefaultValues($data);
 
-        $course = CampusCourse::create($data);
+            // Generar codi automàticament
+            if (empty($data['code'])) {
+                $data['code'] = \App\Models\CampusCourse::generateCourseCode($data['title']);
+            }
+            
+            // Verificar que el codi sigui únic
+            $existingCourse = \App\Models\CampusCourse::where('code', $data['code'])->first();
+            if ($existingCourse) {
+                return redirect()
+                    ->back()
+                    ->withInput()
+                    ->withErrors(['code' => "El codi '{$data['code']}' ja existeix. Si us plau, selecciona un altre títol o introdueix un codi diferent."]);
+            }
 
-        return redirect()
-            ->route('campus.courses.show', $course)
-            ->with('success', __('campus.course_created'));
+            $data['slug'] = Str::slug($data['title']);
+
+            $course = CampusCourse::create($data);
+
+            return redirect()
+                ->route('campus.courses.show', $course)
+                ->with('success', __('campus.course_created'));
+                
+        } catch (\Exception $e) {
+            \Log::error('Error creant curs: ' . $e->getMessage());
+            return redirect()
+                ->back()
+                ->withInput()
+                ->withErrors(['error' => 'Error creant el curs: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Aplicar valors per defecte als camps nullable
+     */
+    private function applyDefaultValues(array $data): array
+    {
+        // Valors per defecte segons lògica de negoci
+        $defaults = [
+            'credits' => 1,           // Mínim 1 crèdit ECTS
+            'hours' => 25,             // Mínim 25 hores
+            'sessions' => 15,          // Mínim 15 sessions
+            'max_students' => 20,       // Mínim 20 alumnes
+            'price' => 0,              // Gratuït per defecte
+            'level' => 'beginner',      // Nivell principiant per defecte
+            'is_active' => true,        // Actiu per defecte
+            'is_public' => true,        // Públic per defecte
+        ];
+        
+        // Per instàncies, si no tenim season_id, agafar el de la sessió actual
+        if (!isset($data['season_id']) || $data['season_id'] === null) {
+            $currentSeason = \App\Models\CampusSeason::where('is_current', true)->first();
+            if ($currentSeason) {
+                $defaults['season_id'] = $currentSeason->id;
+            }
+        }
+        
+        // Aplicar valors per defecte només si són null
+        foreach ($defaults as $field => $default) {
+            if (!isset($data[$field]) || $data[$field] === null || $data[$field] === '') {
+                $data[$field] = $default;
+            }
+        }
+
+        return $data;
     }
 
     /**
@@ -331,7 +484,7 @@ class CourseController extends Controller
     /**
      * Validation rules shared by store & update.
      */
-    protected function validatedData(Request $request): array
+    protected function validatedData(Request $request, CampusCourse $course = null): array
     {
         // Debug: Mostrar todos los datos recibidos antes de validar
         \Log::info('Request received:', [
@@ -343,16 +496,15 @@ class CourseController extends Controller
         $data = $request->validate([
             'season_id'     => ['required', 'exists:campus_seasons,id'],
             'category_id'   => ['nullable', 'exists:campus_categories,id'],
-            'code'          => ['nullable', 'string', 'max:50'],
+            'code' => ['nullable', 'string', 'max:50', Rule::unique("campus_courses", "code")->ignore($course?->id)],
             'title'         => ['required', 'string', 'max:255'],
             'slug'          => ['nullable', 'string', 'max:255'],
             'description'   => ['nullable', 'string'],
-            'credits'       => ['nullable', 'integer', 'min:0', 'max:240'],
-            'hours'         => ['nullable', 'integer', 'min:1', 'max:1000'],
-            'sessions'      => ['nullable', 'integer', 'min:1', 'max:100'],
-            'max_students'  => ['nullable', 'integer', 'min:1'],
+            'hours'         => ['nullable', 'integer', 'min:0', 'max:1000'],
+            'sessions'      => ['nullable', 'integer', 'min:0', 'max:100'],
+            'max_students'  => ['nullable', 'integer', 'min:0'],
             'price'         => ['nullable', 'numeric', 'min:0'],
-            'level'         => ['nullable', 'string', 'max:50'],
+            'level'         => ['nullable', 'string', 'in:beginner,intermediate,advanced,expert'],
             'schedule'      => ['nullable', 'array'],
             'start_date'    => ['nullable', 'date'],
             'end_date'      => ['nullable', 'date', 'after_or_equal:start_date'],
@@ -366,8 +518,7 @@ class CourseController extends Controller
             'metadata'      => ['nullable', 'array'],
             'space_id'      => ['nullable', 'exists:campus_spaces,id'],
             'time_slot_id'  => ['nullable', 'exists:campus_time_slots,id'],
-            'semester'       => ['nullable', 'string', 'in:1Q,2Q'],
-            'status_completed' => ['nullable', 'string'],  // Agregar esta regla
+            'parent_id'     => ['nullable', 'exists:campus_courses,id'],
         ]);
         
         // Debug: Mostrar todos los datos recibidos y validados

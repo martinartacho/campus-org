@@ -1,6 +1,6 @@
 @extends('campus.shared.layout')
 
-@section('title', __('Editar Professor'))
+@section('title', __('Editar Professor/a'))
 @section('subtitle', $teacher->first_name . ' ' . $teacher->last_name)
 
 @section('breadcrumbs')
@@ -16,7 +16,7 @@
         <div class="flex items-center">
             <i class="bi bi-chevron-right text-gray-400 mx-1"></i>
             <a href="{{ route('campus.teachers.index') }}" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2">
-                {{ __('Professors') }}
+                {{ __('Professorats') }}
             </a>
         </div>
     </li>
@@ -41,7 +41,7 @@
 @section('content')
 <div class="container mx-auto px-4 py-8">
     <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold text-gray-900">Editar Professor: {{ $teacher->first_name }} {{ $teacher->last_name }}</h1>
+        <h1 class="text-3xl font-bold text-gray-900">Editar Professorat: {{ $teacher->first_name }} {{ $teacher->last_name }}</h1>
         <a href="{{ route('campus.teachers.index') }}" 
            class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200">
             <i class="fas fa-arrow-left mr-2"></i>Tornar
@@ -355,7 +355,7 @@
                                         <div class="flex space-x-2">
                                             <select name="role[]" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 {{ in_array($teacherCourse->id, $restrictedCourses ?? []) ? 'bg-gray-100 cursor-not-allowed' : '' }}"
                                                     {{ in_array($teacherCourse->id, $restrictedCourses ?? []) ? 'disabled' : '' }}>
-                                                <option value="teacher" {{ $teacherCourse->pivot->role == 'teacher' ? 'selected' : '' }}>Professor</option>
+                                                <option value="teacher" {{ $teacherCourse->pivot->role == 'teacher' ? 'selected' : '' }}>Professor/a</option>
                                                 <option value="assistant" {{ $teacherCourse->pivot->role == 'assistant' ? 'selected' : '' }}>Assistent</option>
                                             </select>
                                             <button type="button" 
@@ -399,7 +399,7 @@
                                         </label>
                                         <div class="flex space-x-2">
                                             <select name="role[]" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                                <option value="teacher">Professor</option>
+                                                <option value="teacher">Professor/a</option>
                                                 <option value="assistant">Assistent</option>
                                             </select>
                                             <button type="button" 
@@ -473,7 +473,7 @@ function addCourseField() {
                 </label>
                 <div class="flex space-x-2">
                     <select name="role[]" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="teacher">Professor</option>
+                        <option value="teacher">Professor/a</option>
                         <option value="assistant">Assistent</option>
                     </select>
                     <button type="button" 

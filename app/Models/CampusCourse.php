@@ -28,14 +28,27 @@ class CampusCourse extends Model
         self::STATUS_CLOSED => 'campus.status_closed',
     ];
 
+    // Level constants
+    const LEVEL_BEGINNER = 'beginner';
+    const LEVEL_INTERMEDIATE = 'intermediate';
+    const LEVEL_ADVANCED = 'advanced';
+    const LEVEL_EXPERT = 'expert';
+
+    public const LEVELS = [
+        self::LEVEL_BEGINNER => 'Principiant',
+        self::LEVEL_INTERMEDIATE => 'Intermedi',
+        self::LEVEL_ADVANCED => 'Avançat',
+        self::LEVEL_EXPERT => 'Expert',
+    ];
+
     protected $fillable = [
         'season_id',
         'category_id',
         'code',
+        'parent_id',
         'title',
         'slug',
         'description',
-        'credits',
         'hours',
         'sessions',
         'max_students',
@@ -59,9 +72,7 @@ class CampusCourse extends Model
     ];
 
     protected $casts = [
-        'credits' => 'integer',
         'hours' => 'integer',
-        'sessions' => 'integer',
         'max_students' => 'integer',
         'price' => 'decimal:2',
         'start_date' => 'date',
@@ -97,9 +108,147 @@ class CampusCourse extends Model
     }
 
     /**
-     * Check if there's a course conflict in the same space and time slot.
+     * Get the parent course.
      */
-    public static function hasConflict($spaceId, $timeSlotId, $excludeCourseId = null)
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(CampusCourse::class, 'parent_id');
+    }
+
+    /**
+     * Get the child courses.
+     */
+    public function children(): HasMany
+    {
+        return $this->hasMany(CampusCourse::class, 'parent_id');
+    }
+
+    /**
+     * Get the root parent course.
+     */
+    public function root(): BelongsTo
+    {
+        return $this->belongsTo(CampusCourse::class, 'parent_id')->with('parent');
+    }
+
+    /**
+     * Check if this is a base course (no parent).
+     */
+    public function isBaseCourse(): bool
+    {
+        return is_null($this->parent_id);
+    }
+
+    /**
+     * Check if this is an instance course (has parent).
+     */
+    public function isInstanceCourse(): bool
+    {
+        return !is_null($this->parent_id);
+    }
+
+    /**
+     * Get all courses in the same family.
+     */
+    public function getFamilyAttribute(): Collection
+    {
+        if ($this->isBaseCourse()) {
+            return $this->children;
+        } else {
+            return $this->parent->children;
+        }
+    }
+
+    /**
+     * Get instances of this course.
+     */
+    public function instances(): HasMany
+    {
+        return $this->hasMany(CampusCourse::class, 'parent_id');
+    }
+
+    /**
+     * Get the appropriate code.
+     */
+    public function getEffectiveCodeAttribute(): string
+    {
+        return $this->code ?? '';
+    }
+
+    /**
+     * Generate a unique course code from title
+     * 
+     * @param string $title
+     * @return string
+     */
+    private function generateCourseCode($title)
+    {
+        // 1. Normalitzar text (accents i caràcters especials)
+        $normalized = Str::ascii($title);
+        $normalized = strtoupper($normalized);
+        $normalized = preg_replace('/[^A-Z\s]/', '', $normalized);
+
+        // 2. Separar paraules
+        $words = array_values(array_filter(explode(' ', $normalized)));
+        $count = count($words);
+
+        $base = '';
+
+        if ($count == 1) {
+            $base = substr($words[0], 0, 6);
+        }
+
+        elseif ($count == 2) {
+            $base =
+                substr($words[0], 0, 3) .
+                substr($words[1], 0, 3);
+        }
+
+        elseif ($count == 3) {
+            foreach ($words as $w) {
+                $base .= substr($w, 0, 2);
+            }
+        }
+
+        elseif ($count == 4) {
+            $base =
+                substr($words[0], 0, 3) .
+                substr($words[1], 0, 1) .
+                substr($words[2], 0, 1) .
+                substr($words[3], 0, 1);
+        }
+
+        elseif ($count == 5) {
+            $base =
+                substr($words[0], 0, 2) .
+                substr($words[1], 0, 2) .
+                substr($words[2], 0, 1) .
+                substr($words[3], 0, 1);
+        }
+
+        else { // 6 o més
+            foreach ($words as $w) {
+                $base .= substr($w, 0, 1);
+                if (strlen($base) >= 6) break;
+            }
+        }
+
+        // Assegurar 6 caràcters
+        $base = substr(str_pad($base, 6, 'X'), 0, 6);
+
+        // 3. Generar número incremental
+        $counter = 1;
+
+        do {
+            $code = $base . '-' . str_pad($counter, 3, '0', STR_PAD_LEFT);
+            $exists = CampusCourse::where('code', $code)->exists();
+            $counter++;
+        } while ($exists);
+
+        return $code;
+    }
+
+        public static function hasConflict($spaceId, $timeSlotId, $excludeCourseId = null)
     {
         $query = self::where('space_id', $spaceId)
                    ->where('time_slot_id', $timeSlotId);

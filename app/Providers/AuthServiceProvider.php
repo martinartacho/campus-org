@@ -45,37 +45,37 @@ class AuthServiceProvider extends ServiceProvider
         
         // Gates para notificaciones
         Gate::define('view-notification', function (User $user, Notification $notification) {
-            return $user->hasRole(['admin', 'gestor','treasury' ]) || 
+            return $user->hasRole(['admin', 'manager', 'coordinacio', 'gestio', 'comunicacio', 'secretaria', 'treasury' ]) || 
                 ($user->hasRole('editor') && $notification->sender_id == $user->id) ||
                 $notification->recipients->contains($user->id);
         });
         
         Gate::define('edit-notification', function (User $user, Notification $notification) {
-            return $user->hasRole(['admin', 'gestor', 'treasury' ]) || 
+            return $user->hasRole(['admin', 'manager', 'coordinacio', 'gestio', 'comunicacio', 'secretaria', 'treasury' ]) || 
                 ($user->hasRole('editor') && $notification->sender_id == $user->id);
         });
 
         Gate::define('update-notification', function (User $user, Notification $notification) {
-            return $user->hasRole(['admin', 'gestor', 'treasury']) || 
+            return $user->hasRole(['admin', 'manager', 'coordinacio', 'gestio', 'comunicacio', 'secretaria', 'treasury']) || 
                 ($user->hasRole('editor') && $notification->sender_id == $user->id);
         });
 
         Gate::define('delete-notification', function (User $user, Notification $notification) {
-            return $user->hasRole(['admin', 'gestor', 'treasury']) || 
+            return $user->hasRole(['admin', 'manager', 'coordinacio', 'gestio', 'comunicacio', 'secretaria', 'treasury']) || 
                 ($user->hasRole('editor') && $notification->sender_id == $user->id);
         });
 
         // Gates para acciones generales (sin necesidad de modelo)
         Gate::define('list-notifications', function (User $user) {
-            return $user->hasAnyRole(['admin', 'gestor', 'treasury', 'editor', 'user']);
+            return $user->hasAnyRole(['admin', 'manager', 'coordinacio', 'gestio', 'comunicacio', 'secretaria', 'treasury', 'editor', 'user']);
         });
 
         Gate::define('create-notification', function (User $user) {
-            return $user->hasAnyRole(['admin', 'gestor', 'treasury', 'editor']);
+            return $user->hasAnyRole(['admin', 'manager', 'coordinacio', 'gestio', 'comunicacio', 'secretaria', 'treasury', 'editor']);
         });
 
         Gate::define('publish-notification', function (User $user) {
-            return $user->hasAnyRole(['admin', 'gestor','treasury']);
+            return $user->hasAnyRole(['admin', 'manager', 'coordinacio', 'gestio', 'comunicacio', 'secretaria', 'treasury', 'editor']);
         });
 
         // Gates para eventos (mantenemos estos gates para compatibilidad)
@@ -84,15 +84,15 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         Gate::define('create-events', function (User $user) {
-            return $user->hasRole(['admin', 'gestor', 'treasury', 'editor']);
+            return $user->hasRole(['admin', 'manager', 'coordinacio', 'gestio', 'comunicacio', 'secretaria', 'treasury', 'editor']);
         });
 
         Gate::define('edit-events', function (User $user) {
-            return $user->hasRole(['admin', 'gestor', 'treasury', 'editor']);
+            return $user->hasRole(['admin', 'manager', 'coordinacio', 'gestio', 'comunicacio', 'secretaria', 'treasury', 'editor']);
         });
 
         Gate::define('delete-events', function (User $user) {
-            return $user->hasRole(['admin', 'gestor','treasury']);
+            return $user->hasRole(['admin', 'manager', 'coordinacio', 'gestio', 'comunicacio', 'secretaria', 'treasury']);
         });
     }
 }

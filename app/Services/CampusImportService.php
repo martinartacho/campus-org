@@ -291,7 +291,7 @@ class CampusImportService
         if (!empty($csvCode)) {
             $courseCode = $csvCode;
         } else {
-            // Generar código automáticamente
+            // Generar código automáticamente usando el mismo algoritmo que el modelo
             $courseCode = $this->generateCourseCode($courseTitle);
         }
         
@@ -382,34 +382,76 @@ class CampusImportService
         }
     }
     
+    /**
+     * Generate a unique course code from title
+     * 
+     * @param string $title
+     * @return string
+     */
     private function generateCourseCode($title)
     {
-        // Extraer las primeras 3-4 letras del título (sin espacios ni caracteres especiales)
-        $prefix = preg_replace('/[^a-zA-Z]/', '', $title);
-        $prefix = strtoupper(substr($prefix, 0, 4));
-        
-        // Si el título es muy corto, usar al menos 3 caracteres
-        if (strlen($prefix) < 3) {
-            $prefix = strtoupper(substr(preg_replace('/[^a-zA-Z]/', '', $title), 0, 3));
+        // 1. Normalitzar text (accents i caràcters especials)
+        $normalized = Str::ascii($title);
+        $normalized = strtoupper($normalized);
+        $normalized = preg_replace('/[^A-Z\s]/', '', $normalized);
+
+        // 2. Separar paraules
+        $words = array_values(array_filter(explode(' ', $normalized)));
+        $count = count($words);
+
+        $base = '';
+
+        if ($count == 1) {
+            $base = substr($words[0], 0, 6);
         }
-        
-        // Obtener el último ID de curso y sumar 1
-        $lastCourse = CampusCourse::orderBy('id', 'desc')->first();
-        $nextId = $lastCourse ? $lastCourse->id + 1 : 1;
-        $suffix = str_pad($nextId, 3, '0', STR_PAD_LEFT);
-        
-        // Generar código con formato: LETRAS + ID
-        $code = $prefix . $suffix;
-        
-        // Asegurar que sea único
-        $originalCode = $code;
+
+        elseif ($count == 2) {
+            $base =
+                substr($words[0], 0, 3) .
+                substr($words[1], 0, 3);
+        }
+
+        elseif ($count == 3) {
+            foreach ($words as $w) {
+                $base .= substr($w, 0, 2);
+            }
+        }
+
+        elseif ($count == 4) {
+            $base =
+                substr($words[0], 0, 3) .
+                substr($words[1], 0, 1) .
+                substr($words[2], 0, 1) .
+                substr($words[3], 0, 1);
+        }
+
+        elseif ($count == 5) {
+            $base =
+                substr($words[0], 0, 2) .
+                substr($words[1], 0, 2) .
+                substr($words[2], 0, 1) .
+                substr($words[3], 0, 1);
+        }
+
+        else { // 6 o més
+            foreach ($words as $w) {
+                $base .= substr($w, 0, 1);
+                if (strlen($base) >= 6) break;
+            }
+        }
+
+        // Assegurar 6 caràcters
+        $base = substr(str_pad($base, 6, 'X'), 0, 6);
+
+        // 3. Generar número incremental
         $counter = 1;
-        
-        while (CampusCourse::where('code', $code)->exists()) {
-            $code = $originalCode . str_pad($counter, 2, '0', STR_PAD_LEFT);
+
+        do {
+            $code = $base . '-' . str_pad($counter, 3, '0', STR_PAD_LEFT);
+            $exists = CampusCourse::where('code', $code)->exists();
             $counter++;
-        }
-        
+        } while ($exists);
+
         return $code;
     }
     

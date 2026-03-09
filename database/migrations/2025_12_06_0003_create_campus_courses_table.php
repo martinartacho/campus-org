@@ -16,11 +16,10 @@ return new class extends Migration
             $table->string('title');
             $table->string('slug')->unique();
             $table->text('description')->nullable();
-            $table->integer('credits')->default(0);
             $table->integer('hours')->default(0);
             $table->integer('max_students')->nullable();
             $table->decimal('price', 10, 2)->nullable();
-            $table->enum('level', ['beginner', 'intermediate', 'advanced', 'expert']);
+            $table->enum('level', ['beginner', 'intermediate', 'advanced', 'expert'])->nullable();
             $table->json('schedule')->nullable(); // Horarios en formato JSON
             $table->date('start_date');
             $table->date('end_date');
