@@ -29,7 +29,7 @@
                 </a>
             @endcan
             
-            @can('campus.courses.create')
+            <!-- @can('campus.courses.create')
                 <a href="{{ route('campus.campus.courses.import') }}"
                    class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
                     <i class="bi bi-upload mr-2"></i>{{ __('campus.import_courses') }}
@@ -38,7 +38,7 @@
                 <span class="text-gray-400 text-sm px-4 py-2 bg-gray-200 rounded-md cursor-not-allowed">
                     <i class="bi bi-upload mr-2"></i>{{ __('campus.import_courses') }} (Sense permisos)
                 </span>
-            @endcan
+            @endcan -->
         </div>
     </div>
 
@@ -333,6 +333,9 @@
     @endif
 </div>
 
+@php
+    $user = Auth::user();
+@endphp
 @if($user->hasRole('superadmin'))
     <div class="p-6 bg-white border-b border-gray-200">
         <h2 class="text-lg font-medium text-gray-900">
@@ -340,9 +343,9 @@
         </h2>
         <p class="text-xs text-gray-500 mt-1">
             {{ __('campus.import_information_alert') }}
-            <a href="#" onclick="return downloadTemplate();" class="text-indigo-600 hover:underline">
+            <!-- <a href="#" onclick="return downloadTemplate();" class="text-indigo-600 hover:underline">
                 📥 {{ __('campus.download_template') }}
-            </a>
+            </a> -->
         </p>
 
         <div class="mt-2 p-3 bg-blue-50 rounded text-xs text-blue-800">

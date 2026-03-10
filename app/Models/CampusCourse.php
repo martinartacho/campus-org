@@ -181,7 +181,7 @@ class CampusCourse extends Model
      * @param string $title
      * @return string
      */
-    private function generateCourseCode($title)
+    public static function generateCourseCode($title)
     {
         // 1. Normalitzar text (accents i caràcters especials)
         $normalized = Str::ascii($title);
