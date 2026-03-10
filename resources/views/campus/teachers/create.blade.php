@@ -308,9 +308,9 @@
                                         Curs
                                     </label>
                                     <div class="flex space-x-2">
-                                        <select name="courses[]" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="toggleNewCourseForm(this)">
+                                        <select name="courses[]" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                                             <option value="">Seleccionar curs...</option>
-                                            <option value="new">+ Crear nou curs...</option>
+                                            <!-- <option value="new">+ Crear nou curs...</option> -->
                                             @foreach($courses as $course)
                                                 <option value="{{ $course->id }}">{{ $course->title }} ({{ $course->code }})</option>
                                             @endforeach
@@ -338,69 +338,10 @@
                                     </select>
                                 </div>
                             </div>
-                            
-                            <!-- Camp per a "Crear nou curs" (es mostra només si es selecciona) -->
-                            <div class="new-course-name" style="display: none;" class="mt-4 bg-blue-50 border border-blue-200 p-4 rounded-lg">
-                                <div class="bg-yellow-50 border border-yellow-200 p-3 rounded-lg mb-4">
-                                    <div class="flex items-start">
-                                        <i class="fas fa-exclamation-triangle text-yellow-600 mt-1 mr-2"></i>
-                                        <div>
-                                            <h5 class="text-sm font-semibold text-yellow-800 mb-1">Requisits per crear un nou curs</h5>
-                                            <ul class="text-xs text-yellow-700 space-y-1">
-                                                <li>• <strong>Codi del curs</strong>: ha de ser únic i no pot existir</li>
-                                                <li>• <strong>Nom del curs</strong>: obligatori</li>
-                                                <li>• <strong>Hores assignades</strong>: seran les hores totals del curs</li>
-                                                <li>• Si el codi ja existeix, no es podrà crear el professor/a</li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                                <h4 class="text-sm font-semibold mb-3 text-blue-900">Crear Nou Curs</h4>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">
-                                            Nom del Curs <span class="text-red-500">*</span>
-                                        </label>
-                                        <input type="text" 
-                                               name="new_course_title[]" 
-                                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                               placeholder="Introduïu el nom del nou curs..."
-                                               value="{{ old('new_course_title.0') }}"
-                                               required>
-                                        @error('new_course_title.0')
-                                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                        @enderror
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">
-                                            Codi del Curs <span class="text-red-500">*</span>
-                                        </label>
-                                        <input type="text" 
-                                               name="new_course_code[]" 
-                                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                               placeholder="Ex: CURS001"
-                                               value="{{ old('new_course_code.0') }}"
-                                               onblur="this.value = this.value.trim().toUpperCase()"
-                                               required>
-                                        @error('new_course_code.0')
-                                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                        @enderror
-                                    </div>
-                                </div>
-                                <p class="text-xs text-gray-600 mt-2">
-                                    <i class="fas fa-info-circle mr-1"></i>
-                                    Les hores assignades seran les hores totals del curs. La resta de dades s'assignaran automàticament.
-                                </p>
-                            </div>
                         </div>
                     </div>
                     
-                    <button type="button" 
-                            onclick="addCourseField()" 
-                            class="mt-4 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200">
-                        <i class="fas fa-plus mr-2"></i>Afegir Curs
-                    </button>
-                </div>
+                                    </div>
 
                 <!-- Botones -->
                 <div class="flex justify-end space-x-4">
@@ -418,142 +359,3 @@
     </div>
 </div>
 
-<script>
-// Esperar a que el DOM esté completamente cargado
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM cargado, formulario de profesor listo');
-});
-
-function addCourseField() {
-    const container = document.getElementById('courses-container');
-    const courseItem = document.createElement('div');
-    courseItem.className = 'course-item bg-gray-50 p-4 rounded-lg';
-    
-    courseItem.innerHTML = `
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">
-                    Curs
-                </label>
-                <div class="flex space-x-2">
-                    <select name="courses[]" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="toggleNewCourseForm(this)">
-                        <option value="">Seleccionar curs...</option>
-                        <option value="new">+ Crear nou curs...</option>
-                        @foreach($courses as $course)
-                            <option value="{{ $course->id }}">{{ $course->title }} ({{ $course->code }})</option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">
-                    Hores Assignades
-                </label>
-                <input type="number" 
-                       name="hours_assigned[]" 
-                       min="0" 
-                       step="1"
-                       placeholder="0"
-                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">
-                    Rol
-                </label>
-                <div class="flex space-x-2">
-                    <select name="role[]" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="teacher">Professor/a</option>
-                        <option value="assistant">Assistent</option>
-                    </select>
-                    <button type="button" 
-                            onclick="this.closest('.course-item').remove()" 
-                            class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Camp per a "Crear nou curs" (es mostra només si es selecciona) -->
-            <div class="new-course-name" style="display: none;" class="mt-4 bg-blue-50 border border-blue-200 p-4 rounded-lg">
-                <div class="bg-yellow-50 border border-yellow-200 p-3 rounded-lg mb-4">
-                    <div class="flex items-start">
-                        <i class="fas fa-exclamation-triangle text-yellow-600 mt-1 mr-2"></i>
-                        <div>
-                            <h5 class="text-sm font-semibold text-yellow-800 mb-1">Requisits per crear un nou curs</h5>
-                            <ul class="text-xs text-yellow-700 space-y-1">
-                                <li>• <strong>Codi del curs</strong>: ha de ser únic i no pot existir</li>
-                                <li>• <strong>Nom del curs</strong>: obligatori</li>
-                                <li>• <strong>Hores assignades</strong>: seran les hores totals del curs</li>
-                                <li>• Si el codi ja existeix, no es podrà crear el professor/a</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <h4 class="text-sm font-semibold mb-3 text-blue-900">Crear Nou Curs</h4>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">
-                            Nom del Curs <span class="text-red-500">*</span>
-                        </label>
-                        <input type="text" 
-                               name="new_course_title[]" 
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                               placeholder="Introduïu el nom del nou curs..."
-                               required>
-                    @error('new_course_title.*')
-                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">
-                            Codi del Curs <span class="text-red-500">*</span>
-                        </label>
-                        <input type="text" 
-                               name="new_course_code[]" 
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                               placeholder="Ex: CURS001"
-                               onblur="this.value = this.value.trim().toUpperCase()"
-                               required>
-                    @error('new_course_code.*')
-                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                    </div>
-                </div>
-                <p class="text-xs text-gray-600 mt-2">
-                    <i class="fas fa-info-circle mr-1"></i>
-                    Les hores assignades seran les hores totals del curs. La resta de dades s'assignaran automàticament.
-                </p>
-            </div>
-        </div>
-    `;
-    
-    container.appendChild(courseItem);
-}
-
-function toggleNewCourseForm(select) {
-    const courseItem = select.closest('.course-item');
-    const newCourseName = courseItem.querySelector('.new-course-name');
-    
-    // Verificar si se encontró el campo
-    if (!newCourseName) {
-        console.error('No se encontró el campo de nombre de nuevo curso');
-        console.log('courseItem:', courseItem);
-        console.log('innerHTML:', courseItem ? courseItem.innerHTML : 'null');
-        return;
-    }
-    
-    if (select.value === 'new') {
-        newCourseName.style.display = 'block';
-    } else {
-        newCourseName.style.display = 'none';
-        // Limpiar campos del formulario
-        const inputs = newCourseName.querySelectorAll('input');
-        if (inputs) {
-            inputs.forEach(field => {
-                field.value = '';
-            });
-        }
-    }
-}
-</script>
-@endsection

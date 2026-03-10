@@ -9,6 +9,8 @@ use App\Models\CampusTeacherPayment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Hash;
 
 class TeacherController extends Controller
 {
@@ -247,16 +249,20 @@ class TeacherController extends Controller
                 }
                 
                 // Generar código de profesor único
-                $teacherCode = 'PROF_' . str_pad(CampusTeacher::count() + 1, 4, '0', STR_PAD_LEFT);
+                $lastTeacher = CampusTeacher::orderBy('id', 'desc')->first();
+                $lastCode = $lastTeacher ? (int)str_replace('PROF_', '', $lastTeacher->teacher_code) : 0;
+                $teacherCode = 'PROF_' . str_pad($lastCode + 1, 4, '0', STR_PAD_LEFT);
                 \Log::info('Teacher code generated:', ['code' => $teacherCode]);
-
+               //  dd('here end '. $teacherCode);
                 // Crear usuario
                 Log::info('Creating user...');
+
+               
                 $user = \App\Models\User::create([
-            'name' => $validated['first_name'] . ' ' . $validated['last_name'],
-            'email' => $validated['email'],
-            'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD')), // Contraseña temporal
-        ]);
+                    'name' => $validated['first_name'] . ' ' . $validated['last_name'],
+                    'email' => $validated['email'],
+                    'password' => Hash::make(env('SEEDER_DEFAULT_PASSWORD')), // Contraseña temporal
+                ]);
         
         // Asignar rol de profesor
         Log::info('Assigning teacher role to user:', ['user_id' => $user->id]);
