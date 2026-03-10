@@ -212,7 +212,7 @@ class CourseController extends Controller
                 'code' => $instanceCode,
                 'season_id' => $selectedSeasonId,
                 'category_id' => $parentCourse->category_id,
-                'title' => $parentCourse->title . ' - Edició ' . $editionNumber,
+                'title' => $parentCourse->title,
                 'description' => $parentCourse->description,
                 'start_date' => $selectedSeason?->season_start?->format('Y-m-d'),
                 'end_date' => $selectedSeason?->season_end?->format('Y-m-d'),
@@ -570,6 +570,30 @@ class CourseController extends Controller
         return response()->json([
             'conflict' => false
         ]);
+    }
+
+    /**
+     * Generate course code from title
+     */
+    public function generateCode(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255'
+        ]);
+
+        try {
+            $code = CampusCourse::generateCourseCode($request->title);
+            
+            return response()->json([
+                'success' => true,
+                'code' => $code
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**

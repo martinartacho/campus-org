@@ -4,7 +4,10 @@
 <button @click="open = !open" class="relative p-2 text-gray-700 hover:text-gray-900 focus:outline-none" data-bell-button>
 
     <i class="bi bi-bell text-xl"></i> {{ __('site.Notifications') }}
-    @if($unreadCount = auth()->user()->unreadNotifications->count())
+    @php
+        $unreadCount = auth()->user()->unreadNotifications()->where('is_published', true)->count();
+    @endphp
+    @if($unreadCount > 0)
         <span id="unread-count" class="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white bg-red-600 rounded-full transform translate-x-1/2 -translate-y-1/2">
             {{ $unreadCount }}
         </span>
@@ -23,17 +26,15 @@
          style="display: none;">
 
         <div class="max-h-96 overflow-y-auto">
-            @forelse(auth()->user()->notifications->take(5) as $notification)
+            @php
+                $unreadNotifications = auth()->user()->unreadNotifications()->where('is_published', true)->take(5)->get();
+            @endphp
+            @forelse($unreadNotifications as $notification)
                 <a href="{{ route('notifications.show', $notification) }}"
                    class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition">
                     <div class="flex justify-between">
-                        @if(!$notification->isRead())
-                            <span class="font-semibold">{{ $notification->title }}</span>
-                            <span class="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full">{{ __('site.New') }}</span>
-                            @else
-                            <span class="{{ $notification->isRead() ? 'opacity-75' : 'font-bold' }}">{{ $notification->title }}</span>
-                            <i class="bi bi-eye"></i>
-                        @endif
+                        <span class="font-semibold">{{ $notification->title }}</span>
+                        <span class="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full">{{ __('site.New') }}</span>
                     </div>
                     <div class="text-xs text-gray-500">{{ $notification->created_at->diffForHumans() }}</div>
                 </a>

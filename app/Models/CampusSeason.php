@@ -12,6 +12,82 @@ class CampusSeason extends Model
 {
     use HasFactory;
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($season) {
+            if (empty($season->slug)) {
+                $season->slug = \Str::slug($season->name);
+            }
+            
+            if (empty($season->academic_year)) {
+                // Generar academic_year basado en las fechas de temporada
+                if ($season->season_start && $season->season_end) {
+                    $startYear = $season->season_start->year;
+                    $endYear = $season->season_end->year;
+                    
+                    if ($startYear === $endYear) {
+                        $season->academic_year = (string)$startYear;
+                    } else {
+                        $season->academic_year = $startYear . '-' . substr($endYear, -2);
+                    }
+                } else {
+                    // Fallback: usar año actual
+                    $season->academic_year = date('Y') . '-' . substr(date('Y') + 1, -2);
+                }
+            }
+            
+            // Generar fechas de registro si no existen
+            if (empty($season->registration_start) || empty($season->registration_end)) {
+                if ($season->season_start && $season->season_end) {
+                    // Si no hay registration_start, usar 2 meses antes del inicio de temporada
+                    if (empty($season->registration_start)) {
+                        $season->registration_start = $season->season_start->copy()->subMonths(2);
+                    }
+                    
+                    // Si no hay registration_end, usar 1 semana antes del inicio de temporada
+                    if (empty($season->registration_end)) {
+                        $season->registration_end = $season->season_start->copy()->subWeek();
+                    }
+                } else {
+                    // Fallback: usar fechas por defecto
+                    if (empty($season->registration_start)) {
+                        $season->registration_start = now()->copy()->subMonths(2);
+                    }
+                    if (empty($season->registration_end)) {
+                        $season->registration_end = now()->copy()->addWeek();
+                    }
+                }
+            }
+            
+            // Establecer tipo por defecto si no existe
+            if (empty($season->type)) {
+                $season->type = 'annual';
+            }
+        });
+
+        static::updating(function ($season) {
+            if ($season->isDirty('name') && empty($season->slug)) {
+                $season->slug = \Str::slug($season->name);
+            }
+            
+            if ($season->isDirty(['season_start', 'season_end']) && empty($season->academic_year)) {
+                // Regenerar academic_year si cambian las fechas
+                if ($season->season_start && $season->season_end) {
+                    $startYear = $season->season_start->year;
+                    $endYear = $season->season_end->year;
+                    
+                    if ($startYear === $endYear) {
+                        $season->academic_year = (string)$startYear;
+                    } else {
+                        $season->academic_year = $startYear . '-' . substr($endYear, -2);
+                    }
+                }
+            }
+        });
+    }
+
     protected $fillable = [
         'name',
         'slug',

@@ -32,7 +32,13 @@ class AppServiceProvider extends ServiceProvider
     {
         if ($this->app->environment('local')) {
             // Desactivar realmente el envío de emails en local
-           //  Mail::alwaysTo('preview@mailpit');
+            Mail::alwaysTo('preview@mailpit');
+        }
+        
+        // En producción, no redirigir emails
+        if ($this->app->environment('production')) {
+            // Configuración de producción - emails reales
+            // Mail::alwaysTo(null); // Desactiva el redireccionamiento
         }
         // Middleware para manejar el idioma
         $this->app->router->group([

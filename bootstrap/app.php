@@ -45,5 +45,8 @@ return Application::configure(basePath: dirname(__DIR__))
         \App\Console\Commands\ModuleCreateCommand::class,
         \App\Console\Commands\ChangeDefaultPasswords::class,
         \App\Console\Commands\CreateDemoUser::class,
+        \App\Console\Commands\SendPendingEmailNotifications::class,
+        \App\Console\Commands\SendPendingPushNotifications::class,
+        \App\Console\Commands\ScheduleEmailNotifications::class,
     ])
     ->create();

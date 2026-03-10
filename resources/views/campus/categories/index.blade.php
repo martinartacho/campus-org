@@ -30,10 +30,10 @@
                 <i class="bi bi-tags text-4xl text-gray-300 mb-4"></i>
                 <h3 class="text-lg font-medium text-gray-900 mb-2">{{ __('campus.no_records') }}</h3>
                 <p class="text-gray-600 mb-6">{{ __('campus.no_records') }}</p>
-                <x-primary-button href="{{ route('campus.categories.create') }}">
+                <x-campus-button href="{{ route('campus.categories.create') }}" variant="header">
                     <i class="bi bi-plus-lg me-2"></i>
-                    {{ __('campus.create_category') }} popo
-                </x-primary-button>
+                    {{ __('campus.new_category') }} 
+                </x-campus-button>
             </div>
         @else
             <table class="min-w-full divide-y divide-gray-200">

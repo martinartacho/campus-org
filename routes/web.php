@@ -463,6 +463,11 @@ Route::get('test-import', function() {
             ->name('courses.check-conflict')
             ->middleware('can:campus.courses.view');
                 
+        // Generate course code endpoint
+        Route::post('courses/generate-code', [CourseController::class, 'generateCode'])
+            ->name('courses.generate-code')
+            ->middleware('can:campus.courses.create');
+                
         // Teachers assignment
         Route::middleware(['auth'])->group(function () {
 

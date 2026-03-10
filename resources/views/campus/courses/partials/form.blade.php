@@ -3,15 +3,75 @@
     $defaultData ??= [];
 @endphp
 
-{{-- Code --}}
+{{-- Title and Code --}}
+{{-- <div class="grid grid-cols-1 md:grid-cols-2 gap-4"> --}}
+{{--     <div>
+        <x-input-label for="title" :value="__('campus.title')" />
+        <x-text-input id="title" name="title" type="text"
+            class="mt-1 block w-full"
+            required
+            :value="old('title', $defaultData['title'] ?? $course?->title)" />
+        <x-input-error :messages="$errors->get('title')" class="mt-2" />
+    </div>
+    
+    <div>
+        <x-input-label for="code" :value="__('campus.code')" />
+        <div class="mt-1 flex gap-2">
+            <x-text-input id="code" name="code" type="text"
+                class="flex-1"
+                placeholder="Es generarà automàticament (ex: PA-002)"
+                :value="old('code', $defaultData['code'] ?? $course?->code)" />
+            <button type="button" 
+                    onclick="generateCodeFromTitle()"
+                    class="px-3 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
+                    title="Generar codi automàticament">
+                <i class="bi bi-magic"></i>
+            </button>
+        </div>
+        <x-input-error :messages="$errors->get('code')" class="mt-2" />
+        <small class="text-gray-500 text-xs">Deixa en blanc per generar automàticament o fes clic a la barita màgica</small>
+    </div> --}}
+{{-- </div> --}}
+
+{{-- Title and Code --}}
+{{-- <div class="grid grid-cols-1 md:grid-cols-4 gap-4"> --}}
 <div>
-    <x-input-label for="code" :value="__('campus.code')" />
-    <x-text-input id="code" name="code" type="text"
-        class="mt-1 block w-full"
-        placeholder="Es generarà automàticament (ex: PA-002)"
-        :value="old('code', $defaultData['code'] ?? $course?->code)" />
-    <x-input-error :messages="$errors->get('code')" class="mt-2" />
-    <small class="text-gray-500 text-xs">Deixa en blanc per generar automàticament</small>
+    {{-- TITLE (3/4) --}}
+    <div class="md:col-span-3">
+        <x-input-label for="title" :value="__('campus.title')" />
+        <x-text-input id="title" name="title" type="text"
+            class="mt-1 block w-full"
+            required
+            :value="old('title', $defaultData['title'] ?? $course?->title)" />
+        <x-input-error :messages="$errors->get('title')" class="mt-2" />
+    </div>
+
+    {{-- CODE (1/4) --}}
+    <div class="md:col-span-1">
+        <x-input-label for="code" :value="__('campus.code')" />
+
+        <div class="mt-1 flex items-center gap-2">
+            <x-text-input id="code" name="code" type="text"
+                class="flex-1"
+                placeholder="Auto (ex: PA-002)"
+                :value="old('code', $defaultData['code'] ?? $course?->code)" />
+
+            <button type="button"
+                onclick="generateCodeFromTitle()"
+                class="px-3 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
+                title="Generar codi">
+                <i class="bi bi-magic"></i>
+            </button>
+        </div>
+
+        <x-input-error :messages="$errors->get('code')" class="mt-2" />
+
+        <small class="text-gray-500 text-xs">
+            Automàtic o amb la vareta màgica
+        </small>
+
+    </div>
+
 </div>
 
 {{-- Season --}}
@@ -45,16 +105,6 @@
         @endforeach
     </select>
     <x-input-error :messages="$errors->get('category_id')" class="mt-2" />
-</div>
-
-{{-- Title --}}
-<div>
-    <x-input-label for="title" :value="__('campus.title')" />
-    <x-text-input id="title" name="title" type="text"
-        class="mt-1 block w-full"
-        required
-        :value="old('title', $defaultData['title'] ?? $course?->title)" />
-    <x-input-error :messages="$errors->get('title')" class="mt-2" />
 </div>
 
 {{-- Description --}}
@@ -186,13 +236,89 @@
 <div class="flex items-center gap-6">
     <label class="flex items-center gap-2">
         <input type="checkbox" name="is_active" value="1"
-            @checked(old('is_active', $defaultData['is_active'] ?? $course?->is_active ?? true))>
+            @checked(old('is_active', $defaultData['is_active'] ?? $course?->is_active ?? false))>
         <span>{{ __('campus.active') }}</span>
     </label>
 
     <label class="flex items-center gap-2">
         <input type="checkbox" name="is_public" value="1"
-            @checked(old('is_public', $defaultData['is_public'] ?? $course?->is_public ?? true))>
+            @checked(old('is_public', $defaultData['is_public'] ?? $course?->is_public ?? false))>
         <span>{{ __('campus.public') }}</span>
     </label>
 </div>
+
+@push('scripts')
+<script>
+// Datos de temporadas para autocompletar fechas
+const seasonsData = @json($seasons->map(function($season) {
+    return [
+        'id' => $season->id,
+        'season_start' => $season->season_start ? $season->season_start->format('Y-m-d') : null,
+        'season_end' => $season->season_end ? $season->season_end->format('Y-m-d') : null
+    ];
+}));
+
+// Autocompletar fechas del curso con las fechas de la temporada
+document.getElementById('season_id').addEventListener('change', function() {
+    const seasonId = parseInt(this.value);
+    const season = seasonsData.find(s => s.id === seasonId);
+    
+    if (season) {
+        const startDateField = document.getElementById('start_date');
+        const endDateField = document.getElementById('end_date');
+        
+        // Solo autocompletar si los campos están vacíos
+        if (!startDateField.value && season.season_start) {
+            startDateField.value = season.season_start;
+        }
+        
+        if (!endDateField.value && season.season_end) {
+            endDateField.value = season.season_end;
+        }
+    }
+});
+
+// Función para generar código usando el método de Laravel
+function generateCodeFromTitle() {
+    const titleField = document.getElementById('title');
+    const codeField = document.getElementById('code');
+    const title = titleField.value.trim();
+    
+    if (!title) {
+        alert('Si us plau, escriu primer el títol del curs');
+        titleField.focus();
+        return;
+    }
+    
+    // Hacer llamada AJAX para usar el método de Laravel
+    fetch('/campus/courses/generate-code', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({ title: title })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            codeField.value = data.code;
+        } else {
+            alert('Error generant el codi: ' + (data.error || 'Error desconegut'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error de connexió generant el codi');
+    });
+}
+
+// Autocompletar fechas al cargar la página si ya hay una temporada seleccionada
+document.addEventListener('DOMContentLoaded', function() {
+    const seasonSelect = document.getElementById('season_id');
+    if (seasonSelect.value) {
+        seasonSelect.dispatchEvent(new Event('change'));
+    }
+});
+</script>
+@endpush

@@ -211,23 +211,18 @@ class RolesAndPermissionsSeeder extends Seeder
             'campus.teachers.delete',
             'campus.teachers.assign',
             
-            // CRUD Courses (para poder crear nuevos cursos desde teacher creation)
-            'campus.courses.view',
-            'campus.courses.create',
-            'campus.courses.edit',
-            'campus.courses.delete',
+            // Cursos
+            'campus.courses.index', 'campus.courses.view',
+            'campus.registrations.index', 'campus.registrations.view', 'campus.registrations.create',
+            'campus.registrations.edit', 'campus.registrations.manage',
             
-            // Consentiments RGPD
-            'campus.consents.request',
-            'campus.consents.view',
-            
-            // Informes
-            'campus.reports.financial',
+            // Notificaciones
+            'notifications.index', 'notifications.create', 'notifications.edit', 'notifications.delete', 'notifications.view',
+            'events.index', 'events.view', 'events.create', 'events.edit', 'events.delete',
         ];
         $treasury->syncPermissions($treasuryPermissions);
 
     
-
         // ROL: EDITOR (només contingut)
         $editor = Role::firstOrCreate(['name' => 'editor']);
         $editorPermissions = [
