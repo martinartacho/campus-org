@@ -172,5 +172,21 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
             collect();
     }
 
+    /**
+     * Get notification count for the user.
+     */
+    public function getNotificationCountAttribute()
+    {
+        return $this->notifications()->where('is_published', true)->count();
+    }
+
+    /**
+     * Get unread notification count for the user.
+     */
+    public function getUnreadNotificationCountAttribute()
+    {
+        return $this->unreadNotifications()->where('is_published', true)->count();
+    }
+
 }
 

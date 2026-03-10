@@ -8,10 +8,66 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Str;
 
 class CampusCourse extends Model
 {
     use HasFactory;
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($course) {
+            if (empty($course->slug)) {
+                $baseSlug = \Str::slug($course->title);
+                
+                // Si es un curso hijo, añadir sufijo para evitar duplicados
+                if ($course->parent_id) {
+                    $parent = static::find($course->parent_id);
+                    if ($parent) {
+                        $baseSlug = $baseSlug . '-edicio-' . ($parent->children()->count() + 1);
+                    }
+                }
+                
+                // Asegurar que el slug sea único
+                $slug = $baseSlug;
+                $count = 1;
+                
+                while (static::where('slug', $slug)->where('id', '!=', $course->id ?? 0)->exists()) {
+                    $slug = $baseSlug . '-' . $count;
+                    $count++;
+                }
+                
+                $course->slug = $slug;
+            }
+        });
+
+        static::updating(function ($course) {
+            if ($course->isDirty('title') && empty($course->slug)) {
+                $baseSlug = \Str::slug($course->title);
+                
+                // Si es un curso hijo, añadir sufijo para evitar duplicados
+                if ($course->parent_id) {
+                    $parent = static::find($course->parent_id);
+                    if ($parent) {
+                        $baseSlug = $baseSlug . '-edicio-' . ($parent->children()->count() + 1);
+                    }
+                }
+                
+                // Asegurar que el slug sea único
+                $slug = $baseSlug;
+                $count = 1;
+                
+                while (static::where('slug', $slug)->where('id', '!=', $course->id)->exists()) {
+                    $slug = $baseSlug . '-' . $count;
+                    $count++;
+                }
+                
+                $course->slug = $slug;
+            }
+        });
+    }
 
     // Status constants
     const STATUS_DRAFT = 'draft';
@@ -79,13 +135,13 @@ class CampusCourse extends Model
         'end_date' => 'date',
         'is_active' => 'boolean',
         'is_public' => 'boolean',
+        'requirements' => 'array',
+        'objectives' => 'array',
+        'metadata' => 'array',
         'schedule' => 'array',
-        'requirements' => 'string',
-        'objectives' => 'string',
-        'metadata' => 'array'
     ];
 
-     public const TEACHER_ROLES = [
+    public const TEACHER_ROLES = [
         'main' => 'campus.teacher_role_main',
         'assistant' => 'campus.teacher_role_assistant',
         'support' => 'campus.teacher_role_support',
@@ -176,12 +232,12 @@ class CampusCourse extends Model
     }
 
     /**
-     * Generate a unique course code from title
+     * Genera un codi automàtic per a un curs a partir del títol
      * 
      * @param string $title
      * @return string
      */
-    private function generateCourseCode($title)
+    public static function generateCourseCode($title)
     {
         // 1. Normalitzar text (accents i caràcters especials)
         $normalized = Str::ascii($title);

@@ -11,13 +11,13 @@
             <div class="flex justify-between items-center mb-6">
                 <h1 class="text-3xl font-bold text-gray-900">
                     <i class="bi bi-shield-check text-green-600 mr-3"></i>
-                    {{ __('campus.treasury_dashboard') }}
+                    {{ __('campus.treasury_dashboard') }} (- path: resources\views\treasury\dashboard.blade.php)
                 </h1>
                 <div class="text-sm text-gray-500">
-                    {{ __('campus.treasury_management') }}
+                    {{ __('campus.treasury_management') }} (- path: resources\views\treasury\dashboard.blade.php)
                 </div>
             </div>
-            
+
             {{-- Estadísticas principales --}}
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {{-- Professors totals / RGPD acceptat --}}
@@ -36,6 +36,26 @@
                     <div class="text-sm text-gray-500">Dades Bancaries (Total / Actualitzades)</div>
                     <div class="text-xs text-gray-400 mt-1">Temporada actual</div>
                 </div>
+                
+                {{-- NOTIFICACIONS --}}
+                @can('notifications.view')
+                    <a href="{{ route('notifications.index') }}" class="block transition-transform hover:scale-[1.02]">
+                        <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-lg shadow text-center border border-blue-200 hover:border-blue-300">
+                            <div class="flex items-center justify-between mb-2">
+                                <i class="bi bi-bell-fill text-blue-600 text-2xl"></i>
+                                <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">Notificacions</span>
+                            </div>
+                            @php
+                                $unreadCount = auth()->user()->unreadNotifications()->where('is_published', true)->count();
+                            @endphp
+                            <div class="text-2xl font-bold text-blue-600">{{ $unreadCount }}</div>
+                            <div class="text-sm text-gray-500">No llegides</div>
+                            <div class="mt-2 text-xs text-blue-600 hover:text-blue-800">
+                                Veure totes les notificacions <i class="bi bi-arrow-right-short"></i>
+                            </div>
+                        </div>
+                    </a>
+                @endcan
                 
                 {{-- Aquest mes (opcional) --}}
                 <div class="bg-white p-6 rounded-lg shadow text-center">

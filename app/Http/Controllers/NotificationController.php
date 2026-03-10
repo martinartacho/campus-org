@@ -6,12 +6,14 @@ use App\Models\Notification;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Spatie\Permission\Models\Role;
 use App\Services\FCMService;
 use Illuminate\Support\Facades\DB;
 use App\Jobs\SendPushNotification;
 use App\Jobs\ProcessNotification;
 use Illuminate\Support\Facades\Log;
+use App\Mail\NotificationMail;
 
 class NotificationController extends Controller
 {
@@ -32,7 +34,7 @@ class NotificationController extends Controller
     public function index()
     {
         // Usuarios con permiso pueden ver todas, los demás solo las propias o asignadas
-        if (Auth::user()->hasRole(['admin', 'manager', 'coordinacio', 'gestio', 'comunicacio', 'secretaria', 'editor'])) {
+        if (Auth::user()->hasRole(['admin', 'super-admin', 'director', 'gestio', 'coordinacio', 'comunicacio', 'secretaria', 'editor'])) {
             $notifications = Notification::latest()->paginate(10);
         } else {
             // Otros ven solo las suyas (relación muchos a muchos)
@@ -333,14 +335,75 @@ class NotificationController extends Controller
 */
     public function sendEmail(Notification $notification)
     {
-        $users = $notification->recipients()->wherePivot('email_sent', false)->get();
+        // Obtener destinatarios según el tipo
+        $recipients = $this->getRecipients($notification);
+        $sent = 0;
+        $failed = 0;
 
-        foreach ($users as $user) {
-            ProcessNotification::dispatch($notification, $user, 'email');
+        foreach ($recipients as $user) {
+            try {
+                // Verificar que el email sea válido
+                if (!filter_var($user->email, FILTER_VALIDATE_EMAIL)) {
+                    $failed++;
+                    continue;
+                }
+
+                // Usar la clase Mailable
+                $mail = new NotificationMail($notification, $user);
+                
+                Mail::to($user->email)->send($mail);
+                
+                // Marcar como enviado en la tabla pivot
+                $notification->recipients()->updateExistingPivot($user->id, [
+                    'email_sent' => true,
+                    'email_sent_at' => now(),
+                ]);
+
+                $sent++;
+
+            } catch (\Exception $e) {
+                $failed++;
+                Log::error("Error enviando email a {$user->email}: " . $e->getMessage());
+            }
+        }
+
+        // Marcar la notificación como enviada si al menos uno se envió
+        if ($sent > 0) {
+            $notification->email_sent = true;
+            $notification->save();
         }
 
         return redirect()->route('notifications.index')
-            ->with('success', __('site.Email_sent_success', ['count' => $users->count()]));
+            ->with('success', __('site.Email_sent_success', [
+                'sent' => $sent,
+                'failed' => $failed,
+                'total' => $recipients->count()
+            ]));
+    }
+
+    /**
+     * Obtener destinatarios según el tipo de notificación
+     */
+    private function getRecipients($notification)
+    {
+        switch ($notification->recipient_type) {
+            case 'all':
+                return User::where('email', '!=', null)->get();
+                
+            case 'role':
+                return User::role($notification->recipient_role)
+                    ->where('email', '!=', null)
+                    ->get();
+                
+            case 'specific':
+                $userIds = $notification->recipient_ids ?? [];
+                return User::whereIn('id', $userIds)
+                    ->where('email', '!=', null)
+                    ->get();
+                
+            default:
+                return collect();
+        }
     }
 
     public function sendWeb(Notification $notification)

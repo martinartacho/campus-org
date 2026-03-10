@@ -98,6 +98,19 @@
             </a>
         @endcan
 
+        {{-- NOTIFICACIONS --}}
+        @can('notifications.view')
+            <a href="{{ route('notifications.index') }}" class="block transition-transform hover:scale-[1.02]">
+                <x-dashboard.card title="{{ __('site.Notifications') }}" color="blue">
+                    <i class="bi bi-bell-fill"></i> {{ __('site.assigned_notifications') }}
+                    @php
+                        $unreadCount = auth()->user()->unreadNotifications()->where('is_published', true)->count();
+                    @endphp
+                    <p class="text-2xl font-semibold text-gray-900">{{ $unreadCount }}</p>
+                </x-dashboard.card>
+            </a>
+        @endcan
+
 
     </div>
 </div>
