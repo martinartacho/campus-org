@@ -275,8 +275,24 @@
                                     <div class="text-sm text-gray-900">{{ $teacher->email }}</div>
                                     @if($teacher->user)
                                         <div class="text-xs text-gray-500">
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                                Actiu
+                                            @if($teacher->status === 'active')
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                   {{ __('campus.active') }}
+                                                </span>
+                                            @elseif($teacher->status === 'inactive')
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                                    {{ __('campus.inactive') }}
+                                                </span>
+                                            @elseif($teacher->status === 'on_leave')
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                                   {{ __('campus.on_leave') }}
+                                                </span>
+                                            @endif
+                                        </div>
+                                    @else
+                                        <div class="text-xs text-gray-500">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                                Error: Notificar a l'administrador 
                                             </span>
                                         </div>
                                     @endif

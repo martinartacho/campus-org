@@ -194,6 +194,7 @@ return [
     'status' => 'Estat',
     'active' => 'Actiu',
     'inactive' => 'Inactiu',
+    'on_leave' => 'De baixa',
     'public' => 'Públic',
 
     'edit' => 'Editar',
