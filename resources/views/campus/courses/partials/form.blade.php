@@ -94,17 +94,32 @@
 {{-- Category --}}
 <div>
     <x-input-label for="category_id" :value="__('campus.category')" />
-    <select name="category_id" id="category_id"
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-        <option value="">{{ __('campus.select_category') }}</option>
-        @foreach($categories as $category)
-            <option value="{{ $category->id }}"
-                @selected(old('category_id', $defaultData['category_id'] ?? $course?->category_id) == $category->id)>
-                {{ $category->name }}
-            </option>
-        @endforeach
-    </select>
-    <x-input-error :messages="$errors->get('category_id')" class="mt-2" />
+    @if($course && $course->category_id)
+        <div class="mt-1 p-3 bg-gray-50 border border-gray-300 rounded-md">
+            <div class="flex items-center justify-between">
+                <span class="text-gray-900 font-medium">{{ $course->category->name }}</span>
+                <span class="text-xs text-orange-600 bg-orange-50 px-2 py-1 rounded">
+                    <i class="bi bi-lock-fill mr-1"></i>Categoria bloquejada
+                </span>
+            </div>
+            <input type="hidden" name="category_id" value="{{ $course->category_id }}">
+            <div class="text-xs text-gray-500 mt-2">
+                Per canviar la categoria, utilitza el botó "Assignar" en el llistat de cursos.
+            </div>
+        </div>
+    @else
+        <select name="category_id" id="category_id"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+            <option value="">{{ __('campus.select_category') }}</option>
+            @foreach($categories as $category)
+                <option value="{{ $category->id }}"
+                    @selected(old('category_id', $defaultData['category_id'] ?? $course?->category_id) == $category->id)>
+                    {{ $category->name }}
+                </option>
+            @endforeach
+        </select>
+        <x-input-error :messages="$errors->get('category_id')" class="mt-2" />
+    @endif
 </div>
 
 {{-- Description --}}

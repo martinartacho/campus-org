@@ -267,7 +267,18 @@
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ $course->category->name ?? 'N/A' }}
+                                @if($course->category && $course->category->name !== 'Sense Categoria')
+                                    {{ $course->category->name }}
+                                @else
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-orange-600 font-medium">Sense Categoria</span>
+                                        <button onclick="openCategoryModal({{ $course->id }}, '{{ $course->category->id ?? '' }}')" 
+                                                class="text-blue-600 hover:text-blue-800 text-xs bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded transition-colors"
+                                                title="Assignar categoria">
+                                            <i class="bi bi-pencil-square"></i> Assignar
+                                        </button>
+                                    </div>
+                                @endif
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-500">
                                 <div class="max-w-xs">
@@ -392,6 +403,46 @@
     </div>
 @endif
 
+<!-- Modal para asignar categoría -->
+<div id="categoryModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-medium text-gray-900">Assignar Categoria</h3>
+                <button onclick="closeCategoryModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            
+            <form id="categoryForm" method="POST" action="{{ route('campus.courses.update-category') }}">
+                @csrf
+                @method('PATCH')
+                <input type="hidden" id="courseId" name="course_id">
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Selecciona una categoria:</label>
+                    <select name="category_id" id="categorySelect" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                        <option value="">Selecciona una categoria...</option>
+                        @foreach($categories as $category)
+                            <option value="{{ $category->id }}">{{ $category->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                
+                <div class="flex justify-end space-x-3">
+                    <button type="button" onclick="closeCategoryModal()" 
+                            class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors">
+                        Cancel·lar
+                    </button>
+                    <button type="submit" 
+                            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                        Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 @endsection
 
@@ -413,6 +464,18 @@ Chi,Kung,CHIKUNG@campus.test,Chi Kung dilluns,chi-kung-dilluns,"Chi Kung (grups 
     document.body.removeChild(a);
     window.URL.revokeObjectURL(url);
     return false;
+}
+
+// Funciones para el modal de categoría
+function openCategoryModal(courseId, currentCategoryId) {
+    document.getElementById('courseId').value = courseId;
+    document.getElementById('categorySelect').value = currentCategoryId;
+    document.getElementById('categoryModal').classList.remove('hidden');
+}
+
+function closeCategoryModal() {
+    document.getElementById('categoryModal').classList.add('hidden');
+    document.getElementById('categoryForm').reset();
 }
 </script>
 

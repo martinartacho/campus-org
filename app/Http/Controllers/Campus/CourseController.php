@@ -629,6 +629,25 @@ class CourseController extends Controller
     }
 
     /**
+     * Update course category
+     */
+    public function updateCategory(Request $request)
+    {
+        $request->validate([
+            'course_id' => 'required|exists:campus_courses,id',
+            'category_id' => 'required|exists:campus_categories,id',
+        ]);
+
+        $course = CampusCourse::findOrFail($request->course_id);
+        $course->category_id = $request->category_id;
+        $course->save();
+
+        return redirect()
+            ->route('campus.courses.index')
+            ->with('success', __('campus.category_updated_successfully'));
+    }
+
+    /**
      * Handle validation errors for debugging
      */
     protected function handleValidationErrors(Request $request, array $errors)

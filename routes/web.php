@@ -548,6 +548,12 @@ Route::get('test-import', function() {
             
     });
     
+// Update course category - Route outside campus group to avoid conflicts
+Route::middleware(['auth', 'can:campus.courses.edit'])
+    ->prefix('campus')
+    ->patch('courses/update-category', [\App\Http\Controllers\Campus\CourseController::class, 'updateCategory'])
+    ->name("campus.courses.update-category");
+    
     // Help System Routes - Admin
     Route::middleware(['auth', 'role:admin'])
     ->prefix('campus/help')
