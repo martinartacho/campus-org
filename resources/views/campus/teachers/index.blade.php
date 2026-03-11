@@ -88,18 +88,19 @@
                         </div>
                     </div>
 
-                    <!-- Segunda fila de filtros -->
+                    <!-- Segunda fila unificadas -->
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
                         <!-- Filtro por DNI -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">
                                 {{ __('DNI/Fiscal ID') }}
                             </label>
                             <input type="text" 
-                                   name="search_dni" 
-                                   value="{{ request('search_dni') }}"
-                                   placeholder="{{ __('Search by DNI') }}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                name="search_dni" 
+                                value="{{ request('search_dni') }}"
+                                placeholder="{{ __('Search by DNI') }}"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
 
                         <!-- Filtro por estado -->
@@ -122,67 +123,32 @@
                             </select>
                         </div>
 
-                        <!-- Filtro por especialización -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
-                                {{ __('Specialization') }}
-                            </label>
-                            <select name="search_specialization" 
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="">{{ __('All specializations') }}</option>
-                                @foreach($specializations as $specialization)
-                                    <option value="{{ $specialization }}" 
-                                            {{ request('search_specialization') == $specialization ? 'selected' : '' }}>
-                                        {{ $specialization }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Tercera fila de filtros -->
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                         <!-- Filtro por número de cursos -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">
                                 {{ __('Number of courses') }}
                             </label>
-                            <div class="flex space-x-2">
-                                <input type="number" 
-                                       name="search_courses_min" 
-                                       value="{{ request('search_courses_min') }}"
-                                       placeholder="{{ __('Min') }}"
-                                       min="0"
-                                       class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <input type="number" 
-                                       name="search_courses_max" 
-                                       value="{{ request('search_courses_max') }}"
-                                       placeholder="{{ __('Max') }}"
-                                       min="0"
-                                       class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+
+                            <div class="flex items-center gap-2">
+                                <input type="number" name="search_courses_min"
+                                    value="{{ request('search_courses_min') }}"
+                                    placeholder="0"
+                                    class="w-20 px-2 py-2 border border-gray-300 rounded-md">
+
+                                <span class="text-gray-500 text-sm">–</span>
+
+                                <input type="number" name="search_courses_max"
+                                    value="{{ request('search_courses_max') }}"
+                                    placeholder="99"
+                                    class="w-20 px-2 py-2 border border-gray-300 rounded-md">
                             </div>
                         </div>
 
-                        <!-- Filtro por fecha de contratación -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
-                                {{ __('Hiring Date') }}
-                            </label>
-                            <div class="flex space-x-2">
-                                <input type="date" 
-                                       name="search_date_from" 
-                                       value="{{ request('search_date_from') }}"
-                                       placeholder="{{ __('From') }}"
-                                       class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <input type="date" 
-                                       name="search_date_to" 
-                                       value="{{ request('search_date_to') }}"
-                                       placeholder="{{ __('To') }}"
-                                       class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            </div>
-                        </div>
                     </div>
 
+                    
+                    <hr>
+                    
                     <!-- Botones de acción y ordenamiento -->
                     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mt-6">
                         <div class="flex flex-wrap gap-2">

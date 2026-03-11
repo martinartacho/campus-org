@@ -175,7 +175,7 @@
                             @enderror
                         </div>
 
-                        <div>
+<!--                         <div>
                             <label for="degree" class="block text-sm font-medium text-gray-700 mb-2">
                                 Títol Acadèmic
                             </label>
@@ -187,9 +187,9 @@
                             @error('degree')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
-                        </div>
+                        </div> -->
 
-                        <div>
+                        <!-- <div>
                             <label for="specialization" class="block text-sm font-medium text-gray-700 mb-2">
                                 Especialització
                             </label>
@@ -201,9 +201,9 @@
                             @error('specialization')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
-                        </div>
+                        </div> -->
 
-                        <div>
+                        <!-- <div>
                             <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
                                 Títol Professional
                             </label>
@@ -216,7 +216,7 @@
                             @error('title')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
-                        </div>
+                        </div> -->
 
                         <div>
                             <label for="areas" class="block text-sm font-medium text-gray-700 mb-2">

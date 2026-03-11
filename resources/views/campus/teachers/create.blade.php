@@ -166,7 +166,7 @@
                             @enderror
                         </div>
 
-                        <div>
+                        <!-- <div>
                             <label for="degree" class="block text-sm font-medium text-gray-700 mb-2">
                                 Títol Acadèmic
                             </label>
@@ -178,23 +178,23 @@
                             @error('degree')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
-                        </div>
+                        </div> -->
 
-                        <div>
-                            <label for="specialization" class="block text-sm font-medium text-gray-700 mb-2">
-                                Especialització
-                            </label>
-                            <input type="text" 
-                                   id="specialization" 
-                                   name="specialization" 
-                                   value="{{ old('specialization') }}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            @error('specialization')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <div>
+                            <!-- <div>
+                                <label for="specialization" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Especialització
+                                </label>
+                                <input type="text" 
+                                    id="specialization" 
+                                    name="specialization" 
+                                    value="{{ old('specialization') }}"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                @error('specialization')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+ -->
+                        <!-- <div>
                             <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
                                 Títol Professional
                             </label>
@@ -207,11 +207,11 @@
                             @error('title')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
-                        </div>
+                        </div> -->
 
                         <div>
                             <label for="hiring_date" class="block text-sm font-medium text-gray-700 mb-2">
-                                Data de Contractació
+                                Data d'alta
                             </label>
                             <input type="date" 
                                    id="hiring_date" 
@@ -280,7 +280,7 @@
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                         </div>
-                        <div>
+                        <!-- <div>
                             <label for="areas" class="block text-sm font-medium text-gray-700 mb-2">
                                 Àrees d'Especialització
                             </label>
@@ -293,7 +293,7 @@
                             @error('areas')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
-                        </div>
+                        </div> -->
                     </div>
                 </div>
 

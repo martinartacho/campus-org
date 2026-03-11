@@ -56,8 +56,8 @@ class CampusImportController extends Controller
 
             if ($result['success']) {
                 $message = __('campus.import_success') . " " .
-                         "{$result['resum']['teachers_creats']} " . __('campus.Professors creats') . ", " .
-                         "{$result['resum']['courses_creats']} " . __('campus.Cursos creats') . ". " .
+                         "{$result['resum']['teachers_creats']} " . __('campus.teachers_created') . ", " .
+                         "{$result['resum']['courses_creats']} " . __('campus.courses_created') . ". " .
                          "Els cursos s'han creat amb is_active=1 i is_public=1.";
 
                 return response()->json([

@@ -361,8 +361,8 @@ return [
     'import_another' => 'Importar un altre',
     'try_again' => 'Tornar a provar',
     'close' => 'Tancar',
-    'Professors creats' => 'Professorat creats',
-    'Cursos creats' => 'Cursos creats',
+    'teachers_created' => 'Professorat creat',
+    'courses_created' => 'Cursos creats',
     'Errors' => 'Errors',
     'view_courses' => 'Veure cursos',
     

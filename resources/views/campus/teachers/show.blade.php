@@ -93,7 +93,7 @@
                                         @endif
                                     </dd>
                                 </div>
-                                <div class="flex justify-between">
+                               <!--  <div class="flex justify-between">
                                     <dt class="text-sm font-medium text-gray-500">Títol Acadèmic:</dt>
                                     <dd class="text-sm text-gray-900">{{ $teacher->degree ?? '-' }}</dd>
                                 </div>
@@ -104,7 +104,7 @@
                                 <div class="flex justify-between">
                                     <dt class="text-sm font-medium text-gray-500">Títol Professional:</dt>
                                     <dd class="text-sm text-gray-900">{{ $teacher->title ?? '-' }}</dd>
-                                </div>
+                                </div> -->
                                 <div class="flex justify-between">
                                     <dt class="text-sm font-medium text-gray-500">Data de Contractació:</dt>
                                     <dd class="text-sm text-gray-900">{{ $teacher->hiring_date ? $teacher->hiring_date->format('d/m/Y') : '-' }}</dd>
@@ -131,12 +131,30 @@
                             <h3 class="font-semibold text-gray-900 mb-3">Estat del Compte</h3>
                             @if($teacher->user)
                                 <div class="flex items-center space-x-2">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                        <i class="bi bi-check-circle mr-1"></i>Actiu
-                                    </span>
                                     <div class="mt-2 text-sm text-gray-600">
-                                        <p>Rol: <span class="font-medium">Professor</span></p>
-                                        <p>ID Usuari: <span class="font-medium">{{ $teacher->user->id }}</span></p>
+                                        <p>Estat: 
+                                            @if($teacher->user->status == 'active')
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                    <i class="bi bi-check-circle mr-1"></i>Actiu
+                                                </span>
+                                            @elseif($teacher->user->status == 'inactive')
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                                    <i class="bi bi-x-circle mr-1"></i>Inactiu
+                                                </span>
+                                            @elseif($teacher->user->status == 'pending')
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                                    <i class="bi bi-clock mr-1"></i>Pendent
+                                                </span> 
+                                            @else
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                                    <i class="bi bi-question-circle mr-1"></i>Desconegut
+                                                </span>
+                                            @endif
+                                        </p>
+                                        <p>Rol: <span class="font-medium">Professor/a</span>
+                                        </p>
+                                        <p>ID Usuari: <span class="font-medium">{{ $teacher->teacher_code }} {{ $teacher->user->id }}</span>
+                                        </p>
                                     </div>
                                 </div>
                             @else
