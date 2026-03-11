@@ -18,27 +18,19 @@
             <div class="col-span-1 md:col-span-2">
                 <h4 class="text-lg font-semibold mb-4 text-white">UPG</h4>
                 <p class="text-gray-200 mb-4">
-                    Plataforma educativa integral per a la gestió de cursos, formació i desenvolupament professional.
+                    Plataforma educativa integral per a la gestió de cursos, formació i desenvolupament personal.
                 </p>
                 <div class="flex items-center space-x-4 text-sm text-gray-300">
-                    <span>UPG © 2016-2025</span>
-                    <span>•</span>
-                    <div class="flex items-center">
-                        <i class="bi bi-cc mr-1"></i>
-                        Creative Commons
-                    </div>
+                    <span>UPG © 2016-2025</span>                   
                 </div>
-                <p class="text-sm text-gray-300 mt-2">
-                    El contingut està disponible sota la llicència Atribució - CompartirIgual 4.0 si no s'indica el contrari.
-                </p>
             </div>
 
             <!-- Enlaces rápidos -->
             <div>
                 <h4 class="text-lg font-semibold mb-4 text-white">Enllaços</h4>
-                <ul class="space-y-2">
+                <ul class="space-y-1">
                     <li>
-                        <a href="#" class="text-gray-200 hover:text-white transition-colors">
+                        <a href="mailto:web@upg.ca" class="text-gray-200 hover:text-white transition-colors">
                             Contacte
                         </a>
                     </li>
@@ -47,23 +39,18 @@
                             Avís legal
                         </a>
                     </li>
-                    <li>
+<!--                     <li>
                         <a href="#" class="text-gray-200 hover:text-white transition-colors">
                             Codi de conducta
                         </a>
-                    </li>
-                    <li>
-                        <a href="#" class="text-gray-200 hover:text-white transition-colors">
-                            Publicitat
-                        </a>
-                    </li>
+                    </li> -->
                 </ul>
             </div>
 
             <!-- Redes sociales -->
             <div>
                 <h4 class="text-lg font-semibold mb-4 text-white">Seguiu-nos</h4>
-                <div class="flex space-x-4">
+               <!--  <div class="flex space-x-4">
                     <a href="#" class="text-gray-200 hover:text-white transition-colors" title="Facebook">
                         <i class="bi bi-facebook text-xl"></i>
                     </a>
@@ -79,7 +66,7 @@
                     <a href="#" class="text-gray-200 hover:text-white transition-colors" title="YouTube">
                         <i class="bi bi-youtube text-xl"></i>
                     </a>
-                </div>
+                </div> -->
                 <div class="mt-4">
                     <p class="text-sm text-gray-300 mb-2">Butlletí informatiu</p>
                     <div class="flex">
@@ -96,7 +83,7 @@
 
         <div class="border-t border-gray-700 mt-8 pt-6 text-center">
             <p class="text-gray-300 text-sm">
-                Desenvolupat amb ❤️ per l'equip d'UPG
+                Desenvolupat amb ❤️ per l'equip d'UPG <span>•</span> amb <i class="bi bi-cc mr-1"></i> Creative Commons (sota la llicència Atribució - CompartirIgual 4.0 si no s'indica el contrari.) 
             </p>
         </div>
     </div>

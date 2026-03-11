@@ -85,12 +85,14 @@ class CampusCourse extends Model
     ];
 
     // Level constants
+    const LEVEL_NONE = 'none';
     const LEVEL_BEGINNER = 'beginner';
     const LEVEL_INTERMEDIATE = 'intermediate';
     const LEVEL_ADVANCED = 'advanced';
     const LEVEL_EXPERT = 'expert';
 
     public const LEVELS = [
+        self::LEVEL_NONE => 'Obert a tothom',
         self::LEVEL_BEGINNER => 'Principiant',
         self::LEVEL_INTERMEDIATE => 'Intermedi',
         self::LEVEL_ADVANCED => 'Avançat',

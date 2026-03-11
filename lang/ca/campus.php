@@ -268,6 +268,7 @@ return [
     'available_spots' => 'Places disponibles: :available de :total',
     'course_is_public' => 'Públic',
     'course_is_private' => 'Privat',
+    'course_level_none' => 'Obert a tothom',
     'course_level_beginner' => 'Principiant',
     'course_level_intermediate' => 'Intermedi',
     'course_level_advanced' => 'Avançat',
