@@ -239,6 +239,31 @@
                                             {{ Str::substr($course->title, 100, 100) }}
                                         </div>
                                     @endif
+                                     @if($course->teachers->count() > 0)
+                                        @php
+                                            $teachers = $course->teachers->take(2);
+                                            $hasMore = $course->teachers->count() > 2;
+                                        @endphp
+                                        <div class="text-xs text-gray-500">
+                                            @foreach($teachers as $teacher)
+                                                <span class="inline-flex items-center" 
+                                                      title="{{ $teacher->first_name }} {{ $teacher->last_name }} ({{ $teacher->teacher_code }})">
+                                                    <i class="bi bi-person-fill text-xs mr-1"></i>
+                                                    {{ $teacher->teacher_code }}
+                                                    @if(!$loop->last && !$hasMore)
+                                                        <span class="mx-1">·</span>
+                                                    @endif
+                                                </span>
+                                            @endforeach
+                                            @if($hasMore)
+                                                <span class="inline-flex items-center ml-1 text-blue-600" 
+                                                      title="{{ $course->teachers->count() }} profesors totals">
+                                                    <i class="bi bi-plus-circle-fill text-xs"></i>
+                                                    {{ $course->teachers->count() - 2 }}
+                                                </span>
+                                            @endif
+                                        </div>
+                                    @endif
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">

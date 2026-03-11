@@ -465,7 +465,7 @@ class CampusCourse extends Model
             'teacher_id',             // foreign key en la taula pivot per a CampusTeacher
             'id',                     // local key en la taula CampusCourse
             'id'                      // local key en la taula CampusTeacher
-        )->withPivot('role', 'hours_assigned', 'assigned_at', 'finished_at', 'metadata')
+        )->withPivot('role', 'sessions_assigned', 'assigned_at', 'finished_at', 'metadata')
         ->withTimestamps();
     }
 
@@ -605,7 +605,7 @@ class CampusCourse extends Model
     {
         return $this->teachers()
             ->wherePivotNull('finished_at')
-            ->sum('hours_assigned');
+            ->sum('sessions_assigned');
     }
 
     /**
@@ -629,7 +629,7 @@ class CampusCourse extends Model
     {
         return $this->teachers()
             ->where('teacher_id', $teacherId)
-            ->withPivot(['role', 'hours_assigned', 'assigned_at', 'finished_at'])
+            ->withPivot(['role', 'sessions_assigned', 'assigned_at', 'finished_at'])
             ->first();
     }
 

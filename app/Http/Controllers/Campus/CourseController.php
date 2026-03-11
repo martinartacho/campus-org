@@ -36,7 +36,10 @@ class CourseController extends Controller
         // Usar temporada de sesión si no hay parámetro
         $seasonFilter = $request->get('search_season', session('selected_season'));
         
-        $query = CampusCourse::with(['season', 'category']);
+        $query = CampusCourse::with(['season', 'category', 'teachers' => function($query) {
+            $query->select('campus_teachers.id', 'campus_teachers.teacher_code', 'campus_teachers.first_name', 'campus_teachers.last_name')
+                  ->withPivot('role');
+        }]);
         
         // Filtro por código
         if ($request->filled('search_code')) {
