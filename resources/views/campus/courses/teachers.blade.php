@@ -62,7 +62,7 @@
 
                 <div class="text-sm text-gray-500">
                     {{ __('campus.hours') }}
-                    <strong>{{ $teacher->pivot->hours_assigned }}</strong>
+                    <strong>{{ $teacher->pivot->sessions_assigned }}</strong>
                 </div>
 
                 <form method="POST"
@@ -84,7 +84,7 @@
     </div>
 
     @php
-        $assignedHours = $assignedTeachers->sum(fn($t) => $t->pivot->hours_assigned);
+        $assignedHours = $assignedTeachers->sum(fn($t) => $t->pivot->sessions_assigned);
         $remainingHours = $course->hours - $assignedHours;
     @endphp
 
@@ -132,7 +132,7 @@
             <div>
                 <label class="campus-label">{{ __('campus.hours') }}</label>
                 <input type="number"
-                    name="hours_assigned"
+                    name="sessions_assigned"
                     class="campus-input w-24"
                     min="1"
                     max="{{ $remainingHours }}"
@@ -174,7 +174,7 @@
 
             <div>
                 <label class="campus-label">{{ __('campus.hours') }}</label>
-                <input type="number" name="hours_assigned" class="campus-input w-24">
+                <input type="number" name="sessions_assigned" class="campus-input w-24">
             </div>
 
             

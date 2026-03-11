@@ -415,7 +415,7 @@ class CourseController extends Controller
      */
     public function update(Request $request, CampusCourse $course)
     {
-        $data = $this->validatedData($request);
+        $data = $this->validatedData($request, $course);
 
         // Check for conflicts before updating
         if (isset($data['space_id']) && isset($data['time_slot_id'])) {
@@ -444,6 +444,15 @@ class CourseController extends Controller
         }
 
         $course->update($data);
+        
+        // Debug: Log después de actualizar
+        \Log::info('=== COURSE UPDATE RESULT ===');
+        \Log::info('Course updated successfully: ' . json_encode([
+            'course_id' => $course->id,
+            'final_code' => $course->fresh()->code,
+            'data_saved' => $data
+        ]));
+        \Log::info('=== COURSE UPDATE END ===');
         
         // Handle manual status completion
         if ($request->has('status_completed') && $request->input('status_completed') === 'completed') {
@@ -490,6 +499,10 @@ class CourseController extends Controller
     protected function validatedData(Request $request, CampusCourse $course = null): array
     {
         // Debug: Mostrar todos los datos recibidos antes de validar
+        \Log::info('=== COURSE EDIT DEBUG START ===');
+        \Log::info('Course ID: ' . ($course->id ?? 'new'));
+        \Log::info('Is Base Course: ' . ($course ? ($course->isBaseCourse() ? 'YES' : 'NO') : 'NEW COURSE'));
+        \Log::info('Current Code: ' . ($course->code ?? 'NONE'));
         \Log::info('Request received:', [
             'all_data' => $request->all(),
             'method' => $request->method(),
@@ -499,7 +512,18 @@ class CourseController extends Controller
         $data = $request->validate([
             'season_id'     => ['required', 'exists:campus_seasons,id'],
             'category_id'   => ['nullable', 'exists:campus_categories,id'],
-            'code' => ['nullable', 'string', 'max:50', Rule::unique("campus_courses", "code")->ignore($course?->id)],
+            'code' => [
+                'nullable', 
+                'string', 
+                'max:50', 
+                Rule::unique("campus_courses", "code")->ignore($course?->id)->where(function ($query) use ($course) {
+                    // Para cursos base, permitir mantener su código original sin validación de unicidad
+                    if ($course && $course->isBaseCourse()) {
+                        return $query->whereRaw('0 = 1'); // Condición que nunca es verdadera
+                    }
+                    return $query;
+                })
+            ],
             'title'         => ['required', 'string', 'max:255'],
             'slug'          => ['nullable', 'string', 'max:255'],
             'description'   => ['nullable', 'string'],
@@ -525,9 +549,14 @@ class CourseController extends Controller
         ]);
         
         // Debug: Mostrar todos los datos recibidos y validados
-        \Log::info('Validation result:', [
-            'validated_data' => $data
-        ]);
+        \Log::info('Validation result: ' . json_encode([
+            'validated_data' => $data,
+            'code_submitted' => $data['code'] ?? 'NULL',
+            'original_code' => $course->code ?? 'NONE',
+            'code_changed' => ($course && isset($data['code']) && $data['code'] !== $course->code) ? 'YES' : 'NO',
+            'is_base_course' => $course ? ($course->isBaseCourse() ? 'YES' : 'NO') : 'NEW',
+            'course_id' => $course->id ?? 'NEW'
+        ]));
         
         return $data;
     }

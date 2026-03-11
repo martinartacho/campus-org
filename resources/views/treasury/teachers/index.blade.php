@@ -109,7 +109,7 @@
                                 <div class="font-medium text-gray-800">{{ $courseData['course_title'] }}</div>
                                 <div class="text-xs text-gray-600">
                                     {{ $courseData['course_code'] }} • 
-                                    <span class="font-medium text-blue-600">{{ $courseData['hours_assigned'] }}h</span>
+                                    <span class="font-medium text-blue-600">{{ $courseData['sessions_assigned'] }}s</span>
                                 </div>
                             </div>
                         </td>

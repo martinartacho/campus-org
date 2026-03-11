@@ -23,7 +23,7 @@ class CourseTeacherController extends Controller
         $teachers = CampusTeacher::orderBy('last_name')->get();
 
         $assignedTeachers = $course->teachers()
-            ->withPivot(['role', 'hours_assigned'])
+            ->withPivot(['role', 'sessions_assigned'])
             ->get()
             ->keyBy('id');
 
@@ -50,7 +50,7 @@ class CourseTeacherController extends Controller
                 'required',
                 Rule::in(array_keys(CampusCourse::TEACHER_ROLES)),
             ],
-            'hours_assigned' => [
+            'sessions_assigned' => [
                 'required',
                 'numeric',
                 'min:0.5',
@@ -61,12 +61,12 @@ class CourseTeacherController extends Controller
         // Horas ya asignadas (excluyendo si el profe ya está asignado)
         $alreadyAssignedHours = $course->teachers()
             ->wherePivot('teacher_id', '!=', $data['teacher_id'])
-            ->sum('hours_assigned');
+            ->sum('sessions_assigned');
 
-        if (($alreadyAssignedHours + $data['hours_assigned']) > $course->hours) {
+        if (($alreadyAssignedHours + $data['sessions_assigned']) > $course->hours) {
             return back()
                 ->withErrors([
-                    'hours_assigned' => __('campus.course_hours_exceeded', [
+                    'sessions_assigned' => __('campus.course_hours_exceeded', [
                         'total' => $course->hours,
                         'assigned' => $alreadyAssignedHours,
                     ])
@@ -77,7 +77,7 @@ class CourseTeacherController extends Controller
         $course->teachers()->syncWithoutDetaching([
             $data['teacher_id'] => [
                 'role' => $data['role'],
-                'hours_assigned' => $data['hours_assigned'],
+                'sessions_assigned' => $data['sessions_assigned'],
                 'assigned_at' => now(),
             ]
         ]);

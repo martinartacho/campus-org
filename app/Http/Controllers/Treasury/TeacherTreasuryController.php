@@ -49,7 +49,7 @@ class TeacherTreasuryController extends Controller
                 ->with([
                     'teacherProfile.courses' => function($query) use ($selectedSeason) {
                         $query->where('season_id', $selectedSeason->id)
-                            ->withPivot('role', 'hours_assigned');
+                            ->withPivot('role', 'sessions_assigned');
                     },
                     'consents' => function($query) use ($selectedSeason) {
                         $query->where('season', $selectedSeason->slug);
@@ -84,7 +84,7 @@ class TeacherTreasuryController extends Controller
                             'pivot' => $course->pivot,
                             'payment' => $payment,
                             'has_payment_data' => $payment !== null,
-                            'hours_assigned' => $course->pivot->hours_assigned ?? 0,
+                            'sessions_assigned' => $course->pivot->sessions_assigned ?? 0,
                             'role' => $course->pivot->role ?? 'teacher',
                             'course_code' => $course->code ?? 'Sense codi',
                             'course_title' => $course->title ?? 'Sense títol',
@@ -111,10 +111,10 @@ class TeacherTreasuryController extends Controller
                         'courses_with_payment' => $coursesWithData->where('has_payment_data', true)->count(),
                         'all_courses_have_payment' => $coursesWithData->count() > 0 && 
                                                     $coursesWithData->where('has_payment_data', true)->count() === $coursesWithData->count(),
-                        'total_hours_assigned' => $coursesWithData->sum('hours_assigned'),
-                        'average_hours_per_course' => $coursesWithData->count() > 0 ? round($coursesWithData->sum('hours_assigned') / $coursesWithData->count(), 2) : 0,
-                        'max_hours_course' => $coursesWithData->max('hours_assigned'),
-                        'min_hours_course' => $coursesWithData->min('hours_assigned'),
+                        'total_sessions_assigned' => $coursesWithData->sum('sessions_assigned'),
+                        'average_hours_per_course' => $coursesWithData->count() > 0 ? round($coursesWithData->sum('sessions_assigned') / $coursesWithData->count(), 2) : 0,
+                        'max_hours_course' => $coursesWithData->max('sessions_assigned'),
+                        'min_hours_course' => $coursesWithData->min('sessions_assigned'),
                         'courses_by_role' => $coursesWithData->groupBy('role')->map(fn($group) => $group->count()),
                     ];
                 });
@@ -158,7 +158,7 @@ class TeacherTreasuryController extends Controller
                 ->with([
                     'teacherProfile.courses' => function($query) use ($selectedSeason) {
                         $query->where('season_id', $selectedSeason->id)
-                            ->withPivot('role', 'hours_assigned');
+                            ->withPivot('role', 'sessions_assigned');
                     },
                     'consents' => function($query) use ($selectedSeason) {
                         $query->where('season', $selectedSeason->slug);

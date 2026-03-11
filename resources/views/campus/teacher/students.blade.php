@@ -340,7 +340,7 @@
                                     {{ trans('campus.teacher_role.' . ($courseTeacher->pivot->role ?? 'assistant')) }}
                                 </div>
                                 <div class="text-xs text-gray-500">
-                                    {{ $courseTeacher->pivot->hours_assigned ?? 0 }}h
+                                    {{ $courseTeacher->pivot->sessions_assigned ?? 0 }}s
                                 </div>
                             </div>
                         </div>

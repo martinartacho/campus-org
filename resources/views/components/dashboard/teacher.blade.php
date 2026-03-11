@@ -137,7 +137,7 @@
                             
                             // Información del profesor actual en este curso
                             $myRole = trans('campus.teacher_role.' . ($course->pivot->role ?? 'assistant'));
-                            $myHours = $course->pivot->hours_assigned ?? 0;
+                            $myHours = $course->pivot->sessions_assigned ?? 0;
                             
                             // Horario de hoy
                             $hasClassToday = !empty($course->schedule_info['today_classes']);
@@ -194,7 +194,7 @@
                                         <div class="text-lg font-semibold text-blue-600">{{ $myRole }}</div>
                                     </div>
                                     <div class="text-right">
-                                        <div class="text-sm font-medium text-gray-700">@lang('campus.course_hours_assigned')</div>
+                                        <div class="text-sm font-medium text-gray-700">@lang('campus.course_sessions_assigned')</div>
                                         <div class="text-lg font-semibold text-gray-800">{{ $myHours }}h</div>
                                     </div>
                                 </div>
@@ -227,7 +227,7 @@
                                                     </div>
                                                     <div class="text-gray-600">
                                                         <span class="font-medium">{{ trans('campus.teacher_role.' . ($otherTeacher->pivot->role ?? 'assistant')) }}</span>
-                                                        <span class="ml-2">• {{ $otherTeacher->pivot->hours_assigned ?? 0 }}h</span>
+                                                        <span class="ml-2">• {{ $otherTeacher->pivot->sessions_assigned ?? 0 }}h</span>
                                                     </div>
                                                 </div>
                                             @endforeach
