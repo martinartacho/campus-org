@@ -155,8 +155,8 @@ class TeacherController extends Controller
             'status' => 'nullable|string|in:active,inactive,on_leave',
             'courses' => 'nullable|array',
             'courses.*' => 'nullable|string',
-            'hours_assigned' => 'nullable|array',
-            'hours_assigned.*' => 'nullable|integer|min:0',
+            'sessions_assigned' => 'nullable|array',
+            'sessions_assigned.*' => 'nullable|integer|min:0',
             'role' => 'nullable|array',
             'role.*' => 'nullable|string|in:teacher,assistant',
         ]);
@@ -218,7 +218,7 @@ class TeacherController extends Controller
                                 'slug' => \Str::slug($title) . '-' . time(), // Asegurar unicidad
                                 'description' => 'Curs creat automàticament des de l\'assignació de professor', // Descripción automática
                                 'credits' => 1,
-                                'hours' => $validated['hours_assigned'][$index] ?? 20, // Usar horas asignadas como horas totales del curso
+                                'hours' => $validated['sessions_assigned'][$index] ?? 20, // Usar sessions asignadas como horas del curso
                                 'max_students' => 30,
                                 'price' => 100.00,
                                 'level' => 'beginner', // Nivel por defecto
@@ -310,7 +310,7 @@ class TeacherController extends Controller
                     }
                     
                     $teacher->courses()->attach($courseId, [
-                        'hours_assigned' => $validated['hours_assigned'][$index] ?? 0,
+                        'sessions_assigned' => (int)($validated['sessions_assigned'][$index] ?? 0),
                         'role' => $validated['role'][$index] ?? 'teacher',
                     ]);
                 }
@@ -401,45 +401,65 @@ class TeacherController extends Controller
      */
     public function update(Request $request, CampusTeacher $teacher)
     {
-        $validated = $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'email' => [
-                'required',
-                'email',
-                Rule::unique('users', 'email')->ignore($teacher->user_id),
-            ],
-            'phone' => 'nullable|string|max:20',
-            'address' => 'nullable|string|max:255',
-            'postal_code' => 'nullable|string|max:10',
-            'city' => 'nullable|string|max:100',
-            'dni' => 'nullable|string|max:20',
-            'iban' => 'nullable|string|max:34',
-            'bank_titular' => 'nullable|string|max:255',
-            'fiscal_id' => 'nullable|string|max:20',
-            'fiscal_situation' => 'nullable|string|max:50',
-            'degree' => 'nullable|string|max:255',
-            'specialization' => 'nullable|string|max:255',
-            'title' => 'nullable|string|max:50',
-            'areas' => 'nullable|string|max:1000',
-            'hiring_date' => 'nullable|date',
-            'status' => 'nullable|string|in:active,inactive,on_leave',
-            'courses' => 'nullable|array',
-            'courses.*' => 'nullable|string',
-            'hours_assigned' => 'nullable|array',
-            'hours_assigned.*' => 'nullable|integer|min:0',
-            'role' => 'nullable|array',
-            'role.*' => 'nullable|string|in:teacher,assistant',
+        \Log::info('=== TEACHER UPDATE START ===');
+        \Log::info('Request data:', $request->all());
+        \Log::info('Teacher data:', [
+            'id' => $teacher->id,
+            'user_id' => $teacher->user_id,
+            'user_exists' => $teacher->user ? 'yes' : 'no'
         ]);
+        
+        try {
+            $validated = $request->validate([
+                'first_name' => 'required|string|max:255',
+                'last_name' => 'required|string|max:255',
+                'email' => [
+                    'required',
+                    'email',
+                    Rule::unique('users', 'email')->ignore($teacher->user_id),
+                ],
+                'phone' => 'nullable|string|max:20',
+                'address' => 'nullable|string|max:255',
+                'postal_code' => 'nullable|string|max:10',
+                'city' => 'nullable|string|max:100',
+                'dni' => 'nullable|string|max:20',
+                'iban' => 'nullable|string|max:34',
+                'bank_titular' => 'nullable|string|max:255',
+                'fiscal_id' => 'nullable|string|max:20',
+                'fiscal_situation' => 'nullable|string|max:50',
+                'degree' => 'nullable|string|max:255',
+                'specialization' => 'nullable|string|max:255',
+                'title' => 'nullable|string|max:50',
+                'areas' => 'nullable|string|max:1000',
+                'hiring_date' => 'nullable|date',
+                'status' => 'nullable|string|in:active,inactive,on_leave',
+                'courses' => 'nullable|array',
+                'courses.*' => 'nullable|string',
+                'sessions_assigned' => 'nullable|array',
+                'sessions_assigned.*' => 'nullable|numeric|min:0',
+                'role' => 'nullable|array',
+                'role.*' => 'nullable|string|in:teacher,assistant',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('Validation failed:', ['errors' => $e->errors()]);
+            throw $e;
+        }
 
-        // Actualizar usuario
-        $teacher->user->update([
-            'name' => $validated['first_name'] . ' ' . $validated['last_name'],
-            'email' => $validated['email'],
-        ]);
+        \Log::info('Validated data:', $validated);
+        \Log::info('VALIDATION PASSED');
+        
+        try {
+            // Actualizar usuario
+            \Log::info('Updating user...');
+            $teacher->user->update([
+                'name' => $validated['first_name'] . ' ' . $validated['last_name'],
+                'email' => $validated['email'],
+            ]);
+            \Log::info('User updated successfully');
 
-        // Actualizar profesor
-        $teacher->update([
+            // Actualizar profesor
+            \Log::info('Updating teacher...');
+            $teacher->update([
             'first_name' => $validated['first_name'],
             'last_name' => $validated['last_name'],
             'email' => $validated['email'],
@@ -455,10 +475,18 @@ class TeacherController extends Controller
             'degree' => $validated['degree'] ?? null,
             'specialization' => $validated['specialization'] ?? null,
             'title' => $validated['title'] ?? null,
-            'areas' => $validated['areas'] ? explode(',', str_replace(' ', '', $validated['areas'])) : null,
+            'areas' => isset($validated['areas']) && $validated['areas'] ? explode(',', str_replace(' ', '', $validated['areas'])) : null,
             'hiring_date' => $validated['hiring_date'] ?? now()->format('Y-m-d'),
             'status' => $validated['status'] ?? 'active',
         ]);
+            \Log::info('Teacher updated successfully');
+
+        } catch (\Exception $e) {
+            \Log::error('Error updating teacher/user:', ['error' => $e->getMessage()]);
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Error al actualizar: ' . $e->getMessage());
+        }
 
         // Verificar cursos con pagos confirmados y excluirlos de la actualización
         $restrictedCourses = [];
@@ -483,29 +511,44 @@ class TeacherController extends Controller
         }
 
         // Sincronizar cursos solo los que no están restringidos
+        \Log::info('=== COURSE SYNC START ===');
+        \Log::info('Courses in validated:', $validated['courses'] ?? 'none');
+        \Log::info('Sessions assigned:', $validated['sessions_assigned'] ?? 'none');
+        \Log::info('Roles:', $validated['role'] ?? 'none');
+        \Log::info('COURSE SYNC START');
+        
         if (!empty($validated['courses'])) {
             $syncData = [];
             foreach ($validated['courses'] as $index => $courseId) {
+                \Log::info("Processing course index {$index}: {$courseId}");
+                
                 // Skip empty or null course IDs
                 if (empty($courseId) || $courseId === '') {
+                    \Log::info("Skipping empty course ID at index {$index}");
                     continue;
                 }
                 
                 // Skip restricted courses
                 if (in_array($courseId, $restrictedCourses)) {
+                    \Log::info("Skipping restricted course: {$courseId}");
                     continue;
                 }
                 
                 // Validate that course exists (unless it's 'new')
                 if ($courseId !== 'new' && !CampusCourse::find($courseId)) {
+                    \Log::info("Course not found: {$courseId}");
                     continue;
                 }
                 
                 $syncData[$courseId] = [
-                    'hours_assigned' => $validated['hours_assigned'][$index] ?? 0,
+                    'sessions_assigned' => (int)($validated['sessions_assigned'][$index] ?? 0),
                     'role' => $validated['role'][$index] ?? 'teacher',
                 ];
+                
+                \Log::info("Added to syncData: {$courseId} => " . json_encode($syncData[$courseId]));
             }
+            
+            \Log::info('Final syncData:', $syncData);
             
             // Obtener cursos actuales que no están restringidos
             $currentUnrestrictedCourses = $teacher->courses()
@@ -513,30 +556,60 @@ class TeacherController extends Controller
                 ->pluck('campus_courses.id')
                 ->toArray();
             
-            // Sincronizar solo cursos no restringidos
-            $teacher->courses()->sync($syncData);
+            \Log::info('Current unrestricted courses:', $currentUnrestrictedCourses);
+            \Log::info('Restricted courses:', $restrictedCourses);
+            
+            // Separar cursos a añadir, actualizar y eliminar
+            $coursesToAdd = array_diff(array_keys($syncData), $currentUnrestrictedCourses);
+            $coursesToUpdate = array_intersect(array_keys($syncData), $currentUnrestrictedCourses);
+            $coursesToRemove = array_diff($currentUnrestrictedCourses, array_keys($syncData));
+            
+            \Log::info('Courses to add:', $coursesToAdd);
+            \Log::info('Courses to update:', $coursesToUpdate);
+            \Log::info('Courses to remove:', $coursesToRemove);
+            
+            // Eliminar cursos que se quitaron del formulario
+            if (!empty($coursesToRemove)) {
+                \Log::info('Removing courses:', $coursesToRemove);
+                $teacher->courses()->detach($coursesToRemove);
+            }
+            
+            // Actualizar cursos existentes
+            foreach ($coursesToUpdate as $courseId) {
+                \Log::info("Updating course {$courseId} with:", $syncData[$courseId]);
+                $teacher->courses()->updateExistingPivot($courseId, $syncData[$courseId]);
+            }
+            
+            // Añadir nuevos cursos
+            foreach ($coursesToAdd as $courseId) {
+                \Log::info("Adding course {$courseId} with:", $syncData[$courseId]);
+                $teacher->courses()->attach($courseId, $syncData[$courseId]);
+            }
             
             // Mantener cursos restringidos sin cambios
             foreach ($restrictedCourses as $restrictedCourseId) {
                 if (!$teacher->courses()->where('campus_courses.id', $restrictedCourseId)->exists()) {
                     // Si por alguna razón no existe, volver a añadirlo con datos originales
                     $originalPivot = $teacher->courses()
-                        ->withPivot(['hours_assigned', 'role'])
+                        ->withPivot(['sessions_assigned', 'role'])
                         ->where('campus_courses.id', $restrictedCourseId)
                         ->first();
                     
                     if ($originalPivot) {
                         $teacher->courses()->attach($restrictedCourseId, [
-                            'hours_assigned' => $originalPivot->pivot->hours_assigned,
+                            'sessions_assigned' => $originalPivot->pivot->sessions_assigned,
                             'role' => $originalPivot->pivot->role,
                         ]);
                     }
                 }
             }
         } else {
+            \Log::info('No courses in validated data, removing unrestricted courses');
             // Si no se envían cursos, eliminar solo los no restringidos
             $teacher->courses()->whereNotIn('campus_courses.id', $restrictedCourses)->detach();
         }
+        
+        \Log::info('=== COURSE SYNC END ===');
 
         return redirect()->route('campus.teachers.show', $teacher)
             ->with('success', 'Professor actualitzat correctament.');

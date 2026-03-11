@@ -218,7 +218,7 @@
                             @enderror
                         </div> -->
 
-                        <div>
+                        <!-- <div>
                             <label for="areas" class="block text-sm font-medium text-gray-700 mb-2">
                                 Àrees d'Especialització
                             </label>
@@ -231,7 +231,7 @@
                             @error('areas')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
-                        </div>
+                        </div> -->
 
                         <div>
                             <label for="hiring_date" class="block text-sm font-medium text-gray-700 mb-2">
@@ -337,13 +337,13 @@
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-2">
-                                            Hores Assignades
+                                            Sessions Assignades
                                         </label>
                                         <input type="number" 
-                                               name="hours_assigned[]" 
+                                               name="sessions_assigned[]" 
                                                min="0" 
                                                step="1"
-                                               value="{{ $teacherCourse->pivot->hours_assigned ?? 0 }}"
+                                               value="{{ number_format($teacherCourse->pivot->sessions_assigned ?? 0, 0, '.', '') }}"
                                                placeholder="0"
                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 {{ in_array($teacherCourse->id, $restrictedCourses ?? []) ? 'bg-gray-100 cursor-not-allowed' : '' }}"
                                                {{ in_array($teacherCourse->id, $restrictedCourses ?? []) ? 'disabled' : '' }}>
@@ -384,10 +384,10 @@
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-2">
-                                            Hores Assignades
+                                            Sessions Assignades
                                         </label>
                                         <input type="number" 
-                                               name="hours_assigned[]" 
+                                               name="sessions_assigned[]" 
                                                min="0" 
                                                step="1"
                                                placeholder="0"
@@ -458,10 +458,10 @@ function addCourseField() {
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">
-                    Hores Assignades
+                    Sessions Assignades
                 </label>
                 <input type="number" 
-                       name="hours_assigned[]" 
+                       name="sessions_assigned[]" 
                        min="0" 
                        step="1"
                        placeholder="0"

@@ -319,10 +319,10 @@
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">
-                                        Hores Assignades
+                                        Sessions Assignades
                                     </label>
                                     <input type="number" 
-                                           name="hours_assigned[]" 
+                                           name="sessions_assigned[]" 
                                            min="0" 
                                            step="1"
                                            placeholder="0"

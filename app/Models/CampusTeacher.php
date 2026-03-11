@@ -127,7 +127,7 @@ class CampusTeacher extends Model
             'course_id',              // foreign key en la taula pivot per a CampusCourse
             'id',                     // local key en la taula CampusTeacher
             'id'                      // local key en la taula CampusCourse
-        )->withPivot('role', 'hours_assigned', 'assigned_at', 'finished_at', 'metadata')
+        )->withPivot('role', 'sessions_assigned', 'assigned_at', 'finished_at', 'metadata')
         ->withTimestamps();
         
     }
@@ -190,13 +190,13 @@ class CampusTeacher extends Model
     }
 
     /**
-     * Get total hours assigned across all courses.
+     * Get total sessions assigned across all courses.
      */
-    public function getTotalAssignedHoursAttribute(): float
+    public function getTotalAssignedSessionsAttribute(): float
     {
         return $this->courses()
                     ->wherePivot('finished_at', null)
-                    ->sum('campus_course_teacher.hours_assigned');
+                    ->sum('campus_course_teacher.sessions_assigned');
     }
 
     /**
@@ -223,7 +223,7 @@ class CampusTeacher extends Model
             ->select(
                 'campus_courses.*',
                 'campus_course_teacher.role',
-                'campus_course_teacher.hours_assigned',
+                'campus_course_teacher.sessions_assigned',
                 'campus_course_teacher.assigned_at',
                 'campus_course_teacher.finished_at'
             )

@@ -302,11 +302,12 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm text-gray-900">
-                                        {{ $teacher->courses->count() }} cursos
+                                        {{ $teacher->courses->count() }} {{ __('campus.courses') }}
                                     </div>
                                     @if($teacher->courses->count() > 0)
+                                
                                         <div class="text-xs text-gray-500">
-                                            {{ $teacher->courses->sum('pivot.hours_assigned') }} h totals
+                                            {{ number_format($teacher->courses->sum('pivot.sessions_assigned'), 0, '.', '') }} {{ __('campus.hours') }} {{ __('campus.total') }}
                                         </div>
                                     @endif
                                 </td>

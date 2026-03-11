@@ -134,16 +134,6 @@
     </div>
 </div>
 
-{{-- Hours --}}
-<div>
-    <x-input-label for="hours" :value="__('campus.hours')" />
-    <x-text-input id="hours" name="hours" type="number"
-        class="mt-1 block w-full"
-        placeholder="Ex: 25 (hores totals)"
-        :value="old('hours', $defaultData['hours'] ?? $course?->hours ?? 25)" />
-    <x-input-error :messages="$errors->get('hours')" class="mt-2" />
-    <small class="text-gray-500 text-xs">Mínim: 1, Màxim: 1000</small>
-</div>
 
 {{-- Sessions --}}
 <div>

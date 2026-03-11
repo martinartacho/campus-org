@@ -197,8 +197,8 @@
                                                     <span class="font-medium">{{ $course->season->name ?? '-' }}</span>
                                                 </div>
                                                 <div>
-                                                    <span class="text-gray-500">Hores:</span>
-                                                    <span class="font-medium">{{ $course->pivot->hours_assigned ?? 0 }}h</span>
+                                                    <span class="text-gray-500">Sessions:</span>
+                                                    <span class="font-medium">{{ number_format($course->pivot->sessions_assigned ?? 0, 0, '.', '') }}s</span>
                                                 </div>
                                                 <div>
                                                     <span class="text-gray-500">Rol:</span>
@@ -243,8 +243,8 @@
                                     <div class="text-sm text-gray-600">Cursos Totals</div>
                                 </div>
                                 <div>
-                                    <div class="text-2xl font-bold text-green-600">{{ $teacher->courses->sum('pivot.hours_assigned') }}</div>
-                                    <div class="text-sm text-gray-600">Hores Totals</div>
+                                    <div class="text-2xl font-bold text-green-600">{{ number_format($teacher->courses->sum('pivot.sessions_assigned'), 0, '.', '') }}</div>
+                                    <div class="text-sm text-gray-600">Sessions Totals</div>
                                 </div>
                                 <div>
                                     <div class="text-2xl font-bold text-purple-600">
