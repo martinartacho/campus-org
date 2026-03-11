@@ -226,7 +226,7 @@ class CampusSeeder extends Seeder
             );
         }
 
-        // 4. ASSIGNAR PROFESSORS A CURSOS (si ja existeixen professors)
+        // 4. ASSIGNAR PROFESSORS A CURSOS (si ja existeixen professorat)
         $teachers = \App\Models\CampusTeacher::all();
         $courses = CampusCourse::all();
 

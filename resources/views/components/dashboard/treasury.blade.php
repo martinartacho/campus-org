@@ -64,7 +64,7 @@
             </a>
         @endcan
         
-        {{-- PROFESSORS --}}
+        {{-- PROFESSORAT --}}
         @can('campus.teachers.view')
             <a href="{{ route('treasury.teachers.index') }}" class="block transition-transform hover:scale-[1.02]">
                 <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-lg border border-purple-200 hover:border-purple-300">
@@ -84,7 +84,7 @@
                 
                     <div class="mt-3 pt-2 border-t border-purple-200">
                         <span class="text-xs text-purple-600 hover:text-purple-800 flex items-center">
-                            Gestionar professors <i class="bi bi-arrow-right-short ms-1"></i>
+                            Gestionar Professorat<i class="bi bi-arrow-right-short ms-1"></i>
                         </span>
                     </div>
                 </div>

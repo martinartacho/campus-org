@@ -32,7 +32,7 @@ class TreasuryController extends Controller
             ->latest('accepted_at')
             ->paginate(20);
         
-        // Estadísticas según propuesta: Professors totals/RGPD acceptat i Dades Bancàries
+        // Estadísticas según propuesta: Professorat totals/RGPD acceptat i Dades Bancàries
         $totalTeachers = CampusTeacher::count();
         $teachersWithConsent = ConsentHistory::where('season', $currentSeason)
             ->whereNotNull('document_path')

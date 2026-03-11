@@ -16,7 +16,7 @@
         <div class="flex items-center">
             <i class="bi bi-chevron-right text-gray-400 mx-1"></i>
             <a href="{{ route('campus.teachers.index') }}" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2">
-                {{ __('Professorats') }}
+                {{ __('campus.teachers') }} 
             </a>
         </div>
     </li>
@@ -32,7 +32,7 @@
         <div class="flex items-center">
             <i class="bi bi-chevron-right text-gray-400 mx-1"></i>
             <span class="ms-1 text-sm font-medium text-gray-500 md:ms-2">
-                {{ __('Editar') }}
+                {{ __('campus.edit') }}
             </span>
         </div>
     </li>
@@ -41,7 +41,7 @@
 @section('content')
 <div class="container mx-auto px-4 py-8">
     <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold text-gray-900">Editar Professorat: {{ $teacher->first_name }} {{ $teacher->last_name }}</h1>
+        <h1 class="text-3xl font-bold text-gray-900">Editar: {{ $teacher->first_name }} {{ $teacher->last_name }}</h1>
         <a href="{{ route('campus.teachers.index') }}" 
            class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200">
             <i class="fas fa-arrow-left mr-2"></i>Tornar
@@ -425,11 +425,11 @@
                 <div class="flex justify-end space-x-4">
                     <a href="{{ route('campus.teachers.index') }}" 
                        class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200">
-                        Cancel·lar
+                        {{ __('campus.cancel') }}
                     </a>
                     <button type="submit" 
                             class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200">
-                        <i class="fas fa-save mr-2"></i>Actualitzar Professor
+                        <i class="fas fa-save mr-2"></i>{{ __('campus.update') }}
                     </button>
                 </div>
             </form>

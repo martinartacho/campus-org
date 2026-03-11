@@ -53,7 +53,7 @@
                         </x-dropdown-link>
                     @endif
                     
-                    {{-- Per a professors --}}
+                    {{-- Per a Professorat --}}
                     @if($user->hasRole('teacher') || $user->can('campus.my_courses.manage'))
                         <x-dropdown-link :href="route('campus.teacher-courses')" :active="request()->routeIs('campus.teacher-courses.*')">
                             <div class="flex items-center">
@@ -144,7 +144,7 @@
                 </x-responsive-nav-link>
             @endif
             
-            {{-- Per a professors --}}
+            {{-- Per a professorat --}}
             @if($user->hasRole('teacher') || $user->can('campus.my_courses.manage'))
                 <x-responsive-nav-link :href="route('campus.teacher-courses')" :active="request()->routeIs('campus.teacher-courses.*')">
                     <div class="flex items-center">

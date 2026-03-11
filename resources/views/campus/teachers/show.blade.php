@@ -16,7 +16,7 @@
         <div class="flex items-center">
             <i class="bi bi-chevron-right text-gray-400 mx-1"></i>
             <a href="{{ route('campus.teachers.index') }}" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2">
-                {{ __('Professors') }}
+                {{ __('campus.teachers') }}
             </a>
         </div>
     </li>
@@ -33,7 +33,7 @@
 @section('content')
 <div class="container mx-auto px-4 py-8">
     <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold text-gray-900">Detalls del Professor</h1>
+        <h1 class="text-3xl font-bold text-gray-900">Detalls del Professor/a</h1>
         <div class="flex space-x-4">
             <a href="{{ route('campus.teachers.index') }}" 
                class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200">
@@ -163,7 +163,7 @@
                                         <i class="bi bi-times-circle mr-1"></i>Sense usuari
                                     </span>
                                     <div class="mt-2 text-sm text-gray-600">
-                                        <p>Rol: <span class="font-medium">Professor</span></p>
+                                        <p>Rol: <span class="font-medium">Professor/a</span></p>
                                         <p>ID Usuari: <span class="font-medium">-</span></p>
                                     </div>
                                 </div>
@@ -204,7 +204,7 @@
                                                     <span class="text-gray-500">Rol:</span>
                                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
                                                         {{ $course->pivot->role == 'teacher' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800' }}">
-                                                        {{ $course->pivot->role == 'teacher' ? 'Professor' : 'Assistent' }}
+                                                        {{ $course->pivot->role == 'teacher' ? 'Professor/a' : 'Assistent' }}
                                                     </span>
                                                 </div>
                                             </div>
@@ -250,14 +250,14 @@
                                     <div class="text-2xl font-bold text-purple-600">
                                         {{ $teacher->courses->where('pivot.role', 'teacher')->count() }}
                                     </div>
-                                    <div class="text-sm text-gray-600">Com a Professor</div>
+                                    <div class="text-sm text-gray-600">Com a Professor/a</div>
                                 </div>
                             </div>
                         </div>
                     @else
                         <div class="text-center py-8">
                             <i class="bi bi-book text-gray-400 text-4xl mb-4"></i>
-                            <p class="text-gray-600">Aquest professor no té cursos assignats.</p>
+                            <p class="text-gray-600">Aquest professor/a no té cursos assignats.</p>
                             @can('campus.teachers.edit')
                                 <a href="{{ route('campus.teachers.edit', $teacher) }}" 
                                    class="mt-4 inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition duration-200">

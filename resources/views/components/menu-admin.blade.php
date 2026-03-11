@@ -116,12 +116,12 @@
             ];
         }
         
-        // Campus - Professors
+        // Campus - Professorat
         if (Auth::user()->can('campus.teachers.view')) {
             $adminItems[] = [
                 'href' => route('campus.teachers.index'),
                 'active' => request()->routeIs('campus.teachers.*'),
-                'label' => __('Professors'),
+                'label' => __('Professorat'),
                 'icon' => 'person-standing',
             ];
         }

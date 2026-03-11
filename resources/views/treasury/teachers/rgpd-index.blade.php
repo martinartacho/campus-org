@@ -64,7 +64,7 @@
         <thead class="bg-gray-100">
             <tr>
                 <th class="p-3 text-left">{{ __('campus.name') }}</th>
-                <th class="p-3 text-left">{{ __('campus.email') }} Usuari/Professor</th>
+                <th class="p-3 text-left">{{ __('campus.email') }} Usuari/Professor/a</th>
                 <th class="p-3 text-center">{{ __('campus.rgpd_status') }}</th>
                 <th class="p-3 text-center">{{ __('campus.actions') }}</th>
             </tr>
@@ -166,7 +166,7 @@
         @endif
     </h3>
     <p class="text-yellow-700">
-        No hi ha professors per mostrar en aquesta temporada.
+        No hi ha professorat per mostrar en aquesta temporada.
     </p>
 </div>
 @endif

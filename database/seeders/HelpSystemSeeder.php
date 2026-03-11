@@ -16,7 +16,7 @@ class HelpSystemSeeder extends Seeder
             ['name' => 'Crear curs', 'area' => 'cursos', 'icon' => 'bi-plus-circle', 'order' => 1],
             ['name' => 'Editar curs', 'area' => 'cursos', 'icon' => 'bi-pencil', 'order' => 2],
             ['name' => 'Llistar cursos', 'area' => 'cursos', 'icon' => 'bi-list', 'order' => 3],
-            ['name' => 'Gestionar professors', 'area' => 'cursos', 'icon' => 'bi-people', 'order' => 4],
+            ['name' => 'Gestionar professorat', 'area' => 'cursos', 'icon' => 'bi-people', 'order' => 4],
             
             // Matrícula
             ['name' => 'Nova matrícula', 'area' => 'matricula', 'icon' => 'bi-person-plus', 'order' => 1],
@@ -50,7 +50,7 @@ class HelpSystemSeeder extends Seeder
             [
                 'title' => 'Com crear un nou curs',
                 'slug' => 'com-crear-nou-curs',
-                'content' => '<h3>Per crear un nou curs:</h3><ol><li>Vés a la secció <strong>Cursos</strong></li><li>Fes clic a <strong>"Nou Curs"</strong></li><li>Completa les dades del curs</li><li>Assigna professors</li><li>Guarda el curs</li></ol>',
+                'content' => '<h3>Per crear un nou curs:</h3><ol><li>Vés a la secció <strong>Cursos</strong></li><li>Fes clic a <strong>"Nou Curs"</strong></li><li>Completa les dades del curs</li><li>Assigna professorats</li><li>Guarda el curs</li></ol>',
                 'area' => 'cursos',
                 'context' => 'admin.courses.create',
                 'type' => 'guia',

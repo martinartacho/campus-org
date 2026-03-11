@@ -399,12 +399,12 @@ Route::get('test-import', function() {
             return view('campus.my-registrations');
         })->name('my-registrations')->middleware('can:campus.my_courses.view');
         
-        // Cursos (professors)
+        // Cursos (professorat)
         Route::get('/teacher-courses', function () {
             return view('campus.teacher-courses');
         })->name('teacher-courses')->middleware('can:campus.my_courses.manage');
         
-        // Estudiants (professors)
+        // Estudiants (professorat)
         Route::get('/teacher-students', function () {
             return view('campus.teacher-students');
         })->name('teacher-students')->middleware('can:campus.students.view');

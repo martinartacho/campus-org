@@ -114,7 +114,7 @@
                             <i class="bi bi-person-workspace text-teal-600 text-lg"></i>
                         </div>
                         <div>
-                            <h3 class="font-semibold text-gray-800">{{ __('Professors') }}</h3>
+                            <h3 class="font-semibold text-gray-800">{{ __('campus.teachers') }}</h3>
                             <p class="text-sm text-gray-600">{{ __('Gestió del professorat') }}</p>
                         </div>
                     </div>
@@ -242,7 +242,7 @@
                         <i class="bi bi-person-workspace text-teal-600 text-lg"></i>
                     </div>
                     <div>
-                        <h3 class="font-semibold text-gray-800">{{ __('Professors') }}</h3>
+                        <h3 class="font-semibold text-gray-800">{{ __('campus.teachers') }}</h3>
                         <p class="text-sm text-gray-600">{{ __('Gestió del professorat') }}</p>
                     </div>
                 </div>

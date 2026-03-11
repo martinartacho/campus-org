@@ -759,7 +759,7 @@ colors: {
                     <tr>
                         <td><span class="badge bg-coordinacio-500">coordinacio</span></td>
                         <td>Coordinació acadèmica</td>
-                        <td>Cursos, estudiants, professors/es</td>
+                        <td>Cursos, estudiants, professorat</td>
                         <td><span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded">Indigo</span></td>
                     </tr>
                     <tr>
@@ -823,7 +823,7 @@ colors: {
                 <div class="card">
                     <div class="card-body">
                         <h6 class="card-title text-primary">teacher</h6>
-                        <p class="card-text small">Professor</p>
+                        <p class="card-text small">Professorat</p>
                         <ul class="small">
                             <li>Cursos assignats</li>
                             <li>Estudiants</li>
@@ -965,7 +965,7 @@ colors: {
         <ul>
             <li><strong>Gestió administrativa:</strong> Accés a tot el panell d\'administració</li>
             <li><strong>Contingut:</strong> Gestió de cursos, materials, notificacions</li>
-            <li><strong>Usuaris:</strong> Gestió de professors, estudiants, personal</li>
+            <li><strong>Usuaris:</strong> Gestió de professorat, estudiants, personal</li>
             <li><strong>Informes:</strong> Accés a tots els informes del sistema</li>
         </ul>
         
@@ -975,7 +975,7 @@ colors: {
             <li>Coordinació general del campus</li>
             <li>Gestió de personal acadèmic</li>
             <li>Administració de cursos i matrícules</li>
-            <li>Comunicació amb estudiants i professors</li>
+            <li>Comunicació amb estudiants i professorat</li>
         </ul>';
     }
 
@@ -988,7 +988,7 @@ colors: {
         <h3>Permisos Principals</h3>
         <ul>
             <li><strong>Supervisió acadèmica:</strong> Tots els aspectes acadèmics</li>
-            <li><strong>Gestió de professors:</strong> Contractació, avaluació, formació</li>
+            <li><strong>Gestió de professorat:</strong> Contractació, avaluació, formació</li>
             <li><strong>Cursos:</strong> Creació, modificació, eliminació de cursos</li>
             <li><strong>Informes globals:</strong> Estadístiques acadèmiques completes</li>
         </ul>
@@ -1020,7 +1020,7 @@ colors: {
         <h3>Subròls Coordinats</h3>
         <ul>
             <li><strong>Comunicació:</strong> Notificacions, esdeveniments, comunicació</li>
-            <li><strong>Coordinació:</strong> Cursos, estudiants, professors</li>
+            <li><strong>Coordinació:</strong> Cursos, estudiants, professorat</li>
             <li><strong>Secretaria:</strong> Estudiants, matrícules, gestió admin</li>
             <li><strong>Gestió:</strong> Operativa del campus, logística</li>
         </ul>';
@@ -1059,7 +1059,7 @@ colors: {
         <h3>Permisos Principals</h3>
         <ul>
             <li><strong>Gestió de cursos:</strong> Creació, edició, eliminació</li>
-            <li><strong>Assignació de professors:</strong> Cursos, horaris, aules</li>
+            <li><strong>Assignació de professorat:</strong> Cursos, horaris, aules</li>
             <li><strong>Gestió d\'estudiants:</strong> Matrícules, expedients</li>
             <li><strong>Horaris i aules:</strong> Planificació d\'espais i temps</li>
         </ul>
@@ -1157,7 +1157,7 @@ colors: {
             <li><strong>Accés a cursos:</strong> Cursos matriculats</li>
             <li><strong>Materials:</strong> Descàrrega de contingut</li>
             <li><strong>Progrés:</strong> Seguiment del teu aprenentatge</li>
-            <li><strong>Comunicació:</strong> Contacte amb professors</li>
+            <li><strong>Comunicació:</strong> Contacte amb el professorat</li>
         </ul>
         
         <h3>Responsabilitats</h3>

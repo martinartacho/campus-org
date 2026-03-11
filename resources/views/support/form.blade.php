@@ -26,7 +26,7 @@
                         <form method="POST" action="{{ route('support.store') }}" id="supportForm">
                             @csrf
 
-                            {{-- Información del usuario --}}
+                            {{-- Informació del usuari --}}
                             <div class="border rounded-lg p-6 mb-6 bg-gray-50">
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <!-- Nom -->
@@ -102,7 +102,7 @@
                                 </div>
                             </div>
 
-                            {{-- Descripción --}}
+                            {{-- Descripció --}}
                             <div class="border rounded-lg p-6 mb-6 bg-gray-50">
                                 <!-- Descripció -->
                                 <div>
@@ -119,7 +119,7 @@
                                 </div>
                             </div>
 
-                            {{-- Módulo y URL --}}
+                            {{-- Módul i URL --}}
                             <div class="border rounded-lg p-6 mb-6 bg-gray-50">
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <!-- Pantalla / Mòdul afectat -->
@@ -206,7 +206,7 @@
                                 </div>
                             </div>
 
-                            {{-- Información de autenticación --}}
+                            {{-- Informació de autenticació --}}
                             @if($user)
                             <div class="alert alert-info mb-4">
                                 <i class="bi bi-info-circle me-2"></i>
@@ -225,7 +225,7 @@
                             </div>
                             @endif
 
-                            {{-- Botones --}}
+                            {{-- Botons --}}
                             <div class="flex justify-between mt-6">
                                 <a href="{{ url()->previous() }}" class="inline-flex items-center px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors">
                                     <i class="bi bi-arrow-left mr-2"></i> Tornar
@@ -238,7 +238,7 @@
                     </div>
                 </div>
 
-                {{-- Información adicional --}}
+                {{-- Informació adicional --}}
                 <div class="card mt-4">
                     <div class="card-body">
                         <h5 class="card-title">
@@ -250,7 +250,7 @@
                                 <h6 class="mb-3">⏰ Temps de resposta estimat:</h6>
                                 <div class="alert alert-info">
                                     <p class="mb-2">El temps de resposta varia en funció de la urgència de la sol·licitud i la complexitat de la mateixa.</p>
-                                    <p class="mb-0"><strong>ET</strong> (Equip Tècnic) està format per persones de voluntaries que resolten les sol·licituds de suport al seu temps personal sense cap tipus de compensació ecónomica.</p>
+                                    <p class="mb-0"><strong>ET</strong> (Equip Tècnic) està format per <strong>persones de voluntaries</strong> que resolten les sol·licituds de suport al seu temps personal sense cap tipus de compensació ecónomica.</p>
                                 </div>
                             </div>
 
@@ -261,16 +261,16 @@
                                     <ul class="space-y-2 mb-0">
                                         <li class="flex items-center">
                                             <i class="bi bi-envelope mr-2 text-blue-600"></i>
-                                            <strong>Email:</strong> support@upg.cat
+                                            <strong>Email:</strong> campus@upg.cat
                                         </li>
-                                        <li class="flex items-center">
+                                        <!-- <li class="flex items-center">
                                             <i class="bi bi-telephone mr-2 text-blue-600"></i>
-                                            <strong>Telèfon:</strong> 93 123 45 67
+                                            <strong>Telèfon:</strong> 
                                         </li>
                                         <li class="flex items-center">
                                             <i class="bi bi-clock mr-2 text-blue-600"></i>
-                                            <strong>Horari:</strong> 9:00 - 18:00
-                                        </li>
+                                            <strong>Horari:</strong> 
+                                        </li> -->
                                     </ul>
                                 </div>
                             </div>
@@ -297,7 +297,7 @@ document.addEventListener('DOMContentLoaded', function() {
             '/dashboard': 'Taulell de control',
             '/campus': 'Campus',
             '/courses': 'Cursos',
-            '/teachers': 'Professors',
+            '/teachers': 'Professorat',
             '/treasury': 'Tresoreria',
             '/admin': 'Administració',
             '/profile': 'Perfil'

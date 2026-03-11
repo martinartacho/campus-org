@@ -24,7 +24,7 @@
                 </div>
                 <div>
                     <h3 class="text-xl font-semibold text-gray-900">Pagaments</h3>
-                    <p class="text-sm text-gray-600">Gestionar pagaments de professors</p>
+                    <p class="text-sm text-gray-600">Gestionar pagaments de professorat</p>
                 </div>
             </div>
             <div class="text-sm text-gray-500">
@@ -43,13 +43,13 @@
                     <i class="bi bi-person-workspace text-teal-600 text-2xl"></i>
                 </div>
                 <div>
-                    <h3 class="text-xl font-semibold text-gray-900">Professors</h3>
+                    <h3 class="text-xl font-semibold text-gray-900">Professorat</h3>
                     <p class="text-sm text-gray-600">Gestió completa del professorat</p>
                 </div>
             </div>
             <div class="text-sm text-gray-500">
                 <i class="bi bi-arrow-right-circle me-1"></i>
-                CRUD complet de professors
+                Gestió de professorat
             </div>
         </a>
         @endcan
@@ -123,9 +123,9 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
     {{-- Estadísticas según propuesta --}}
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-        {{-- Professors totals / RGPD acceptat --}}
+        {{-- Professorat totals / RGPD acceptat --}}
         <div class="p-6 bg-white shadow rounded-lg">
-            <div class="text-gray-500 text-sm mb-2">Professors totals / RGPD acceptat</div>
+            <div class="text-gray-500 text-sm mb-2">Professorat totals / RGPD acceptat</div>
             <div class="text-3xl font-bold text-blue-600">
                 {{ $data['teachers_total'] }} / {{ $data['teachers_with_rgpd'] }}
             </div>
@@ -150,7 +150,7 @@
         <table class="w-full text-sm">
             <thead>
                 <tr class="text-left text-gray-500 border-b">
-                    <th>Professor</th>
+                    <th>Professorat</th>
                     <th>Temporada</th>
                     <th>Acceptat</th>
                 </tr>
@@ -170,7 +170,7 @@
             <a href="{{ route('campus.treasury.teachers.index') }}"
                class="text-blue-600 hover:underline inline-flex items-center">
                 <i class="bi bi-arrow-right-circle me-1"></i>
-                Gestió professors (Tresoreria)
+                Gestió professorat (Tresoreria)
             </a>
         </div>
     </div>

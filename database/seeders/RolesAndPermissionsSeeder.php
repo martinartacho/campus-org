@@ -105,7 +105,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'campus.students.delete',
             'campus.students.manage',
             
-            // Professors
+            // Professors/es
             'campus.teachers.index',
             'campus.teachers.view',
             'campus.teachers.create',
@@ -132,7 +132,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'campus.profile.view',
             'campus.profile.edit',
             
-            // Vista de cursos propis (per a professors i estudiants)
+            // Vista de cursos propis (per a professors/es i estudiants)
             'campus.my_courses.view',
             'campus.my_courses.manage',
             
@@ -232,7 +232,7 @@ class RolesAndPermissionsSeeder extends Seeder
         ];
         $editor->syncPermissions($editorPermissions);
 
-        // ROL: PROFESSOR (NOU - Professor)
+        // ROL: PROFESSOR (NOU - Professor/a)
         $teacher = Role::firstOrCreate(['name' => 'teacher']);
         $teacherPermissions = [
             'campus.profile.view', 'campus.profile.edit',
