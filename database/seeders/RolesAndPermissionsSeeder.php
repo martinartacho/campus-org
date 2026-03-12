@@ -121,6 +121,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'campus.registrations.delete',
             'campus.registrations.approve',
             'campus.registrations.manage',
+            'campus.registrations.import',
             
             // Pagaments
             'campus.payments.view',
@@ -186,6 +187,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'campus.teachers.edit', 'campus.teachers.delete', 'campus.teachers.assign',
             'campus.registrations.index', 'campus.registrations.view', 'campus.registrations.create',
             'campus.registrations.edit', 'campus.registrations.delete', 'campus.registrations.manage',
+            'campus.registrations.import',
             'campus.payments.view', 'campus.payments.manage',
         ];
         $gestor->syncPermissions($gestorPermissions);
@@ -326,6 +328,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'campus.teachers.edit', 'campus.teachers.delete', 'campus.teachers.assign',
             'campus.registrations.index', 'campus.registrations.view', 'campus.registrations.create',
             'campus.registrations.edit', 'campus.registrations.delete', 'campus.registrations.manage',
+            'campus.registrations.import',
             'campus.payments.view', 'campus.payments.manage', 'campus.payments.approve',
             'notifications.index', 'notifications.create', 'notifications.edit', 'notifications.delete', 'notifications.view',
             'events.index', 'events.view', 'events.create', 'events.edit', 'events.delete',

@@ -503,14 +503,16 @@ Route::get('test-import', function() {
             ->middleware('can:campus.registrations.view');
 
         // Registration Import/Export - Use different prefix to avoid conflicts
-        Route::get('registrations-import', [\App\Http\Controllers\Campus\ImportController::class, 'showImportForm'])
-            ->name('registrations.import.form');
-        Route::post('registrations-import', [\App\Http\Controllers\Campus\ImportController::class, 'import'])
-            ->name('registrations.import.store');
+        Route::get('registrations-import', [\App\Http\Controllers\Campus\RegistrationImportController::class, 'showImportForm'])
+            ->name('campus.registrations.import.form');
+        Route::post('registrations-import/validate', [\App\Http\Controllers\Campus\RegistrationImportController::class, 'validateImport'])
+            ->name('campus.registrations.import.validate');
+        Route::post('registrations-import/process', [\App\Http\Controllers\Campus\RegistrationImportController::class, 'processImport'])
+            ->name('campus.registrations.import.process');
         Route::get('registrations-export', [\App\Http\Controllers\Campus\ImportController::class, 'export'])
-            ->name('registrations.export');
+            ->name('campus.registrations.export');
         Route::get('registrations-list', [\App\Http\Controllers\Campus\ImportController::class, 'index'])
-            ->name('registrations.list'); 
+            ->name('campus.registrations.list'); 
         
         
         // Rutas duplicadas eliminadas - están definidas dentro del grupo campus

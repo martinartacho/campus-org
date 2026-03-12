@@ -117,11 +117,11 @@ class CampusRegistration extends Model
     public function getFormattedStatusAttribute(): string
     {
         $statuses = [
-            'pending' => 'Pendiente',
-            'confirmed' => 'Confirmado',
-            'cancelled' => 'Cancelado',
-            'completed' => 'Completado',
-            'failed' => 'Fallido'
+            'pending' => __('campus.registration_status_pending'),
+            'confirmed' => __('campus.registration_status_confirmed'),
+            'cancelled' => __('campus.registration_status_cancelled'),
+            'completed' => __('campus.registration_status_completed'),
+            'failed' => __('campus.registration_status_failed')
         ];
         
         return $statuses[$this->status] ?? $this->status;
@@ -133,10 +133,10 @@ class CampusRegistration extends Model
     public function getFormattedPaymentStatusAttribute(): string
     {
         $statuses = [
-            'pending' => 'Pendiente de pago',
-            'paid' => 'Pagado',
-            'partial' => 'Pago parcial',
-            'cancelled' => 'Pago cancelado'
+            'pending' => __('campus.payment_status_pending'),
+            'paid' => __('campus.payment_status_paid'),
+            'partial' => __('campus.payment_status_partial'),
+            'cancelled' => __('campus.payment_status_cancelled')
         ];
         
         return $statuses[$this->payment_status] ?? $this->payment_status;

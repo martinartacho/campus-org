@@ -11,6 +11,8 @@ class CampusCourseStudent extends Model
 {
     use HasFactory;
 
+    protected $table = 'campus_course_student';
+
     const STATUS_ENROLLED = 'enrolled';
     const STATUS_ACTIVE = 'active';
     const STATUS_COMPLETED = 'completed';
