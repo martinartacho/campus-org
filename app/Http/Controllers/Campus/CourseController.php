@@ -334,11 +334,28 @@ class CourseController extends Controller
     /**
      * Display the specified course.
      */
-    public function show(CampusCourse $course)
+    public function show(CampusCourse $course, Request $request)
     {
         $course->load(['season', 'category']);
+        
+        // Capturar la URL de referencia para volver al listado con filtros
+        // Prioridad: 1) back_url explícito, 2) referer HTTP, 3) ruta por defecto
+        $backUrl = $request->get('back_url');
+        
+        if (!$backUrl && $request->header('referer')) {
+            $referer = $request->header('referer');
+            // Solo usar referer si viene de nuestro dominio y es la página de cursos
+            if (strpos($referer, route('campus.courses.index')) !== false) {
+                $backUrl = $referer;
+            }
+        }
+        
+        // Fallback a ruta por defecto
+        if (!$backUrl) {
+            $backUrl = route('campus.courses.index');
+        }
 
-        return view('campus.courses.show', compact('course'));
+        return view('campus.courses.show', compact('course', 'backUrl'));
     }
 
     /**
@@ -396,7 +413,7 @@ class CourseController extends Controller
     /**
      * Show the form for editing the specified course.
      */
-    public function edit(CampusCourse $course)
+    public function edit(CampusCourse $course, Request $request)
     {
         // Obtener temporadas según permisos
         if (auth()->user()->hasRole('admin') || auth()->user()->can('manage_seasons')) {
@@ -406,8 +423,11 @@ class CourseController extends Controller
         }
         
         $categories = CampusCategory::orderBy('name')->get();
+        
+        // Capturar la URL de referencia para volver al listado con filtros
+        $backUrl = $request->get('back_url', route('campus.courses.index'));
 
-        return view('campus.courses.edit', compact('course', 'seasons', 'categories'));
+        return view('campus.courses.edit', compact('course', 'seasons', 'categories', 'backUrl'));
     }
 
     /**
@@ -476,20 +496,22 @@ class CourseController extends Controller
         }
 
         // For regular form submissions, redirect as before
-        return redirect()
-            ->route('campus.courses.show', $course)
+        $backUrl = $request->get('back_url', route('campus.courses.index'));
+        
+        return redirect($backUrl)
             ->with('success', __('campus.course_updated'));
     }
 
     /**
      * Remove the specified course from storage.
      */
-    public function destroy(CampusCourse $course)
+    public function destroy(CampusCourse $course, Request $request)
     {
         $course->delete();
 
-        return redirect()
-            ->route('campus.courses.index')
+        $backUrl = $request->get('back_url', route('campus.courses.index'));
+        
+        return redirect($backUrl)
             ->with('success', __('campus.course_deleted'));
     }
 
@@ -627,26 +649,6 @@ class CourseController extends Controller
             ], 500);
         }
     }
-
-    /**
-     * Update course category
-     */
-    public function updateCategory(Request $request)
-    {
-        $request->validate([
-            'course_id' => 'required|exists:campus_courses,id',
-            'category_id' => 'required|exists:campus_categories,id',
-        ]);
-
-        $course = CampusCourse::findOrFail($request->course_id);
-        $course->category_id = $request->category_id;
-        $course->save();
-
-        return redirect()
-            ->route('campus.courses.index')
-            ->with('success', __('campus.category_updated_successfully'));
-    }
-
     /**
      * Handle validation errors for debugging
      */

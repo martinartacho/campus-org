@@ -30,8 +30,14 @@
     </h1>
 
     <div class="flex gap-2">
+        <!-- Botón Volver -->
+        <a href="{{ $backUrl }}" 
+           class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors">
+            <i class="bi bi-arrow-left me-2"></i>{{ __('campus.back') }}
+        </a>
+        
     @can('campus.courses.edit')
-        <a href="{{ route('campus.courses.edit', $course) }}"
+        <a href="{{ route('campus.courses.edit', $course) }}{{ $backUrl != route('campus.courses.index') ? '?back_url=' . urlencode($backUrl) : '' }}"
            class="campus-primary-button">
             {{ __('campus.edit') }}
         </a>

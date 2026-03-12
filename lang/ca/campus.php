@@ -274,6 +274,7 @@ return [
     'course_level_advanced' => 'Avançat',
     'course_level_expert' => 'Expert',
     'category_updated_successfully' => 'Categoria actualitzada correctament',
+    'back' => 'Tornar',
 
     // Estadísticas del dashboard
     'total_courses_teacher' => 'Cursos totals',

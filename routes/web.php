@@ -53,11 +53,7 @@ Route::post('importar-cursos/validate', [CampusImportController::class, 'validat
 Route::get('importar-cursos/template', [CampusImportController::class, 'downloadTemplate'])
     ->name('importar.cursos.template');
 
-Route::post('campus/courses/import', [CampusImportController::class, 'store'])
-    ->name('campus.courses.import.store');
-
-Route::get('campus/courses/import/template', [CampusImportController::class, 'downloadTemplate'])
-    ->name('campus.courses.import.template');
+// Rutas duplicadas eliminadas - están definidas dentro del grupo campus
 
 
 
@@ -517,11 +513,7 @@ Route::get('test-import', function() {
             ->name('registrations.list'); 
         
         
-        Route::get('campus/courses/import', [CampusImportController::class, 'create'])
-            ->name('campus.courses.import');
-        
-        Route::post('campus/courses/import', [CampusImportController::class, 'store'])
-            ->name('campus.courses.import.store');
+        // Rutas duplicadas eliminadas - están definidas dentro del grupo campus
             
 
         // Re-Cursos - Resource Management
@@ -547,12 +539,6 @@ Route::get('test-import', function() {
         Route::get('resources/getnextcode', [ResourceController::class, 'getNextCode'])->name('resources.getnextcode'); 
             
     });
-    
-// Update course category - Route outside campus group to avoid conflicts
-Route::middleware(['auth', 'can:campus.courses.edit'])
-    ->prefix('campus')
-    ->patch('courses/update-category', [\App\Http\Controllers\Campus\CourseController::class, 'updateCategory'])
-    ->name("campus.courses.update-category");
     
     // Help System Routes - Admin
     Route::middleware(['auth', 'role:admin'])

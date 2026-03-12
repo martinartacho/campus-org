@@ -36,14 +36,13 @@
     @include('campus.courses.partials.form', ['course' => $course])
 
     <div class="flex justify-end gap-2">
-        <a href="{{ route('campus.courses.show', $course) }}"
-           class="campus-secondary-button">
+        <x-campus-button href="{{ route('campus.courses.show', $course) }}" variant="secondary">
             {{ __('campus.cancel') }}
-        </a>
+        </x-campus-button>
 
-        <button type="submit" class="campus-primary-button">
+        <x-campus-button type="submit" variant="primary">
             {{ __('campus.update') }}
-        </button>
+        </x-campus-button>
     </div>
 </form>
 @endsection

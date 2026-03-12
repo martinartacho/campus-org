@@ -18,6 +18,30 @@
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
+    <!-- Force cache busting -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    @php
+    // Función para acortar nombres largos de categorías
+    function shortenCategoryName($name) {
+        if (strlen($name) <= 20) {
+            return $name;
+        }
+        
+        // Dividir en palabras
+        $words = explode(' ', $name);
+        $firstWord = $words[0] ?? '';
+        
+        // Si hay más de una palabra, añadir "..."
+        if (count($words) > 1) {
+            return $firstWord . '...';
+        }
+        
+        return $firstWord;
+    }
+    @endphp
     
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold text-gray-900">{{ __('campus.courses') }}</h1>
@@ -268,15 +292,17 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 @if($course->category && $course->category->name !== 'Sense Categoria')
-                                    {{ $course->category->name }}
+                                    <span title="{{ $course->category->name }}">
+                                        {{ shortenCategoryName($course->category->name) }}
+                                    </span>
                                 @else
-                                    <div class="flex items-center space-x-2">
+                                    <div class="flex flex-col items-start space-y-1">
                                         <span class="text-orange-600 font-medium">Sense Categoria</span>
-                                        <button onclick="openCategoryModal({{ $course->id }}, '{{ $course->category->id ?? '' }}')" 
-                                                class="text-blue-600 hover:text-blue-800 text-xs bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded transition-colors"
-                                                title="Assignar categoria">
-                                            <i class="bi bi-pencil-square"></i> Assignar
-                                        </button>
+                                        <a href="{{ route('campus.courses.edit', $course->id) }}?back_url={{ urlencode(request()->fullUrl()) }}" 
+                                                class="text-blue-600 hover:text-blue-800 text-xs bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded transition-colors flex items-center"
+                                                title="Editar curso y asignar categoria">
+                                            <i class="bi bi-pencil-square mr-1"></i> Assignar
+                                        </a>
                                     </div>
                                 @endif
                             </td>
@@ -331,7 +357,7 @@
                                 @endif
                                
                                     @can('campus.courses.edit')
-                                        <a href="{{ route('campus.courses.edit', $course) }}" 
+                                        <a href="{{ route('campus.courses.edit', $course) }}?back_url={{ urlencode(request()->fullUrl()) }}" 
                                            class="text-indigo-600 hover:text-indigo-900 mr-3">
                                             <i class="bi bi-pencil"></i>
                                         </a>
@@ -340,7 +366,7 @@
                                 
                               
                                 @can('campus.courses.delete')
-                                    <form action="{{ route('campus.courses.destroy', $course) }}" method="POST" class="inline">
+                                    <form action="{{ route('campus.courses.destroy', $course) }}?back_url={{ urlencode(request()->fullUrl()) }}" method="POST" class="inline">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="text-red-600 hover:text-red-900"
@@ -369,113 +395,5 @@
         </div>
     @endif
 </div>
-@php
-    $user = Auth::user();
-@endphp
-@if($user->hasRole('superadmin'))
-    <div class="p-6 bg-white border-b border-gray-200">
-        <h2 class="text-lg font-medium text-gray-900">
-            {{ __('campus.import_information') }}
-        </h2>
-        <p class="text-xs text-gray-500 mt-1">
-            {{ __('campus.import_information_alert') }}
-            <a href="#" onclick="return downloadTemplate();" class="text-indigo-600 hover:underline">
-                📥 {{ __('campus.download_template') }}
-            </a>
-        </p>
-
-        <div class="mt-2 p-3 bg-blue-50 rounded text-xs text-blue-800">
-            <strong>{{ __('campus.code_protocol') }}:</strong><br>
-            {{ __('campus.code_protocol_description') }}<br>
-            &nbsp;&nbsp;- {{ __('campus.code_protocol_prefix') }}<br>
-            &nbsp;&nbsp;- {{ __('campus.code_protocol_suffix') }}<br>
-            &nbsp;&nbsp;- {{ __('campus.code_protocol_result') }}
-        </div>
-        <div class="mt-2 p-3 bg-green-50 rounded text-xs text-green-800">
-            <strong>{{ __('campus.category_protocol') }}:</strong><br>
-            {{ __('campus.category_protocol_description') }}<br>
-            &nbsp;&nbsp;- {{ __('campus.category_protocol_name') }}<br>
-            &nbsp;&nbsp;- {{ __('campus.category_protocol_slug') }}<br>
-            &nbsp;&nbsp;- {{ __('campus.category_protocol_description') }}<br>
-            &nbsp;&nbsp;- {{ __('campus.category_protocol_order') }}<br>
-            • {{ __('campus.category_protocol_report') }}
-        </div>
-    </div>
-@endif
-
-<!-- Modal para asignar categoría -->
-<div id="categoryModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50">
-    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-        <div class="mt-3">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-medium text-gray-900">Assignar Categoria</h3>
-                <button onclick="closeCategoryModal()" class="text-gray-400 hover:text-gray-600">
-                    <i class="bi bi-x-lg"></i>
-                </button>
-            </div>
-            
-            <form id="categoryForm" method="POST" action="{{ route('campus.courses.update-category') }}">
-                @csrf
-                @method('PATCH')
-                <input type="hidden" id="courseId" name="course_id">
-                
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Selecciona una categoria:</label>
-                    <select name="category_id" id="categorySelect" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                        <option value="">Selecciona una categoria...</option>
-                        @foreach($categories as $category)
-                            <option value="{{ $category->id }}">{{ $category->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                
-                <div class="flex justify-end space-x-3">
-                    <button type="button" onclick="closeCategoryModal()" 
-                            class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors">
-                        Cancel·lar
-                    </button>
-                    <button type="submit" 
-                            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
-                        Guardar
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
 @endsection
-
-<script>
-window.downloadTemplate = function() {
-    const template = `first_name,last_name,email,title,slug,description,credits,hours,sessions,max_students,price,level,schedule,start_date,end_date,location,format,is_active,is_public,requirements,objectives,metadata,created_at,updated_at
-Pepito,Grillo,CREACIO@campus.test,Creació literària: el microrelat,creacio-literaria-el-microrelat,"Creació literària: el microrelat","7","7","7","30","50.00","beginner",,"2025-09-16","2026-01-31",,,"1","1",,,,,
-Chi,Kung,CHIKUNG@campus.test,Chi Kung dilluns,chi-kung-dilluns,"Chi Kung (grups dilluns)","27","27","27","30","50.00","beginner",,"2025-09-16","2026-01-31",,,"1","1",,,,,
-,,COMFUNC@campus.test,Com funciona la terra que trepitgem,com-funciona-la-terra-que-trepitgem-1771350937,"Com funciona la terra que trepitgem","8","8","8","30","50.00",,,,,,,,,,,,
-,,NUTRICIO@campus.test,Nutrició i dietoteràpia,nutricio-i-dietoterapia-1771350937,"Nutrició i dietoteràpia",,,,,,,,,,,,,,,,,,`;
-    
-    const blob = new Blob([template], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'plantilla_cursos.csv';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
-    return false;
-}
-
-// Funciones para el modal de categoría
-function openCategoryModal(courseId, currentCategoryId) {
-    document.getElementById('courseId').value = courseId;
-    document.getElementById('categorySelect').value = currentCategoryId;
-    document.getElementById('categoryModal').classList.remove('hidden');
-}
-
-function closeCategoryModal() {
-    document.getElementById('categoryModal').classList.add('hidden');
-    document.getElementById('categoryForm').reset();
-}
-</script>
 
