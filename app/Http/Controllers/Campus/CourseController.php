@@ -553,7 +553,7 @@ class CourseController extends Controller
             'sessions'      => ['nullable', 'integer', 'min:0', 'max:100'],
             'max_students'  => ['nullable', 'integer', 'min:0'],
             'price'         => ['nullable', 'numeric', 'min:0'],
-            'level'         => ['nullable', 'string', 'in:beginner,intermediate,advanced,expert'],
+            'level'         => ['nullable', 'string', 'in:none,beginner,intermediate,advanced,expert'],
             'schedule'      => ['nullable', 'array'],
             'start_date'    => ['nullable', 'date'],
             'end_date'      => ['nullable', 'date', 'after_or_equal:start_date'],
