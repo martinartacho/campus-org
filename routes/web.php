@@ -356,20 +356,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
           
     });
 
-// Ruta de prueba simple
-Route::get('test-import', function() {
-    return 'Importación funciona - ' . date('Y-m-d H:i:s');
-});
-
-    // Rutas de importación (acceso público para pruebas)
-/*     Route::get('campus/courses/import', [CampusImportController::class, 'create'])
-        ->name('campus.courses.import');
-
-    Route::post('campus/courses/import', [CampusImportController::class, 'store'])
-        ->name('campus.courses.import.store');
-
-    Route::get('campus/courses/import/template', [CampusImportController::class, 'downloadTemplate'])
-        ->name('campus.courses.import.template'); */
 
     // Rutas públicas del calendario
     Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
@@ -394,6 +380,55 @@ Route::get('test-import', function() {
         Route::get('/my-registrations', function () {
             return view('campus.my-registrations');
         })->name('my-registrations')->middleware('can:campus.my_courses.view');
+        
+        // Rutas específicas para estudiantes
+        Route::prefix('student')->name('student.')->middleware(['role:student'])->group(function () {
+            Route::get('/profile', function () {
+                return view('campus.student.profile');
+            })->name('profile');
+            
+            Route::get('/registrations', function () {
+                $user = auth()->user();
+                $student = $user->student;
+                
+                if (!$student) {
+                    return view('campus.student.registrations')->with('registrations', collect());
+                }
+                
+                // Get active registrations (courses that haven't ended yet)
+                $registrations = \App\Models\CampusRegistration::where('student_id', $student->id)
+                    ->where('status', 'confirmed')
+                    ->whereHas('course', function($query) {
+                        $query->where('end_date', '>=', now());
+                    })
+                    ->with(['course', 'course.season'])
+                    ->orderBy('created_at', 'desc')
+                    ->get();
+                
+                return view('campus.student.registrations')->with('registrations', $registrations);
+            })->name('registrations');
+            
+            Route::get('/history', function () {
+                $user = auth()->user();
+                $student = $user->student;
+                
+                if (!$student) {
+                    return view('campus.student.history')->with('registrations', collect());
+                }
+                
+                // Get completed registrations (courses that have ended)
+                $registrations = \App\Models\CampusRegistration::where('student_id', $student->id)
+                    ->where('status', 'confirmed')
+                    ->whereHas('course', function($query) {
+                        $query->where('end_date', '<', now());
+                    })
+                    ->with(['course', 'course.season'])
+                    ->orderBy('updated_at', 'desc')
+                    ->get();
+                
+                return view('campus.student.history')->with('registrations', $registrations);
+            })->name('history');
+        });
         
         // Cursos (professorat)
         Route::get('/teacher-courses', function () {

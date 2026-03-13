@@ -36,7 +36,16 @@
 
             {{-- 4. Student --}}
             @elseif(auth()->user()->hasRole('student'))
-                <x-dashboard.student />
+                <x-dashboard.student
+                    :student="$student ?? null"
+                    :studentStats="$studentStats ?? []"
+                    :studentCourses="$studentCourses ?? collect()"
+                    :recentActivity="$recentActivity ?? collect()"
+                    :upcomingClasses="$upcomingClasses ?? collect()"
+                    :grades="$grades ?? collect()"
+                    :debug="$debug ?? null"
+                    :error="$error ?? null"
+                />
 
             {{-- 5. Fallback --}}
             @else

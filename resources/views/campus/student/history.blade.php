@@ -36,10 +36,7 @@
                                 {{ __('Data finalització') }}
                             </th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                {{ __('Nota') }}
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                {{ __('Certificat') }}
+                                {{ __('Estat') }}
                             </th>
                         </tr>
                     </thead>
@@ -57,24 +54,10 @@
                                     {{ $registration->updated_at->format('d/m/Y') }}
                                 </td>
                                 <td class="px-6 py-4">
-                                    <div class="flex items-center">
-                                        <span class="font-medium {{ $registration->grade >= 5 ? 'text-green-600' : 'text-red-600' }}">
-                                            {{ $registration->grade }}/10
-                                        </span>
-                                        @if($registration->grade >= 5)
-                                            <i class="bi bi-check-circle text-green-500 ml-2"></i>
-                                        @endif
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4">
-                                    @if($registration->grade >= 5)
-                                        <button class="text-blue-600 hover:text-blue-900">
-                                            <i class="bi bi-download"></i>
-                                            {{ __('Descarregar') }}
-                                        </button>
-                                    @else
-                                        <span class="text-gray-400">{{ __('No disponible') }}</span>
-                                    @endif
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        <i class="bi bi-check-circle mr-1"></i>
+                                        {{ __('Completat') }}
+                                    </span>
                                 </td>
                             </tr>
                         @endforeach
