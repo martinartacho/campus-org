@@ -105,11 +105,12 @@
                     </div>
                     
                     <div class="flex items-center space-x-2">
-                        <button type="button" 
-                                class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                        <a href="{{ route('campus.teacher.courses.students.export', $course->id) }}" 
+                           target="_blank"
+                           class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
                             <i class="bi bi-download mr-2"></i>
                             @lang('campus.export')
-                        </button>
+                        </a>
                         
                         <button type="button" 
                                 class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700">
@@ -132,12 +133,6 @@
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     @lang('campus.email')
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    @lang('campus.registered_at')
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    @lang('campus.status')
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     @lang('campus.actions')
@@ -174,34 +169,6 @@
                                            class="text-blue-600 hover:text-blue-800 hover:underline">
                                             {{ $student['email'] }}
                                         </a>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        @if($student['registration_date'])
-                                            <div class="flex items-center">
-                                                <i class="bi bi-calendar3 mr-2 text-gray-400"></i>
-                                                {{ $student['registration_date']->format('d/m/Y') }}
-                                            </div>
-                                        @else
-                                            <span class="text-gray-400">-</span>
-                                        @endif
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        @if($student['status'] === 'confirmed')
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                                <i class="bi bi-check-circle mr-1"></i>
-                                                @lang('campus.registration_status_confirmed')
-                                            </span>
-                                        @elseif($student['status'] === 'completed')
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                                <i class="bi bi-check-circle-fill mr-1"></i>
-                                                @lang('campus.registration_status_completed')
-                                            </span>
-                                        @else
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                                <i class="bi bi-clock mr-1"></i>
-                                                {{ ucfirst($student['status']) }}
-                                            </span>
-                                        @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <div class="flex items-center justify-end space-x-2">

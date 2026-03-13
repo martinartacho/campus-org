@@ -699,6 +699,42 @@ class TeacherController extends Controller
     }
     
     /**
+     * Exportar estudiantes en formato HTML
+     */
+    public function exportStudentsHtml($courseId)
+    {
+        $course = CampusCourse::with([
+            'season',
+            'category',
+            'registrations' => function ($query) {
+                $query->whereIn('status', ['confirmed', 'completed'])
+                      ->with(['student.user']);
+            }
+        ])->findOrFail($courseId);
+        
+        $this->authorizeCourse($course);
+        
+        $students = $course->registrations->map(function ($registration) {
+            return [
+                'id' => $registration->student->id,
+                'name' => $registration->student->user->name ?? 
+                         ($registration->student->first_name . ' ' . $registration->student->last_name),
+                'email' => $registration->student->email ?? $registration->student->user->email,
+                'student_code' => $registration->student->student_code,
+                'registration_date' => $registration->registration_date,
+                'status' => $registration->status,
+                'registration_id' => $registration->id
+            ];
+        });
+        
+        $html = view('campus.teacher.export-students-html', compact('course', 'students'))->render();
+        
+        return response($html)
+            ->header('Content-Type', 'text/html; charset=utf-8')
+            ->header('Content-Disposition', 'inline; filename="estudiants_' . $course->code . '.html"');
+    }
+    
+    /**
      * Autorizar que el profesor tenga acceso al curso
      */
     private function authorizeCourse(CampusCourse $course)
@@ -715,7 +751,7 @@ class TeacherController extends Controller
             
         abort_if(!$isAssigned, 403, 'No estás asignado a este curso');
     }
-
+    
     /**
      * Descargar plantilla de importación de profesores
      */

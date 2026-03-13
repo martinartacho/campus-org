@@ -635,6 +635,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::get('/courses/{course}/students', [TeacherController::class, 'students'])
             ->name('courses.students');
+
+        Route::get('/courses/{course}/students/export', [TeacherController::class, 'exportStudentsHtml'])
+            ->name('courses.students.export');
     });
 
     // Admin Support Routes
