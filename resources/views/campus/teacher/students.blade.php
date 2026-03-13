@@ -205,23 +205,11 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <div class="flex items-center justify-end space-x-2">
-                                            <button type="button" 
-                                                    class="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50"
-                                                    title="@lang('campus.view')">
-                                                <i class="bi bi-eye"></i>
-                                            </button>
-                                            
                                             <a href="mailto:{{ $student['email'] }}" 
                                                class="text-green-600 hover:text-green-900 p-1 rounded hover:bg-green-50"
                                                title="@lang('campus.contact')">
                                                 <i class="bi bi-envelope"></i>
                                             </a>
-                                            
-                                            <button type="button" 
-                                                    class="text-purple-600 hover:text-purple-900 p-1 rounded hover:bg-purple-50"
-                                                    title="@lang('campus.view_profile')">
-                                                <i class="bi bi-person-lines-fill"></i>
-                                            </button>
                                         </div>
                                     </td>
                                 </tr>

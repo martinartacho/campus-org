@@ -192,7 +192,7 @@
                                     </div>
                                     <div class="text-right">
                                         <div class="text-sm font-medium text-gray-700">@lang('campus.course_sessions_assigned')</div>
-                                        <div class="text-lg font-semibold text-gray-800">{{ $myHours }}h</div>
+                                        <div class="text-lg font-semibold text-gray-800">{{ number_format($myHours) }} @lang('campus.sessions')</div>
                                     </div>
                                 </div>
 
