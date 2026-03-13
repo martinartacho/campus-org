@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head profile="http://www.w3.org/2005/10/profile">
-        <link rel="icon" 
-            type="image/png" 
-            href="{{ asset('img/h.svg') }}">
+        <!-- Favicon HTML5 Standard -->
+        <link rel="icon" type="image/x-icon" href="{{ asset('img/favicon.ico') }}">
+        <link rel="icon" type="image/svg+xml" href="{{ asset('img/favicon.svg') }}">
+        <link rel="apple-touch-icon" href="{{ asset('img/favicon.svg') }}">
         <meta charset="utf-8">
         
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Artacho') }}</title>
+        <title>{{ config('app.name', 'Campus UPG') }}</title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">

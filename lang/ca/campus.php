@@ -359,7 +359,7 @@ return [
     'total_amount' => 'Import total',
     'import_registrations' => 'Importar',
     'export_registrations' => 'Exportar',
-    'search_by_nif_name_course' => 'Buscar per NIF, nom o curs...',
+    'search_by_nif_name_course' => 'Buscar per nom, mail o curs...',
     'all_statuses' => 'Tots els estats',
     'all_payments' => 'Tots els pagaments',
     'search' => 'Buscar',
