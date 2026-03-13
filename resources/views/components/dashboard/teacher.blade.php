@@ -95,24 +95,21 @@
         </div>
 
         <div class="bg-white p-4 rounded shadow text-center">
-            <div class="text-2xl font-bold text-orange-600">{{ $stats['upcoming_registrations'] ?? 0 }}</div>
-            <div class="text-xs text-gray-500">@lang('campus.pending_registrations_teacher')</div>
-        </div>
-
-        <div class="bg-white p-4 rounded shadow text-center">
             @php
                 $unreadCount = auth()->user()->unreadNotifications()->where('is_published', true)->count();
             @endphp
             <div class="text-2xl font-bold text-blue-600">{{ $unreadCount }}</div>
             <div class="text-xs text-gray-500">@lang('site.Notifications')</div>
         </div>
+    </div>
+    
 
-        {{-- CURSOS --}}
-        <div class="bg-white p-6 rounded shadow">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-xl font-bold text-gray-800">@lang('campus.my_courses')</h2>
-                <div class="text-sm text-gray-500">
-                    @lang('campus.active'): {{ $stats['active_courses'] ?? 0 }} | 
+    {{-- CURSOS --}}
+    <div class="bg-white p-6 rounded shadow">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-bold text-gray-800">@lang('campus.my_courses')</h2>
+            <div class="text-sm text-gray-500">
+                @lang('campus.active'): {{ $stats['active_courses'] ?? 0 }} | 
                     @lang('campus.completed'): {{ $stats['completed_courses'] ?? 0 }}
                 </div>
             </div>
