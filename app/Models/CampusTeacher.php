@@ -104,7 +104,16 @@ class CampusTeacher extends Model
     protected $casts = [
         'hiring_date' => 'date',
         'areas' => 'array',
-        'metadata' => 'array'
+        'metadata' => 'array',
+        // 🔐 Datos sensibles encriptados
+        'iban' => 'encrypted',
+        'bank_titular' => 'encrypted',
+        'fiscal_id' => 'encrypted',
+        'dni' => 'encrypted',
+        'phone' => 'encrypted',
+        'address' => 'encrypted',
+        'postal_code' => 'encrypted',
+        'email' => 'encrypted'
     ];
 
     /**
