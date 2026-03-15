@@ -32,7 +32,7 @@ class CampusTeacherPayment extends Model
         'metadata' => 'array',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
-        // 🔐 SOLO IBAN encriptado - primer paso
+        // 🔐 IBAN encriptado - ACTIVADO
         'iban' => 'encrypted', // IBAN - muy sensible
     ];
 

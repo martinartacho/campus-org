@@ -105,7 +105,7 @@ class CampusTeacher extends Model
         'hiring_date' => 'date',
         'areas' => 'array',
         'metadata' => 'array',
-        // 🔐 SOLO IBAN encriptado - primer paso
+        // 🔐 IBAN encriptado - ACTIVADO
         'iban' => 'encrypted', // IBAN - muy sensible
     ];
 
