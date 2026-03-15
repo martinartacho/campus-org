@@ -9,9 +9,9 @@
 # =================================================================
 
 # Configuración
-DB_NAME="campus_dev"
-DB_USER="artacho"
-DB_PASS="M4rt1n.Ha"
+DB_NAME="${DB_DATABASE:-campus_dev}"
+DB_USER="${DB_USER:-artacho}"
+DB_PASS="${DB_PASSWORD:-M4rt1n.Ha}"
 BACKUP_DIR="/var/www/backups"
 LOG_FILE="/var/www/backups/backup.log"
 DATE=$(date +%Y%m%d_%H%M%S)

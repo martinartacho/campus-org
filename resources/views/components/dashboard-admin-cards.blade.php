@@ -153,6 +153,22 @@
                 </a>
                 @endcan
                 
+                {{-- Gestión de Backups --}}
+                @can('admin.access')
+                <a href="{{ route('admin.backups.index') }}" 
+                   class="bg-gray-50 hover:bg-gray-100 p-4 rounded-lg border border-gray-200 transition duration-150">
+                    <div class="flex items-center">
+                        <div class="p-2 bg-cyan-100 rounded-lg me-3">
+                            <i class="bi bi-arrow-repeat text-cyan-600 text-lg"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-800">🔄 Backups</h3>
+                            <p class="text-sm text-gray-600">Gestió de backups automàtics</p>
+                        </div>
+                    </div>
+                </a>
+                @endcan
+                
             </div>
         </div>
     @endif

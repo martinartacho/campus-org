@@ -257,8 +257,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('/settings/language', [SettingsController::class, 'updateLanguage'])->name('settings.updateLanguage');
         
         // Gestión de backups
-        Route::prefix('backups')->name('backups.')->group(function () {
-            Route::get('/', [BackupController::class, 'index'])->name('');
+        Route::prefix('admin/backups')->name('admin.backups.')->group(function () {
+            Route::get('/', [BackupController::class, 'index'])->name('index');
             Route::post('/execute', [BackupController::class, 'execute'])->name('execute');
             Route::get('/download/{filename}', [BackupController::class, 'download'])->name('download');
             Route::delete('/{filename}', [BackupController::class, 'destroy'])->name('destroy');

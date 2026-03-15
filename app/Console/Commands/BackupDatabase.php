@@ -29,6 +29,12 @@ class BackupDatabase extends Command
     public function handle()
     {
         $environment = $this->option('environment');
+        
+        // Convertir 'local' a 'dev' para compatibilidad
+        if ($environment === 'local') {
+            $environment = 'dev';
+        }
+        
         $this->info("🔄 Iniciando backup de base de datos - Entorno: {$environment}");
         
         try {
@@ -45,10 +51,25 @@ class BackupDatabase extends Command
                 'LOG_PREFIX' => 'DEV'
             ];
             
-            // Ejecutar script bash real
+            // Ejecutar script bash real con variables de entorno
             $output = [];
             $returnCode = 0;
-            exec("{$scriptPath}", $output, $returnCode);
+            
+            // Preparar entorno para el script
+            $envVars = [
+                'DB_DATABASE' => $dbConfig['DB_DATABASE'],
+                'DB_USER' => config('database.connections.mysql.username', 'artacho'),
+                'DB_PASSWORD' => config('database.connections.mysql.password', 'M4rt1n.Ha'),
+            ];
+            
+            // Construir comando con variables de entorno
+            $envString = '';
+            foreach ($envVars as $key => $value) {
+                $envString .= "{$key}='{$value}' ";
+            }
+            
+            $command = "env -i " . trim($envString) . " {$scriptPath}";
+            exec($command, $output, $returnCode);
             
             if ($returnCode === 0) {
                 // Buscar el backup más reciente
