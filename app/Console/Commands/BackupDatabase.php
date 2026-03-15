@@ -58,8 +58,8 @@ class BackupDatabase extends Command
             // Preparar entorno para el script
             $envVars = [
                 'DB_DATABASE' => $dbConfig['DB_DATABASE'],
-                'DB_USER' => config('database.connections.mysql.username', 'artacho'),
-                'DB_PASSWORD' => config('database.connections.mysql.password', 'M4rt1n.Ha'),
+                'DB_USER' => config('database.connections.mysql.username'),
+                'DB_PASSWORD' => config('database.connections.mysql.password'),
             ];
             
             // Construir comando con variables de entorno
