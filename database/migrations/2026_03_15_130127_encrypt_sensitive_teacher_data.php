@@ -14,81 +14,60 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // 🔐 Encriptar datos existentes de profesores
+        // 🔐 Encriptar SOLO datos realmente sensibles de profesores
         $teachers = CampusTeacher::all();
         foreach ($teachers as $teacher) {
             if ($teacher->iban) {
-                $teacher->iban = $teacher->iban; // Laravel lo encriptará automáticamente
+                $teacher->iban = $teacher->iban; // IBAN - muy sensible
             }
             if ($teacher->bank_titular) {
-                $teacher->bank_titular = $teacher->bank_titular;
+                $teacher->bank_titular = $teacher->bank_titular; // Titular bancario - sensible
             }
             if ($teacher->fiscal_id) {
-                $teacher->fiscal_id = $teacher->fiscal_id;
+                $teacher->fiscal_id = $teacher->fiscal_id; // ID fiscal - sensible
             }
             if ($teacher->dni) {
-                $teacher->dni = $teacher->dni;
-            }
-            if ($teacher->phone) {
-                $teacher->phone = $teacher->phone;
+                $teacher->dni = $teacher->dni; // DNI - muy sensible
             }
             if ($teacher->address) {
-                $teacher->address = $teacher->address;
+                $teacher->address = $teacher->address; // Dirección completa - sensible
             }
-            if ($teacher->postal_code) {
-                $teacher->postal_code = $teacher->postal_code;
-            }
-            if ($teacher->email) {
-                $teacher->email = $teacher->email;
-            }
+            // ❌ NO encriptar email, phone, postal_code - necesarios para búsquedas
             $teacher->save();
         }
 
-        // 🔐 Encriptar datos existentes de pagos de profesores
+        // 🔐 Encriptar SOLO datos sensibles de pagos de profesores
         $payments = CampusTeacherPayment::all();
         foreach ($payments as $payment) {
-            if ($payment->first_name) {
-                $payment->first_name = $payment->first_name;
-            }
-            if ($payment->last_name) {
-                $payment->last_name = $payment->last_name;
-            }
             if ($payment->fiscal_id) {
-                $payment->fiscal_id = $payment->fiscal_id;
-            }
-            if ($payment->postal_code) {
-                $payment->postal_code = $payment->postal_code;
-            }
-            if ($payment->city) {
-                $payment->city = $payment->city;
+                $payment->fiscal_id = $payment->fiscal_id; // ID fiscal - sensible
             }
             if ($payment->iban) {
-                $payment->iban = $payment->iban;
+                $payment->iban = $payment->iban; // IBAN - muy sensible
             }
             if ($payment->bank_titular) {
-                $payment->bank_titular = $payment->bank_titular;
+                $payment->bank_titular = $payment->bank_titular; // Titular bancario - sensible
             }
             if ($payment->fiscal_situation) {
-                $payment->fiscal_situation = $payment->fiscal_situation;
+                $payment->fiscal_situation = $payment->fiscal_situation; // Situación fiscal - sensible
             }
             if ($payment->invoice) {
-                $payment->invoice = $payment->invoice;
+                $payment->invoice = $payment->invoice; // Datos de factura - sensible
             }
             if ($payment->observacions) {
-                $payment->observacions = $payment->observacions;
+                $payment->observacions = $payment->observacions; // Observaciones privadas
             }
+            // ❌ NO encriptar first_name, last_name, postal_code, city - necesarios para búsquedas
             $payment->save();
         }
 
-        // 🔐 Encriptar datos existentes de usuarios
+        // 🔐 Encriptar SOLO datos sensibles de usuarios
         $users = User::all();
         foreach ($users as $user) {
-            if ($user->email) {
-                $user->email = $user->email;
-            }
             if ($user->fcm_token) {
-                $user->fcm_token = $user->fcm_token;
+                $user->fcm_token = $user->fcm_token; // Token FCM - sensible
             }
+            // ❌ NO encriptar email - necesario para login y búsquedas
             $user->save();
         }
     }

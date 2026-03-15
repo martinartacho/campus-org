@@ -32,17 +32,14 @@ class CampusTeacherPayment extends Model
         'metadata' => 'array',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
-        // 🔐 Datos sensibles encriptados
-        'first_name' => 'encrypted',
-        'last_name' => 'encrypted',
-        'fiscal_id' => 'encrypted',
-        'postal_code' => 'encrypted',
-        'city' => 'encrypted',
-        'iban' => 'encrypted',
-        'bank_titular' => 'encrypted',
-        'fiscal_situation' => 'encrypted',
-        'invoice' => 'encrypted',
-        'observacions' => 'encrypted'
+        // 🔐 Solo datos realmente sensibles encriptados
+        'fiscal_id' => 'encrypted', // ID fiscal - sensible
+        'iban' => 'encrypted', // IBAN - muy sensible
+        'bank_titular' => 'encrypted', // Titular bancario - sensible
+        'fiscal_situation' => 'encrypted', // Situación fiscal - sensible
+        'invoice' => 'encrypted', // Datos de factura - sensible
+        'observacions' => 'encrypted', // Observaciones privadas
+        // ❌ NO encriptar first_name, last_name, postal_code, city - necesarios para búsquedas
     ];
 
     public function teacher(): BelongsTo

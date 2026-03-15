@@ -105,15 +105,13 @@ class CampusTeacher extends Model
         'hiring_date' => 'date',
         'areas' => 'array',
         'metadata' => 'array',
-        // 🔐 Datos sensibles encriptados
-        'iban' => 'encrypted',
-        'bank_titular' => 'encrypted',
-        'fiscal_id' => 'encrypted',
-        'dni' => 'encrypted',
-        'phone' => 'encrypted',
-        'address' => 'encrypted',
-        'postal_code' => 'encrypted',
-        'email' => 'encrypted'
+        // 🔐 Solo datos realmente sensibles encriptados
+        'iban' => 'encrypted', // IBAN - muy sensible
+        'bank_titular' => 'encrypted', // Titular bancario - sensible
+        'fiscal_id' => 'encrypted', // ID fiscal - sensible
+        'dni' => 'encrypted', // DNI - muy sensible
+        'address' => 'encrypted', // Dirección completa - sensible
+        // ❌ NO encriptar email, phone, postal_code - necesarios para búsquedas y contacto
     ];
 
     /**
