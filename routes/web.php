@@ -31,6 +31,7 @@ use App\Http\Controllers\TreasuryController;
 
 
 use App\Http\Controllers\Admin\FeedbackController as AdminFeedbackController;
+use App\Http\Controllers\Admin\BackupController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\SupportController;
 use Illuminate\Support\Facades\Route;
@@ -254,6 +255,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/settings', [SettingsController::class, 'edit'])->name('settings.edit');
         Route::post('/settings/logo', [SettingsController::class, 'updateLogo'])->name('settings.updateLogo');
         Route::put('/settings/language', [SettingsController::class, 'updateLanguage'])->name('settings.updateLanguage');
+        
+        // Gestión de backups
+        Route::prefix('backups')->name('backups.')->group(function () {
+            Route::get('/', [BackupController::class, 'index'])->name('');
+            Route::post('/execute', [BackupController::class, 'execute'])->name('execute');
+            Route::get('/download/{filename}', [BackupController::class, 'download'])->name('download');
+            Route::delete('/{filename}', [BackupController::class, 'destroy'])->name('destroy');
+        });
     });
 
     Route::prefix('user')->name('user.')->group(function () {

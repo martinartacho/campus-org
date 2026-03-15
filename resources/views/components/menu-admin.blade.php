@@ -76,6 +76,16 @@
             ];
         }
         
+        // Backups
+        if (Auth::user()->can('admin.access')) {
+            $adminItems[] = [
+                'href' => route('admin.backups.index'),
+                'active' => request()->routeIs('admin.backups.*'),
+                'label' => '🔄 Backups',
+                'icon' => 'arrow-repeat',
+            ];
+        }
+        
         // Campus - Categories
         if (Auth::user()->can('campus.categories.view')) {
             $adminItems[] = [
