@@ -35,7 +35,7 @@ class BackupDatabase extends Command
             $environment = 'dev';
         }
         
-        $this->info("🔄 Iniciando backup de base de datos - Entorno: {$environment}");
+        $this->info("🔄 Iniciant backup de la base de dades - Entorn: {$environment}");
         
         try {
             // Ejecutar script de backup real
@@ -76,8 +76,8 @@ class BackupDatabase extends Command
                 $backupFiles = glob('/var/www/backups/campus_dev_*.sql.gz');
                 if (!empty($backupFiles)) {
                     $backupFile = end($backupFiles);
-                    $this->info("✅ Backup completado: {$backupFile}");
-                    $this->info("📊 Tamaño: " . $this->getBackupSize($backupFile));
+                    $this->info("✅ Backup completat: {$backupFile}");
+                    $this->info("📊 Mida: " . $this->getBackupSize($backupFile));
                     
                     // Crear registro en base de datos
                     $this->createBackupRecord($environment, $backupFile);
@@ -85,26 +85,26 @@ class BackupDatabase extends Command
                     // Enviar notificación a admin
                     $this->notifyAdmin($environment, $backupFile);
                     
-                    Log::info("Backup automático completado", [
+                    Log::info("Backup automàtic completat", [
                         'environment' => $environment,
                         'backup_file' => $backupFile,
                         'timestamp' => now()->toISOString()
                     ]);
                     
-                    $this->info("🎉 Backup completado exitosamente");
+                    $this->info("🎉 Backup completat amb èxit");
                     
                     return Command::SUCCESS;
                 } else {
-                    throw new \Exception("No se encontró archivo de backup generado");
+                    throw new \Exception("No s'ha trobat l'arxiu de backup generat");
                 }
             } else {
-                throw new \Exception("Error ejecutando script de backup. Código: {$returnCode}");
+                throw new \Exception("Error executant l'script de backup. Codi: {$returnCode}");
             }
             
         } catch (\Exception $e) {
             $this->error("❌ Error en backup: " . $e->getMessage());
             
-            Log::error("Error en backup automático", [
+            Log::error("Error en backup automàtic", [
                 'environment' => $environment,
                 'error' => $e->getMessage(),
                 'timestamp' => now()->toISOString()
