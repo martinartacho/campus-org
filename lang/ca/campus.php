@@ -24,6 +24,7 @@ return [
     'season_dates' => 'Dates de la temporada',
     'season_basic_info' => 'Informació bàsica',
     'season_status' => 'Estat de la temporada',
+    'season_status_help' => 'Gestiona el cicle de vida de la temporada. Només els rols de coordinació i superiors poden modificar aquest estat. Flux: Draft → Planning → Active → Registration → In Progress → Completed → Archived',
     
     // General
     'cancel' => 'Cancel·lar',
