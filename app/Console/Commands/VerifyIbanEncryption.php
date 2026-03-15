@@ -5,31 +5,29 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Models\CampusTeacher;
 use App\Models\CampusTeacherPayment;
-use App\Models\User;
-use Illuminate\Support\Facades\DB;
 
-class VerifyEncryption extends Command
+class VerifyIbanEncryption extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'encryption:verify {--demo : Mostrar ejemplo de encriptación}';
+    protected $signature = 'encryption:verify-iban {--demo : Mostrar ejemplo de encriptación}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Verificar que los datos sensibles están encriptados correctamente';
+    protected $description = 'Verificar que los IBANs están encriptados correctamente';
 
     /**
      * Execute the console command.
      */
     public function handle()
     {
-        $this->info('🔐 Verificando encriptación de datos sensibles...');
+        $this->info('🔐 Verificando encriptación de IBANs...');
         $this->newLine();
 
         // 🎯 Demostración de encriptación
@@ -39,13 +37,10 @@ class VerifyEncryption extends Command
         }
 
         // 📊 Verificar CampusTeacher
-        $this->verifyTeacherEncryption();
+        $this->verifyTeacherIbanEncryption();
         
         // 📊 Verificar CampusTeacherPayment
-        $this->verifyPaymentEncryption();
-        
-        // 📊 Verificar User
-        $this->verifyUserEncryption();
+        $this->verifyPaymentIbanEncryption();
 
         $this->newLine();
         $this->info('✅ Verificación completada');
@@ -53,7 +48,7 @@ class VerifyEncryption extends Command
 
     private function showEncryptionDemo()
     {
-        $this->info('🎯 Demostración de encriptación:');
+        $this->info('🎯 Demostración de encriptación de IBAN:');
         
         // Ejemplo de IBAN
         $iban = 'ES1234567890123456789012345';
@@ -69,16 +64,18 @@ class VerifyEncryption extends Command
         $this->newLine();
     }
 
-    private function verifyTeacherEncryption()
+    private function verifyTeacherIbanEncryption()
     {
-        $this->info('👨‍🏫 Verificando CampusTeacher:');
+        $this->info('👨‍🏫 Verificando IBANs en CampusTeacher:');
         
         $teachers = CampusTeacher::all();
         $encryptedCount = 0;
         $totalCount = $teachers->count();
+        $withIbanCount = 0;
         
         foreach ($teachers as $teacher) {
             if ($teacher->iban) {
+                $withIbanCount++;
                 // Verificar si el IBAN está encriptado (empieza con prefijo de encriptación)
                 if (str_starts_with($teacher->iban, 'eyJ') || strlen($teacher->iban) > 100) {
                     $encryptedCount++;
@@ -87,6 +84,7 @@ class VerifyEncryption extends Command
         }
         
         $this->line("📊 Total profesores: {$totalCount}");
+        $this->line("💳 Con IBAN: {$withIbanCount}");
         $this->line("🔒 IBANs encriptados: {$encryptedCount}");
         
         if ($encryptedCount > 0) {
@@ -98,16 +96,18 @@ class VerifyEncryption extends Command
         $this->newLine();
     }
 
-    private function verifyPaymentEncryption()
+    private function verifyPaymentIbanEncryption()
     {
-        $this->info('💳 Verificando CampusTeacherPayment:');
+        $this->info('💳 Verificando IBANs en CampusTeacherPayment:');
         
         $payments = CampusTeacherPayment::all();
         $encryptedCount = 0;
         $totalCount = $payments->count();
+        $withIbanCount = 0;
         
         foreach ($payments as $payment) {
             if ($payment->iban) {
+                $withIbanCount++;
                 if (str_starts_with($payment->iban, 'eyJ') || strlen($payment->iban) > 100) {
                     $encryptedCount++;
                 }
@@ -115,47 +115,13 @@ class VerifyEncryption extends Command
         }
         
         $this->line("📊 Total pagos: {$totalCount}");
+        $this->line("💳 Con IBAN: {$withIbanCount}");
         $this->line("🔒 IBANs encriptados: {$encryptedCount}");
         
         if ($encryptedCount > 0) {
             $this->info('✅ IBANs de pagos encriptados correctamente');
         } else {
             $this->warn('⚠️ No se encontraron IBANs encriptados');
-        }
-        
-        $this->newLine();
-    }
-
-    private function verifyUserEncryption()
-    {
-        $this->info('👤 Verificando User:');
-        
-        $users = User::all();
-        $encryptedEmails = 0;
-        $encryptedTokens = 0;
-        $totalCount = $users->count();
-        
-        foreach ($users as $user) {
-            if ($user->email) {
-                if (str_starts_with($user->email, 'eyJ') || strlen($user->email) > 100) {
-                    $encryptedEmails++;
-                }
-            }
-            if ($user->fcm_token) {
-                if (str_starts_with($user->fcm_token, 'eyJ') || strlen($user->fcm_token) > 100) {
-                    $encryptedTokens++;
-                }
-            }
-        }
-        
-        $this->line("📊 Total usuarios: {$totalCount}");
-        $this->line("🔒 Emails encriptados: {$encryptedEmails}");
-        $this->line("🔒 FCM tokens encriptados: {$encryptedTokens}");
-        
-        if ($encryptedEmails > 0 || $encryptedTokens > 0) {
-            $this->info('✅ Datos de usuarios encriptados correctamente');
-        } else {
-            $this->warn('⚠️ No se encontraron datos encriptados');
         }
         
         $this->newLine();
