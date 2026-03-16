@@ -10,9 +10,13 @@ use Illuminate\Support\Facades\Session;
 use App\Notifications\Channels\FcmChannel;
 use Illuminate\Support\Facades\Mail;
 use App\Services\ExportService;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Notifications\Channels\DatabaseChannel;
 
-
-
+/**
+ * Class AppServiceProvider
+ * @package App\Providers
+ */
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -33,6 +37,11 @@ class AppServiceProvider extends ServiceProvider
         if ($this->app->environment('local')) {
             // Desactivar realmente el envío de emails en local
             Mail::alwaysTo('preview@mailpit');
+            Log::info('🔒 Emails redirigidos a preview@mailpit (entorno local)');
+            
+            // Configuración adicional de seguridad
+            config(['mail.default' => 'log']); // Cambiar a log para máxima seguridad
+            Log::info('🔒 Mailer cambiado a "log" para desarrollo');
         }
         
         // En producción, no redirigir emails
