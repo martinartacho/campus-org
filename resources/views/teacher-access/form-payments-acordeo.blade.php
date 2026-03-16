@@ -187,7 +187,7 @@
 
                                 <label class="block font-medium">IBAN:</label>
                                 <input type="text" name="iban" 
-                                    value="{{ old('iban', $payment?->iban ?? '') }}"
+                                    value="{{ old('iban', ($needs == 'own_fee') ? ($payment?->iban ?? '') : '') }}"
                                     class="border p-2 w-full" 
                                     placeholder="ES00 0000 0000 0000 0000 0000"
                                     pattern="^ES\d{2}\s?\d{4}\s?\d{4}\s?\d{4}\s?\d{4}\s?\d{4}$"
@@ -199,7 +199,7 @@
                             
                                 <label class="block font-medium">Titular del compte:</label>
                                 <input type="text" name="bank_titular" 
-                                    value="{{ old('bank_titular', $payment?->bank_titular ?? '') }}"
+                                    value="{{ old('bank_titular', ($needs == 'own_fee') ? ($payment?->bank_titular ?? '') : '') }}"
                                     class="border p-2 w-full"
                                     placeholder="Nom i cognoms del titular">
                                 @error('bank_titular')
@@ -210,7 +210,7 @@
                                 <label class="block font-medium">Factura (opcional):</label>
                                 <div class="flex items-center mt-2">
                                     <input type="checkbox" name="invoice" value="1" 
-                                        {{ old('invoice', $payment?->invoice) == '1' ? 'checked' : '' }}
+                                        {{ old('invoice', ($needs == 'own_fee') ? ($payment?->invoice) == '1' : false) ? 'checked' : '' }}
                                         class="mr-2">
                                     <span class="text-sm">Si</span>
                                 </div>
@@ -367,7 +367,7 @@
                             <div>
                                 <label class="block font-medium">IBAN:</label>
                                 <input type="text" name="beneficiary_iban" 
-                                    value="{{ old('beneficiary_iban', $payment?->iban ?? '') }}"
+                                    value="{{ old('beneficiary_iban', ($needs == 'ceded_fee') ? ($payment?->iban ?? '') : '') }}"
                                     class="border p-2 w-full" 
                                     placeholder="ES00 0000 0000 0000 0000 0000"
                                     pattern="^ES\d{2}\s?\d{4}\s?\d{4}\s?\d{4}\s?\d{4}\s?\d{4}$"
@@ -379,7 +379,7 @@
                             
                                 <label class="block font-medium">Titular del compte (beneficiari):</label>
                                 <input type="text" name="beneficiary_bank_titular" 
-                                    value="{{ old('beneficiary_bank_titular', $payment?->bank_titular ?? '') }}"
+                                    value="{{ old('beneficiary_bank_titular', ($needs == 'ceded_fee') ? ($payment?->bank_titular ?? '') : '') }}"
                                     class="border p-2 w-full"
                                     placeholder="Nom i cognoms del titular">
                                 @error('beneficiary_bank_titular')
@@ -390,7 +390,7 @@
                                 <label class="block font-medium">Factura (opcional):</label>
                                 <div class="flex items-center mt-2">
                                     <input type="checkbox" name="beneficiary_invoice" value="1" 
-                                        {{ old('beneficiary_invoice', $payment?->invoice) == '1' ? 'checked' : '' }}
+                                        {{ old('beneficiary_invoice', ($needs == 'ceded_fee') ? ($payment?->invoice) == '1' : false) ? 'checked' : '' }}
                                         class="mr-2">
                                     <span class="text-sm">Si</span>
                                 </div>
@@ -477,12 +477,46 @@
                     onsubmit="return validateFinalForm();">
                     @csrf
 
+                <!-- Camps ocults per passar les dades bàsiques -->
+                <input type="hidden" name="first_name" value="{{ old('first_name', $teacher->first_name ?? '') }}">
+                <input type="hidden" name="last_name" value="{{ old('last_name', $teacher->last_name ?? '') }}">
+                <input type="hidden" name="email" value="{{ old('email', $user->email ?? '') }}">
+                <input type="hidden" name="phone" value="{{ old('phone', $teacher->phone ?? $user->phone ?? '') }}">
+                <input type="hidden" name="dni" value="{{ old('dni', $teacher->dni ?? '') }}">
+                <input type="hidden" name="address" value="{{ old('address', $teacher->address ?? '') }}">
+                <input type="hidden" name="postal_code" value="{{ old('postal_code', $teacher->postal_code ?? '') }}">
+                <input type="hidden" name="city" value="{{ old('city', $teacher->city ?? '') }}">
+                <input type="hidden" name="needs_payment" value="{{ old('needs_payment', $teacher->needs_payment ?? '') }}">
+                <input type="hidden" name="observacions" value="{{ old('observacions', $teacher->observacions ?? '') }}">
+                
+                <!-- Camps bancaris ocults (només si són necessaris) -->
+                @if(old('needs_payment', $teacher->needs_payment ?? '') === 'own_fee')
+                    <input type="hidden" name="fiscal_id" value="{{ old('fiscal_id', $teacher->fiscal_id ?? '') }}">
+                    <input type="hidden" name="iban" value="{{ old('iban', $payment?->iban ?? '') }}">
+                    <input type="hidden" name="bank_titular" value="{{ old('bank_titular', $payment?->bank_titular ?? '') }}">
+                    <input type="hidden" name="fiscal_situation" value="{{ old('fiscal_situation', $teacher->fiscal_situation ?? '') }}">
+                    <input type="hidden" name="invoice" value="{{ old('invoice', $payment?->invoice ?? false) ? '1' : '' }}">
+                @endif
+                
+                <!-- Camps del beneficiari ocults (només si són necessaris) -->
+                @if(old('needs_payment', $teacher->needs_payment ?? '') === 'ceded_fee')
+                    <input type="hidden" name="beneficiary_first_name" value="{{ old('beneficiary_first_name', $payment?->first_name ?? '') }}">
+                    <input type="hidden" name="beneficiary_email" value="{{ old('beneficiary_email', $user->email ?? '') }}">
+                    <input type="hidden" name="beneficiary_phone" value="{{ old('beneficiary_phone', $teacher->phone ?? $user->phone ?? '') }}">
+                    <input type="hidden" name="beneficiary_address" value="{{ old('beneficiary_address', $payment?->address ?? '') }}">
+                    <input type="hidden" name="beneficiary_postal_code" value="{{ old('beneficiary_postal_code', $payment?->postal_code ?? '') }}">
+                    <input type="hidden" name="beneficiary_city" value="{{ old('beneficiary_city', $payment?->city ?? '') }}">
+                    <input type="hidden" name="beneficiary_fiscal_id" value="{{ old('beneficiary_fiscal_id', $payment?->fiscal_id ?? '') }}">
+                    <input type="hidden" name="beneficiary_iban" value="{{ old('beneficiary_iban', $payment?->iban ?? '') }}">
+                    <input type="hidden" name="beneficiary_bank_titular" value="{{ old('beneficiary_bank_titular', $payment?->bank_titular ?? '') }}">
+                    <input type="hidden" name="beneficiary_invoice" value="{{ old('beneficiary_invoice', $payment?->invoice ?? false) ? '1' : '' }}">
+                @endif
+
                 <!-- Autorización de datos del beneficiario -->
                     <div class="mt-6 p-4 border rounded bg-blue-50">
                         <label class="flex items-start">
                             <input type="checkbox" name="end_autoritzacio_dades" value="1" 
-                                class="mr-2 mt-1" @checked(old('end_autoritzacio_dades', $payment?->metadata['end_autoritzacio_dades'] ?? false))
-                                @if(old('end_autoritzacio_dades', $payment?->metadata['end_autoritzacio_dades'] ?? false)) checked @endif>
+                                class="mr-2 mt-1" {{ old('end_autoritzacio_dades') ? 'checked' : '' }}>
                             <span class="text-sm">
                                 <strong>Necessari:</strong> Autoritzo el tractament de les meves dades personals amb finalitats fiscals 
                                 i administratives, d'acord amb la normativa vigent de protecció de dades.
@@ -497,8 +531,7 @@
                         <div class="bg-yellow-50 p-3 rounded border border-yellow-200">
                             <label class="flex items-start">
                                 <input type="checkbox" name="end_declaracio_fiscal" value="1" 
-                                    class="mr-2 mt-1" @checked(old('end_declaracio_fiscal', $payment?->metadata['end_declaracio_fiscal'] ?? false))
-                                    @if(old('end_declaracio_fiscal', $payment?->metadata['end_declaracio_fiscal'] ?? false)) checked @endif>
+                                    class="mr-2 mt-1" {{ old('end_declaracio_fiscal') ? 'checked' : '' }}>
                                 <span class="text-sm">
                                     <strong>Necessari:</strong> Declaro que les dades facilitades són certes i que sóc coneixedor/a de la fiscalitat corresponent                                     als ingressos previstos.
                                 </span>
@@ -567,22 +600,43 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const beneficiaryRequiredFields = [
         'beneficiary_first_name',
-        'beneficiary_last_name',
         'beneficiary_email',
         'beneficiary_phone'
     ];
 
     const allBeneficiaryFields = document.querySelectorAll('[name^="beneficiary_"]');
+    
+    // Camps bancaris del professor (per own_fee)
+    const professorBankFields = [
+        'fiscal_id',
+        'iban', 
+        'bank_titular',
+        'invoice',
+        'fiscal_situation'
+    ];
+    
+    const allProfessorBankFields = professorBankFields.flatMap(name => 
+        Array.from(document.querySelectorAll(`[name="${name}"]`))
+    );
 
     function clearBeneficiaryFields() {
         allBeneficiaryFields.forEach(field => {
-
             if (field.type === 'radio' || field.type === 'checkbox') {
                 field.checked = false;
             } else {
                 field.value = '';
             }
-
+            field.removeAttribute('required');
+        });
+    }
+    
+    function clearProfessorBankFields() {
+        allProfessorBankFields.forEach(field => {
+            if (field.type === 'radio' || field.type === 'checkbox') {
+                field.checked = false;
+            } else {
+                field.value = '';
+            }
             field.removeAttribute('required');
         });
     }
@@ -597,12 +651,23 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function handlePaymentChange(value) {
+        // Netejar tots els camps opcions
+        clearBeneficiaryFields();
+        clearProfessorBankFields();
 
         if (value === 'ceded_fee') {
+            // Opció 3: Activar camps del beneficiari
             activateBeneficiaryRequired();
-        } else {
-            clearBeneficiaryFields();
+        } else if (value === 'own_fee') {
+            // Opció 2: Activar camps bancaris del professor
+            professorBankFields.forEach(name => {
+                const field = document.querySelector(`[name="${name}"]`);
+                if (field) {
+                    field.setAttribute('required', 'required');
+                }
+            });
         }
+        // Opció 1 (waived_fee): No fer res, els camps queden nets i sense required
     }
 
     // Inicialització

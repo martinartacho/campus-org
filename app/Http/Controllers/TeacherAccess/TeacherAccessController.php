@@ -36,7 +36,7 @@ class TeacherAccessController extends Controller
             $user = User::findOrFail($accessToken->teacher_id);
             
             // Verificar si es el proceso final (solo autorizaciones)
-            if ($request->has('end_autoritzacio_dades') && $request->has('end_end_declaracio_fiscal')) {
+            if ($request->has('end_autoritzacio_dades') && $request->has('end_declaracio_fiscal')) {
                 return $this->processFinalConsent($request, $accessToken, $user);
             }
 
@@ -89,6 +89,23 @@ class TeacherAccessController extends Controller
                     'beneficiary_fiscal_situation' => 'nullable|string|max:255',
                 ]);
             }
+            
+            // Si es waived_fee, verificar que no s'enviïn dades bancaries
+            if ($needsPayment === 'waived_fee') {
+                // Netejar camps bancaris si s'han enviat per error
+                $request->merge([
+                    'fiscal_id' => null,
+                    'iban' => null,
+                    'bank_titular' => null,
+                    'invoice' => null,
+                    'fiscal_situation' => null,
+                    'beneficiary_iban' => null,
+                    'beneficiary_bank_titular' => null,
+                    'beneficiary_invoice' => null,
+                ]);
+                
+                \Log::info('WAIVED_FEE: Camps bancaris netejats per evitar guardar dades innecessàries');
+            }
 
             $validated = $request->validate($rules);
 
@@ -117,25 +134,40 @@ class TeacherAccessController extends Controller
             | ACTUALIZAR TEACHER
             |--------------------------------------------------------------------------
             */
+            $teacherData = [
+                'first_name'  => $validated['first_name'],
+                'last_name'   => $validated['last_name'],
+                'email'       => $validated['email'],
+                'phone'       => $validated['phone'],
+                'dni'         => $validated['dni'],
+                'address'     => $validated['address'] ?? null,
+                'postal_code' => $validated['postal_code'] ?? null,
+                'city'        => $validated['city'] ?? null,
+                'needs_payment' => $needsPayment,
+                'observacions' => $request->input('observacions'),
+            ];
+            
+            // Només guardar dades bancaries si no és waived_fee
+            if ($needsPayment !== 'waived_fee') {
+                $teacherData['fiscal_id'] = $validated['fiscal_id'] ?? $validated['dni'];
+                $teacherData['iban'] = $validated['iban'] ?? null;
+                $teacherData['bank_titular'] = $validated['bank_titular'] ?? null;
+                $teacherData['fiscal_situation'] = $validated['fiscal_situation'] ?? null;
+                $teacherData['invoice'] = $invoice;
+            } else {
+                // Per waived_fee, netejar dades bancaries
+                $teacherData['fiscal_id'] = null;
+                $teacherData['iban'] = null;
+                $teacherData['bank_titular'] = null;
+                $teacherData['fiscal_situation'] = null;
+                $teacherData['invoice'] = false;
+                
+                \Log::info('WAIVED_FEE: Dades bancaries netejades del model CampusTeacher');
+            }
+
             $teacher = CampusTeacher::updateOrCreate(
                 ['user_id' => $user->id],
-                [
-                    'first_name'  => $validated['first_name'],
-                    'last_name'   => $validated['last_name'],
-                    'email'       => $validated['email'],
-                    'phone'       => $validated['phone'],
-                    'dni'         => $validated['dni'],
-                    'address'     => $validated['address'] ?? null,
-                    'postal_code' => $validated['postal_code'] ?? null,
-                    'city'        => $validated['city'] ?? null,
-                    'fiscal_id'   => $validated['fiscal_id'] ?? $validated['dni'],
-                    'iban'        => $validated['iban'] ?? null,
-                    'bank_titular'=> $validated['bank_titular'] ?? null,
-                    'fiscal_situation' => $validated['fiscal_situation'] ?? null,
-                    'needs_payment' => $needsPayment,
-                    'invoice' => $invoice,
-                    'observacions' => $request->input('observacions'),
-                ]
+                $teacherData
             );
 
             /*
