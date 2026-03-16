@@ -452,7 +452,7 @@ class TeacherAccessController extends Controller
         // Actualizar consent_histories con la ruta del PDF final
         ConsentHistory::updateOrCreate(
             [
-                'teacher_id' => $teacher->id,
+                'teacher_id' => $user->id, // Usar user_id en lugar de teacher->id
                 'season' => $seasonSlug,
             ],
             [
@@ -466,7 +466,7 @@ class TeacherAccessController extends Controller
         );
         
         \Log::info('ConsentHistory actualizado con PDF final:', [
-            'teacher_id' => $teacher->id, 
+            'teacher_id' => $user->id, // Log correcto
             'season' => $seasonSlug, 
             'path' => $finalConsentPath
         ]);     
