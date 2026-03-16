@@ -144,9 +144,9 @@
                                    id="iban" 
                                    name="iban" 
                                    value="{{ old('iban') }}" 
-                                   placeholder="{{ $teacher->iban ? 'Introduce nuevo IBAN para modificar' : 'ES00 0000 0000 0000 0000 0000' }}"
+                                   placeholder="{{ $teacher->iban ? 'Introdueix nou IBAN per modificar' : 'ES00 0000 0000 0000 0000 0000' }}"
                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <p class="mt-1 text-xs text-gray-500">Formato: ES00 0000 0000 0000 0000 0000</p>
+                            <p class="mt-1 text-xs text-gray-500">Format: ES00 0000 0000 0000 0000 0000</p>
                             @error('iban')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror

@@ -134,8 +134,13 @@ class TeacherController extends Controller
         \Log::info('=== STORE START TeacherController ===');
         \Log::info('Request data:', $request->all());
         
-        try {
-            $validated = $request->validate([
+        // Mensajes de error personalizados
+        $messages = [
+            'iban.regex' => 'El format IBAN no és vàlid. Ha de seguir el patró: ES00 0000 0000 0000 0000 0000',
+        ];
+        
+        // Validar con mensajes personalizados
+        $validated = $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
@@ -144,8 +149,7 @@ class TeacherController extends Controller
             'postal_code' => 'nullable|string|max:10',
             'city' => 'nullable|string|max:100',
             'dni' => 'nullable|string|max:20',
-            'iban' => 'nullable|string|max:34',
-            'bank_titular' => 'nullable|string|max:255',
+            'iban' => 'nullable|string|max:34|regex:/^ES\d{2}\s?\d{4}\s?\d{4}\s?\d{4}\s?\d{4}\s?\d{4}$/',
             'fiscal_situation' => 'nullable|string|in:autonomo,empleat,pensionista,altres',
             'degree' => 'nullable|string|max:255',
             'specialization' => 'nullable|string|max:255',
@@ -159,7 +163,9 @@ class TeacherController extends Controller
             'sessions_assigned.*' => 'nullable|integer|min:0',
             'role' => 'nullable|array',
             'role.*' => 'nullable|string|in:teacher,assistant',
-        ]);
+        ], $messages);
+        
+        try {
         
         // Validación adicional para nuevos cursos (simplificada)
         $newCourseRules = [
@@ -409,6 +415,11 @@ class TeacherController extends Controller
             'user_exists' => $teacher->user ? 'yes' : 'no'
         ]);
         
+        // Mensajes de error personalizados
+        $messages = [
+            'iban.regex' => 'El format IBAN no és vàlid. Ha de seguir el patró: ES00 0000 0000 0000 0000 0000',
+        ];
+        
         try {
             $validated = $request->validate([
                 'first_name' => 'required|string|max:255',
@@ -423,8 +434,7 @@ class TeacherController extends Controller
                 'postal_code' => 'nullable|string|max:10',
                 'city' => 'nullable|string|max:100',
                 'dni' => 'nullable|string|max:20',
-                'iban' => 'nullable|string|max:34',
-                'bank_titular' => 'nullable|string|max:255',
+                'iban' => 'nullable|string|max:34|regex:/^ES\d{2}\s?\d{4}\s?\d{4}\s?\d{4}\s?\d{4}\s?\d{4}$/',
                 'fiscal_id' => 'nullable|string|max:20',
                 'fiscal_situation' => 'nullable|string|max:50',
                 'degree' => 'nullable|string|max:255',
@@ -439,7 +449,7 @@ class TeacherController extends Controller
                 'sessions_assigned.*' => 'nullable|numeric|min:0',
                 'role' => 'nullable|array',
                 'role.*' => 'nullable|string|in:teacher,assistant',
-            ]);
+            ], $messages);
         } catch (\Illuminate\Validation\ValidationException $e) {
             \Log::error('Validation failed:', ['errors' => $e->errors()]);
             throw $e;
