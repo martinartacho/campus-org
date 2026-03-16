@@ -190,7 +190,7 @@
                                     value="{{ old('iban', ($needs == 'own_fee') ? ($payment?->iban ?? '') : '') }}"
                                     class="border p-2 w-full" 
                                     placeholder="ES00 0000 0000 0000 0000 0000"
-                                    pattern="^ES\d{2}\s?\d{4}\s?\d{4}\s?\d{4}\s?\d{4}\s?\d{4}$"
+                                    pattern="^ES\d{2}\s?\d{4}\s?\d{4}\s?\d{2}\s?\d{10}$"
                                     title="Format: ES00 0000 0000 0000 0000 0000">
                                 <p class="text-xs text-gray-500 mt-1">Format: ES00 0000 0000 0000 0000 0000</p>
                                 @error('iban')
@@ -208,11 +208,19 @@
 
                                 
                                 <label class="block font-medium">Factura (opcional):</label>
-                                <div class="flex items-center mt-2">
-                                    <input type="checkbox" name="invoice" value="1" 
-                                        {{ old('invoice', ($needs == 'own_fee') ? ($payment?->invoice) == '1' : false) ? 'checked' : '' }}
-                                        class="mr-2">
-                                    <span class="text-sm">Si</span>
+                                <div class="flex items-center space-x-4 mt-2">
+                                    <label class="flex items-center">
+                                        <input type="radio" name="invoice" value="1" 
+                                            {{ old('invoice', ($needs == 'own_fee' ? ($payment?->invoice) == '1' : false)) ? 'checked' : '' }}
+                                            class="mr-2">
+                                        <span class="text-sm">Sí</span>
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input type="radio" name="invoice" value="0" 
+                                            {{ old('invoice', ($needs == 'own_fee' ? ($payment?->invoice) == '0' : true)) ? 'checked' : '' }}
+                                            class="mr-2">
+                                        <span class="text-sm">No</span>
+                                    </label>
                                 </div>
                                 <p class="text-xs text-gray-500 mt-1">Marcar si presentarà factura</p>
                                 @error('invoice')
@@ -370,7 +378,7 @@
                                     value="{{ old('beneficiary_iban', ($needs == 'ceded_fee') ? ($payment?->iban ?? '') : '') }}"
                                     class="border p-2 w-full" 
                                     placeholder="ES00 0000 0000 0000 0000 0000"
-                                    pattern="^ES\d{2}\s?\d{4}\s?\d{4}\s?\d{4}\s?\d{4}\s?\d{4}$"
+                                    pattern="^ES\d{2}\s?\d{4}\s?\d{4}\s?\d{2}\s?\d{10}$"
                                     title="Format: ES00 0000 0000 0000 0000 0000">
                                 <p class="text-xs text-gray-500 mt-1">Format: ES00 0000 0000 0000 0000 0000</p>
                                 @error('beneficiary_iban')
@@ -388,11 +396,19 @@
 
                                 
                                 <label class="block font-medium">Factura (opcional):</label>
-                                <div class="flex items-center mt-2">
-                                    <input type="checkbox" name="beneficiary_invoice" value="1" 
-                                        {{ old('beneficiary_invoice', ($needs == 'ceded_fee') ? ($payment?->invoice) == '1' : false) ? 'checked' : '' }}
-                                        class="mr-2">
-                                    <span class="text-sm">Si</span>
+                                <div class="flex items-center space-x-4 mt-2">
+                                    <label class="flex items-center">
+                                        <input type="radio" name="beneficiary_invoice" value="1" 
+                                            {{ old('beneficiary_invoice', ($needs == 'ceded_fee' ? ($payment?->invoice) == '1' : false)) ? 'checked' : '' }}
+                                            class="mr-2">
+                                        <span class="text-sm">Sí</span>
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input type="radio" name="beneficiary_invoice" value="0" 
+                                            {{ old('beneficiary_invoice', ($needs == 'ceded_fee' ? ($payment?->invoice) == '0' : true)) ? 'checked' : '' }}
+                                            class="mr-2">
+                                        <span class="text-sm">No</span>
+                                    </label>
                                 </div>
                                 <p class="text-xs text-gray-500 mt-1">Marcar si presentarà factura</p>
                                 @error('beneficiary_invoice')
@@ -495,7 +511,7 @@
                     <input type="hidden" name="iban" value="{{ old('iban', $payment?->iban ?? '') }}">
                     <input type="hidden" name="bank_titular" value="{{ old('bank_titular', $payment?->bank_titular ?? '') }}">
                     <input type="hidden" name="fiscal_situation" value="{{ old('fiscal_situation', $teacher->fiscal_situation ?? '') }}">
-                    <input type="hidden" name="invoice" value="{{ old('invoice', $payment?->invoice ?? false) ? '1' : '' }}">
+                    <input type="hidden" name="invoice" value="{{ old('invoice', ($needs == 'own_fee' ? $payment?->invoice : '0')) }}">
                 @endif
                 
                 <!-- Camps del beneficiari ocults (només si són necessaris) -->
@@ -509,7 +525,7 @@
                     <input type="hidden" name="beneficiary_fiscal_id" value="{{ old('beneficiary_fiscal_id', $payment?->fiscal_id ?? '') }}">
                     <input type="hidden" name="beneficiary_iban" value="{{ old('beneficiary_iban', $payment?->iban ?? '') }}">
                     <input type="hidden" name="beneficiary_bank_titular" value="{{ old('beneficiary_bank_titular', $payment?->bank_titular ?? '') }}">
-                    <input type="hidden" name="beneficiary_invoice" value="{{ old('beneficiary_invoice', $payment?->invoice ?? false) ? '1' : '' }}">
+                    <input type="hidden" name="beneficiary_invoice" value="{{ old('beneficiary_invoice', ($needs == 'ceded_fee' ? $payment?->invoice : '0')) }}">
                 @endif
 
                 <!-- Autorización de datos del beneficiario -->
@@ -611,7 +627,6 @@ document.addEventListener('DOMContentLoaded', function () {
         'fiscal_id',
         'iban', 
         'bank_titular',
-        'invoice',
         'fiscal_situation'
     ];
     

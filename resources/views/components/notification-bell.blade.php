@@ -81,6 +81,7 @@
 
         // Actualizar contador
         function updateUnreadCount() {
+            @auth
             fetch('{{ route("notifications.unread-count") }}')
                 .then(res => res.json())
                 .then(data => {
@@ -98,7 +99,13 @@
                     } else if (counter) {
                         counter.remove();
                     }
+                })
+                .catch(error => {
+                    console.log('Error obtenint notificacions:', error);
                 });
+            @else
+            // Si no està autenticat, no fer res
+            @endif
         }
 
         // Actualizar cada 60 segundos y al cargar

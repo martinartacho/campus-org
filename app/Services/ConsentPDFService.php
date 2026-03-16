@@ -63,7 +63,7 @@ class ConsentPDFService
         // Asegurar que el directorio exista
         $directory = storage_path("app/consents/teachers/{$teacher->id}");
         if (!is_dir($directory)) {
-            mkdir($directory, 0755, true);
+            mkdir($directory, 0775, true);
         }
         
         // Guardar PDF

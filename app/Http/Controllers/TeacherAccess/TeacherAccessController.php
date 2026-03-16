@@ -68,7 +68,7 @@ class TeacherAccessController extends Controller
 
                 $rules = array_merge($rules, [
                     'fiscal_id'        => 'nullable|string|max:20',
-                    'iban' => 'nullable|string|max:34|regex:/^ES\d{2}\s?\d{4}\s?\d{4}\s?\d{4}\s?\d{4}\s?\d{4}$/',
+                    'iban' => 'nullable|string|max:34|regex:/^ES\d{2}\s?\d{4}\s?\d{4}\s?\d{2}\s?\d{10}$/',
                     'bank_titular'     => 'nullable|string|max:255',
                     'fiscal_situation' => 'nullable|string|max:255',
                 ]);
@@ -84,7 +84,7 @@ class TeacherAccessController extends Controller
                     'beneficiary_address'          => 'nullable|string|max:255',
                     'beneficiary_postal_code'      => 'nullable|string|max:10',
                     'beneficiary_city'             => 'nullable|string|max:255',
-                    'beneficiary_iban' => 'nullable|string|max:34|regex:/^ES\d{2}\s?\d{4}\s?\d{4}\s?\d{4}\s?\d{4}\s?\d{4}$/',
+                    'beneficiary_iban' => 'nullable|string|max:34|regex:/^ES\d{2}\s?\d{4}\s?\d{4}\s?\d{2}\s?\d{10}$/',
                     'beneficiary_bank_titular'     => 'nullable|string|max:255',
                     'beneficiary_fiscal_situation' => 'nullable|string|max:255',
                 ]);
@@ -114,8 +114,8 @@ class TeacherAccessController extends Controller
             | NORMALIZAR CHECKBOXES
             |--------------------------------------------------------------------------
             */
-            $invoice = $request->has('invoice');
-            $beneficiaryInvoice = $request->has('beneficiary_invoice');
+            $invoice = $request->input('invoice') == '1';
+            $beneficiaryInvoice = $request->input('beneficiary_invoice') == '1';
             $endAutoritzacio = $request->has('end_autoritzacio_dades');
             $endDeclaracio = $request->has('end_end_declaracio_fiscal');
 
