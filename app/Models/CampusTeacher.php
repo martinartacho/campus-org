@@ -105,8 +105,7 @@ class CampusTeacher extends Model
         'hiring_date' => 'date',
         'areas' => 'array',
         'metadata' => 'array',
-        // 🔐 IBAN encriptado
-        'iban' => 'encrypted',
+        // 🔐 Sin cast especial para IBAN - manejo normal
     ];
 
     /**
@@ -116,16 +115,9 @@ class CampusTeacher extends Model
     {
         $iban = $this->iban;
         
-        // Si está doblemente serializado, extraer el valor real
-        if (is_string($iban) && str_starts_with($iban, 's:')) {
-            // Extraer el contenido entre comillas del primer nivel: s:32:"s:29:"ES9621001426480100129107";";
-            if (preg_match('/s:\d+:"s:\d+:"([^"]+)"/', $iban, $matches)) {
-                $iban = $matches[1];
-            }
-            // Si está serializado una sola vez: s:29:"ES9621001426480100129107";
-            elseif (preg_match('/s:\d+:"([^"]+)"/', $iban, $matches)) {
-                $iban = $matches[1];
-            }
+        // Si está encriptado o serializado, mostrar vacío por seguridad
+        if (is_string($iban) && (str_starts_with($iban, 'eyJ') || str_starts_with($iban, 's:'))) {
+            return '';
         }
         
         // Formatear IBAN con espacios cada 4 caracteres
@@ -138,6 +130,11 @@ class CampusTeacher extends Model
     public function getMaskedIbanAttribute(): string
     {
         $iban = $this->formatted_iban;
+        
+        // Si no hay IBAN o está encriptado, mostrar vacío
+        if (empty($iban)) {
+            return 'No disponible';
+        }
         
         // Mostrar primeros 4 caracteres y últimos 4, con asteriscos en medio
         if (strlen($iban) > 8) {
@@ -160,18 +157,6 @@ class CampusTeacher extends Model
         
         // Add spaces every 4 characters
         return implode(' ', str_split($cleanIban, 4));
-    }
-
-    /**
-     * Set the IBAN attribute (clean format before encryption).
-     */
-    public function setIbanAttribute($value)
-    {
-        // Remove spaces before saving (clean format)
-        $cleanIban = str_replace(' ', '', $value);
-        
-        // Laravel encrypted cast manejará la encriptación automáticamente
-        $this->attributes['iban'] = $cleanIban;
     }
 
     /**
