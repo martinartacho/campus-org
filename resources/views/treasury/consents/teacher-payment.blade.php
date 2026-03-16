@@ -36,11 +36,20 @@
             font-size: 13px;
         }
         .info-grid { 
-            display: grid; 
-            grid-template-columns: repeat(2, 1fr); 
-            gap: 8px; 
+            width: 100%;
         }
-        .info-item { margin-bottom: 8px; }
+        .info-item { 
+            float: left; 
+            width: 48%; 
+            margin-right: 2%;
+            margin-bottom: 8px; 
+            min-width: 200px;
+        }
+        .info-grid::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
         .label { 
             font-weight: bold; 
             color: #555; 
