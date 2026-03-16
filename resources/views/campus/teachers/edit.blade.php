@@ -135,11 +135,18 @@
                             <label for="iban" class="block text-sm font-medium text-gray-700 mb-2">
                                 IBAN
                             </label>
+                            @if($teacher->iban)
+                                <div class="mb-2 p-2 bg-gray-50 border border-gray-200 rounded text-sm text-gray-600">
+                                    <strong>IBAN actual:</strong> {{ $teacher->masked_iban }}
+                                </div>
+                            @endif
                             <input type="text" 
                                    id="iban" 
                                    name="iban" 
-                                   value="{{ old('iban', $teacher->iban) }}"
+                                   value="{{ old('iban') }}" 
+                                   placeholder="{{ $teacher->iban ? 'Introduce nuevo IBAN para modificar' : 'ES00 0000 0000 0000 0000 0000' }}"
                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <p class="mt-1 text-xs text-gray-500">Formato: ES00 0000 0000 0000 0000 0000</p>
                             @error('iban')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror

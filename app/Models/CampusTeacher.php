@@ -104,8 +104,75 @@ class CampusTeacher extends Model
     protected $casts = [
         'hiring_date' => 'date',
         'areas' => 'array',
-        'metadata' => 'array'
+        'metadata' => 'array',
+        // 🔐 IBAN encriptado
+        'iban' => 'encrypted',
     ];
+
+    /**
+     * Get the formatted IBAN attribute.
+     */
+    public function getFormattedIbanAttribute(): string
+    {
+        $iban = $this->iban;
+        
+        // Si está doblemente serializado, extraer el valor real
+        if (is_string($iban) && str_starts_with($iban, 's:')) {
+            // Extraer el contenido entre comillas del primer nivel: s:32:"s:29:"ES9621001426480100129107";";
+            if (preg_match('/s:\d+:"s:\d+:"([^"]+)"/', $iban, $matches)) {
+                $iban = $matches[1];
+            }
+            // Si está serializado una sola vez: s:29:"ES9621001426480100129107";
+            elseif (preg_match('/s:\d+:"([^"]+)"/', $iban, $matches)) {
+                $iban = $matches[1];
+            }
+        }
+        
+        // Formatear IBAN con espacios cada 4 caracteres
+        return $this->formatIban($iban);
+    }
+
+    /**
+     * Get the masked IBAN for security display.
+     */
+    public function getMaskedIbanAttribute(): string
+    {
+        $iban = $this->formatted_iban;
+        
+        // Mostrar primeros 4 caracteres y últimos 4, con asteriscos en medio
+        if (strlen($iban) > 8) {
+            $start = substr($iban, 0, 4);
+            $end = substr($iban, -4);
+            $middle = str_repeat('*', strlen($iban) - 8);
+            return $start . ' ' . $middle . ' ' . $end;
+        }
+        
+        return $iban;
+    }
+
+    /**
+     * Format IBAN with spaces every 4 characters.
+     */
+    private function formatIban(string $iban): string
+    {
+        // Remove existing spaces
+        $cleanIban = str_replace(' ', '', $iban);
+        
+        // Add spaces every 4 characters
+        return implode(' ', str_split($cleanIban, 4));
+    }
+
+    /**
+     * Set the IBAN attribute (clean format before encryption).
+     */
+    public function setIbanAttribute($value)
+    {
+        // Remove spaces before saving (clean format)
+        $cleanIban = str_replace(' ', '', $value);
+        
+        // Laravel encrypted cast manejará la encriptación automáticamente
+        $this->attributes['iban'] = $cleanIban;
+    }
 
     /**
      * Get the user that owns the teacher profile.
