@@ -52,6 +52,8 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'fcm_token' => 'encrypted', // 🔐 Token FCM sensible
+            // ❌ NO encriptar email - necesario para búsquedas y login
         ];
     }
 
