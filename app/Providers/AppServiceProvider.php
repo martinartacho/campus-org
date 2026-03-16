@@ -34,19 +34,17 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        if ($this->app->environment('local')) {
-            // Desactivar realmente el envío de emails en local
+        // Configurar emails en entorno local (evitar duplicados con archivo estático)
+        if ($this->app->environment('local') && !config('email-security.configured', false)) {
             Mail::alwaysTo('preview@mailpit');
+            config(['mail.default' => 'log']);
+            app('config')->set('mail.default', 'log'); // Forzar configuración
             
-            // Configuración adicional de seguridad
-            config(['mail.default' => 'log']); // Cambiar a log para máxima seguridad
+            Log::info('🔒 Emails redirigidos a preview@mailpit (entorno local)');
+            Log::info('🔒 Mailer cambiado a "log" para desarrollo');
             
-            // Log solo una vez por aplicación (no en cada request)
-            if (!config('app.email_config_logged', false)) {
-                Log::info('🔒 Emails redirigidos a preview@mailpit (entorno local)');
-                Log::info('🔒 Mailer cambiado a "log" para desarrollo');
-                config(['app.email_config_logged' => true]);
-            }
+            // Marcar como configurado en archivo estático
+            file_put_contents(config_path('email-security.php'), "<?php\n\nreturn [\n    'configured' => true,\n];");
         }
         
         // En producción, no redirigir emails
