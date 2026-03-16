@@ -34,24 +34,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Configurar emails en entorno local (evitar duplicados con archivo estático)
-        if ($this->app->environment('local') && !config('email-security.configured', false)) {
-            Mail::alwaysTo('preview@mailpit');
-            config(['mail.default' => 'log']);
-            app('config')->set('mail.default', 'log'); // Forzar configuración
-            
-            Log::info('🔒 Emails redirigidos a preview@mailpit (entorno local)');
-            Log::info('🔒 Mailer cambiado a "log" para desarrollo');
-            
-            // Marcar como configurado en archivo estático
-            file_put_contents(config_path('email-security.php'), "<?php\n\nreturn [\n    'configured' => true,\n];");
-        }
-        
-        // En producción, no redirigir emails
-        if ($this->app->environment('production')) {
-            // Configuración de producción - emails reales
-            // Mail::alwaysTo(null); // Desactiva el redireccionamiento
-        }
         // Middleware para manejar el idioma
         $this->app->router->group([
             'namespace' => 'App\Http\Controllers',
