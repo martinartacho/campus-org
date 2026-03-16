@@ -120,6 +120,11 @@ class CampusTeacher extends Model
             return '';
         }
         
+        // Si el IBAN es null o vacío, devolver vacío
+        if (empty($iban)) {
+            return '';
+        }
+        
         // Formatear IBAN con espacios cada 4 caracteres
         return $this->formatIban($iban);
     }
