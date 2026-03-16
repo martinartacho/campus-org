@@ -37,11 +37,16 @@ class AppServiceProvider extends ServiceProvider
         if ($this->app->environment('local')) {
             // Desactivar realmente el envío de emails en local
             Mail::alwaysTo('preview@mailpit');
-            Log::info('🔒 Emails redirigidos a preview@mailpit (entorno local)');
             
             // Configuración adicional de seguridad
             config(['mail.default' => 'log']); // Cambiar a log para máxima seguridad
-            Log::info('🔒 Mailer cambiado a "log" para desarrollo');
+            
+            // Log solo una vez por aplicación (no en cada request)
+            if (!config('app.email_config_logged', false)) {
+                Log::info('🔒 Emails redirigidos a preview@mailpit (entorno local)');
+                Log::info('🔒 Mailer cambiado a "log" para desarrollo');
+                config(['app.email_config_logged' => true]);
+            }
         }
         
         // En producción, no redirigir emails
