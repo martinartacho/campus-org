@@ -4,6 +4,90 @@
 
 ---
 
+## 🚀 Release v1.1.0 - Sistema de IBAN y Seguridad Mejorados
+**Fecha:** 2026-03-16  
+**Branch:** main  
+**Estado:** ✅ Desplegado y estable
+
+### 🎯 Objetivos Principales
+- Corregir error 500 en manejo de IBAN encriptado
+- Estandarizar validación y formato de IBAN en toda la aplicación
+- Implementar seguridad de emails para entorno de desarrollo
+- Resolver problemas de permisos y foreign keys
+
+---
+
+## 📦 Componentes Actualizados
+
+### 🔐 **Manejo de IBAN**
+- **Modelo `CampusTeacher`:** Simplificado sin cast `encrypted`
+- **Accesores:** `formatted_iban`, `masked_iban` para visualización segura
+- **Validación:** Regex unificada para formato español
+- **Formularios:** Actualizados en todas las vistas
+
+### 📧 **Controllers Actualizados**
+- **`TeacherController`:** Validación consistente de IBAN
+- **`TeacherAccessController`:** Corrección de validación y formato
+- **`SendTeacherAccessController`:** Fix de foreign key constraint
+
+### 🎨 **Vistas Actualizadas**
+- **`campus/teachers/edit.blade.php`:** IBAN enmascarado + edición segura
+- **`campus/teachers/show.blade.php`:** Visualización enmascarada
+- **`treasury/consents/teacher-payment.blade.php`:** IBAN seguro
+- **`teacher-access/form-payments-acordeo.blade.php`:** Formatos consistentes
+
+### 🛡️ **Seguridad de Emails**
+- **Configuración por entorno:** `.env` condicional (local vs producción)
+- **Desarrollo:** `MAIL_MAILER=log` + `MAIL_ALWAYS_TO=preview@mailpit`
+- **Producción:** Configuración SMTP real sin redirección
+- **AppServiceProvider:** Simplificado sin lógica compleja
+
+---
+
+## ✅ Problemas Resueltos
+
+### 🚨 **Error 500 - "The payload is invalid"**
+- **Causa:** Conflicto entre cast `encrypted` y mutadores personalizados
+- **Solución:** Eliminar cast y manejar encriptación manualmente
+- **Resultado:** Formulario estable sin reinicios de servidor
+
+### 🔒 **Visualización de IBAN Encriptado**
+- **Causa:** Valor encriptado mostrado directamente en UI
+- **Solución:** Implementar accesores con desencriptación y formateo
+- **Resultado:** IBAN enmascarado: `ES00 ********************* 0000`
+
+### 🌐 **Formato Inconsistente**
+- **Causa:** Diferentes patrones de validación en toda la app
+- **Solución:** Regex unificada: `/^ES\d{2}\s?\d{4}\s?\d{4}\s?\d{4}\s?\d{4}$/`
+- **Resultado:** Formato consistente: `ES00 0000 0000 0000 0000 0000`
+
+### 🔐 **Permisos 403**
+- **Causa:** Usuario `tresoreria@upg.cat` sin permiso `campus.consents.request`
+- **Solución:** Añadir permiso faltante al usuario
+- **Resultado:** Acceso completo a funciones de tesorería
+
+### 🗄️ **Foreign Key Constraint**
+- **Causa:** Confusión entre `user_id` y `teacher_id` en `consent_histories`
+- **Solución:** Usar `$user->id` en lugar de `$teacher->id` para FK
+- **Resultado:** Guardado correcto de consentimientos finales
+
+### 📧 **Logs Duplicados**
+- **Causa:** `AppServiceProvider@boot()` ejecutando en cada request
+- **Solución:** Configuración condicional en `.env` por entorno
+- **Resultado:** Configuración limpia y mantenible
+
+---
+
+## 📊 Estadísticas de Cambios
+- **Commits:** 6 commits principales
+- **Archivos modificados:** 12 archivos
+- **Vistas actualizadas:** 5 archivos
+- **Controllers actualizados:** 3 archivos
+- **Problemas resueltos:** 5 problemas críticos
+- **Tiempo de desarrollo:** ~2 horas
+
+---
+
 ## 🚀 Release v1.0.0 - Sistema de Backups Automatizados
 **Fecha:** 2026-03-15  
 **Branch:** dev  
