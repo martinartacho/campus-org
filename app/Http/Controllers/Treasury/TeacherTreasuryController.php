@@ -441,6 +441,10 @@ class TeacherTreasuryController extends Controller
         
         $user = auth()->user();
         
+        // Buscar el CampusTeacher relacionado con este user_id
+        $campusTeacher = \App\Models\CampusTeacher::where('user_id', $consent->teacher_id)->first();
+        $teacherId = $campusTeacher ? $campusTeacher->id : $consent->teacher_id;
+        
         if ($user && 
             $user->id !== $consent->teacher_id &&
             ! $user->can('campus.consents.view')
@@ -448,14 +452,22 @@ class TeacherTreasuryController extends Controller
             abort(403);
         }
 
-        if (! Storage::disk('local')->exists($consent->document_path)) {
-            abort(404, 'Document no trobat');
+        // Verificar si el documento existe en la ruta correcta
+        $documentPath = $consent->document_path;
+        if (! Storage::disk('local')->exists($documentPath)) {
+            // Si no existe, intentar construir la ruta con el CampusTeacher ID
+            $alternativePath = str_replace('consents/teachers/' . $consent->teacher_id . '/', 'consents/teachers/' . $teacherId . '/', $documentPath);
+            if (Storage::disk('local')->exists($alternativePath)) {
+                $documentPath = $alternativePath;
+            } else {
+                abort(404, 'Document no trobat');
+            }
         }
      
 
         return Storage::disk('local')->download(
-            $consent->document_path,
-            basename($consent->document_path)
+            $documentPath,
+            basename($documentPath)
         );
     }
 

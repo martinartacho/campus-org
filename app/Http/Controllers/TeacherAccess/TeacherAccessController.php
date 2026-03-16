@@ -36,7 +36,7 @@ class TeacherAccessController extends Controller
             $user = User::findOrFail($accessToken->teacher_id);
             
             // Verificar si es el proceso final (solo autorizaciones)
-            if ($request->has('end_autoritzacio_dades') && $request->has('end_declaracio_fiscal')) {
+            if ($request->has('end_autoritzacio_dades') && $request->has('end_end_declaracio_fiscal')) {
                 return $this->processFinalConsent($request, $accessToken, $user);
             }
 
@@ -100,7 +100,7 @@ class TeacherAccessController extends Controller
             $invoice = $request->has('invoice');
             $beneficiaryInvoice = $request->has('beneficiary_invoice');
             $endAutoritzacio = $request->has('end_autoritzacio_dades');
-            $endDeclaracio = $request->has('end_declaracio_fiscal');
+            $endDeclaracio = $request->has('end_end_declaracio_fiscal');
 
             /*
             |--------------------------------------------------------------------------
@@ -434,7 +434,7 @@ class TeacherAccessController extends Controller
             'acceptedAt' => $acceptedAt,
             'checksum' => $finalChecksum,
             'autoritzacioDades' => $payment->metadata['end_autoritzacio_dades'] ?? false,
-            'declaracioFiscal' => $payment->metadata['declaracio_fiscal'] ?? false,
+            'declaracioFiscal' => $payment->metadata['end_declaracio_fiscal'] ?? false,
             'seasonSlug' => $seasonSlug,
             'isFinalConsent' => true,
         ];
@@ -602,7 +602,7 @@ class TeacherAccessController extends Controller
                 ])),
                 now(),
                 $payment->metadata['end_autoritzacio_dades'] ?? false,
-                $payment->metadata['declaracio_fiscal'] ?? false
+                $payment->metadata['end_declaracio_fiscal'] ?? false
             );
 
             // 5. Actualizar metadatos del payment con las autorizaciones
@@ -610,7 +610,7 @@ class TeacherAccessController extends Controller
             $payment->update([
                 'metadata' => array_merge($existingMetadata, [
                     'end_autoritzacio_dades' => true,
-                    'end_declaracio_fiscal' => true,
+                    'end_end_declaracio_fiscal' => true,
                     'final_consent_accepted_at' => now()->toDateTimeString(),
                     'ip_address' => $request->ip(),
                 ])
