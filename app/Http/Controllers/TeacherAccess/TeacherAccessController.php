@@ -68,7 +68,7 @@ class TeacherAccessController extends Controller
 
                 $rules = array_merge($rules, [
                     'fiscal_id'        => 'nullable|string|max:20',
-                    'iban'             => 'nullable|string|max:24',
+                    'iban' => 'nullable|string|max:34|regex:/^ES\d{2}\s?\d{4}\s?\d{4}\s?\d{4}\s?\d{4}\s?\d{4}$/',
                     'bank_titular'     => 'nullable|string|max:255',
                     'fiscal_situation' => 'nullable|string|max:255',
                 ]);
@@ -84,7 +84,7 @@ class TeacherAccessController extends Controller
                     'beneficiary_address'          => 'nullable|string|max:255',
                     'beneficiary_postal_code'      => 'nullable|string|max:10',
                     'beneficiary_city'             => 'nullable|string|max:255',
-                    'beneficiary_iban'             => 'nullable|string|max:24',
+                    'beneficiary_iban' => 'nullable|string|max:34|regex:/^ES\d{2}\s?\d{4}\s?\d{4}\s?\d{4}\s?\d{4}\s?\d{4}$/',
                     'beneficiary_bank_titular'     => 'nullable|string|max:255',
                     'beneficiary_fiscal_situation' => 'nullable|string|max:255',
                 ]);
@@ -367,19 +367,8 @@ class TeacherAccessController extends Controller
         // Limpiar espacios
         $iban = strtoupper(str_replace(' ', '', $iban));
         
-        // Validar longitud (24 caracteres para España)
-        if (strlen($iban) !== 24) {
-            return false;
-        }
-        
-        // Validar que empieza con ES
-        if (substr($iban, 0, 2) !== 'ES') {
-            return false;
-        }
-        
-        // Validar que los siguientes 22 caracteres son dígitos
-        $digits = substr($iban, 2);
-        if (!ctype_digit($digits)) {
+        // Validar con regex para formato español
+        if (!preg_match('/^ES\d{22}$/', $iban)) {
             return false;
         }
         

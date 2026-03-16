@@ -232,7 +232,7 @@
             @if($iban)
             <div class="info-item">
                 <div class="label">IBAN:</div>
-                <div class="value">{{ $iban }}</div>
+                <div class="value">{{ $teacher->masked_iban }}</div>
             </div>
             @endif
             
