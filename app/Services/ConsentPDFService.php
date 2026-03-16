@@ -60,6 +60,12 @@ class ConsentPDFService
         $filename = "final_consent_{$seasonSlug}_{$courseId}.pdf";
         $path = "consents/teachers/{$teacher->id}/{$filename}";
         
+        // Asegurar que el directorio exista
+        $directory = storage_path("app/consents/teachers/{$teacher->id}");
+        if (!is_dir($directory)) {
+            mkdir($directory, 0755, true);
+        }
+        
         // Guardar PDF
         $pdf->Output(storage_path("app/{$path}"), 'F');
         
