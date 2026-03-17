@@ -629,7 +629,26 @@ class TeacherAccessController extends Controller
                 'payment_option' => $payment?->payment_option
             ]);
 
+            // SIEMPRE crear un payment temporal con los datos del request actual
+            $tempPayment = new \stdClass();
+            $tempPayment->payment_option = $request->input('needs_payment', 'waived_fee');
+            $tempPayment->fiscal_id = $request->input('fiscal_id', $teacher->dni);
+            $tempPayment->iban = $request->input('iban', $teacher->masked_iban);
+            $tempPayment->bank_titular = $request->input('bank_titular', $teacher->first_name . ' ' . $teacher->last_name);
+            $tempPayment->metadata = [];
+            
+            // Usar siempre el payment temporal del request actual
+            $payment = $tempPayment;
+            
+            \Log::info('Usando payment temporal del request:', [
+                'payment_option' => $payment->payment_option,
+                'fiscal_id' => $payment->fiscal_id,
+                'iban' => $payment->iban
+            ]);
+            
             if (!$payment) {
+                // Este bloque ya no debería ejecutarse nunca
+                \Log::warning('Payment temporal es null - no debería pasar');
                 // En lugar de fallar, generar PDF con datos básicos del profesor
                 \Log::warning('No se encontraron datos de pago específicos, usando datos básicos del profesor', [
                     'teacher_id' => $teacher->id,
