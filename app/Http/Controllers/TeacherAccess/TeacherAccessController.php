@@ -41,6 +41,16 @@ class TeacherAccessController extends Controller
             }
 
             $needsPayment = $request->input('needs_payment');
+            
+            // DEBUG: Ver qué llega en el request
+            \Log::info('DEBUG - Request data:', [
+                'needs_payment' => $needsPayment,
+                'all_request' => $request->all(),
+                'payment_option' => $request->input('payment_option'),
+                'own_fee' => $request->input('own_fee'),
+                'ceded_fee' => $request->input('ceded_fee'),
+                'waived_fee' => $request->input('waived_fee')
+            ]);
 
             /*
             |--------------------------------------------------------------------------
@@ -590,13 +600,39 @@ class TeacherAccessController extends Controller
             }
 
             // 2. Obtener datos de pago usando course_id y season_id del request
+            \Log::info('Buscando datos de pago con:', [
+                'teacher_id' => $teacher->id,
+                'course_id' => $request->input('course_id'),
+                'season_id' => $request->input('season_id'),
+                'request_all' => $request->all()
+            ]);
+            
             $payment = CampusTeacherPayment::where('teacher_id', $teacher->id)
                 ->where('course_id', $request->input('course_id'))
                 ->where('season_id', $request->input('season_id'))
                 ->first();
 
+            \Log::info('Resultado búsqueda payment:', [
+                'payment_found' => $payment ? 'YES' : 'NO',
+                'payment_id' => $payment?->id,
+                'payment_option' => $payment?->payment_option
+            ]);
+
             if (!$payment) {
-                throw new \Exception('No se encontraron datos de pago para el curso y temporada especificados');
+                // En lugar de fallar, generar PDF con datos básicos del profesor
+                \Log::warning('No se encontraron datos de pago específicos, usando datos básicos del profesor', [
+                    'teacher_id' => $teacher->id,
+                    'course_id' => $request->input('course_id'),
+                    'season_id' => $request->input('season_id')
+                ]);
+                
+                // Crear un objeto payment básico para que el PDF funcione
+                $payment = new \stdClass();
+                $payment->payment_option = 'own_fee'; // Asumimos que cobra
+                $payment->fiscal_id = $teacher->dni;
+                $payment->iban = $teacher->masked_iban;
+                $payment->bank_titular = $teacher->first_name . ' ' . $teacher->last_name;
+                $payment->metadata = [];
             }
 
             // 3. Obtener temporada y curso
