@@ -113,10 +113,6 @@ class RolesAndPermissionsSeeder extends Seeder
             'campus.teachers.delete',
             'campus.teachers.assign',
             
-            // Consentimientos
-            'campus.consents.request',
-            'campus.consents.view',
-            
             // Matriculacions/Registres
             'campus.registrations.index',
             'campus.registrations.view',
@@ -216,10 +212,6 @@ class RolesAndPermissionsSeeder extends Seeder
             'campus.teachers.edit',
             'campus.teachers.delete',
             'campus.teachers.assign',
-            
-            // Consentimientos
-            'campus.consents.request',
-            'campus.consents.view',
             
             // Cursos
             'campus.courses.index', 'campus.courses.view',
