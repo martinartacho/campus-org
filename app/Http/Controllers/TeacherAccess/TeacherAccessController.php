@@ -13,7 +13,7 @@ use App\Models\CampusCourseTeacher;
 use App\Models\TreasuryData;
 use App\Models\User;
 use Illuminate\Http\Request;
-use App\Services\ConsentPDFService;
+use App\Services\SimpleConsentPDFService;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
@@ -615,24 +615,12 @@ class TeacherAccessController extends Controller
             ]);
 
             // 4. Generar PDF usando TCPDF
-            $pdfService = new ConsentPDFService();
-            $finalConsentPath = $pdfService->generateTeacherConsentPDF(
+            $pdfService = new SimpleConsentPDFService();
+            $finalConsentPath = $pdfService->generateSimplePDF(
                 $teacher,
-                $user,
                 $season,
                 $course,
                 $payment,
-                hash('sha256', implode('|', [
-                    $teacher->id,
-                    $season->slug ?? $season->id,
-                    $course->code ?? 'unknown',
-                    $payment->payment_option,
-                    now()->timestamp,
-                    $payment->fiscal_id,
-                    $request->ip(),
-                    'final_consent_with_authorizations'
-                ])),
-                now(),
                 $payment->metadata['end_autoritzacio_dades'] ?? false,
                 $payment->metadata['end_declaracio_fiscal'] ?? false
             );

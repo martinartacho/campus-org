@@ -83,6 +83,21 @@ class ConsentPDFService
         bool $autoritzacioDades,
         bool $declaracioFiscal
     ): string {
+        // DEBUG SIMPLE
+        \Log::info('ConsentPDF: buildConsentHTML llamado para teacher ' . $teacher->id . ' y course ' . $course->id);
+        
+        // DEBUG: Log valores de las variables
+        \Log::info('ConsentPDF DEBUG - Variables:', [
+            'teacher_id' => $teacher->id,
+            'course_id' => $course->id,
+            'payment_option' => $payment->payment_option ?? 'null',
+            'declaracioFiscal' => $declaracioFiscal,
+            'autoritzacioDades' => $autoritzacioDades,
+            'payment_exists' => !is_null($payment),
+            'fiscal_id' => $payment->fiscal_id ?? 'null',
+            'iban' => $payment->iban ?? 'null'
+        ]);
+        
         $paymentOptionLabel = $this->getPaymentOptionLabel($payment->payment_option);
         
         return '
@@ -146,10 +161,30 @@ class ConsentPDFService
         </div>
         
         <div class="section">
-            <h2>4. DADES FISCALS I BANCÀRIES</h2>
+            <h2>4. DADES FISCALS I BANCÀRIES</h2>';
+        
+        // Determinar si mostrem dades del professor o del beneficiari
+        if ($payment && $payment->payment_option === 'ceded_fee') {
+            // Mostrar dades del beneficiari si existen, sino del professor
+            $html .= '
             <div class="info-row">
                 <span class="label">Identificació fiscal:</span>
-                <span class="value">' . htmlspecialchars($payment->fiscal_id ?? 'N/A') . '</span>
+                <span class="value">' . htmlspecialchars($payment->fiscal_id ?? $teacher->dni ?? 'N/A') . '</span>
+            </div>
+            <div class="info-row">
+                <span class="label">IBAN:</span>
+                <span class="value">' . htmlspecialchars($payment->iban ?? $teacher->masked_iban ?? 'N/A') . '</span>
+            </div>
+            <div class="info-row">
+                <span class="label">Titular del compte:</span>
+                <span class="value">' . htmlspecialchars($payment->bank_titular ?? $teacher->first_name . ' ' . $teacher->last_name) . '</span>
+            </div>';
+        } elseif ($payment && $payment->payment_option === 'own_fee') {
+            // Mostrar dades del professor
+            $html .= '
+            <div class="info-row">
+                <span class="label">Identificació fiscal:</span>
+                <span class="value">' . htmlspecialchars($payment->fiscal_id ?? $teacher->dni ?? 'N/A') . '</span>
             </div>
             <div class="info-row">
                 <span class="label">IBAN:</span>
@@ -157,26 +192,44 @@ class ConsentPDFService
             </div>
             <div class="info-row">
                 <span class="label">Titular del compte:</span>
-                <span class="value">' . htmlspecialchars($payment->bank_titular ?? 'N/A') . '</span>
-            </div>
+                <span class="value">' . htmlspecialchars($payment->bank_titular ?? $teacher->first_name . ' ' . $teacher->last_name) . '</span>
+            </div>';
+        } else {
+            // waived_fee o sin datos de pago - mostrar mensaje
+            $html .= '
+            <div class="info-row">
+                <span class="label">Nota:</span>
+                <span class="value">No aplica - Renuncia al cobrament o datos no disponibles</span>
+            </div>';
+        }
+        
+        $html .= '
         </div>
+        
+        <div style="page-break-before: always;"></div>
         
         <div class="section">
             <h2>5. DECLARACIONS I AUTORITZACIONS</h2>';
         
-        if ($declaracioFiscal) {
-            $html .= '
+        // Mostrar siempre la declaración fiscal (temporal para pruebas)
+        $html .= '
             <div class="declaration">
-                <strong>DECLARACIÓ FISCAL:</strong> Declara ser responsable de les seves obligacions fiscals i que la informació proporcionada és verídica.
+                <strong>✅ DECLARACIÓ FISCAL:</strong> Declara sota la meva responsabilitat que les dades facilitades són certes 
+                i que es troba en alguna de les següents situacions fiscals:
+                <ul style="margin-left: 20px; font-size: 11px;">
+                    <li>Soc autònom i presento declaracions trimestrals d\'IVA</li>
+                    <li>Soc pensionista i els meus ingressos estan exempts d\'IRPF</li>
+                    <li>Soc aturat i no tinc ingressos subjectes a retenció</li>
+                    <li>Altres situacions exentes o amb retencions específiques</li>
+                </ul>
             </div>';
-        }
         
-        if ($autoritzacioDades) {
-            $html .= '
+        // Mostrar siempre la autorización de datos (temporal para pruebas)
+        $html .= '
             <div class="declaration">
-                <strong>AUTORITZACIÓ DE DADES:</strong> Autoritza el tractament de les seves dades personals per a la gestió administrativa i acadèmica del curs.
+                <strong>✅ AUTORITZACIÓ TRACTAMENT DE DADES:</strong> Autoritzo el tractament de les meves dades personals 
+                amb finalitats fiscals i administratives, d\'acord amb la normativa vigent de protecció de dades.
             </div>';
-        }
         
         $html .= '
         </div>
