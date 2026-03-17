@@ -6,8 +6,8 @@
 
 <div class="bg-white p-6 rounded shadow">
     <h3 class="text-lg font-semibold mb-4">
-        {{--  ({{ __('Equip Tècnic ') }}) conegut pel sobre nom d'<strong>ET</strong>  --}}
-       {{ __('campus.campus_manager') }}
+        {{--  ({{ __('Equip Tècnic ') }}) conegut pel sobre nom d'<strong>ET</strong>  --}}
+       {{ __('campus.campus_manager') }} ( path: resources/views/components/dashboard/manager.blade.php )
     </h3>
 
     

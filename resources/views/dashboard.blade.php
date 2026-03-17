@@ -20,7 +20,11 @@
 
             {{-- 2. Dashboard Manager --}}
             @elseif(auth()->user()->hasAnyRole(['manager', 'gestor', 'editor']))
-                <x-dashboard.manager :stats="$stats ?? []" />
+                <!-- <x-dashboard.manager :stats="$stats ?? []" /> -->
+                <x-dashboard.admin-cards :stats="$stats ?? []" />
+                @foreach($widgets ?? [] as $widget)
+                    @include($widget)
+                @endforeach
 
             {{-- 2.1 Dashboard Treasury --}}
             @elseif(auth()->user()->hasRole('treasury'))
