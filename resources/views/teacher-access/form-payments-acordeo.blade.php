@@ -185,14 +185,14 @@
                                     <span class="text-red-600 text-sm">{{ $message }}</span>
                                 @enderror
 
-                                <label class="block font-medium">IBAN (24 dígits):</label>
+                                <label class="block font-medium">IBAN:</label>
                                 <input type="text" name="iban" 
                                     value="{{ old('iban', $payment?->iban ?? '') }}"
                                     class="border p-2 w-full" 
-                                    placeholder="ESXX XXXX XXXX XXXX XXXX XXXX"
-                                    pattern="[A-Z]{2}[0-9]{22}"
-                                    title="Format: 2 lletres + 22 dígits">
-                                <p class="text-xs text-gray-500 mt-1">Format: ES + 22 dígits</p>
+                                    placeholder="ES00 0000 0000 0000 0000 0000"
+                                    pattern="^ES\d{2}\s?\d{4}\s?\d{4}\s?\d{4}\s?\d{4}\s?\d{4}$"
+                                    title="Format: ES00 0000 0000 0000 0000 0000">
+                                <p class="text-xs text-gray-500 mt-1">Format: ES00 0000 0000 0000 0000 0000</p>
                                 @error('iban')
                                     <span class="text-red-600 text-sm">{{ $message }}</span>
                                 @enderror
@@ -365,14 +365,14 @@
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label class="block font-medium">IBAN  (24 dígits):</label>
+                                <label class="block font-medium">IBAN:</label>
                                 <input type="text" name="beneficiary_iban" 
                                     value="{{ old('beneficiary_iban', $payment?->iban ?? '') }}"
                                     class="border p-2 w-full" 
-                                    placeholder="ESXX XXXX XXXX XXXX XXXX XXXX"
-                                    pattern="[A-Z]{2}[0-9]{22}"
-                                    title="Format: 2 lletres + 22 dígits">
-                                <p class="text-xs text-gray-500 mt-1">Format: ES + 22 dígits</p>
+                                    placeholder="ES00 0000 0000 0000 0000 0000"
+                                    pattern="^ES\d{2}\s?\d{4}\s?\d{4}\s?\d{4}\s?\d{4}\s?\d{4}$"
+                                    title="Format: ES00 0000 0000 0000 0000 0000">
+                                <p class="text-xs text-gray-500 mt-1">Format: ES00 0000 0000 0000 0000 0000</p>
                                 @error('beneficiary_iban')
                                     <span class="text-red-600 text-sm">{{ $message }}</span>
                                 @enderror

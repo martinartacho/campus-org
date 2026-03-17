@@ -13,7 +13,7 @@ use App\Models\CampusCourseTeacher;
 use App\Models\TreasuryData;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Barryvdh\DomPDF\Facade\Pdf;
+use App\Services\ConsentPDFService;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
@@ -36,7 +36,7 @@ class TeacherAccessController extends Controller
             $user = User::findOrFail($accessToken->teacher_id);
             
             // Verificar si es el proceso final (solo autorizaciones)
-            if ($request->has('end_autoritzacio_dades') && $request->has('end_declaracio_fiscal')) {
+            if ($request->has('end_autoritzacio_dades') && $request->has('end_end_declaracio_fiscal')) {
                 return $this->processFinalConsent($request, $accessToken, $user);
             }
 
@@ -68,7 +68,7 @@ class TeacherAccessController extends Controller
 
                 $rules = array_merge($rules, [
                     'fiscal_id'        => 'nullable|string|max:20',
-                    'iban'             => 'nullable|string|max:24',
+                    'iban' => 'nullable|string|max:34|regex:/^ES\d{2}\s?\d{4}\s?\d{4}\s?\d{4}\s?\d{4}\s?\d{4}$/',
                     'bank_titular'     => 'nullable|string|max:255',
                     'fiscal_situation' => 'nullable|string|max:255',
                 ]);
@@ -84,7 +84,7 @@ class TeacherAccessController extends Controller
                     'beneficiary_address'          => 'nullable|string|max:255',
                     'beneficiary_postal_code'      => 'nullable|string|max:10',
                     'beneficiary_city'             => 'nullable|string|max:255',
-                    'beneficiary_iban'             => 'nullable|string|max:24',
+                    'beneficiary_iban' => 'nullable|string|max:34|regex:/^ES\d{2}\s?\d{4}\s?\d{4}\s?\d{4}\s?\d{4}\s?\d{4}$/',
                     'beneficiary_bank_titular'     => 'nullable|string|max:255',
                     'beneficiary_fiscal_situation' => 'nullable|string|max:255',
                 ]);
@@ -100,7 +100,7 @@ class TeacherAccessController extends Controller
             $invoice = $request->has('invoice');
             $beneficiaryInvoice = $request->has('beneficiary_invoice');
             $endAutoritzacio = $request->has('end_autoritzacio_dades');
-            $endDeclaracio = $request->has('end_declaracio_fiscal');
+            $endDeclaracio = $request->has('end_end_declaracio_fiscal');
 
             /*
             |--------------------------------------------------------------------------
@@ -367,19 +367,8 @@ class TeacherAccessController extends Controller
         // Limpiar espacios
         $iban = strtoupper(str_replace(' ', '', $iban));
         
-        // Validar longitud (24 caracteres para España)
-        if (strlen($iban) !== 24) {
-            return false;
-        }
-        
-        // Validar que empieza con ES
-        if (substr($iban, 0, 2) !== 'ES') {
-            return false;
-        }
-        
-        // Validar que los siguientes 22 caracteres son dígitos
-        $digits = substr($iban, 2);
-        if (!ctype_digit($digits)) {
+        // Validar con regex para formato español
+        if (!preg_match('/^ES\d{22}$/', $iban)) {
             return false;
         }
         
@@ -435,17 +424,17 @@ class TeacherAccessController extends Controller
             'payment' => $payment,
             'paymentOption' => $payment->payment_option,
             'paymentOptionLabel' => $this->getPaymentOptionLabel($payment->payment_option),
-            'fiscalId' => $payment->fiscal_id,
-            'address' => $payment->address,
-            'postalCode' => $payment->postal_code,
-            'city' => $payment->city,
-            'iban' => $payment->iban,
-            'bank_titular' => $payment->bank_titular,
-            'fiscalSituation' => $payment->fiscal_situation,
+            'fiscalId' => $payment->fiscal_id ?? 'N/A',
+            'address' => $payment->address ?? 'N/A',
+            'postalCode' => $payment->postal_code ?? 'N/A',
+            'city' => $payment->city ?? 'N/A',
+            'iban' => $payment->iban ?? 'N/A',
+            'bank_titular' => $payment->bank_titular ?? 'N/A',
+            'fiscalSituation' => $payment->fiscal_situation ?? 'N/A',
             'acceptedAt' => $acceptedAt,
             'checksum' => $finalChecksum,
             'autoritzacioDades' => $payment->metadata['end_autoritzacio_dades'] ?? false,
-            'declaracioFiscal' => $payment->metadata['declaracio_fiscal'] ?? false,
+            'declaracioFiscal' => $payment->metadata['end_declaracio_fiscal'] ?? false,
             'seasonSlug' => $seasonSlug,
             'isFinalConsent' => true,
         ];
@@ -463,7 +452,7 @@ class TeacherAccessController extends Controller
         // Actualizar consent_histories con la ruta del PDF final
         ConsentHistory::updateOrCreate(
             [
-                'teacher_id' => $teacher->id,
+                'teacher_id' => $user->id, // Usar user_id en lugar de teacher->id
                 'season' => $seasonSlug,
             ],
             [
@@ -477,7 +466,7 @@ class TeacherAccessController extends Controller
         );
         
         \Log::info('ConsentHistory actualizado con PDF final:', [
-            'teacher_id' => $teacher->id, 
+            'teacher_id' => $user->id, // Log correcto
             'season' => $seasonSlug, 
             'path' => $finalConsentPath
         ]);     
@@ -593,28 +582,88 @@ class TeacherAccessController extends Controller
                 'course_id' => $course->id
             ]);
 
-            // 4. Generar PDF
-            $this->generateFinalConsentPdf($teacher, $user, $season, $course, $payment, $request);
+            // 4. Generar PDF usando TCPDF
+            $pdfService = new ConsentPDFService();
+            $finalConsentPath = $pdfService->generateTeacherConsentPDF(
+                $teacher,
+                $user,
+                $season,
+                $course,
+                $payment,
+                hash('sha256', implode('|', [
+                    $teacher->id,
+                    $season->slug ?? $season->id,
+                    $course->code ?? 'unknown',
+                    $payment->payment_option,
+                    now()->timestamp,
+                    $payment->fiscal_id,
+                    $request->ip(),
+                    'final_consent_with_authorizations'
+                ])),
+                now(),
+                $payment->metadata['end_autoritzacio_dades'] ?? false,
+                $payment->metadata['end_declaracio_fiscal'] ?? false
+            );
 
             // 5. Actualizar metadatos del payment con las autorizaciones
             $existingMetadata = $payment->metadata ?? [];
             $payment->update([
                 'metadata' => array_merge($existingMetadata, [
                     'end_autoritzacio_dades' => true,
-                    'end_declaracio_fiscal' => true,
+                    'end_end_declaracio_fiscal' => true,
                     'final_consent_accepted_at' => now()->toDateTimeString(),
                     'ip_address' => $request->ip(),
                 ])
             ]);
 
-            // 6. Marcar token como usado
-            $accessToken->update(['used_at' => now()]);
+            // 7. Actualizar consent_histories con la ruta del PDF final
+        ConsentHistory::updateOrCreate(
+            [
+                'teacher_id' => $user->id, // Usar user_id en lugar de teacher->id
+                'season' => $season->slug ?? $season->id,
+            ],
+            [
+                'accepted_at' => now(),
+                'checksum' => hash('sha256', implode('|', [
+                    $teacher->id,
+                    $season->slug ?? $season->id,
+                    $course->code ?? 'unknown',
+                    $payment->payment_option,
+                    now()->timestamp,
+                    $payment->fiscal_id,
+                    $request->ip(),
+                    'final_consent_with_authorizations'
+                ])),
+                'document_path' => $finalConsentPath,
+                'final_consent_document_path' => $finalConsentPath,
+                'final_consent_accepted_at' => now(),
+                'final_consent_checksum' => hash('sha256', implode('|', [
+                    $teacher->id,
+                    $season->slug ?? $season->id,
+                    $course->code ?? 'unknown',
+                    $payment->payment_option,
+                    now()->timestamp,
+                    $payment->fiscal_id,
+                    $request->ip(),
+                    'final_consent_with_authorizations'
+                ])),
+            ]
+        );
+        
+        \Log::info('ConsentHistory actualizado con PDF final:', [
+            'teacher_id' => $user->id, // Log correcto
+            'season' => $season->slug ?? $season->id, 
+            'path' => $finalConsentPath
+        ]);
 
-            \Log::info('=== CONSENTIMIENTO FINAL PROCESADO CORRECTAMENTE ===');
+        // 8. Marcar token como usado
+        $accessToken->update(['used_at' => now()]);
 
-            // 7. Redirigir a página de éxito
-            return redirect()->route('teacher.access.success', $accessToken->token)
-                ->with('message', 'final_consent_saved');
+        \Log::info('=== CONSENTIMIENTO FINAL PROCESADO CORRECTAMENTE ===');
+
+        // 9. Redirigir a página de éxito
+        return redirect()->route('teacher.access.success', $accessToken->token)
+            ->with('message', 'final_consent_saved');
 
         } catch (\Exception $e) {
             \Log::error('Error en processFinalConsent: ' . $e->getMessage());

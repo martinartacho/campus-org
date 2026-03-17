@@ -10,9 +10,13 @@ use Illuminate\Support\Facades\Session;
 use App\Notifications\Channels\FcmChannel;
 use Illuminate\Support\Facades\Mail;
 use App\Services\ExportService;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Notifications\Channels\DatabaseChannel;
 
-
-
+/**
+ * Class AppServiceProvider
+ * @package App\Providers
+ */
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -30,16 +34,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        if ($this->app->environment('local')) {
-            // Desactivar realmente el envío de emails en local
-            Mail::alwaysTo('preview@mailpit');
-        }
-        
-        // En producción, no redirigir emails
-        if ($this->app->environment('production')) {
-            // Configuración de producción - emails reales
-            // Mail::alwaysTo(null); // Desactiva el redireccionamiento
-        }
         // Middleware para manejar el idioma
         $this->app->router->group([
             'namespace' => 'App\Http\Controllers',
