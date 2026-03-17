@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\CampusTeacher;
 use App\Models\CampusTeacherPayment;
 use App\Models\ConsentHistory;
-use App\Models\CampusCourseTeacher;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
@@ -16,7 +15,7 @@ class TreasuryController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('role:admin|treasury');
+        $this->middleware('role:treasury');
     }
 
     /**
@@ -26,11 +25,39 @@ class TreasuryController extends Controller
     {
         $this->authorize('campus.teachers.view');
         
-        // Usar TreasuryDashboardData para obtener los datos
-        $user = auth()->user();
-        $data = app(\App\Services\Dashboard\TreasuryDashboardData::class)->build($user);
+        // Obtener consentimientos de la temporada actual con relaciones
+        $currentSeason = config('campus.current_season', '2024-25');
+        $consentments = ConsentHistory::with(['teacher.user', 'course', 'season'])
+            ->where('season', $currentSeason)
+            ->latest('accepted_at')
+            ->paginate(20);
         
-        return view('dashboard.treasury', compact('data'));
+        // Estadísticas según propuesta: Professorat totals/RGPD acceptat i Dades Bancàries
+        $totalTeachers = CampusTeacher::count();
+        $teachersWithConsent = ConsentHistory::where('season', $currentSeason)
+            ->whereNotNull('document_path')
+            ->distinct('teacher_id')
+            ->count('teacher_id');
+            
+        // Calcular total d'assignacions de cursos (dades bancàries)
+        $totalCourseAssignments = CampusCourseTeacher::whereHas('course', function($query) use ($currentSeason) {
+            $query->whereHas('season', function($seasonQuery) use ($currentSeason) {
+                $seasonQuery->where('slug', $currentSeason);
+            });
+        })->count();
+        
+        $stats = [
+            'total_teachers' => $totalTeachers,
+            'teachers_with_consent' => $teachersWithConsent,
+            'total_course_assignments' => $totalCourseAssignments,
+            'updated_course_assignments' => $teachersWithConsent, // Han acceptat consentiment i PDF creat
+            'this_month_consents' => ConsentHistory::where('season', $currentSeason)
+                ->whereMonth('accepted_at', now()->month)
+                ->whereYear('accepted_at', now()->year)
+                ->count(),
+        ];
+        
+        return view('treasury.dashboard', compact('consentments', 'stats'));
     }
 
     /**

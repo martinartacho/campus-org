@@ -663,7 +663,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // Treasury Routes
-    Route::middleware(['auth', 'role:admin|treasury'])
+    Route::middleware(['auth', 'role:treasury'])
     ->prefix('treasury')
     ->name('treasury.')
     ->group(function () {
