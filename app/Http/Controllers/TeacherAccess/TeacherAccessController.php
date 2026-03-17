@@ -612,6 +612,17 @@ class TeacherAccessController extends Controller
                 ->where('season_id', $request->input('season_id'))
                 ->first();
 
+            // ELIMINAR payment antiguo si la opción cambió
+            if ($payment && $payment->payment_option !== $request->input('needs_payment')) {
+                \Log::info('Eliminando payment antiguo con opción diferente:', [
+                    'old_option' => $payment->payment_option,
+                    'new_option' => $request->input('needs_payment'),
+                    'payment_id' => $payment->id
+                ]);
+                $payment->delete();
+                $payment = null;
+            }
+
             \Log::info('Resultado búsqueda payment:', [
                 'payment_found' => $payment ? 'YES' : 'NO',
                 'payment_id' => $payment?->id,
