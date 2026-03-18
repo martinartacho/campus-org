@@ -8,7 +8,14 @@
     <h3 class="text-lg font-semibold mb-4">
        {{ __('campus.treasury_manager') }} 
     </h3>
-
+    @if(config('app.debug'))
+        <pre class="bg-gray-100 p-3 text-xs rounded border">{{ var_export([
+            'error' => $error,
+            'debug' => $debug,
+            'stats' => $stats,
+        ], true) }}
+        </pre>
+    @endif
     <div class="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-lg border border-green-200 hover:border-green-300">
         <div class="flex items-center justify-between">
             <h4 class="text-lg font-medium text-green-800">{{ __('Estadístiques') }}</h4>

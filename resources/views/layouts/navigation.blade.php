@@ -91,6 +91,11 @@
             {{--     @include('components.menu-admin', ['desktop' => true]) --}}
                 
                 {{-- Menú d'Usuari (DESKTOP) --}}
+                <!-- Role Switcher (solo para usuarios con múltiples roles) -->
+                <div class="hidden sm:flex sm:items-center sm:ms-6">
+                    <x-role-switcher />
+                </div>
+
                 <!-- Settings Dropdown -->
                 <div class="hidden sm:flex sm:items-center sm:ms-6">
                     {{-- ... codi del dropdown del perfil ... --}}

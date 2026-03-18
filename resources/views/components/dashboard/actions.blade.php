@@ -1,9 +1,19 @@
 {{-- resources/views/components/dashboard/actions.blade.php --}}
-
+{{-- Cuando se usa este componente, se ejecuta el código de abajo --}}
 @auth
     @php
         $user = Auth::user();
     @endphp
+
+    @if(config('app.debug'))
+        <pre class="bg-gray-100 p-3 text-xs rounded border">{{ var_export([
+            'path' => 'resources/views/components/dashboard/actions.blade.php',
+            'error' => $error,
+            'debug' => $debug,
+            'stats' => $stats,
+        ], true) }}
+        </pre>
+    @endif
 
     {{-- ========================= --}}
     {{-- 📊 STATS RÀPIDES --}}

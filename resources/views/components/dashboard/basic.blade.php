@@ -5,7 +5,15 @@
         </h3>
         
         <div class="py-12">
-           
+            
+    @if(config('app.debug'))
+        <pre class="bg-gray-100 p-3 text-xs rounded border">{{ var_export([
+            'error' => $error,
+            'debug' => $debug,
+            'stats' => $stats,
+        ], true) }}
+        </pre>
+    @endif
                 {{-- Estadísticas generales --}} 
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
                     <div class="p-6 text-gray-900">

@@ -9,17 +9,17 @@ class DashboardController extends Controller
 {
 
 
-    public function index()
+    /* public function index()
     {
+
         $user = auth()->user();
         $stats = [];
-
         if ($user->hasAnyRole(['manager', 'coordinacio', 'gestio', 'comunicacio', 'secretaria', 'editor'])) {
             $stats = app(\App\Services\Dashboard\ManagerDashboardData::class)
                 ->build($user);
         }
-        dd('Error: 220260129: Fins ara no s\'havia fet servir comunicar a responsabe de programació');
+        dd('Error: 220260129: Fins ara no s\'havia fet servir comunicar a responsabe de programació');
         return view('dashboard', compact('stats'));
-    }
+    } */
 
 }

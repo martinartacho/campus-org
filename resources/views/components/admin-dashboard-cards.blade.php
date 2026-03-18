@@ -17,38 +17,38 @@
 
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
 
-                @isset($stats['courses'])
+                @isset($stats['total_courses'])
                     <div class="bg-blue-50 p-4 rounded-lg border">
                         <div class="text-sm text-gray-600">Cursos</div>
                         <div class="text-2xl font-bold text-blue-700">
-                            {{ $stats['courses'] }}
+                            {{ $stats['total_courses'] }}
                         </div>
                     </div>
                 @endisset
 
-                @isset($stats['students'])
+                @isset($stats['student_count'])
                     <div class="bg-green-50 p-4 rounded-lg border">
                         <div class="text-sm text-gray-600">Estudiants</div>
                         <div class="text-2xl font-bold text-green-700">
-                            {{ $stats['students'] }}
+                            {{ $stats['student_count'] }}
                         </div>
                     </div>
                 @endisset
 
-                @isset($stats['teachers'])
+                @isset($stats['teacher_count'])
                     <div class="bg-teal-50 p-4 rounded-lg border">
                         <div class="text-sm text-gray-600">Professors</div>
                         <div class="text-2xl font-bold text-teal-700">
-                            {{ $stats['teachers'] }}
+                            {{ $stats['teacher_count'] }}
                         </div>
                     </div>
                 @endisset
 
-                @isset($stats['registrations'])
+                @isset($stats['total_registrations'])
                     <div class="bg-purple-50 p-4 rounded-lg border">
                         <div class="text-sm text-gray-600">Matriculacions</div>
                         <div class="text-2xl font-bold text-purple-700">
-                            {{ $stats['registrations'] }}
+                            {{ $stats['total_registrations'] }}
                         </div>
                     </div>
                 @endisset
@@ -107,7 +107,7 @@
             </h2>
 
             @php
-                $coursesWithoutTeacher = \App\Models\Course::whereNull('teacher_id')
+                $coursesWithoutTeacher = \App\Models\CampusCourse::whereNull('teacher_id')
                     ->latest()
                     ->limit(5)
                     ->get();

@@ -75,6 +75,9 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
+    
+    Route::get('/dashboard/switch/{role}', [DashboardController::class, 'switchRole'])
+        ->name('dashboard.switch.role');
 
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])

@@ -9,7 +9,14 @@
         {{--  ({{ __('Equip Tècnic ') }}) conegut pel sobre nom d'<strong>ET</strong>  --}}
        {{ __('campus.campus_manager') }} ( path: resources/views/components/dashboard/manager.blade.php )
     </h3>
-
+    @if(config('app.debug'))
+        <pre class="bg-gray-100 p-3 text-xs rounded border">{{ var_export([
+            'error' => $error,
+            'debug' => $debug,
+            'stats' => $stats,
+        ], true) }}
+        </pre>
+    @endif
     
     <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-lg border border-blue-200 hover:border-blue-300">
         <div class="flex items-center justify-between">

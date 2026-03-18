@@ -2,13 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use App\Http\Controllers\Controller;
+use App\Models\User;
+use App\Models\CampusCourse;
+use App\Models\CampusCategory;
+use App\Models\CampusSeason;
+use App\Models\Event;
+use App\Models\Feedback;
+use App\Models\CampusRegistration;
 
 class DashboardController extends Controller
 {
-    public function index()
+
+public function index()
     {
         $user = auth()->user();
         \Log::info('DashboardController - User access', [
@@ -17,6 +22,17 @@ class DashboardController extends Controller
             'hasAnyRole_manager' => $user->hasAnyRole(['director', 'manager', 'coordinacio', 'gestio', 'comunicacio', 'secretaria', 'editor']),
             'hasAnyRole_admin' => $user->hasAnyRole(['admin', 'super-admin']),
         ]);
+        $data = [];
+
+        // Obtener rol activo de sesión o usar el primer rol disponible
+        $activeRole = session('active_role');
+        if ($activeRole && $user->hasRole($activeRole)) {
+            // Usar rol activo
+            $userRoles = [$activeRole];
+        } else {
+            // Usar todos los roles del usuario
+            $userRoles = $user->roles->pluck('name')->toArray();
+        }
 
         // Usar rol activo si existe, sino verificar todos los roles
         $activeRole = session('active_role');
@@ -43,14 +59,37 @@ class DashboardController extends Controller
             }
         }
         
-        // Fallback: si no hay rol activo, usar comportamiento original
+        // Fallback: si no hay rol activo, usar admin o verificar todos los roles
         if ($user->hasAnyRole(['admin', 'super-admin'])) {
             \Log::info('DashboardController - Admin user (fallback)', ['user' => $user->email, 'active_role' => $activeRole]);
             $data = app(\App\Services\Dashboard\AdminDashboardData::class)->build();
             \Log::info('DashboardController - Admin data', ['data_keys' => array_keys($data)]);
             return view('dashboard', $data);
         
-        } elseif ($user->hasAnyRole(['director', 'manager', 'coordinacio', 'gestio', 'comunicacio', 'secretaria', 'editor'])) {
+        if ($activeRole && $user->hasRole($activeRole)) {
+            // Usar rol activo específico
+            \Log::info('DashboardController - Using active role', ['user' => $user->email, 'active_role' => $activeRole]);
+            
+            if ($activeRole === 'admin' || $activeRole === 'super-admin') {
+                $data = app(\App\Services\Dashboard\AdminDashboardData::class)->build();
+                return view('dashboard', $data);
+            } elseif (in_array($activeRole, ['director', 'manager', 'coordinacio', 'gestio', 'comunicacio', 'secretaria', 'editor'])) {
+                $data = app(\App\Services\Dashboard\ManagerDashboardData::class)->build($user);
+                return view('dashboard', $data);
+            } elseif ($activeRole === 'treasury') {
+                $data = app(\App\Services\Dashboard\TreasuryDashboardData::class)->build($user);
+                return view('dashboard.treasury', compact('data'));
+            } elseif ($activeRole === 'teacher') {
+                $data = app(\App\Services\Dashboard\TeacherDashboardData::class)->build($user);
+                return view('dashboard', $data);
+            } elseif ($activeRole === 'student') {
+                $data = app(\App\Services\Dashboard\StudentDashboardData::class)->build($user);
+                return view('dashboard', $data);
+            }
+        }
+        
+        // Fallback: verificar todos los roles del usuario (comportamiento original)
+        if ($user->hasAnyRole(['director', 'manager', 'coordinacio', 'gestio', 'comunicacio', 'secretaria', 'editor'])) {
             $data = app(\App\Services\Dashboard\ManagerDashboardData::class)
                 ->build($user);
             \Log::info('DashboardController - Manager data (fallback)', [
@@ -91,4 +130,6 @@ class DashboardController extends Controller
 
         return redirect()->route('dashboard')->with('success', 'Has cambiado al rol: ' . ucfirst($role));
     }
+
+
 }
