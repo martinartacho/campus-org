@@ -25,8 +25,8 @@
                 <span class="text-green-700">{{ __('campus.payments') }}: {{ $stats['payments'] }}</span>
             @endisset
 
-            @isset($stats['pending_payments'])
-                <span class="text-green-700">{{ __('campus.pending_payments') }}: {{ $stats['pending_payments'] }}</span>
+            @isset($stats['pending_bank_data'])
+                <span class="text-green-700">Dades bancàries pendents: {{ $stats['pending_bank_data'] }}</span>
             @endisset
 
             @isset($stats['teachers'])
@@ -39,32 +39,32 @@
 <div class="bg-white p-6 rounded-lg shadow-md">
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         
-        {{-- PAGAMENTS --}}
+        {{-- DADES BANCÀRIES PROFESSORAT --}}
         @can('campus.payments.view')
             <a href="{{ route('treasury.payments.index') }}" class="block transition-transform hover:scale-[1.02]">
                 <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-lg border border-blue-200 hover:border-blue-300">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-sm font-medium text-blue-800">{{ __('campus.payments') }}</p>
+                            <p class="text-sm font-medium text-blue-800">Dades bancàries professorat</p>
                             <p class="text-2xl font-bold text-blue-900">
                                 @isset($stats['payments'])
                                 {{ $stats['payments'] }}
                                 @endisset
                             </p>
                         </div>
-                        <div class="p-2 bg-blue-200 rounded-lg">
-                            <i class="bi bi-cash text-blue-600 text-xl"></i>
+                        <div class="bg-blue-100 p-3 rounded-full">
+                            <i class="bi bi-credit-card text-blue-600 text-xl"></i>
                         </div>
                     </div>
                     
                     <div class="mt-2 grid grid-cols-2 gap-1 text-xs">
-                        <span class="text-green-700">Pendents: {{ $stats['pending_payments'] ?? 0 }}</span>
-                        <span class="text-green-700">Aprovats: {{ $stats['approved_payments'] ?? 0 }}</span>
+                        <span class="text-green-700">Pendents: {{ $stats['pending_bank_data'] ?? 0 }}</span>
+                        <span class="text-green-700">Completats: {{ $stats['approved_payments'] ?? 0 }}</span>
                     </div>
                     
                     <div class="mt-3 pt-2 border-t border-blue-200">
                         <span class="text-xs text-blue-600 hover:text-blue-800 flex items-center">
-                            Gestionar pagaments <i class="bi bi-arrow-right-short ms-1"></i>
+                            Gestionar dades bancàries <i class="bi bi-arrow-right-short ms-1"></i>
                         </span>
                     </div>
                 </div>

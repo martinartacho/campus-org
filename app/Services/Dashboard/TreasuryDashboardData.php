@@ -7,6 +7,7 @@ use App\Models\ConsentHistory;
 use App\Models\CampusSeason;
 use App\Models\CampusTeacher;
 use App\Models\CampusCourseTeacher;
+use App\Models\CampusTeacherPayment;
 
 class TreasuryDashboardData
 {
@@ -23,10 +24,17 @@ class TreasuryDashboardData
             ->distinct("teacher_id")
             ->count("teacher_id");
 
-        // Dades Bancàries: Total assignacions de cursos / Actualitzades
+        // Dades Bancàries: Total assignacions de cursos / Pendents
         $totalCourseAssignments = CampusCourseTeacher::whereHas("course", function($query) use ($season) {
             $query->where("season_id", $season?->id);
         })->count();
+
+        // Dades bancàries pendents de confirmación
+        $pendingBankData = CampusTeacherPayment::where('needs_payment', true)
+            ->whereHas('course', function($query) use ($season) {
+                $query->where("season_id", $season?->id);
+            })
+            ->count();
 
         return [
             "season" => $seasonCode,
@@ -35,9 +43,10 @@ class TreasuryDashboardData
             "teachers_total" => $totalTeachers,
             "teachers_with_rgpd" => $teachersWithConsent,
             
-            // Dades Bancàries (Total / Actualitzades)
+            // Dades Bancàries (Total / Pendents)
             "course_assignments_total" => $totalCourseAssignments,
             "course_assignments_updated" => $teachersWithConsent, // Han acceptat consentiment i PDF creat
+            "pending_bank_data" => $pendingBankData,
             
             // Últims consentiments
             "last_consents" => ConsentHistory::with("teacher")

@@ -31,6 +31,7 @@
             </h2>
 
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <p>path: resources/views/components/dashboard/admin-cards.blade.php</p>
 
                 {{-- Contadores según rol activo --}}
                 @switch($activeRole)
@@ -134,7 +135,7 @@
                         @endisset
                         @isset($stats['teachers'])
                             <div class="bg-teal-50 p-4 rounded-lg border">
-                                <div class="text-sm text-gray-600">Soport</div>
+                                <div class="text-sm text-gray-600">Suport</div>
                                 <div class="text-2xl font-bold text-teal-700">
                                     {{ $stats['teachers'] }}
                                 </div>
@@ -169,7 +170,7 @@
                         @endisset
                         @isset($stats['total_registrations'])
                             <div class="bg-purple-50 p-4 rounded-lg border">
-                                <div class="text-sm text-gray-600">Matriculacions (linia 60)</div>
+                                <div class="text-sm text-gray-600">Matriculacions </div>
                                 <div class="text-2xl font-bold text-purple-700">
                                     {{ $stats['total_registrations'] }}
                                 </div>

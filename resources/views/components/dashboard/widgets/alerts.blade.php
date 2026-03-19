@@ -1,19 +1,19 @@
 {{-- resources/views/components/dashboard/widgets/alerts.blade.php --}}
 
 <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-    <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
-        <i class="bi bi-exclamation-triangle me-2 text-orange-600"></i>
-        Alertes i Notificacions
-    </h2>
+    <!-- Header sin acordeón (siempre visible) -->
+    <div class="border-b border-gray-200 pb-3">
+        <div class="flex items-center">
+            <i class="bi bi-exclamation-triangle me-2 text-orange-600"></i>
+            <h2 class="text-lg font-bold text-gray-800">Alertes i Notificacions</h2>
+        </div>
+    </div>
 
     @php
         $alerts = [];
         
         // Alerta: Cursos sense professor
         $coursesWithoutTeacher = \App\Models\CampusCourse::whereDoesntHave('teachers')
-            ->whereHas('season', function($query) {
-                $query->where('slug', config('campus.current_season', '2024-25'));
-            })
             ->count();
         if ($coursesWithoutTeacher > 0) {
             $alerts[] = [
@@ -21,17 +21,19 @@
                 'icon' => 'bi-person-x',
                 'title' => 'Cursos sense professor',
                 'message' => "{$coursesWithoutTeacher} cursos no tenen professor assignat",
-                'count' => $coursesWithoutTeacher
+                'count' => $coursesWithoutTeacher,
+                'link' => 'https://dev.upg.cat/campus/courses',
+                'link_text' => 'Veure cursos'
             ];
         }
 
         // Alerta: Cursos plens
         $fullCourses = \App\Models\CampusCourse::where('max_students', '>', 0)
-            ->whereHas('season', function($query) {
-                $query->where('slug', config('campus.current_season', '2024-25'));
-            })
-            ->whereRaw('(SELECT COUNT(*) FROM campus_registrations WHERE campus_registrations.course_id = campus_courses.id) >= max_students')
-            ->count();
+            ->withCount('students')
+            ->get()
+            ->filter(function($course) {
+                return $course->students_count >= $course->max_students;
+            })->count();
         if ($fullCourses > 0) {
             $alerts[] = [
                 'type' => 'info',
@@ -42,27 +44,31 @@
             ];
         }
 
-        // Alerta: Matriculacions pendents
-        $pendingRegistrations = \App\Models\CampusRegistration::where('status', 'pending')->count();
-        if ($pendingRegistrations > 0) {
-            $alerts[] = [
-                'type' => 'danger',
-                'icon' => 'bi-clock-fill',
-                'title' => 'Matriculacions pendents',
-                'message' => "{$pendingRegistrations} matriculacions esperant aprovació",
-                'count' => $pendingRegistrations
-            ];
-        }
+        // Alerta: Matriculacions pendents - ELIMINADO COMPLETAMENTE
+        // $pendingRegistrations = \App\Models\CampusCourseStudent::where('academic_status', 'enrolled')
+        //     ->count();
+        // if ($pendingRegistrations > 0) {
+        //     $alerts[] = [
+        //         'type' => 'danger',
+        //         'icon' => 'bi-clock-fill',
+        //         'title' => 'Matriculacions pendents',
+        //         'message' => "{$pendingRegistrations} matriculacions esperant aprovació",
+        //         'count' => $pendingRegistrations
+        //     ];
+        // }
 
-        // Alerta: Pagaments pendents
-        $pendingPayments = \App\Models\CampusTeacherPayment::where('needs_payment', true)->count();
-        if ($pendingPayments > 0) {
+        // Alerta: Datos bancarios en preparación
+        $pendingBankData = \App\Models\CampusTeacherPayment::where('needs_payment', true)
+            ->count();
+        if ($pendingBankData > 0) {
             $alerts[] = [
-                'type' => 'warning',
-                'icon' => 'bi-credit-card',
-                'title' => 'Pagaments pendents',
-                'message' => "{$pendingPayments} pagaments de professorat pendents",
-                'count' => $pendingPayments
+                'type' => 'info',
+                'icon' => 'bi-clock-history',
+                'title' => 'Dades bancàries en preparació',
+                'message' => "{$pendingBankData} professors/es en procés de preparació de dades",
+                'count' => $pendingBankData,
+                'link' => 'https://dev.upg.cat/campus/treasury/teachers',
+                'link_text' => 'Veure detalls'
             ];
         }
     @endphp
@@ -96,6 +102,19 @@
                         @else text-gray-700 @endif">
                         {{ $alert['message'] }}
                     </p>
+                    @isset($alert['link'])
+                        <div class="mt-2">
+                            <a href="{{ $alert['link'] }}" 
+                               class="inline-flex items-center text-xs font-medium 
+                                   @if($alert['type'] == 'danger') text-red-600 hover:text-red-800
+                                   @elseif($alert['type'] == 'warning') text-yellow-600 hover:text-yellow-800
+                                   @elseif($alert['type'] == 'info') text-blue-600 hover:text-blue-800
+                                   @else text-gray-600 hover:text-gray-800 @endif">
+                                <i class="bi bi-arrow-right me-1"></i>
+                                {{ $alert['link_text'] ?? 'Veure detalls' }}
+                            </a>
+                        </div>
+                    @endisset
                 </div>
                 <div class="ml-3 flex-shrink-0">
                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium

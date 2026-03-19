@@ -193,7 +193,7 @@
             <div class="border-t border-gray-200 mt-2">
                 <div class="px-4 py-3">
                     <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                        <div class="text-sm font-medium text-blue-900 mb-2">Rol Activo: {{ ucfirst(session('active_role', auth()->user()->roles->first()->name)) }} (path: resources/views/layouts/navigation.blade.php)</div>
+                        <div class="text-sm font-medium text-blue-900 mb-2">Rol Activo: {{ ucfirst(session('active_role', auth()->user()->roles->first()->name)) }}</div>
                         <div class="flex flex-col space-y-2">
                             @foreach(auth()->user()->roles as $role)
                                 <a href="{{ route('dashboard.switch.role', $role->name) }}" 

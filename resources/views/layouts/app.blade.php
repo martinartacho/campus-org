@@ -73,7 +73,7 @@
                 <i class="bi bi-question-lg text-xl"></i>
             </a>
 
-            @include('debug.footer')
+           <!--  // @  include ('debug.footer') -->
             <!-- Footer con botón de soporte flotante -->
             @include('components.footer')
 

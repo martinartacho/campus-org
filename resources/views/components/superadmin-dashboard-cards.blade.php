@@ -1,9 +1,13 @@
-{{-- resources/views/components/admin-dashboard-cards.blade.php --}}
+{{-- resources/views/components/superadmin-dashboard-cards.blade.php --}}
+{{-- Dashboard exclusivo para Super-Admin --}}
 
 @auth
     @php
         $user = Auth::user();
     @endphp
+    
+    {{-- Solo para super-admin --}}
+    @if($user->hasRole('super-admin'))
 
     {{-- ========================= --}}
     {{-- 📊 STATS RÀPIDES --}}
@@ -69,7 +73,7 @@
             </h2>
 
             @php
-                $recentRegistrations = \App\Models\Registration::with('student', 'course')
+                $recentRegistrations = \App\Models\CampusRegistration::with('student', 'course')
                     ->latest()
                     ->limit(5)
                     ->get();
@@ -107,7 +111,7 @@
             </h2>
 
             @php
-                $coursesWithoutTeacher = \App\Models\CampusCourse::whereNull('teacher_id')
+                $coursesWithoutTeacher = \App\Models\CampusCourse::whereDoesntHave('teachers')
                     ->latest()
                     ->limit(5)
                     ->get();
@@ -137,7 +141,7 @@
             </h2>
 
             @php
-                $recentStudents = \App\Models\Student::latest()
+                $recentStudents = \App\Models\CampusStudent::latest()
                     ->limit(5)
                     ->get();
             @endphp
@@ -159,4 +163,5 @@
         </div>
     @endcan
 
+    @endif {{-- Solo para super-admin --}}
 @endauth

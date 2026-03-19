@@ -20,7 +20,7 @@
     
     <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-lg border border-blue-200 hover:border-blue-300">
         <div class="flex items-center justify-between">
-            <h4 class="text-lg font-medium text-blue-800">{{ __('Estadístiques') }}</h4>
+            <h4 class="text-lg font-medium text-blue-800">{{ __('Estadístiques') }} bloque 1</h4>
             
             
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

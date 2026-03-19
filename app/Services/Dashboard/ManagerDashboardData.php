@@ -39,34 +39,97 @@ class ManagerDashboardData
             $stats['registrations'] = $adminData['total_registrations'];
         }
 
+        // 📊 ESTADÍSTIQUES DEL SISTEMA para coordinacio
+        if ($activeRole === 'coordinacio') {
+            // Usuarios - usar datos existentes de admin
+            $stats['total_users'] = $adminData['stats']['total_users'] ?? 0;
+            $stats['active_users'] = \App\Models\User::where('email_verified_at', '!=', null)->count();
+            $stats['new_users'] = \App\Models\User::where('created_at', '>=', now()->subDays(30))->count();
+            
+            // Cursos - usar datos existentes de admin y añadir subtotales por status
+            $stats['total_courses'] = $adminData['stats']['total_courses'] ?? 0;
+            $stats['active_courses'] = \App\Models\CampusCourse::where('is_active', true)->count();
+            $stats['full_courses'] = \App\Models\CampusCourse::where('max_students', '>', 0)
+                ->withCount('students')
+                ->get()
+                ->filter(function($course) {
+                    return $course->students_count >= $course->max_students;
+                })->count();
+            
+            // Subtotales de cursos por status
+            $stats['courses_by_status'] = [];
+            $courseStatuses = ['planning', 'draft', 'active', 'completed', 'archived'];
+            foreach ($courseStatuses as $status) {
+                $stats['courses_by_status'][$status] = \App\Models\CampusCourse::where('status', $status)->count();
+            }
+            
+            // Profesores - usar datos existentes de admin
+            $stats['total_teachers'] = $adminData['stats']['teacher_count'] ?? 0;
+            $stats['active_teachers'] = \App\Models\CampusTeacher::whereHas('courses')->count();
+            $stats['pending_teachers'] = \App\Models\CampusTeacher::whereDoesntHave('courses')->count();
+            
+            // Estudiantes - usar datos existentes de admin y añadir subtotales por status
+            $stats['total_students'] = $adminData['stats']['student_count'] ?? 0;
+            $stats['active_registrations'] = $adminData['stats']['active_registrations'] ?? 0;
+            $stats['completed_registrations'] = $adminData['stats']['completed_registrations'] ?? 0;
+            
+            // Subtotales de matrículas por academic_status
+            $stats['registrations_by_status'] = [];
+            $registrationStatuses = ['pending', 'enrolled', 'completed', 'cancelled', 'dropped'];
+            foreach ($registrationStatuses as $status) {
+                $stats['registrations_by_status'][$status] = \App\Models\CampusCourseStudent::where('academic_status', $status)->count();
+            }
+            
+            // Temporadas - usar datos existentes de admin
+            $stats['total_seasons'] = $adminData['stats']['total_seasons'] ?? 0;
+            $stats['current_season'] = \App\Models\CampusSeason::where('slug', config('campus.current_season', 'curs-2025-26'))->count();
+            $stats['past_seasons'] = \App\Models\CampusSeason::where('slug', '!=', config('campus.current_season', 'curs-2025-26'))->count();
+            
+            // Eventos - usar datos existentes de admin
+            $stats['total_events'] = $adminData['stats']['total_events'] ?? 0;
+            $stats['upcoming_events'] = 0; // Por ahora, no hay datos de fechas
+            $stats['past_events'] = 0; // Por ahora, no hay datos de fechas
+            
+            // Feedback - usar datos existentes de admin
+            $stats['total_feedback'] = $adminData['stats']['total_feedback'] ?? 0;
+            $stats['pending_feedback'] = $adminData['stats']['pending_feedback'] ?? 0;
+            $stats['resolved_feedback'] = $adminData['stats']['responded_feedback'] ?? 0;
+        }
+
         // 🧠 WIDGETS según configuración de la base de datos
         if ($activeRole) {
             $widgetNames = \App\Models\DashboardWidgetPermission::getWidgetsForRole($activeRole);
             
             // Mapeo de nombres de widgets a rutas de componentes
             $widgetMap = [
-                'recent_registrations' => 'components.dashboard.widgets.recent_registrations',
                 'courses_status' => 'components.dashboard.widgets.courses_status',
-                'pending_registrations' => 'components.dashboard.widgets.pending_registrations',
                 'support_tickets' => 'components.dashboard.widgets.support_tickets',
                 'alerts' => 'components.dashboard.widgets.alerts',
             ];
             
+            // 🚨 PRIORIZAR ALERTAS: Siempre primero si está habilitado
+            $prioritizedWidgets = [];
+            if (in_array('alerts', $widgetNames)) {
+                $prioritizedWidgets[] = 'components.dashboard.widgets.alerts';
+                // Eliminar alerts del array original para no duplicar
+                $widgetNames = array_diff($widgetNames, ['alerts']);
+            }
+            
+            // Añadir el resto de widgets
             foreach ($widgetNames as $widgetName) {
                 if (isset($widgetMap[$widgetName])) {
-                    $widgets[] = $widgetMap[$widgetName];
+                    $prioritizedWidgets[] = $widgetMap[$widgetName];
                 }
             }
+            
+            $widgets = $prioritizedWidgets;
         } else {
             // Fallback: comportamiento original si no hay rol activo
+            // 🚨 PRIORIZAR ALERTAS siempre primero
+            $widgets[] = 'components.dashboard.widgets.alerts';
+            
             if ($user->can('campus.courses.view')) {
                 $widgets[] = 'components.dashboard.widgets.courses_status';
-            }
-            if ($user->can('campus.registrations.view')) {
-                $widgets[] = 'components.dashboard.widgets.recent_registrations';
-            }
-            if ($user->can('campus.registrations.manage')) {
-                $widgets[] = 'components.dashboard.widgets.pending_registrations';
             }
             if ($user->can('campus.support.view')) {
                 $widgets[] = 'components.dashboard.widgets.support_tickets';
