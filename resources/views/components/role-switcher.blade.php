@@ -34,9 +34,8 @@
                    class="flex items-center px-4 py-3 text-sm hover:bg-gray-50 transition-colors">
                     <div class="flex-1">
                         <div class="font-medium text-gray-900">{{ ucfirst($role->name) }}</div>
-                        <div class="text-xs text-gray-500">{{ $role->permissions->where('name', 'like', 'campus.%')->count() }} permisos campus</div>
                     </div>
-                    @if(request()->get('active_role') == $role->name)
+                    @if(session('active_role') == $role->name)
                         <i class="bi bi-check-circle text-green-600"></i>
                     @endif
                 </a>

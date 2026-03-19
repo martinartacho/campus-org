@@ -3,7 +3,7 @@
 <div class="bg-white p-6 rounded-lg shadow-md mb-6">
     <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
         <i class="bi bi-clock-history me-2 text-green-600"></i>
-        Matriculacions Recents
+        Matriculacions Recents (widgets/recent_registrations linia 6)
     </h2>
 
     @php

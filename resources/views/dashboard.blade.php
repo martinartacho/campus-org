@@ -15,7 +15,7 @@
     <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
         <div class="flex items-center justify-between">
             <div>
-                <h3 class="text-sm font-medium text-blue-900">Rol Activo: {{ ucfirst(session('active_role', auth()->user()->roles->first()->name)) }}</h3>
+                <h3 class="text-sm font-medium text-blue-900">Rol Activo: {{ ucfirst(session('active_role', auth()->user()->roles->first()->name)) }} ( path: resource/views/dashboard.blade.php )</h3>
                 <p class="text-xs text-blue-700">Tienes {{ auth()->user()->roles->count() }} roles disponibles</p>
             </div>
             <div class="flex space-x-2">
@@ -29,6 +29,7 @@
         </div>
     </div>
     @endif
+    
     
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -44,9 +45,9 @@
                 <x-dashboard.admin :stats="$stats ?? []" />
 
             {{-- 2. Dashboard Manager --}}
-            @elseif(($activeRole && in_array($activeRole, ['manager', 'coordinacio', 'gestio', 'comunicacio', 'secretaria']) && $user->hasRole($activeRole)) || (!$activeRole && $user->hasAnyRole(['manager', 'coordinacio', 'gestio', 'comunicacio', 'secretaria'])))
+            @elseif(($activeRole && in_array($activeRole, ['director', 'manager', 'coordinacio', 'gestio', 'comunicacio', 'secretaria', 'editor']) && $user->hasRole($activeRole)) || (!$activeRole && $user->hasAnyRole(['director', 'manager', 'coordinacio', 'gestio', 'comunicacio', 'secretaria', 'editor'])))
                 <!-- <x-dashboard.manager :stats="$stats ?? []" /> -->
-                <x-dashboard.admin-cards :stats="$stats ?? []" />
+                <x-dashboard.admin-cards :stats="$stats ?? []" :active-role="$activeRole" />
                 @foreach($widgets ?? [] as $widget)
                     @include($widget)
                 @endforeach

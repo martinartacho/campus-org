@@ -3,7 +3,7 @@
 <div class="bg-white p-6 rounded-lg shadow-md mb-6">
     <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
         <i class="bi bi-book me-2 text-blue-600"></i>
-        Estat dels Cursos
+        Estat dels Cursos (widgets/courses_status linia 6)
     </h2>
 
     @php

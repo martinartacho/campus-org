@@ -3,7 +3,7 @@
 <div class="bg-white p-6 rounded-lg shadow-md mb-6">
     <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
         <i class="bi bi-hourglass-split me-2 text-orange-600"></i>
-        Matriculacions Pendents
+        Matriculacions Pendents (widgets/pending_registrations linia 6)
     </h2>
 
     @php

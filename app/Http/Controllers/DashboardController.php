@@ -29,7 +29,8 @@ class DashboardController extends Controller
                 $data = app(\App\Services\Dashboard\AdminDashboardData::class)->build();
                 return view('dashboard', $data);
             } elseif (in_array($activeRole, ['director', 'manager', 'coordinacio', 'gestio', 'comunicacio', 'secretaria', 'editor'])) {
-                $data = app(\App\Services\Dashboard\ManagerDashboardData::class)->build($user);
+                // Manager Group: Widgets específicos por sub-rol
+                $data = app(\App\Services\Dashboard\ManagerDashboardData::class)->build($user, $activeRole);
                 return view('dashboard', $data);
             } elseif ($activeRole === 'treasury') {
                 $data = app(\App\Services\Dashboard\TreasuryDashboardData::class)->build($user);
@@ -51,10 +52,12 @@ class DashboardController extends Controller
             return view('dashboard', $data);
         
         } elseif ($user->hasAnyRole(['director', 'manager', 'coordinacio', 'gestio', 'comunicacio', 'secretaria', 'editor'])) {
-            $data = app(\App\Services\Dashboard\ManagerDashboardData::class)
-                ->build($user);
+            // Manager Group fallback: Widgets específicos por sub-rol
+            $activeRole = $user->roles->whereIn('name', ['director', 'manager', 'coordinacio', 'gestio', 'comunicacio', 'secretaria', 'editor'])->first()->name;
+            $data = app(\App\Services\Dashboard\ManagerDashboardData::class)->build($user, $activeRole);
             \Log::info('DashboardController - Manager data (fallback)', [
                 'user' => $user->email,
+                'active_role' => $activeRole,
                 'data_keys' => array_keys($data),
                 'stats_count' => count($data['stats'] ?? []),
                 'widgets_count' => count($data['widgets'] ?? []),

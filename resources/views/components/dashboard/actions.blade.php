@@ -14,7 +14,7 @@
         ], true) }}
         </pre>
     @endif
-
+ 
     {{-- ========================= --}}
     {{-- 📊 STATS RÀPIDES --}}
     {{-- ========================= --}}
@@ -22,14 +22,14 @@
         <div class="bg-white p-6 rounded-lg shadow-md mb-6">
             <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
                 <i class="bi bi-speedometer2 me-2"></i>
-                {{ __('Visió general') }}
+                {{ __('Visió general ') }} ( {{ count($stats) }} en {{ __('Actions') }})
             </h2>
 
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
 
                 @isset($stats['courses'])
                     <div class="bg-blue-50 p-4 rounded-lg border">
-                        <div class="text-sm text-gray-600">Cursos</div>
+                        <div class="text-sm text-gray-600">Cursos </div>
                         <div class="text-2xl font-bold text-blue-700">
                             {{ $stats['courses'] }}
                         </div>

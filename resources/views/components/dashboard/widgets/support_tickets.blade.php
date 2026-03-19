@@ -3,7 +3,7 @@
 <div class="bg-white p-6 rounded-lg shadow-md mb-6">
     <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
         <i class="bi bi-headset me-2 text-purple-600"></i>
-        Tiquets de Suport
+        Tiquets de Suport (widgets/support_tickets linia 6)
     </h2>
 
     @php
