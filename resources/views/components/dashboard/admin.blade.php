@@ -3,7 +3,56 @@
 <div class="space-y-6">
     
     {{-- SECCIÓ 1: CARDS D'ACCÉS RÀPID --}}
-    @include('components.dashboard-admin-cards')
+    {{-- Dashboard específico según rol --}}
+    @if(auth()->user()->hasRole('super-admin'))
+        @include('components.superadmin-dashboard-cards')
+    @else
+        {{-- Dashboard para admin normal (más simplificado) --}}
+        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                <i class="bi bi-speedometer2 me-2"></i>
+                {{ __('Visió general - Admin') }}
+            </h2>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                @isset($stats['total_users'])
+                    <div class="bg-blue-50 p-4 rounded-lg border">
+                        <div class="text-sm text-gray-600">Usuaris</div>
+                        <div class="text-2xl font-bold text-blue-700">
+                            {{ $stats['total_users'] }}
+                        </div>
+                    </div>
+                @endisset
+
+                @isset($stats['total_courses'])
+                    <div class="bg-green-50 p-4 rounded-lg border">
+                        <div class="text-sm text-gray-600">Cursos</div>
+                        <div class="text-2xl font-bold text-green-700">
+                            {{ $stats['total_courses'] }}
+                        </div>
+                    </div>
+                @endisset
+
+                @isset($stats['total_registrations'])
+                    <div class="bg-purple-50 p-4 rounded-lg border">
+                        <div class="text-sm text-gray-600">Matriculacions</div>
+                        <div class="text-2xl font-bold text-purple-700">
+                            {{ $stats['total_registrations'] }}
+                        </div>
+                    </div>
+                @endisset
+
+                @isset($stats['total_feedback'])
+                    <div class="bg-amber-50 p-4 rounded-lg border">
+                        <div class="text-sm text-gray-600">Feedback</div>
+                        <div class="text-2xl font-bold text-amber-700">
+                            {{ $stats['total_feedback'] }}
+                        </div>
+                    </div>
+                @endisset
+            </div>
+        </div>
+    @endif
     
     {{-- SECCIÓ 2: ESTADÍSTIQUES DEL SISTEMA (CON ENLACES) --}}
     @if(!empty($stats))

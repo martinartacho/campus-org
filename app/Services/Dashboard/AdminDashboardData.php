@@ -44,8 +44,6 @@ class AdminDashboardData
 
                     'total_seasons' => CampusSeason::count(),
                     'current_season' => $season?->name ?? 'No configurada',
-                    //'current_season' => optional(CampusSeason::current()->first())->name,
-                    'current_season' => $currentSeason?->name,
                     
 
                     'total_events' => Event::count(),
@@ -53,6 +51,12 @@ class AdminDashboardData
                     'total_feedback' => Feedback::count(),
                     'pending_feedback' => Feedback::where('status', 'pending')->count(),
                     'responded_feedback' => Feedback::where('status', 'responded')->count(),
+                    
+                    // Subtotales de cursos por status
+                    'courses_by_status' => $this->getCoursesByStatus(),
+                    
+                    // Subtotales de matrículas por academic_status
+                    'registrations_by_status' => $this->getRegistrationsByStatus(),
                 ],
             ];
 
@@ -64,6 +68,36 @@ class AdminDashboardData
                 'stats' => [],
             ];
         }
+    }
+
+    /**
+     * Obtener subtotales de cursos por status
+     */
+    public function getCoursesByStatus(): array
+    {
+        $statuses = ['planning', 'draft', 'active', 'completed', 'archived'];
+        $byStatus = [];
+        
+        foreach ($statuses as $status) {
+            $byStatus[$status] = CampusCourse::where('status', $status)->count();
+        }
+        
+        return $byStatus;
+    }
+
+    /**
+     * Obtener subtotales de matrículas por academic_status
+     */
+    public function getRegistrationsByStatus(): array
+    {
+        $statuses = ['pending', 'enrolled', 'completed', 'cancelled', 'dropped'];
+        $byStatus = [];
+        
+        foreach ($statuses as $status) {
+            $byStatus[$status] = \App\Models\CampusCourseStudent::where('academic_status', $status)->count();
+        }
+        
+        return $byStatus;
     }
 
     public function raw(): array

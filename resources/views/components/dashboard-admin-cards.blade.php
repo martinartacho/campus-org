@@ -73,6 +73,22 @@
                 </a>
                 @endcan
                 
+                {{-- Gestión de Widgets del Dashboard --}}
+                @can('dashboard.widgets.manage')
+                <a href="{{ route('admin.dashboard-widgets.index') }}" 
+                   class="bg-gray-50 hover:bg-gray-100 p-4 rounded-lg border border-gray-200 transition duration-150">
+                    <div class="flex items-center">
+                        <div class="p-2 bg-green-100 rounded-lg me-3">
+                            <i class="bi bi-layout-grid text-green-600 text-lg"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-800">Widgets Dashboard</h3>
+                            <p class="text-sm text-gray-600">Gestió de widgets del dashboard</p>
+                        </div>
+                    </div>
+                </a>
+                @endcan
+                
                 {{-- Gestión de Feedback --}}
                 @can('users.view')
                 <a href="{{ route('admin.feedback.index') }}" 

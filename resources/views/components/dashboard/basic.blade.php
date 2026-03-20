@@ -1,12 +1,20 @@
 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
     <div class="p-6 bg-white border-b border-gray-200">
         <h3 class="text-lg font-medium text-gray-900">
-            basic <i class="bi bi-person"></i> {{ __('site.welcome') }}
+            basic <i class="bi bi-person"></i> {{ __('site.welcome') }} (path resources/views/components/dashboard/basic.blade.php)
         </h3>
         
         <div class="py-12">
-           
-                {{-- Estadísticas generales --}}
+            
+    @if(config('app.debug'))
+        <pre class="bg-gray-100 p-3 text-xs rounded border">{{ var_export([
+            'error' => $error,
+            'debug' => $debug,
+            'stats' => $stats,
+        ], true) }}
+        </pre>
+    @endif
+                {{-- Estadísticas generales --}} 
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
                     <div class="p-6 text-gray-900">
                         {{ __("Benvingut/da, ") }} <strong>{{ Auth::user()->name }}</strong>!

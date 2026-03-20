@@ -73,9 +73,10 @@
                 <i class="bi bi-question-lg text-xl"></i>
             </a>
 
-
+           <!--  // @  include ('debug.footer') -->
             <!-- Footer con botón de soporte flotante -->
             @include('components.footer')
+
         </div>
 
         <!-- SweetAlert2 JS -->
