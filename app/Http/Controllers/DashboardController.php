@@ -26,7 +26,15 @@ class DashboardController extends Controller
             \Log::info('DashboardController - Using active role', ['user' => $user->email, 'active_role' => $activeRole]);
             
             if ($activeRole === 'admin' || $activeRole === 'super-admin') {
-                $data = app(\App\Services\Dashboard\AdminDashboardData::class)->build();
+                // Admin y Super-Admin ahora usan widgets
+                $adminData = app(\App\Services\Dashboard\AdminDashboardData::class)->build();
+                $managerData = app(\App\Services\Dashboard\ManagerDashboardData::class)->build($user, $activeRole);
+                
+                // Combinar datos: stats de admin + widgets de manager
+                $data = array_merge($adminData, [
+                    'widgets' => $managerData['widgets'] ?? []
+                ]);
+                
                 return view('dashboard', $data);
             } elseif (in_array($activeRole, ['director', 'manager', 'coordinacio', 'gestio', 'comunicacio', 'secretaria', 'editor'])) {
                 // Manager Group: Widgets específicos por sub-rol

@@ -79,14 +79,16 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/switch/{role}', [DashboardController::class, 'switchRole'])
         ->name('dashboard.switch.role');
 
-    // Admin Dashboard Widgets
-    Route::middleware(['role:admin|super-admin'])->prefix('admin')->name('admin.')->group(function () {
-        Route::get('/dashboard-widgets', [App\Http\Controllers\Admin\DashboardWidgetController::class, 'index'])
-            ->name('dashboard-widgets.index');
-        Route::put('/dashboard-widgets', [App\Http\Controllers\Admin\DashboardWidgetController::class, 'update'])
-            ->name('dashboard-widgets.update');
-        Route::get('/dashboard-widgets/{role}/widgets', [App\Http\Controllers\Admin\DashboardWidgetController::class, 'getRoleWidgets'])
-            ->name('dashboard-widgets.get-role-widgets');
+    // Admin Dashboard Widgets - Solo para super-admin, admin, manager
+    Route::middleware(['role:super-admin|admin|manager'])->prefix('admin')->name('admin.')->group(function () {
+        Route::prefix('dashboard_widgets')->name('dashboard_widgets.')->group(function () {
+            Route::get('/', [App\Http\Controllers\Admin\DashboardWidgetController::class, 'index'])
+                ->name('index');
+            Route::put('/widgets', [App\Http\Controllers\Admin\DashboardWidgetController::class, 'updateWidgets'])
+                ->name('update_widgets');
+            Route::put('/quick-actions', [App\Http\Controllers\Admin\DashboardWidgetController::class, 'updateQuickActions'])
+                ->name('update_quick_actions');
+        });
     });
 
     Route::prefix('admin')->name('admin.')->group(function () {

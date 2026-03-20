@@ -39,34 +39,22 @@ class ManagerDashboardData
             $stats['registrations'] = $adminData['total_registrations'];
         }
 
-        // 📊 ESTADÍSTIQUES DEL SISTEMA para coordinacio
-        if ($activeRole === 'coordinacio') {
-            // Usuarios - usar datos existentes de admin
+        // 📊 ESTADÍSTIQUES DEL SISTEMA para todos los roles manager
+        if (in_array($activeRole, ['director', 'manager', 'coordinacio', 'gestio', 'comunicacio', 'secretaria', 'editor', 'admin', 'super-admin'])) {
+            // Usuarios - usar datos completos de admin
             $stats['total_users'] = $adminData['stats']['total_users'] ?? 0;
-            $stats['active_users'] = \App\Models\User::where('email_verified_at', '!=', null)->count();
-            $stats['new_users'] = \App\Models\User::where('created_at', '>=', now()->subDays(30))->count();
+            $stats['active_users'] = $adminData['stats']['active_users'] ?? \App\Models\User::where('email_verified_at', '!=', null)->count();
+            $stats['new_users'] = $adminData['stats']['new_users'] ?? \App\Models\User::where('created_at', '>=', now()->subDays(30))->count();
             
-            // Cursos - usar datos existentes de admin y añadir subtotales por status
+            // Cursos - usar datos completos de admin
             $stats['total_courses'] = $adminData['stats']['total_courses'] ?? 0;
-            $stats['active_courses'] = \App\Models\CampusCourse::where('is_active', true)->count();
-            $stats['full_courses'] = \App\Models\CampusCourse::where('max_students', '>', 0)
-                ->withCount('students')
-                ->get()
-                ->filter(function($course) {
-                    return $course->students_count >= $course->max_students;
-                })->count();
+            $stats['active_courses'] = $adminData['stats']['active_courses'] ?? \App\Models\CampusCourse::where('is_active', true)->count();
+            $stats['full_courses'] = $adminData['stats']['full_courses'] ?? 0;
             
-            // Subtotales de cursos por status
-            $stats['courses_by_status'] = [];
-            $courseStatuses = ['planning', 'draft', 'active', 'completed', 'archived'];
-            foreach ($courseStatuses as $status) {
-                $stats['courses_by_status'][$status] = \App\Models\CampusCourse::where('status', $status)->count();
-            }
-            
-            // Profesores - usar datos existentes de admin
+            // Profesores - usar datos completos de admin
             $stats['total_teachers'] = $adminData['stats']['teacher_count'] ?? 0;
-            $stats['active_teachers'] = \App\Models\CampusTeacher::whereHas('courses')->count();
-            $stats['pending_teachers'] = \App\Models\CampusTeacher::whereDoesntHave('courses')->count();
+            $stats['active_teachers'] = $adminData['stats']['active_teachers'] ?? \App\Models\CampusTeacher::whereHas('courses')->count();
+            $stats['pending_teachers'] = $adminData['stats']['pending_teachers'] ?? \App\Models\CampusTeacher::whereDoesntHave('courses')->count();
             
             // Estudiantes - usar datos existentes de admin y añadir subtotales por status
             $stats['total_students'] = $adminData['stats']['student_count'] ?? 0;
@@ -80,17 +68,17 @@ class ManagerDashboardData
                 $stats['registrations_by_status'][$status] = \App\Models\CampusCourseStudent::where('academic_status', $status)->count();
             }
             
-            // Temporadas - usar datos existentes de admin
+            // Temporadas - usar datos completos de admin
             $stats['total_seasons'] = $adminData['stats']['total_seasons'] ?? 0;
-            $stats['current_season'] = \App\Models\CampusSeason::where('slug', config('campus.current_season', 'curs-2025-26'))->count();
-            $stats['past_seasons'] = \App\Models\CampusSeason::where('slug', '!=', config('campus.current_season', 'curs-2025-26'))->count();
+            $stats['current_season'] = $adminData['stats']['current_season'] ?? \App\Models\CampusSeason::where('slug', config('campus.current_season', 'curs-2025-26'))->count();
+            $stats['past_seasons'] = $adminData['stats']['past_seasons'] ?? \App\Models\CampusSeason::where('slug', '!=', config('campus.current_season', 'curs-2025-26'))->count();
             
-            // Eventos - usar datos existentes de admin
+            // Eventos - usar datos completos de admin
             $stats['total_events'] = $adminData['stats']['total_events'] ?? 0;
-            $stats['upcoming_events'] = 0; // Por ahora, no hay datos de fechas
-            $stats['past_events'] = 0; // Por ahora, no hay datos de fechas
+            $stats['upcoming_events'] = $adminData['stats']['upcoming_events'] ?? 0;
+            $stats['past_events'] = $adminData['stats']['past_events'] ?? 0;
             
-            // Feedback - usar datos existentes de admin
+            // Feedback - usar datos completos de admin
             $stats['total_feedback'] = $adminData['stats']['total_feedback'] ?? 0;
             $stats['pending_feedback'] = $adminData['stats']['pending_feedback'] ?? 0;
             $stats['resolved_feedback'] = $adminData['stats']['responded_feedback'] ?? 0;
@@ -102,20 +90,18 @@ class ManagerDashboardData
             
             // Mapeo de nombres de widgets a rutas de componentes
             $widgetMap = [
-                'courses_status' => 'components.dashboard.widgets.courses_status',
-                'support_tickets' => 'components.dashboard.widgets.support_tickets',
-                'alerts' => 'components.dashboard.widgets.alerts',
+                'system_stats_users' => 'components.dashboard.widgets.system_stats_users',
+                'system_stats_courses' => 'components.dashboard.widgets.system_stats_courses',
+                'system_stats_registrations' => 'components.dashboard.widgets.system_stats_registrations',
+                'system_stats_categories' => 'components.dashboard.widgets.system_stats_categories',
+                'system_stats_seasons' => 'components.dashboard.widgets.system_stats_seasons',
+                'system_stats_events' => 'components.dashboard.widgets.system_stats_events',
             ];
             
-            // 🚨 PRIORIZAR ALERTAS: Siempre primero si está habilitado
+            // 🎯 PRIORIZAR WIDGETS DE ESTADÍSTICAS
             $prioritizedWidgets = [];
-            if (in_array('alerts', $widgetNames)) {
-                $prioritizedWidgets[] = 'components.dashboard.widgets.alerts';
-                // Eliminar alerts del array original para no duplicar
-                $widgetNames = array_diff($widgetNames, ['alerts']);
-            }
             
-            // Añadir el resto de widgets
+            // Añadir widgets de estadísticas del sistema
             foreach ($widgetNames as $widgetName) {
                 if (isset($widgetMap[$widgetName])) {
                     $prioritizedWidgets[] = $widgetMap[$widgetName];
@@ -124,19 +110,15 @@ class ManagerDashboardData
             
             $widgets = $prioritizedWidgets;
         } else {
-            // Fallback: comportamiento original si no hay rol activo
-            // 🚨 PRIORIZAR ALERTAS siempre primero
-            $widgets[] = 'components.dashboard.widgets.alerts';
-            
-            if ($user->can('campus.courses.view')) {
-                $widgets[] = 'components.dashboard.widgets.courses_status';
-            }
-            if ($user->can('campus.support.view')) {
-                $widgets[] = 'components.dashboard.widgets.support_tickets';
-            }
-            if ($user->can('campus.courses.manage')) {
-                $widgets[] = 'components.dashboard.widgets.alerts';
-            }
+            // Fallback: widgets de estadísticas por defecto
+            $widgets = [
+                'components.dashboard.widgets.system_stats_users',
+                'components.dashboard.widgets.system_stats_courses',
+                'components.dashboard.widgets.system_stats_registrations',
+                'components.dashboard.widgets.system_stats_categories',
+                'components.dashboard.widgets.system_stats_seasons',
+                'components.dashboard.widgets.system_stats_events',
+            ];
         }
 
         // DEBUG: Ver qué estamos devolviendo
