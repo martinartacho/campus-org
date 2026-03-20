@@ -9,7 +9,7 @@ class DashboardWidgetPermissionSeeder extends Seeder
 {
     public function run(): void
     {
-        // Widgets disponibles (nuevos system_stats)
+        // Widgets disponibles (nuevos system_stats + secretaria)
         $availableWidgets = [
             'system_stats_users' => 'Estadísticas de Usuarios',
             'system_stats_courses' => 'Estadísticas de Cursos',
@@ -17,6 +17,9 @@ class DashboardWidgetPermissionSeeder extends Seeder
             'system_stats_categories' => 'Estadísticas de Categorías',
             'system_stats_seasons' => 'Estadísticas de Temporadas',
             'system_stats_events' => 'Estadísticas de Eventos',
+            'secretaria_documents' => 'Documentos de Secretaría',
+            'secretaria_registrations' => 'Matriculaciones de Secretaría',
+            'secretaria_certificates' => 'Certificados de Secretaría',
         ];
 
         // Roles Manager Group
@@ -29,7 +32,7 @@ class DashboardWidgetPermissionSeeder extends Seeder
             'coordinacio' => ['system_stats_users', 'system_stats_courses', 'system_stats_registrations', 'system_stats_categories', 'system_stats_seasons', 'system_stats_events'],
             'gestio' => ['system_stats_users', 'system_stats_courses', 'system_stats_registrations'],
             'comunicacio' => ['system_stats_users', 'system_stats_events'],
-            'secretaria' => ['system_stats_users', 'system_stats_registrations'],
+            'secretaria' => ['secretaria_documents', 'secretaria_registrations', 'system_stats_users', 'system_stats_registrations'],
             'editor' => ['system_stats_courses', 'system_stats_categories'],
         ];
 

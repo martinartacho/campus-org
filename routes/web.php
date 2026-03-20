@@ -208,6 +208,44 @@ Route::get(
 Route::get('teacher-access/success/{token}', [TeacherAccessController::class, 'success'])
     ->name('teacher.access.success');
 
+// Campus Document Management Routes (con prefix /campus/)
+Route::middleware(['auth'])->prefix('campus')->name('campus.')->group(function () {
+    // Document routes
+    Route::prefix('documents')->name('documents.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\DocumentController::class, 'index'])->name('index');
+        Route::get('/create', [\App\Http\Controllers\DocumentController::class, 'create'])->name('create');
+        Route::post('/', [\App\Http\Controllers\DocumentController::class, 'store'])->name('store');
+        Route::get('/{document}', [\App\Http\Controllers\DocumentController::class, 'show'])->name('show');
+        Route::get('/{document}/edit', [\App\Http\Controllers\DocumentController::class, 'edit'])->name('edit');
+        Route::put('/{document}', [\App\Http\Controllers\DocumentController::class, 'update'])->name('update');
+        Route::delete('/{document}', [\App\Http\Controllers\DocumentController::class, 'destroy'])->name('destroy');
+        Route::get('/{document}/download', [\App\Http\Controllers\DocumentController::class, 'download'])->name('download');
+        
+        // Category routes (solo admin/secretaria)
+        Route::middleware(['role:admin,super-admin,secretaria'])->group(function () {
+            Route::prefix('categories')->name('categories.')->group(function () {
+                Route::get('/', [\App\Http\Controllers\DocumentCategoryController::class, 'index'])->name('index');
+                Route::get('/create', [\App\Http\Controllers\DocumentCategoryController::class, 'create'])->name('create');
+                Route::post('/', [\App\Http\Controllers\DocumentCategoryController::class, 'store'])->name('store');
+                Route::get('/{category}', [\App\Http\Controllers\DocumentCategoryController::class, 'show'])->name('show');
+                Route::get('/{category}/edit', [\App\Http\Controllers\DocumentCategoryController::class, 'edit'])->name('edit');
+                Route::put('/{category}', [\App\Http\Controllers\DocumentCategoryController::class, 'update'])->name('update');
+                Route::delete('/{category}', [\App\Http\Controllers\DocumentCategoryController::class, 'destroy'])->name('destroy');
+                Route::put('/{category}/toggle', [\App\Http\Controllers\DocumentCategoryController::class, 'toggle'])->name('toggle');
+            });
+        });
+        
+        // API routes
+        Route::get('/categories/{category}/documents', [\App\Http\Controllers\DocumentController::class, 'getCategoryDocuments'])->name('documents.category.documents');
+    });
+    
+    // Secretaria-specific routes (acceso restringido)
+    Route::prefix('secretaria')->name('secretaria.')->middleware(['role:secretaria,admin,super-admin'])->group(function () {
+        Route::get('/documents', [\App\Http\Controllers\DocumentController::class, 'index'])->name('documents.index');
+        Route::get('/documents/create', [\App\Http\Controllers\DocumentController::class, 'create'])->name('documents.create');
+    });
+});
+
 // ENVIAR MAIL (Treasury)    
 Route::middleware(['auth', 'permission:campus.consents.request'])
     ->prefix('campus/treasury')

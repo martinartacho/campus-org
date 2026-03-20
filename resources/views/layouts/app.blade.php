@@ -65,7 +65,7 @@
 
             <!-- Page Content -->
             <main>
-                {{ $slot }}
+                @yield('content')
             </main>
 
             <!-- Botó d'ajuda flotant minimalista -->
