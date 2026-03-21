@@ -28,8 +28,7 @@ class DocumentCategoryController extends Controller
      */
     public function create()
     {
-        $categories = DocumentCategory::whereNull('parent_id')
-            ->active()
+        $categories = DocumentCategory::active()
             ->orderBy('sort_order')
             ->pluck('name', 'id');
 
@@ -64,7 +63,7 @@ class DocumentCategoryController extends Controller
         DocumentCategory::create($validated);
 
         return redirect()
-            ->route('documents.categories.index')
+            ->route('campus.documents.categories.index')
             ->with('success', 'Categoría creada correctamente');
     }
 
@@ -85,8 +84,7 @@ class DocumentCategoryController extends Controller
      */
     public function edit(DocumentCategory $category)
     {
-        $categories = DocumentCategory::whereNull('parent_id')
-            ->where('id', '!=', $category->id)
+        $categories = DocumentCategory::where('id', '!=', $category->id)
             ->active()
             ->orderBy('sort_order')
             ->pluck('name', 'id');
@@ -130,7 +128,7 @@ class DocumentCategoryController extends Controller
         $category->update($validated);
 
         return redirect()
-            ->route('documents.categories.show', $category)
+            ->route('campus.documents.categories.show', $category)
             ->with('success', 'Categoría actualizada correctamente');
     }
 
@@ -142,21 +140,21 @@ class DocumentCategoryController extends Controller
         // Check if category has documents
         if ($category->documents()->exists()) {
             return redirect()
-                ->route('documents.categories.index')
+                ->route('campus.documents.categories.index')
                 ->with('error', 'No se puede eliminar una categoría que contiene documentos');
         }
 
         // Check if category has children
         if ($category->children()->exists()) {
             return redirect()
-                ->route('documents.categories.index')
+                ->route('campus.documents.categories.index')
                 ->with('error', 'No se puede eliminar una categoría que tiene subcategorías');
         }
 
         $category->delete();
 
         return redirect()
-            ->route('documents.categories.index')
+            ->route('campus.documents.categories.index')
             ->with('success', 'Categoría eliminada correctamente');
     }
 
@@ -168,7 +166,7 @@ class DocumentCategoryController extends Controller
         $category->update(['is_active' => !$category->is_active]);
 
         return redirect()
-            ->route('documents.categories.index')
+            ->route('campus.documents.categories.index')
             ->with('success', 'Estado de la categoría actualizado correctamente');
     }
 }

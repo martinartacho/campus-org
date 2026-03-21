@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('campus.shared.layout')
 
 @section('title', $document->title)
 
@@ -251,7 +251,7 @@
                         </div>
                     @else
                         <p class="text-sm text-gray-600">
-                            Accessible segons la configuració de la categoria.
+                            Accessible segons la configuració de la categoria: <strong>{{ $document->category->name }}</strong>
                         </p>
                     @endif
                 @endif

@@ -300,7 +300,7 @@ class DocumentController extends Controller
         );
 
         // Return file download
-        return Storage::disk('public')->download($document->file_path, $document->file_name);
+        return Storage::disk('documents')->download($document->file_path, $document->file_name);
     }
 
     /**

@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('campus.shared.layout')
 
 @section('title', 'Documentació del Campus')
 
@@ -84,10 +84,18 @@
     <!-- Categories Tree -->
     @if(!$selectedCategory && !$searchTerm && !$selectedYear)
         <div class="bg-white shadow rounded-lg p-6 mb-8">
-            <h2 class="text-xl font-semibold text-gray-900 mb-4">
-                <i class="bi bi-folder-tree text-blue-600 mr-2"></i>
-                Categories
-            </h2>
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold text-gray-900">
+                    <i class="bi bi-folder-tree text-blue-600 mr-2"></i>
+                    Categories
+                </h2>
+                    @if(auth()->user()->hasAnyRole(['admin', 'super-admin', 'secretaria']))
+                        <a href="{{ route('campus.documents.categories.index') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                            <i class="bi bi-folder-tree mr-2"></i>
+                            Categories
+                        </a>
+                    @endif
+            </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 @foreach($categories as $category)
                     <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors">
@@ -99,9 +107,15 @@
                             <span class="text-sm text-gray-500">{{ $category->documents_count ?? 0 }} docs</span>
                         </div>
                         <p class="text-sm text-gray-600 mb-3">{{ $category->description }}</p>
-                        <a href="{{ route('campus.documents.index', ['category' => $category->id]) }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                            Veure documents →
-                        </a>
+                        <div class="flex justify-between items-center">
+                            <a href="{{ route('campus.documents.index', ['category' => $category->id]) }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                Veure documents →
+                            </a>
+                                <a href="{{ route('campus.documents.categories.edit', $category) }}" class="text-gray-600 hover:text-gray-800 text-sm font-medium">
+                                    <i class="bi bi-pencil-square mr-1"></i>
+                                    Editar
+                                </a>
+                        </div>
                     </div>
                 @endforeach
             </div>
