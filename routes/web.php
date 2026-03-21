@@ -596,6 +596,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 
         Route::resource('registrations', \App\Http\Controllers\Campus\RegistrationController::class)
             ->middleware('can:campus.registrations.view');
+        
+        Route::post('registrations/{registration}/validate', [\App\Http\Controllers\Campus\RegistrationController::class, 'validateRegistration'])
+            ->name('registrations.validate');
 
         // Registration Import/Export - Use different prefix to avoid conflicts
         Route::get('registrations-import', [\App\Http\Controllers\Campus\RegistrationImportController::class, 'showImportForm'])

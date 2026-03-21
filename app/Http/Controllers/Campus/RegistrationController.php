@@ -8,6 +8,7 @@ use App\Models\CampusStudent;
 use App\Models\CampusCourse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\DB;
 
 class RegistrationController extends Controller
 {
@@ -31,7 +32,7 @@ class RegistrationController extends Controller
                 $q->whereHas('student', function ($studentQuery) use ($search) {
                     $studentQuery->where('first_name', 'like', "%{$search}%")
                         ->orWhere('last_name', 'like', "%{$search}%")
-                        ->orWhere('nif', 'like', "%{$search}%");
+                        ->orWhere('dni', 'like', "%{$search}%");
                 })
                 ->orWhereHas('course', function ($courseQuery) use ($search) {
                     $courseQuery->where('title', 'like', "%{$search}%")
@@ -101,6 +102,59 @@ class RegistrationController extends Controller
     public function update(Request $request, string $id)
     {
         //
+    }
+
+    /**
+     * Validate registration and create course student relationship.
+     */
+    public function validateRegistration(string $id)
+    {
+        try {
+            $registration = CampusRegistration::findOrFail($id);
+            
+            // Check if relationship already exists
+            $existing = DB::table('campus_course_student')
+                ->where('student_id', $registration->student_id)
+                ->where('course_id', $registration->course_id)
+                ->first();
+            
+            if (!$existing) {
+                // Create new relationship
+                DB::table('campus_course_student')->insert([
+                    'student_id' => $registration->student_id,
+                    'course_id' => $registration->course_id,
+                    'season_id' => $registration->course->season_id ?? null,
+                    'enrollment_date' => now(),
+                    'academic_status' => 'active',
+                    'start_date' => $registration->course->start_date ?? now(),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+                
+                // Update registration status
+                $registration->update(['status' => 'confirmed']);
+                
+                return redirect()->back()
+                    ->with('success', __('campus.registration_validated_successfully'));
+            } else {
+                // Update existing relationship
+                DB::table('campus_course_student')
+                    ->where('id', $existing->id)
+                    ->update([
+                        'academic_status' => 'active',
+                        'updated_at' => now(),
+                    ]);
+                
+                $registration->update(['status' => 'confirmed']);
+                
+                return redirect()->back()
+                    ->with('success', __('campus.registration_updated_successfully'));
+            }
+            
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', __('campus.registration_validation_error') . ': ' . $e->getMessage());
+        }
     }
 
     /**

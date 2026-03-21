@@ -8,10 +8,10 @@
         <h1 class="text-3xl font-bold text-gray-900">{{ __('campus.registration_records') }}</h1>
         <div class="flex gap-4">
             <a href="{{ url('/campus/registrations-import') }}" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-                <i class="fas fa-upload mr-2"></i>{{ __('campus.import_registrations') }}
+                <i class="bi bi-upload mr-2"></i>{{ __('campus.import_registrations') }}
             </a>
             <button onclick="exportRegistrations()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-                <i class="fas fa-download mr-2"></i>{{ __('campus.export_registrations') }}
+                <i class="bi bi-download mr-2"></i>{{ __('campus.export_registrations') }}
             </button>
         </div>
     </div>
@@ -62,7 +62,7 @@
                 <option value="partial" {{ request('payment_status') == 'partial' ? 'selected' : '' }}>{{ __('campus.payment_status_partial') }}</option>
             </select>
             <button type="submit" class="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">
-                <i class="fas fa-search mr-2"></i>{{ __('campus.search') }}
+                <i class="bi bi-search mr-2"></i>{{ __('campus.search') }}
             </button>
         </form>
     </div>
@@ -123,13 +123,24 @@
                                 €{{ number_format($registration->amount, 2) }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <form action="{{ url("/campus/registrations/{$registration->id}") }}" method="POST" onsubmit="return confirm('{{ __('campus.delete_registration_confirm') }}')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-900">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </form>
+                                <div class="flex space-x-2">
+                                    @if($registration->status == 'pending' || $registration->status == 'cancelled')
+                                        <form action="{{ route('campus.registrations.validate', $registration->id) }}" method="POST" class="inline">
+                                            @csrf
+                                            <button type="submit" class="text-green-600 hover:text-green-900" title="{{ __('campus.validate_registration') }}">
+                                                <i class="bi bi-check-circle"></i>
+                                            </button>
+                                        </form>
+                                    @endif
+                                    
+                                    <form action="{{ url("/campus/registrations/{$registration->id}") }}" method="POST" onsubmit="return confirm('{{ __('campus.delete_registration_confirm') }}')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-red-600 hover:text-red-900" title="{{ __('campus.delete_registration') }}">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     @empty

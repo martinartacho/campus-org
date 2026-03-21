@@ -376,6 +376,10 @@ return [
     'no_registrations_found' => 'No s\'han trobat registres',
     'showing_from_to' => 'Mostrant :from a :to de :total resultats',
     'delete_registration_confirm' => 'Estàs segur que vols eliminar aquest registre?',
+    'validate_registration' => 'Validar registre',
+    'registration_validated_successfully' => 'Registre validat correctament',
+    'registration_updated_successfully' => 'Registre actualitzat correctament',
+    'registration_validation_error' => 'Error en la validació del registre',
     
     // Registration Statuses
     'registration_status_pending' => 'Pendent',
