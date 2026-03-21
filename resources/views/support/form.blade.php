@@ -59,20 +59,51 @@
                                 </div>
                             </div>
 
-                            @if($user?->department)
+                            <!-- Departament responsable -->
                             <div class="border rounded-lg p-6 mb-6 bg-gray-50">
-                                <!-- Departament -->
                                 <div>
-                                    <label class="block font-medium">Departament</label>
-                                    <input type="text" 
-                                        name="department"
-                                        value="{{ $user->department->name ?? old('department') }}"
-                                        class="border p-2 w-full rounded-lg bg-gray-100"
-                                        readonly>
-                                    <small class="text-gray-600 text-sm">Departament detectat automàticament</small>
+                                    <label class="block font-medium">Departament responsable *</label>
+                                    <select name="department"
+                                            class="border p-2 w-full rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('department') border-red-500 @enderror"
+                                            required>
+                                        <option value="">Selecciona un departament...</option>
+                                        <option value="admin" {{ old('department') == 'admin' ? 'selected' : '' }}>
+                                            🏢 Administració
+                                        </option>
+                                        <option value="junta" {{ old('department') == 'junta' ? 'selected' : '' }}>
+                                            👥 Junta Directiva
+                                        </option>
+                                        <option value="manager" {{ old('department') == 'manager' ? 'selected' : '' }}>
+                                            👔 Direcció
+                                        </option>
+                                        <option value="coordinacio" {{ old('department') == 'coordinacio' ? 'selected' : '' }}>
+                                            🎯 Coordinació
+                                        </option>
+                                        <option value="gestio" {{ old('department') == 'gestio' ? 'selected' : '' }}>
+                                            📊 Gestió
+                                        </option>
+                                        <option value="comunicacio" {{ old('department') == 'comunicacio' ? 'selected' : '' }}>
+                                            📢 Comunicació
+                                        </option>
+                                        <option value="secretaria" {{ old('department') == 'secretaria' ? 'selected' : '' }}>
+                                            📋 Secretaria
+                                        </option>
+                                        <option value="editor" {{ old('department') == 'editor' ? 'selected' : '' }}>
+                                            ✏️ Edició
+                                        </option>
+                                        <option value="treasury" {{ old('department') == 'treasury' ? 'selected' : '' }}>
+                                            💰 Tresoreria
+                                        </option>
+                                        <option value="general" {{ old('department') == 'general' ? 'selected' : '' }}>
+                                            🌐 General
+                                        </option>
+                                    </select>
+                                    <small class="text-gray-600 text-sm">Selecciona el departament responsable de gestionar aquesta sol·licitud</small>
+                                    @error('department')
+                                        <span class="text-red-600 text-sm">{{ $message }}</span>
+                                    @enderror
                                 </div>
                             </div>
-                            @endif
 
                             {{-- Tipo de solicitud --}}
                             <div class="border rounded-lg p-6 mb-6 bg-gray-50">

@@ -26,6 +26,7 @@ class SupportRequest extends Model
         'resolved_at',
         'resolved_by',
         'resolution_notes',
+        'ticket_number',
     ];
 
     protected $casts = [
@@ -33,6 +34,56 @@ class SupportRequest extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+
+    /**
+     * Boot the model
+     */
+    protected static function booted()
+    {
+        static::creating(function ($supportRequest) {
+            // Generate ticket number if not provided
+            if (empty($supportRequest->ticket_number)) {
+                $supportRequest->ticket_number = static::generateTicketNumber($supportRequest);
+            }
+        });
+    }
+
+    /**
+     * Generate ticket number with department abbreviation
+     */
+    public static function generateTicketNumber($supportRequest)
+    {
+        $departmentAbbreviations = [
+            'admin' => 'ADM',
+            'junta' => 'JNT',
+            'manager' => 'MGR',
+            'coordinacio' => 'COR',
+            'gestio' => 'GST',
+            'comunicacio' => 'COM',
+            'secretaria' => 'SEC',
+            'editor' => 'EDT',
+            'treasury' => 'TRS',
+            'general' => 'GEN',
+        ];
+
+        $department = strtolower($supportRequest->department ?? 'general');
+        $abbr = $departmentAbbreviations[$department] ?? 'GEN';
+        
+        // Get next sequence for today
+        $today = now()->format('Ymd');
+        $lastTicket = static::where('ticket_number', 'like', $abbr . '-' . $today . '-%')
+            ->orderBy('ticket_number', 'desc')
+            ->first();
+        
+        if ($lastTicket) {
+            $lastSequence = explode('-', $lastTicket->ticket_number)[2];
+            $sequence = str_pad((int)$lastSequence + 1, 5, '0', STR_PAD_LEFT);
+        } else {
+            $sequence = '00001';
+        }
+        
+        return "{$abbr}-{$today}-{$sequence}";
+    }
 
     /**
      * Tipos de solicitudes
