@@ -1,6 +1,6 @@
 @extends('campus.shared.layout')
-@section('title', __('Professorat'))
-@section('subtitle', __('campusAccés a la zona de cobrament'))
+@section('title', __('Suport'))
+@section('subtitle', __('Sol·licitud de Servei / Incidència'))
 
 @section('content')
 

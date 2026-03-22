@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 use App\Models\User;
+use App\Models\SupportRequest;
 use App\Observers\UserObserver;
+use App\Observers\SupportRequestObserver;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\App;
@@ -47,6 +49,7 @@ class AppServiceProvider extends ServiceProvider
         return new FcmChannel($app->make(\App\Services\FCMService::class));
     });
 
-        \App\Models\User::observe(\App\Observers\UserObserver::class);  
+        \App\Models\User::observe(\App\Observers\UserObserver::class);
+        \App\Models\SupportRequest::observe(\App\Observers\SupportRequestObserver::class);  
     }
 }

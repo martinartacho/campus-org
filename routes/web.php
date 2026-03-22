@@ -723,6 +723,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
             
         Route::post('/bulk-update', [App\Http\Controllers\Admin\SupportRequestController::class, 'bulkUpdate'])
             ->name('bulk-update');
+            
+        Route::post('/{supportRequest}/notify', [App\Http\Controllers\Admin\SupportRequestController::class, 'sendNotification'])
+            ->name('send-notification');
+            
+        Route::post('/bulk-delete', [App\Http\Controllers\Admin\SupportRequestController::class, 'bulkDelete'])
+            ->name('bulk-delete');
+            
+        Route::post('/bulk-notify', [App\Http\Controllers\Admin\SupportRequestController::class, 'bulkNotify'])
+            ->name('bulk-notify');
     });
 
     // Treasury Routes
