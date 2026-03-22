@@ -144,6 +144,7 @@
             @if($supportRequests->count() > 0)
                 <form method="POST" action="{{ route('admin.support-requests.bulk-update') }}" id="bulkForm">
                     @csrf
+                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
                     <input type="hidden" name="status" id="bulkStatus">
                     
                     <div class="overflow-x-auto">
@@ -153,20 +154,14 @@
                                     <th class="px-6 py-3 text-left">
                                         <input type="checkbox" id="selectAll" class="rounded">
                                     </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style="width: 350px;">
                                         Sol·licitud
                                     </th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Tipus
+                                        Tipus / Urgència
                                     </th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Urgència
-                                    </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Estat
-                                    </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Data
+                                        Estat / Data
                                     </th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Accions
@@ -193,7 +188,7 @@
                                                         </div>
                                                     @endif
                                                 </div>
-                                                <div class="ml-4">
+                                                <div class="ml-4 flex-1 min-w-0">
                                                     <div class="text-sm font-medium text-gray-900">
                                                         {{ $request->name }}
                                                     </div>
@@ -205,52 +200,57 @@
                                                             <i class="bi bi-window mr-1"></i>{{ $request->module }}
                                                         </div>
                                                     @endif
+                                                    <div class="text-sm text-gray-700 mt-1" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4;">
+                                                        {{ $request->description }}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </td>
                                         <td class="px-6 py-4">
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                                {{ $request->type == 'service' ? 'bg-blue-100 text-blue-800' : '' }}
-                                                {{ $request->type == 'incident' ? 'bg-red-100 text-red-800' : '' }}
-                                                {{ $request->type == 'improvement' ? 'bg-green-100 text-green-800' : '' }}
-                                                {{ $request->type == 'consultation' ? 'bg-purple-100 text-purple-800' : '' }}">
-                                                {{ $request->type_label }}
-                                            </span>
+                                            <div class="flex flex-col space-y-1">
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                                    {{ $request->type == 'service' ? 'bg-blue-100 text-blue-800' : '' }}
+                                                    {{ $request->type == 'incident' ? 'bg-red-100 text-red-800' : '' }}
+                                                    {{ $request->type == 'improvement' ? 'bg-green-100 text-green-800' : '' }}
+                                                    {{ $request->type == 'consultation' ? 'bg-purple-100 text-purple-800' : '' }}">
+                                                    {{ $request->type_label }}
+                                                </span>
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                                    {{ $request->urgency == 'low' ? 'bg-green-100 text-green-800' : '' }}
+                                                    {{ $request->urgency == 'medium' ? 'bg-yellow-100 text-yellow-800' : '' }}
+                                                    {{ $request->urgency == 'high' ? 'bg-orange-100 text-orange-800' : '' }}
+                                                    {{ $request->urgency == 'critical' ? 'bg-red-100 text-red-800' : '' }}">
+                                                    {{ $request->urgency_label }}
+                                                </span>
+                                            </div>
                                         </td>
                                         <td class="px-6 py-4">
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                                {{ $request->urgency == 'low' ? 'bg-green-100 text-green-800' : '' }}
-                                                {{ $request->urgency == 'medium' ? 'bg-yellow-100 text-yellow-800' : '' }}
-                                                {{ $request->urgency == 'high' ? 'bg-orange-100 text-orange-800' : '' }}
-                                                {{ $request->urgency == 'critical' ? 'bg-red-100 text-red-800' : '' }}">
-                                                {{ $request->urgency_label }}
-                                            </span>
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                                {{ $request->status == 'pending' ? 'bg-yellow-100 text-yellow-800' : '' }}
-                                                {{ $request->status == 'in_progress' ? 'bg-blue-100 text-blue-800' : '' }}
-                                                {{ $request->status == 'resolved' ? 'bg-green-100 text-green-800' : '' }}
-                                                {{ $request->status == 'closed' ? 'bg-gray-100 text-gray-800' : '' }}">
-                                                {{ $request->status_label }}
-                                            </span>
-                                        </td>
-                                        <td class="px-6 py-4 text-sm text-gray-500">
-                                            {{ $request->created_at->format('d/m/Y H:i') }}
+                                            <div class="flex flex-col space-y-1">
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                                    {{ $request->status == 'pending' ? 'bg-yellow-100 text-yellow-800' : '' }}
+                                                    {{ $request->status == 'in_progress' ? 'bg-blue-100 text-blue-800' : '' }}
+                                                    {{ $request->status == 'resolved' ? 'bg-green-100 text-green-800' : '' }}
+                                                    {{ $request->status == 'closed' ? 'bg-gray-100 text-gray-800' : '' }}">
+                                                    {{ $request->status_label }}
+                                                </span>
+                                                <span class="text-xs text-gray-500">
+                                                    {{ $request->created_at->format('d/m/Y H:i') }}
+                                                </span>
+                                            </div>
                                         </td>
                                         <td class="px-6 py-4 text-sm font-medium">
                                             <div class="flex space-x-2">
                                                 <a href="{{ route('admin.support-requests.show', $request) }}" 
-                                                   class="text-blue-600 hover:text-blue-900">
+                                                   class="text-blue-600 hover:text-blue-900" title="Veure detalls">
                                                     <i class="bi bi-eye"></i>
                                                 </a>
-                                                <form method="POST" 
+                                                                                                <form method="POST" 
                                                       action="{{ route('admin.support-requests.destroy', $request) }}" 
                                                       class="inline"
                                                       onsubmit="return confirm('Estàs segur que vols eliminar aquesta sol·licitud?')">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="text-red-600 hover:text-red-900">
+                                                    <button type="submit" class="text-red-600 hover:text-red-900" title="Eliminar">
                                                         <i class="bi bi-trash"></i>
                                                     </button>
                                                 </form>
@@ -276,11 +276,9 @@
                                     <option value="in_progress">Marcar com a en procés</option>
                                     <option value="resolved">Marcar com a resolt</option>
                                     <option value="closed">Marcar com a tancat</option>
-                                </select>
-                                <button type="submit" 
-                                        class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition-colors">
-                                    Aplicar
-                                </button>
+                                    <option value="notify">Enviar notificació</option>
+                                                                    </select>
+
                             </div>
                         </div>
                     </div>
@@ -332,10 +330,103 @@ document.addEventListener('DOMContentLoaded', function() {
 
     bulkActionSelect.addEventListener('change', function() {
         if (this.value) {
-            document.getElementById('bulkStatus').value = this.value;
-            bulkForm.submit();
+            // Check if there are selected items
+            const checkboxes = document.querySelectorAll('.request-checkbox:checked');
+            
+            if (checkboxes.length === 0) {
+                alert('Si us plau, selecciona almenys una sol·licitud per aplicar aquesta acció.');
+                this.value = ''; // Reset select
+                return;
+            }
+            
+            // Handle different actions
+            if (this.value === 'notify') {
+                // Send notifications to selected requests
+                sendBulkNotifications(checkboxes);
+                this.value = ''; // Reset select
+                return;
+            }
+            
+                        
+            // Handle status changes with AJAX
+            const status = this.value;
+            const requestIds = Array.from(checkboxes).map(checkbox => checkbox.value);
+            
+            // Send AJAX request
+            fetch('/admin/support-requests/bulk-update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken ? csrfToken.getAttribute('content') : '',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    request_ids: requestIds,
+                    status: status,
+                    _token: csrfToken ? csrfToken.getAttribute('content') : ''
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    // Redirect to support requests page
+                    window.location.href = '{{ route("admin.support-requests.index") }}';
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error en actualitzar les sol·licituds');
+            });
         }
     });
 });
+
+
+function sendBulkNotifications(checkboxes) {
+    const count = checkboxes.length;
+    
+    if (!confirm(`Vols enviar una notificació a ${count} sol·licitud(s) seleccionada(s)?`)) {
+        return;
+    }
+    
+    // Collect request IDs
+    const requestIds = Array.from(checkboxes).map(checkbox => checkbox.value);
+    
+    // Get CSRF token
+    const csrfToken = document.querySelector('meta[name="csrf-token"]');
+    
+    // Send AJAX request
+    fetch('/admin/support-requests/bulk-notify', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken ? csrfToken.getAttribute('content') : '',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            request_ids: requestIds,
+            message: 'Actualització de les vostres sol·licituds de suport',
+            _token: csrfToken ? csrfToken.getAttribute('content') : ''
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            // Redirect to support requests page
+            window.location.href = '{{ route("admin.support-requests.index") }}';
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error en enviar les notificacions');
+    });
+}
+
 </script>
 @endpush

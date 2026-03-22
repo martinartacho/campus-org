@@ -144,11 +144,11 @@
                                           class="border p-2 w-full rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                           placeholder="Descriu com s'ha resolt la incidència...">{{ $supportRequest->resolution_notes }}</textarea>
                                 <p class="text-sm text-gray-500 mt-1">
-                                    Obligatori quan l'estat és "Resolt" o "Tancat"
+                                    Obligatori quan l'estat és "Resolt" o "Tancat". També es pot utilitzar per enviar notificacions personalitzades.
                                 </p>
                             </div>
 
-                            <div class="flex justify-end space-x-3">
+                            <div class="flex justify-between items-center">
                                 <a href="{{ route('admin.support-requests.index') }}" 
                                    class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors">
                                     <i class="bi bi-arrow-left mr-2"></i>Tornar
@@ -259,10 +259,15 @@
                     </h3>
                     
                     <div class="space-y-2">
-                        <a href="mailto:{{ $supportRequest->email }}" 
+                        <button onclick="sendCustomNotification({{ $supportRequest->id }})"
+                           class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors inline-flex items-center justify-center">
+                            <i class="bi bi-envelope mr-2"></i>Enviar notificació personalitzada
+                        </button>
+                        
+                        <button onclick="sendNotificationFromShow({{ $supportRequest->id }}, '{{ $supportRequest->status }}')"
                            class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors inline-flex items-center justify-center">
-                            <i class="bi bi-envelope mr-2"></i>Enviar email
-                        </a>
+                            <i class="bi bi-envelope mr-2"></i>Enviar notificació d'estat
+                        </button>
                         
                         @if($supportRequest->url)
                             <a href="{{ $supportRequest->url }}" 
@@ -289,3 +294,91 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+function sendNotificationFromShow(requestId, currentStatus) {
+    if (confirm('Vols enviar una notificació sobre l\'estat actual "' + currentStatus + '" d\'aquesta sol·licitud?')) {
+        // Send AJAX request
+        fetch(`/admin/support-requests/${requestId}/notify`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                status: currentStatus,
+                _token: document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Notificació enviada correctament!');
+                // Reload page to show updated status
+                location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error en enviar la notificació');
+        });
+    }
+}
+
+function sendCustomNotification(requestId) {
+    const customMessage = document.querySelector('textarea[name="resolution_notes"]').value;
+    
+    console.log('Custom message from textarea:', customMessage);
+    console.log('Trimmed message:', customMessage.trim());
+    console.log('Message length:', customMessage.trim().length);
+    
+    if (!customMessage.trim()) {
+        alert('Si us plau, escriu un missatge per enviar la notificació personalitzada.');
+        document.querySelector('textarea[name="resolution_notes"]').focus();
+        return;
+    }
+    
+    if (confirm('Vols enviar una notificació personalitzada amb el text introduït?\n\nMissatge: "' + customMessage.trim() + '"')) {
+        // Send AJAX request
+        const payload = {
+            message: customMessage.trim(),
+            _token: document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        };
+        
+        console.log('Sending payload:', payload);
+        
+        fetch(`/admin/support-requests/${requestId}/notify`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(response => {
+            console.log('Response received:', response);
+            return response.json();
+        })
+        .then(data => {
+            console.log('Response data:', data);
+            if (data.success) {
+                alert('Notificació personalitzada enviada correctament!');
+                // Reload page to show updated status
+                location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error en enviar la notificació personalitzada');
+        });
+    }
+}
+</script>
+@endpush

@@ -72,11 +72,10 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <!-- Summernote Editor CSS -->
-    <!-- Summernote Editor CSS - Temporalment desactivat per proves -->
-    <!-- <link href="{{ asset('vendor/summernote/summernote.min.css') }}" rel="stylesheet"> -->
+    <link href="{{ asset('vendor/summernote/summernote.min.css') }}" rel="stylesheet">
     
-    <!-- Summernote Editor JS - Temporalment desactivat per proves -->
-    <!-- <script src="{{ asset('vendor/summernote/summernote.min.js') }}"></script> -->
+    <!-- Summernote Editor JS -->
+    <script src="{{ asset('vendor/summernote/summernote.min.js') }}"></script>
     
     <!-- Verificació de càrrega -->
     <script>
