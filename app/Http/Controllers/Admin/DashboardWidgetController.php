@@ -21,67 +21,77 @@ class DashboardWidgetController extends Controller
         
         $widgets = [
             'system_stats_users' => [
-                'name' => 'Estadísticas de Usuarios',
-                'description' => 'Muestra estadísticas generales de usuarios del sistema',
+                'name' => 'Estadístiques d\'Usuaris',
+                'description' => 'Mostra estadístiques generals d\'usuaris del sistema',
                 'icon' => 'bi-people-fill'
             ],
             'system_stats_courses' => [
-                'name' => 'Estadísticas de Cursos',
-                'description' => 'Muestra estadísticas de cursos activos e inactivos',
+                'name' => 'Estadístiques de Cursos',
+                'description' => 'Mostra estadístiques de cursos actius i inactius',
                 'icon' => 'bi-book-fill'
             ],
             'system_stats_registrations' => [
-                'name' => 'Estadísticas de Matriculaciones',
-                'description' => 'Muestra estadísticas de matriculaciones por estado',
+                'name' => 'Estadístiques de Matriculacions',
+                'description' => 'Mostra estadístiques de matriculacions per estat',
                 'icon' => 'bi-person-check-fill'
             ],
             'system_stats_categories' => [
-                'name' => 'Estadísticas de Categorías',
-                'description' => 'Muestra estadísticas de categorías de cursos',
+                'name' => 'Estadístiques de Categories',
+                'description' => 'Mostra estadístiques de categories de cursos',
                 'icon' => 'bi-tags-fill'
             ],
             'system_stats_seasons' => [
-                'name' => 'Estadísticas de Temporadas',
-                'description' => 'Muestra estadísticas de temporadas académicas',
+                'name' => 'Estadístiques de Temporades',
+                'description' => 'Mostra estadístiques de temporades acadèmiques',
                 'icon' => 'bi-calendar-fill'
             ],
             'system_stats_events' => [
-                'name' => 'Estadísticas de Eventos',
-                'description' => 'Muestra estadísticas de eventos del campus',
+                'name' => 'Estadístiques d\'Esdeveniments',
+                'description' => 'Mostra estadístiques d\'esdeveniments del campus',
                 'icon' => 'bi-calendar-event-fill'
+            ],
+            'support_stats' => [
+                'name' => __('campus.support_statistics'),
+                'description' => __('campus.support_statistics') . ' - ' . __('campus.support_dashboard_subtitle'),
+                'icon' => 'bi-headset'
             ]
         ];
         
         $quickActions = [
             'add_user' => [
-                'name' => 'Añadir Usuario',
-                'description' => 'Permite crear nuevos usuarios en el sistema',
+                'name' => 'Afegir Usuari',
+                'description' => 'Permet crear nous usuaris en el sistema',
                 'icon' => 'bi-person-plus'
             ],
             'add_course' => [
-                'name' => 'Añadir Curso',
-                'description' => 'Permite crear nuevos cursos',
+                'name' => 'Afegir Curs',
+                'description' => 'Permet crear nous cursos',
                 'icon' => 'bi-plus-circle'
             ],
             'add_season' => [
-                'name' => 'Añadir Temporada',
-                'description' => 'Permite crear nuevas temporadas académicas',
+                'name' => 'Afegir Temporada',
+                'description' => 'Permet crear noves temporades acadèmiques',
                 'icon' => 'bi-calendar-plus'
             ],
             'manage_resources' => [
                 'name' => 'Gestionar Recursos',
-                'description' => 'Permite gestionar recursos del campus',
+                'description' => 'Permet gestionar recursos del campus',
                 'icon' => 'bi-folder'
             ],
             'help_management' => [
-                'name' => 'Gestión de Ayuda',
-                'description' => 'Permite gestionar el sistema de ayuda',
+                'name' => 'Gestió d\'Ajuda',
+                'description' => 'Permet gestionar el sistema d\'ajuda',
                 'icon' => 'bi-question-circle'
             ],
             'help_center' => [
-                'name' => 'Centro de Ayuda',
-                'description' => 'Permite acceder al centro de ayuda',
+                'name' => 'Centre d\'Ajuda',
+                'description' => 'Permet accedir al centre d\'ajuda',
                 'icon' => 'bi-life-preserver'
+            ],
+            'support_management' => [
+                'name' => __('campus.support_management'),
+                'description' => __('campus.support_management') . ' - ' . __('campus.support_dashboard_subtitle'),
+                'icon' => 'bi-headset'
             ]
         ];
         

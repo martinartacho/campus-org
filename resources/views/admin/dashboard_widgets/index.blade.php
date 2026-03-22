@@ -1,8 +1,8 @@
 @extends('campus.shared.layout')
 
-@section('title', 'Configuración de Dashboard')
+@section('title', 'Configuració de Dashboard')
 
-@section('subtitle', 'Gestión de Widgets y Acciones Rápidas por Rol')
+@section('subtitle', 'Gestió de Widgets i Accions Ràpides per Rol')
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
@@ -11,16 +11,16 @@
         <div>
             <h1 class="text-3xl font-bold text-gray-900 mb-2">
                 <i class="bi bi-gear-fill text-blue-600 mr-3"></i>
-                Configuración de Dashboard
+                Configuració de Dashboard
             </h1>
             <p class="text-gray-600">
-                Gestiona los widgets y acciones rápidas disponibles para cada rol
+                Gestiona els widgets i accions ràpides disponibles per a cada rol
             </p>
         </div>
         <div>
             <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
                 <i class="bi bi-shield-check mr-2"></i>
-                Gestión de Permisos
+                Gestió de Permisos
             </span>
         </div>
     </div>
@@ -40,12 +40,12 @@
             <button class="py-2 px-1 border-b-2 border-blue-500 font-medium text-sm text-blue-600" 
                     onclick="showTab('widgets')" id="widgets-tab">
                 <i class="bi bi-grid-3x3-gap mr-2"></i>
-                Widgets por Rol
+                Widgets per Rol
             </button>
             <button class="py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300" 
                     onclick="showTab('quickactions')" id="quickactions-tab">
                 <i class="bi bi-lightning-fill mr-2"></i>
-                Acciones Rápidas
+                Accions Ràpides
             </button>
         </nav>
     </div>
@@ -56,7 +56,7 @@
         <div class="mb-6">
             <h2 class="text-xl font-semibold text-gray-900 mb-4">
                 <i class="bi bi-grid-3x3-gap text-blue-600 mr-2"></i>
-                Configuración de Widgets por Rol
+                Configuració de Widgets per Rol
             </h2>
             
             <div class="overflow-x-auto">
@@ -117,7 +117,7 @@
         <div class="mb-6">
             <h2 class="text-xl font-semibold text-gray-900 mb-4">
                 <i class="bi bi-lightning-fill text-yellow-600 mr-2"></i>
-                Configuración de Acciones Rápidas por Rol
+                Configuració d'Accions Ràpides per Rol
             </h2>
             
             <div class="overflow-x-auto">
@@ -125,7 +125,7 @@
                     <thead class="bg-gray-50">
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style="width: 300px;">
-                                Acción Rápida
+                                Acció Ràpida
                             </th>
                             @foreach($roles as $role)
                                 <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -189,16 +189,16 @@
     <div>
         <button type="button" onclick="submitForm('widgets')" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 mr-4">
             <i class="bi bi-save mr-2"></i>
-            Guardar Configuración de Widgets
+            Guardar Configuració de Widgets
         </button>
         <button type="button" onclick="submitForm('quickactions')" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
             <i class="bi bi-save mr-2"></i>
-            Guardar Configuración de Acciones Rápidas
+            Guardar Configuració d'Accions Ràpides
         </button>
     </div>
     <a href="{{ route('admin.dashboard') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
         <i class="bi bi-arrow-left mr-2"></i>
-        Volver al Dashboard
+        Tornar al Dashboard
     </a>
 </div>
         </div>
