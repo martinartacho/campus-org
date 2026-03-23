@@ -103,8 +103,9 @@
         </div>
 
         {{-- TARGETA DADES BANCÀRIES --}}
+        @if($teacher)
         <div class="bg-gradient-to-r from-green-500 to-green-600 p-4 rounded shadow text-center hover:from-green-600 hover:to-green-700 transition-colors cursor-pointer"
-             onclick="window.location.href='{{ route('profile.edit') }}#banking-data'">
+             onclick="window.location.href='{{ route('teacher.profile') }}#banking-data'">
             <div class="text-2xl font-bold text-white">
                 <i class="bi bi-bank"></i>
             </div>
@@ -112,13 +113,22 @@
                 {{ __('Dades Bancàries') }}
             </div>
             <div class="mt-1">
-                @if(auth()->user()->teacherProfile?->iban)
+                @php
+                    $hasIban = false;
+                    try {
+                        $hasIban = auth()->user()->teacherProfile && !empty(auth()->user()->teacherProfile->iban);
+                    } catch (\Exception $e) {
+                        $hasIban = false;
+                    }
+                @endphp
+                @if($hasIban)
                     <span class="text-xs text-green-100">{{ __('Completes') }}</span>
                 @else
                     <span class="text-xs text-yellow-200">{{ __('Pendents') }}</span>
                 @endif
             </div>
         </div>
+        @endif
     </div>
     
 

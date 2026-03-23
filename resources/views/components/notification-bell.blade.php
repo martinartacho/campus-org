@@ -79,9 +79,15 @@
             });
         });
 
+        // Variable para controlar llamadas simultáneas
+        let isUpdating = false;
+        
         // Actualizar contador
         function updateUnreadCount() {
             @auth
+            if (isUpdating) return; // Evitar llamadas simultáneas
+            isUpdating = true;
+            
             fetch('{{ route("notifications.unread-count") }}')
                 .then(res => res.json())
                 .then(data => {
@@ -102,6 +108,9 @@
                 })
                 .catch(error => {
                     console.log('Error obtenint notificacions:', error);
+                })
+                .finally(() => {
+                    isUpdating = false;
                 });
             @else
             // Si no està autenticat, no fer res

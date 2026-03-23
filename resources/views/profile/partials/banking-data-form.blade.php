@@ -87,11 +87,33 @@
                     <div class="space-y-4">
                         <div>
                             <x-input-label for="iban" :value="__('IBAN') . ' *'" />
-                            <x-text-input id="iban" name="iban" type="text" class="mt-1 block w-full" 
-                                       :value="auth()->user()->teacherProfile?->iban ?? ''"
-                                       placeholder="ES00 0000 0000 0000 0000"
-                                       pattern="^ES\d{2}\s?\d{4}\s?\d{4}\s?\d{2}\s?\d{10}$"
-                                       title="Format: ES00 0000 0000 0000 0000" />
+                            <div class="mt-1 relative">
+                                {{-- Camp IBAN ocult --}}
+                                <x-text-input id="iban" name="iban" type="text" class="mt-1 block w-full pr-20" 
+                                           @try
+                                               :value="auth()->user()->teacherProfile?->masked_iban ?? ''"
+                                           @catch (\Exception $e)
+                                               value=""
+                                           @endtry
+                                           placeholder="ES00 0000 0000 0000 0000"
+                                           pattern="^ES\d{2}\s?\d{4}\s?\d{4}\s?\d{2}\s?\d{10}$"
+                                           title="Format: ES00 0000 0000 0000 0000" />
+                                
+                                {{-- Botó per mostrar/ocultar --}}
+                                <button type="button" 
+                                        onclick="toggleIbanVisibility()"
+                                        class="absolute inset-y-0 right-0 px-3 py-2 bg-gray-100 text-gray-600 hover:bg-gray-200 text-xs font-medium rounded-r-md">
+                                    @php
+                                        $hasIban = false;
+                                        try {
+                                            $hasIban = auth()->user()->teacherProfile && !empty(auth()->user()->teacherProfile->iban);
+                                        } catch (\Exception $e) {
+                                            $hasIban = false;
+                                        }
+                                    @endphp
+                                    <span id="iban-toggle-text">{{ $hasIban ? 'Mostrar' : 'Editar' }}</span>
+                                </button>
+                            </div>
                             <p class="mt-1 text-xs text-gray-500">{{ __('Format: ES00 0000 0000 0000 0000') }}</p>
                             <x-input-error class="mt-2" :messages="$errors->get('iban')" />
                         </div>
@@ -164,13 +186,12 @@
             </div>
 
             <!-- Botons d'acció -->
-            <div class="flex justify-between items-center">
-                <div class="text-sm text-gray-600">
-                    <i class="bi bi-info-circle mr-1"></i>
+            <div class="mt-6 space-y-3">
+                <p class="text-sm text-gray-600">
                     {{ __('Els camps marcats amb * són obligatoris') }}
-                </div>
+                </p>
                 
-                <div class="space-x-4">
+                <div class="flex flex-wrap gap-3">
                     <button type="button" 
                             onclick="window.location.href='{{ route('dashboard') }}'"
                             class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
@@ -179,14 +200,14 @@
                     </button>
                     
                     <button type="submit" 
-                            class="inline-flex items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            class="inline-flex items-center px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                         <i class="bi bi-save mr-2"></i>
                         {{ __('Guardar Dades') }}
                     </button>
                     
                     <button type="button" 
                             onclick="generateBankingPDF()"
-                            class="inline-flex items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                            class="inline-flex items-center px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                         <i class="bi bi-file-pdf mr-2"></i>
                         {{ __('Generar PDF') }}
                     </button>
@@ -209,16 +230,52 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        window.location.reload();
+                        alert('{{ __("PDF generat correctament!") }}');
+                        window.open(data.pdf_url, '_blank');
                     } else {
-                        alert('{{ __("Error generant el PDF") }}: ' + data.message);
+                        alert('{{ __("Error al generar el PDF") }}: ' + data.message);
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('{{ __("Error generant el PDF") }}');
+                    alert('{{ __("Error al generar el PDF") }}');
                 });
             }
         }
+        
+        // Funció per mostrar/ocultar IBAN
+        function toggleIbanVisibility() {
+            const ibanInput = document.getElementById('iban');
+            const toggleText = document.getElementById('iban-toggle-text');
+            const currentValue = ibanInput.value;
+            
+            if (currentValue && currentValue.includes('****')) {
+                // Mostrar IBAN complet
+                ibanInput.value = ibanInput.dataset.originalIban || '';
+                toggleText.textContent = 'Ocultar';
+            } else if (currentValue) {
+                // Ocultar IBAN
+                ibanInput.dataset.originalIban = currentValue;
+                const formatted = formatIbanHidden(currentValue);
+                ibanInput.value = formatted;
+                toggleText.textContent = 'Mostrar';
+            }
+        }
+        
+        function formatIbanHidden(iban) {
+            const clean = iban.replace(/\s/g, '');
+            if (clean.length >= 24) {
+                return clean.substring(0, 4) + ' **** ' + clean.substring(clean.length - 4);
+            }
+            return iban;
+        }
+        
+        // Inicialitzar
+        document.addEventListener('DOMContentLoaded', function() {
+            const ibanInput = document.getElementById('iban');
+            if (ibanInput && ibanInput.value && !ibanInput.value.includes('****')) {
+                toggleIbanVisibility(); // Ocultar per defecte
+            }
+        });
     </script>
 </section>

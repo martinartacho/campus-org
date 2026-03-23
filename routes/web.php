@@ -336,6 +336,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->name('profile.banking-data.update');
         Route::post('/profile/banking-data/pdf', [ProfileController::class, 'generateBankingPDF'])
             ->name('profile.banking-data.pdf');
+        
+        // Ruta para el perfil del profesor
+        Route::get('/teacher/profile', [ProfileController::class, 'teacherEdit'])
+            ->name('teacher.profile');
+        Route::put('/teacher/profile', [ProfileController::class, 'teacherUpdate'])
+            ->name('teacher.profile.update');
+        
+        // Ruta segura para descargar PDFs privados
+        Route::get('/pdfs/download/{path}', [ProfileController::class, 'downloadPDF'])
+            ->name('pdfs.download')
+            ->middleware('signed');
 });
     Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
        Route::get('/feedback', [AdminFeedbackController::class, 'index'])->name('admin.feedback.index');

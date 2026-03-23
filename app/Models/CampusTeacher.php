@@ -105,7 +105,10 @@ class CampusTeacher extends Model
         'hiring_date' => 'date',
         'areas' => 'array',
         'metadata' => 'array',
-        // 🔐 Sin cast especial para IBAN - manejo normal
+        // 🔐 Dades sensibles xifrades (RGPD)
+        'iban' => 'encrypted',
+        'bank_titular' => 'encrypted',
+        'fiscal_id' => 'encrypted',
     ];
 
     /**
@@ -115,41 +118,35 @@ class CampusTeacher extends Model
     {
         $iban = $this->iban;
         
-        // Si está encriptado o serializado, mostrar vacío por seguridad
-        if (is_string($iban) && (str_starts_with($iban, 'eyJ') || str_starts_with($iban, 's:'))) {
-            return '';
-        }
-        
-        // Si el IBAN es null o vacío, devolver vacío
         if (empty($iban)) {
             return '';
         }
         
-        // Formatear IBAN con espacios cada 4 caracteres
-        return $this->formatIban($iban);
-    }
-
-    /**
-     * Get the masked IBAN for security display.
-     */
-    public function getMaskedIbanAttribute(): string
-    {
-        $iban = $this->formatted_iban;
+        // Si está encriptado, Laravel lo desencripta automáticamente
+        // Formatear para mostrar solo primeros y últimos dígitos
+        $clean = str_replace(' ', '', $iban);
         
-        // Si no hay IBAN o está encriptado, mostrar vacío
-        if (empty($iban)) {
-            return 'No disponible';
-        }
-        
-        // Mostrar primeros 4 caracteres y últimos 4, con asteriscos en medio
-        if (strlen($iban) > 8) {
-            $start = substr($iban, 0, 4);
-            $end = substr($iban, -4);
-            $middle = str_repeat('*', strlen($iban) - 8);
-            return $start . ' ' . $middle . ' ' . $end;
+        if (strlen($clean) >= 24) {
+            return substr($clean, 0, 4) . ' **** ' . substr($clean, -4);
         }
         
         return $iban;
+    }
+    
+    /**
+     * Get the masked IBAN attribute for display.
+     */
+    public function getMaskedIbanAttribute(): string
+    {
+        return $this->getFormattedIbanAttribute();
+    }
+
+    /**
+     * Get the user that owns the teacher profile.
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     /**
@@ -162,14 +159,6 @@ class CampusTeacher extends Model
         
         // Add spaces every 4 characters
         return implode(' ', str_split($cleanIban, 4));
-    }
-
-    /**
-     * Get the user that owns the teacher profile.
-     */
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'user_id');
     }
 
     /**

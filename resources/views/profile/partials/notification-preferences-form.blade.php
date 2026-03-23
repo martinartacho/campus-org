@@ -186,13 +186,12 @@
                 </div>
             </div>
         </div>
-        @endif
 
         <!-- Admin Notifications -->
-        @if(auth()->user()->hasRole('admin'))
+        @if(auth()->user()->hasAnyRole(['admin', 'gestio', 'coordinacio', 'comunicacio', 'secretaria', 'editor', 'treasury', 'junta']))
         <div class="border-b pb-6">
             <h3 class="text-lg font-medium text-gray-900 mb-4">
-                <i class="bi bi-shield-check mr-2"></i>{{ __('Notificacions d\'Administració') }}
+                <i class="bi bi-shield-check mr-2"></i>{{ __('Notificacions d\'Admin') }}
             </h3>
             
             <div class="space-y-4">
@@ -242,6 +241,20 @@
                             <span class="ml-2 text-sm">{{ __('No') }}</span>
                         </label>
                     </div>
+                </div>
+            </div>
+        </div>
+        @endif
+        @else
+        <!-- Message for non-management roles -->
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <div class="flex items-start">
+                <i class="bi bi-info-circle text-blue-600 mr-3 mt-1"></i>
+                <div>
+                    <h4 class="text-sm font-medium text-blue-800">{{ __('Preferències Bàsiques') }}</h4>
+                    <p class="mt-1 text-xs text-blue-700">
+                        {{ __('Com a professor/a o alumne/a, només pots configurar les notificacions generals i de suport. Les notificacions de departament i admin estan reservades per a rols de gestió.') }}
+                    </p>
                 </div>
             </div>
         </div>

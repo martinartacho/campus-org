@@ -195,6 +195,108 @@ class ProfileController extends Controller
     }
 
     /**
+     * Show the teacher profile edit form.
+     */
+    public function teacherEdit()
+    {
+        $user = Auth::user();
+        $teacher = $user->teacherProfile;
+        
+        if (!$teacher) {
+            return redirect()->route('dashboard')
+                ->with('error', __('No tens perfil de professor associat.'));
+        }
+        
+        return view('teacher.profile.edit', compact('teacher'));
+    }
+    
+    /**
+     * Update the teacher profile.
+     */
+    public function teacherUpdate(Request $request): RedirectResponse
+    {
+        $user = Auth::user();
+        $teacher = $user->teacherProfile;
+        
+        if (!$teacher) {
+            return redirect()->route('dashboard')
+                ->with('error', __('No tens perfil de professor associat.'));
+        }
+        
+        $validated = $request->validate([
+            'first_name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255'],
+            'phone' => ['nullable', 'string', 'max:20'],
+            'dni' => ['required', 'string', 'max:20'],
+            'address' => ['nullable', 'string', 'max:255'],
+            'postal_code' => ['nullable', 'string', 'max:10'],
+            'city' => ['nullable', 'string', 'max:100'],
+            
+            // Banking data
+            'iban' => ['nullable', 'string', 'regex:/^ES\d{2}\s?\d{4}\s?\d{4}\s?\d{2}\s?\d{10}$/'],
+            'bank_titular' => ['nullable', 'required_with:iban', 'string', 'max:255'],
+            'fiscal_id' => ['nullable', 'string', 'max:20'],
+            'fiscal_situation' => ['nullable', 'in:autonom,employee,pensioner,altre'],
+            'invoice' => ['nullable', 'boolean'],
+        ], [
+            'first_name.required' => __('El nom és obligatori'),
+            'last_name.required' => __('Els cognoms són obligatoris'),
+            'email.required' => __('El correu és obligatori'),
+            'email.email' => __('El correu no és vàlid'),
+            'dni.required' => __('El DNI és obligatori'),
+            'iban.required' => __('L\'IBAN és obligatori'),
+            'iban.regex' => __('L\'IBAN no té el format correcte'),
+            'bank_titular.required_with' => __('El titular del compte és obligatori si has posat IBAN'),
+            'fiscal_situation.in' => __('La situació fiscal seleccionada no és vàlida'),
+        ]);
+        
+        // Update teacher data
+        $teacher->update([
+            'first_name' => $validated['first_name'],
+            'last_name' => $validated['last_name'],
+            'email' => $validated['email'],
+            'phone' => $validated['phone'],
+            'dni' => $validated['dni'],
+            'address' => $validated['address'],
+            'postal_code' => $validated['postal_code'],
+            'city' => $validated['city'],
+            'iban' => $validated['iban'] ?? null,
+            'bank_titular' => $validated['bank_titular'] ?? null,
+            'fiscal_id' => $validated['fiscal_id'] ?? null,
+            'fiscal_situation' => $validated['fiscal_situation'] ?? null,
+            'invoice' => $validated['invoice'] ?? '0',
+        ]);
+        
+        return redirect()->route('teacher.profile')
+            ->with('status', 'profile-updated');
+    }
+
+    /**
+     * Download private PDF securely.
+     */
+    public function downloadPDF($path)
+    {
+        $user = Auth::user();
+        
+        // Verificar que el path pertany a l'usuari actual
+        if (!str_starts_with($path, 'pdfs/tresoreria/' . $user->teacherProfile->id . '/')) {
+            abort(403, __('Accés no autoritzat'));
+        }
+        
+        if (!Storage::disk('local')->exists($path)) {
+            abort(404, __('PDF no trobat'));
+        }
+        
+        $fileContents = Storage::disk('local')->get($path);
+        $filename = basename($path);
+        
+        return response($fileContents)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
+    }
+
+    /**
      * Generate banking data PDF.
      */
     public function generateBankingPDF(Request $request): JsonResponse
@@ -213,15 +315,23 @@ class ProfileController extends Controller
         try {
             $pdfContent = $this->generateBankingPDFContent($teacher);
             
-            // Guardar PDF a storage
+            // Guardar PDF a storage privat (seguretat!)
             $filename = 'dades_bancaries_' . $user->id . '_' . date('Y-m-d_H-i-s') . '.pdf';
-            Storage::disk('public')->put('pdfs/' . $filename, $pdfContent);
+            Storage::disk('local')->put('pdfs/tresoreria/' . $teacher->id . '/' . $filename, $pdfContent);
+            
+            // Crear URL temporal per descarregar
+            $temporaryUrl = URL::temporarySignedRoute(
+                'pdfs.download', 
+                now()->addMinutes(15), 
+                ['path' => 'pdfs/tresoreria/' . $teacher->id . '/' . $filename]
+            );
             
             return response()->json([
                 'success' => true,
                 'message' => __('PDF generat correctament'),
                 'filename' => $filename,
-                'url' => Storage::url('pdfs/' . $filename)
+                'url' => $temporaryUrl,
+                'download_url' => $temporaryUrl
             ]);
             
         } catch (\Exception $e) {

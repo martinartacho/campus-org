@@ -19,7 +19,7 @@
         <div class="bg-white p-6 rounded-lg shadow-md mb-6">
             <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
                 <i class="bi bi-shield-check me-2"></i>
-                    {{ __('gestió del professorat') }} <!-- (- path: resources\views\components\dashboard-teacher-cards.blade.php) -->
+                    {{ __('gestió del professorat') }} PEPE (- path: resources\views\components\dashboard-teacher-cards.blade.php)
             </h2>
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
