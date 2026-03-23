@@ -17,9 +17,25 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('profile.banking-data.update') }}" class="space-y-6">
-        @csrf
-        @method('PUT')
+    <!-- Alerta si no té CampusTeacher -->
+    @if(!auth()->user()->teacherProfile)
+        <div class="mb-6 p-4 bg-yellow-100 border border-yellow-400 text-yellow-700 rounded">
+            <div class="flex items-start">
+                <i class="bi bi-exclamation-triangle-fill mr-3 mt-1"></i>
+                <div>
+                    <h3 class="font-medium text-yellow-800">{{ __('Avís: No tens perfil de professor') }}</h3>
+                    <p class="mt-2 text-sm text-yellow-700">
+                        {{ __('Per gestionar les teves dades bancàries, primer has de tenir un perfil de professor associat. Si ets professor/a i no tens accés, contacta amb l\'administració.') }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    @if(auth()->user()->teacherProfile)
+        <form method="POST" action="{{ route('profile.banking-data.update') }}" class="space-y-6">
+            @csrf
+            @method('PUT')
 
         <!-- Informació del professor -->
         <div class="mb-6 p-4 border rounded-lg bg-gray-50">
@@ -30,29 +46,29 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700">{{ __('Nom Complet') }}</label>
-                    <div class="mt-1 text-sm text-gray-900">
-                        {{ auth()->user()->campusTeacher?->full_name ?? 'No disponible' }}
+                    <div class="text-sm text-gray-900">
+                        {{ auth()->user()->teacherProfile?->full_name ?? 'No disponible' }}
                     </div>
                 </div>
                 
                 <div>
                     <label class="block text-sm font-medium text-gray-700">{{ __('DNI') }}</label>
                     <div class="mt-1 text-sm text-gray-900">
-                        {{ auth()->user()->campusTeacher?->dni ?? 'No disponible' }}
+                        {{ auth()->user()->teacherProfile?->dni ?? 'No disponible' }}
                     </div>
                 </div>
                 
                 <div>
                     <label class="block text-sm font-medium text-gray-700">{{ __('Correu') }}</label>
                     <div class="mt-1 text-sm text-gray-900">
-                        {{ auth()->user()->campusTeacher?->email ?? auth()->user()->email }}
+                        {{ auth()->user()->teacherProfile?->email ?? auth()->user()->email }}
                     </div>
                 </div>
                 
                 <div>
                     <label class="block text-sm font-medium text-gray-700">{{ __('Telèfon') }}</label>
                     <div class="mt-1 text-sm text-gray-900">
-                        {{ auth()->user()->campusTeacher?->phone ?? 'No disponible' }}
+                        {{ auth()->user()->teacherProfile?->phone ?? 'No disponible' }}
                     </div>
                 </div>
             </div>
@@ -73,7 +89,7 @@
                         <input type="text" 
                                id="iban"
                                name="iban" 
-                               value="{{ auth()->user()->campusTeacher?->iban ?? '' }}"
+                               value="{{ auth()->user()->teacherProfile?->iban ?? '' }}"
                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                                placeholder="ES00 0000 0000 0000 0000"
                                pattern="^ES\d{2}\s?\d{4}\s?\d{4}\s?\d{2}\s?\d{10}$"
@@ -91,7 +107,7 @@
                         <input type="text" 
                                id="bank_titular"
                                name="bank_titular" 
-                               value="{{ auth()->user()->campusTeacher?->bank_titular ?? '' }}"
+                               value="{{ auth()->user()->teacherProfile?->bank_titular ?? '' }}"
                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                                placeholder="{{ __('Nom i cognoms del titular') }}">
                         @error('bank_titular')
@@ -108,7 +124,7 @@
                         <input type="text" 
                                id="fiscal_id"
                                name="fiscal_id" 
-                               value="{{ auth()->user()->campusTeacher?->fiscal_id ?? '' }}"
+                               value="{{ auth()->user()->teacherProfile?->fiscal_id ?? '' }}"
                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                                placeholder="{{ __('Nomes si és diferent del DNI') }}">
                         <p class="mt-1 text-xs text-gray-500">{{ __('Nomes si és diferent del DNI') }}</p>
@@ -127,7 +143,7 @@
                                        name="fiscal_situation" 
                                        value="autonom" 
                                        class="border-gray-300 text-blue-600 focus:ring-blue-500"
-                                       {{ auth()->user()->campusTeacher?->fiscal_situation == 'autonom' ? 'checked' : '' }}>
+                                       {{ auth()->user()->teacherProfile?->fiscal_situation == 'autonom' ? 'checked' : '' }}>
                                 <span class="ml-2 text-sm">{{ __('Autònom/a') }}</span>
                             </label>
                             
@@ -136,7 +152,7 @@
                                        name="fiscal_situation" 
                                        value="employee" 
                                        class="border-gray-300 text-blue-600 focus:ring-blue-500"
-                                       {{ auth()->user()->campusTeacher?->fiscal_situation == 'employee' ? 'checked' : '' }}>
+                                       {{ auth()->user()->teacherProfile?->fiscal_situation == 'employee' ? 'checked' : '' }}>
                                 <span class="ml-2 text-sm">{{ __('Treballador/a per compte alié') }}</span>
                             </label>
                             
@@ -145,7 +161,7 @@
                                        name="fiscal_situation" 
                                        value="pensioner" 
                                        class="border-gray-300 text-blue-600 focus:ring-blue-500"
-                                       {{ auth()->user()->campusTeacher?->fiscal_situation == 'pensioner' ? 'checked' : '' }}>
+                                       {{ auth()->user()->teacherProfile?->fiscal_situation == 'pensioner' ? 'checked' : '' }}>
                                 <span class="ml-2 text-sm">{{ __('Pensionista o jubilat/jubilada') }}</span>
                             </label>
                             
@@ -154,7 +170,7 @@
                                        name="fiscal_situation" 
                                        value="altre" 
                                        class="border-gray-300 text-blue-600 focus:ring-blue-500"
-                                       {{ auth()->user()->campusTeacher?->fiscal_situation == 'altre' ? 'checked' : '' }}>
+                                       {{ auth()->user()->teacherProfile?->fiscal_situation == 'altre' ? 'checked' : '' }}>
                                 <span class="ml-2 text-sm">{{ __('Altre (no llistat)') }}</span>
                             </label>
                         </div>
@@ -169,7 +185,7 @@
                                    name="invoice" 
                                    value="1"
                                    class="border-gray-300 rounded text-blue-600 focus:ring-blue-500"
-                                   {{ auth()->user()->campusTeacher?->invoice == '1' ? 'checked' : '' }}>
+                                   {{ auth()->user()->teacherProfile?->invoice == '1' ? 'checked' : '' }}>
                             <span class="ml-2 text-sm">{{ __('Presentaré factura') }}</span>
                         </label>
                         <p class="mt-1 text-xs text-gray-500">{{ __('Marcar si presentarà factura') }}</p>
@@ -211,6 +227,7 @@
             </div>
         </div>
     </form>
+    @endif
 
     <!-- Script per generar PDF -->
     <script>

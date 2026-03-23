@@ -178,7 +178,7 @@ class ProfileController extends Controller
         ]);
 
         // Obtenir o crear el perfil de professor
-        $teacher = $user->campusTeacher ?? new CampusTeacher();
+        $teacher = $user->teacherProfile ?? new CampusTeacher();
         
         // Actualitzar dades
         $teacher->user_id = $user->id;
@@ -200,7 +200,7 @@ class ProfileController extends Controller
     public function generateBankingPDF(Request $request): JsonResponse
     {
         $user = Auth::user();
-        $teacher = $user->campusTeacher;
+        $teacher = $user->teacherProfile;
         
         if (!$teacher) {
             return response()->json([
