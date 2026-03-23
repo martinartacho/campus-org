@@ -1,4 +1,4 @@
-<section>
+<section id="banking-data">
     <header>
         <h2 class="text-lg font-medium text-gray-900">
             <i class="bi bi-bank mr-2"></i>{{ __('Dades Bancàries de Cobrament') }}

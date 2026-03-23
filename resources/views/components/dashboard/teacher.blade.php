@@ -78,7 +78,7 @@
     </div>
 
     {{-- STATS --}}
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
         <div class="bg-white p-4 rounded shadow text-center">
             <div class="text-2xl font-bold text-blue-600">{{ $stats['total_courses'] ?? 0 }}</div>
             <div class="text-xs text-gray-500">@lang('campus.total_courses_teacher')</div>
@@ -100,6 +100,24 @@
             @endphp
             <div class="text-2xl font-bold text-blue-600">{{ $unreadCount }}</div>
             <div class="text-xs text-gray-500">@lang('site.Notifications')</div>
+        </div>
+
+        {{-- TARGETA DADES BANCÀRIES --}}
+        <div class="bg-gradient-to-r from-green-500 to-green-600 p-4 rounded shadow text-center hover:from-green-600 hover:to-green-700 transition-colors cursor-pointer"
+             onclick="window.location.href='{{ route('profile.edit') }}#banking-data'">
+            <div class="text-2xl font-bold text-white">
+                <i class="bi bi-bank"></i>
+            </div>
+            <div class="text-xs text-white font-medium">
+                {{ __('Dades Bancàries') }}
+            </div>
+            <div class="mt-1">
+                @if(auth()->user()->teacherProfile?->iban)
+                    <span class="text-xs text-green-100">{{ __('Completes') }}</span>
+                @else
+                    <span class="text-xs text-yellow-200">{{ __('Pendents') }}</span>
+                @endif
+            </div>
         </div>
     </div>
     
