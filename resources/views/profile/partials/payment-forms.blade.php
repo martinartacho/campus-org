@@ -13,28 +13,28 @@
         <div class="space-y-4">
             <div>
                 <x-input-label for="first_name" :value="__('Nom') . ' *'" />
-                <x-text-input id="first_name" name="first_name" type="text" tabindex="0" 
+                <x-text-input id="first_name" name="first_name" data-payment="waived" data-payment="own" data-payment="ceded" type="text" tabindex="0" 
                            class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" 
                            :value="auth()->user()->teacherProfile?->first_name ?? ''"
-                           required tabindex="0" />
+                            tabindex="0" />
                 <x-input-error class="mt-2" :messages="$errors->get('first_name')" />
             </div>
             
             <div>
                 <x-input-label for="last_name" :value="__('Cognoms') . ' *'" />
-                <x-text-input id="last_name" name="last_name" type="text" tabindex="0" 
+                <x-text-input id="last_name" name="last_name" data-payment="waived" data-payment="own" data-payment="ceded" type="text" tabindex="0" 
                            class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" 
                            :value="auth()->user()->teacherProfile?->last_name ?? ''"
-                           required tabindex="0" />
+                            tabindex="0" />
                 <x-input-error class="mt-2" :messages="$errors->get('last_name')" />
             </div>
             
             <div>
                 <x-input-label for="email" :value="__('Correu Electrònic') . ' *'" />
-                <x-text-input id="email" name="email" type="email" tabindex="0" 
+                <x-text-input id="email" name="email" data-payment="waived" data-payment="own" data-payment="ceded" type="email" tabindex="0" 
                            class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" 
                            :value="auth()->user()->teacherProfile?->email ?? ''"
-                           required tabindex="0" />
+                            tabindex="0" />
                 <x-input-error class="mt-2" :messages="$errors->get('email')" />
             </div>
         </div>
@@ -42,7 +42,7 @@
         <div class="space-y-4">
             <div>
                 <x-input-label for="phone" :value="__('Telèfon')" />
-                <x-text-input id="phone" name="phone" type="tel" 
+                <x-text-input id="phone" name="phone" data-payment="waived" data-payment="own" data-payment="ceded" type="tel" 
                            class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" 
                            :value="auth()->user()->teacherProfile?->phone ?? ''" />
                 <x-input-error class="mt-2" :messages="$errors->get('phone')" />
@@ -50,7 +50,7 @@
             
             <div>
                 <x-input-label for="address" :value="__('Adreça')" />
-                <x-text-input id="address" name="address" type="text" tabindex="0" 
+                <x-text-input id="address" name="address" data-payment="waived" data-payment="own" data-payment="ceded" type="text" tabindex="0" 
                            class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" 
                            :value="auth()->user()->teacherProfile?->address ?? ''" />
                 <x-input-error class="mt-2" :messages="$errors->get('address')" />
@@ -67,7 +67,7 @@
                 
                 <div>
                     <x-input-label for="city" :value="__('Ciutat')" />
-                    <x-text-input id="city" name="city" type="text" tabindex="0" 
+                    <x-text-input id="city" name="city" data-payment="waived" data-payment="own" data-payment="ceded" type="text" tabindex="0" 
                                class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" 
                                :value="auth()->user()->teacherProfile?->city ?? ''" />
                     <x-input-error class="mt-2" :messages="$errors->get('city')" />
@@ -79,8 +79,8 @@
     {{-- CONFIRMACIÓ --}}
     <div class="border-t pt-4 mt-6">
         <label class="flex items-start cursor-pointer">
-            <input type="checkbox" tabindex="0" name="waived_confirmation" value="1" 
-                   class="mt-1 mr-3" required
+            <input type="checkbox" tabindex="0" name="waived_confirmation" data-payment="waived" value="1" 
+                   class="mt-1 mr-3" 
                    tabindex="0"
                    @if(auth()->user()->teacherProfile?->waived_confirmation) checked @endif>
             <div class="text-sm">
@@ -107,28 +107,28 @@
         <div class="space-y-4">
             <div>
                 <x-input-label for="first_name" :value="__('Nom') . ' *'" />
-                <x-text-input id="first_name" name="first_name" type="text" tabindex="0" 
+                <x-text-input id="first_name" name="first_name" data-payment="waived" data-payment="own" data-payment="ceded" type="text" tabindex="0" 
                            class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" 
                            :value="auth()->user()->teacherProfile?->first_name ?? ''"
-                           required tabindex="0" />
+                            tabindex="0" />
                 <x-input-error class="mt-2" :messages="$errors->get('first_name')" />
             </div>
             
             <div>
                 <x-input-label for="last_name" :value="__('Cognoms') . ' *'" />
-                <x-text-input id="last_name" name="last_name" type="text" tabindex="0" 
+                <x-text-input id="last_name" name="last_name" data-payment="waived" data-payment="own" data-payment="ceded" type="text" tabindex="0" 
                            class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" 
                            :value="auth()->user()->teacherProfile?->last_name ?? ''"
-                           required tabindex="0" />
+                            tabindex="0" />
                 <x-input-error class="mt-2" :messages="$errors->get('last_name')" />
             </div>
             
             <div>
                 <x-input-label for="email" :value="__('Correu Electrònic') . ' *'" />
-                <x-text-input id="email" name="email" type="email" tabindex="0" 
+                <x-text-input id="email" name="email" data-payment="waived" data-payment="own" data-payment="ceded" type="email" tabindex="0" 
                            class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" 
                            :value="auth()->user()->teacherProfile?->email ?? ''"
-                           required tabindex="0" />
+                            tabindex="0" />
                 <x-input-error class="mt-2" :messages="$errors->get('email')" />
             </div>
         </div>
@@ -136,16 +136,16 @@
         <div class="space-y-4">
             <div>
                 <x-input-label for="dni" :value="__('NIF/DNI') . ' *'" />
-                <x-text-input id="dni" name="dni" type="text" tabindex="0" 
+                <x-text-input id="dni" name="dni" data-payment="own" type="text" tabindex="0" 
                            class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" 
                            :value="auth()->user()->teacherProfile?->dni ?? ''"
-                           required tabindex="0" />
+                            tabindex="0" />
                 <x-input-error class="mt-2" :messages="$errors->get('dni')" />
             </div>
             
             <div>
                 <x-input-label for="phone" :value="__('Telèfon')" />
-                <x-text-input id="phone" name="phone" type="tel" 
+                <x-text-input id="phone" name="phone" data-payment="waived" data-payment="own" data-payment="ceded" type="tel" 
                            class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" 
                            :value="auth()->user()->teacherProfile?->phone ?? ''" />
                 <x-input-error class="mt-2" :messages="$errors->get('phone')" />
@@ -153,7 +153,7 @@
             
             <div>
                 <x-input-label for="address" :value="__('Adreça')" />
-                <x-text-input id="address" name="address" type="text" tabindex="0" 
+                <x-text-input id="address" name="address" data-payment="waived" data-payment="own" data-payment="ceded" type="text" tabindex="0" 
                            class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" 
                            :value="auth()->user()->teacherProfile?->address ?? ''" />
                 <x-input-error class="mt-2" :messages="$errors->get('address')" />
@@ -170,7 +170,7 @@
                 <div>
                     <x-input-label for="iban" :value="__('IBAN') . ' *'" />
                     <div class="mt-1 relative">
-                        <x-text-input id="iban" name="iban" type="password" tabindex="0" 
+                        <x-text-input id="iban" name="iban" data-payment="own" type="password" tabindex="0" 
                                    class="mt-1 block w-full pr-20 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" 
                                    :value="auth()->user()->teacherProfile?->masked_iban ?? ''"
                                    placeholder="ES00 0000 0000 0000 0000"
@@ -199,10 +199,10 @@
                 
                 <div>
                     <x-input-label for="bank_titular" :value="__('Titular del Compte') . ' *'" />
-                    <x-text-input id="bank_titular" name="bank_titular" type="text" tabindex="0" 
+                    <x-text-input id="bank_titular" name="bank_titular" data-payment="own" type="text" tabindex="0" 
                                class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" 
                                :value="auth()->user()->teacherProfile?->bank_titular ?? ''"
-                               required tabindex="0" />
+                                tabindex="0" />
                     <x-input-error class="mt-2" :messages="$errors->get('bank_titular')" />
                 </div>
             </div>
@@ -212,7 +212,7 @@
                     <x-input-label for="fiscal_situation" :value="__('Situació Fiscal') . ' *'" />
                     <select tabindex="0" id="fiscal_situation" name="fiscal_situation" 
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
-                            required>
+                            >
                         <option value="">{{ __('Selecciona una opció') }}</option>
                         <option value="autonom" @if(auth()->user()->teacherProfile?->fiscal_situation === 'autonom') selected @endif>
                             {{ __('Autònom/a') }}
@@ -248,8 +248,8 @@
     {{-- CONFIRMACIÓ --}}
     <div class="border-t pt-4 mt-6">
         <label class="flex items-start cursor-pointer">
-            <input type="checkbox" tabindex="0" name="own_confirmation" value="1" 
-                   class="mt-1 mr-3" required
+            <input type="checkbox" tabindex="0" name="own_confirmation" data-payment="own" value="1" 
+                   class="mt-1 mr-3" 
                    tabindex="0"
                    @if(auth()->user()->teacherProfile?->own_confirmation) checked @endif>
             <div class="text-sm">
@@ -276,28 +276,28 @@
         <div class="space-y-4">
             <div>
                 <x-input-label for="first_name" :value="__('Nom') . ' *'" />
-                <x-text-input id="first_name" name="first_name" type="text" tabindex="0" 
+                <x-text-input id="first_name" name="first_name" data-payment="waived" data-payment="own" data-payment="ceded" type="text" tabindex="0" 
                            class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" 
                            :value="auth()->user()->teacherProfile?->first_name ?? ''"
-                           required tabindex="0" />
+                            tabindex="0" />
                 <x-input-error class="mt-2" :messages="$errors->get('first_name')" />
             </div>
             
             <div>
                 <x-input-label for="last_name" :value="__('Cognoms') . ' *'" />
-                <x-text-input id="last_name" name="last_name" type="text" tabindex="0" 
+                <x-text-input id="last_name" name="last_name" data-payment="waived" data-payment="own" data-payment="ceded" type="text" tabindex="0" 
                            class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" 
                            :value="auth()->user()->teacherProfile?->last_name ?? ''"
-                           required tabindex="0" />
+                            tabindex="0" />
                 <x-input-error class="mt-2" :messages="$errors->get('last_name')" />
             </div>
             
             <div>
                 <x-input-label for="email" :value="__('Correu Electrònic') . ' *'" />
-                <x-text-input id="email" name="email" type="email" tabindex="0" 
+                <x-text-input id="email" name="email" data-payment="waived" data-payment="own" data-payment="ceded" type="email" tabindex="0" 
                            class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" 
                            :value="auth()->user()->teacherProfile?->email ?? ''"
-                           required tabindex="0" />
+                            tabindex="0" />
                 <x-input-error class="mt-2" :messages="$errors->get('email')" />
             </div>
         </div>
@@ -305,7 +305,7 @@
         <div class="space-y-4">
             <div>
                 <x-input-label for="phone" :value="__('Telèfon')" />
-                <x-text-input id="phone" name="phone" type="tel" 
+                <x-text-input id="phone" name="phone" data-payment="waived" data-payment="own" data-payment="ceded" type="tel" 
                            class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" 
                            :value="auth()->user()->teacherProfile?->phone ?? ''" />
                 <x-input-error class="mt-2" :messages="$errors->get('phone')" />
@@ -313,7 +313,7 @@
             
             <div>
                 <x-input-label for="address" :value="__('Adreça')" />
-                <x-text-input id="address" name="address" type="text" tabindex="0" 
+                <x-text-input id="address" name="address" data-payment="waived" data-payment="own" data-payment="ceded" type="text" tabindex="0" 
                            class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" 
                            :value="auth()->user()->teacherProfile?->address ?? ''" />
                 <x-input-error class="mt-2" :messages="$errors->get('address')" />
@@ -321,10 +321,10 @@
             
             <div>
                 <x-input-label for="city" :value="__('Ciutat') . ' *'" />
-                <x-text-input id="city" name="city" type="text" tabindex="0" 
+                <x-text-input id="city" name="city" data-payment="waived" data-payment="own" data-payment="ceded" type="text" tabindex="0" 
                            class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" 
                            :value="auth()->user()->teacherProfile?->city ?? ''"
-                           required tabindex="0" />
+                            tabindex="0" />
                 <x-input-error class="mt-2" :messages="$errors->get('city')" />
             </div>
         </div>
@@ -338,19 +338,19 @@
             <div class="space-y-4">
                 <div>
                     <x-input-label for="beneficiary_dni" :value="__('NIF/DNI del Beneficiari') . ' *'" />
-                    <x-text-input id="beneficiary_dni" name="beneficiary_dni" type="text" tabindex="0" 
+                    <x-text-input id="beneficiary_dni" name="beneficiary_dni" data-payment="ceded" type="text" tabindex="0" 
                                class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" 
                                :value="auth()->user()->teacherProfile?->beneficiary_dni ?? ''"
-                               required tabindex="0" />
+                                tabindex="0" />
                     <x-input-error class="mt-2" :messages="$errors->get('beneficiary_dni')" />
                 </div>
                 
                 <div>
                     <x-input-label for="beneficiary_city" :value="__('Ciutat del Beneficiari') . ' *'" />
-                    <x-text-input id="beneficiary_city" name="beneficiary_city" type="text" tabindex="0" 
+                    <x-text-input id="beneficiary_city" name="beneficiary_city" data-payment="ceded" type="text" tabindex="0" 
                                class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" 
                                :value="auth()->user()->teacherProfile?->beneficiary_city ?? ''"
-                               required tabindex="0" />
+                                tabindex="0" />
                     <x-input-error class="mt-2" :messages="$errors->get('beneficiary_city')" />
                 </div>
             </div>
@@ -387,7 +387,7 @@
             <div class="space-y-4">
                 <div>
                     <x-input-label for="beneficiary_iban" :value="__('IBAN del Beneficiari') . ' *'" />
-                    <x-text-input id="beneficiary_iban" name="beneficiary_iban" type="text" tabindex="0" 
+                    <x-text-input id="beneficiary_iban" name="beneficiary_iban" data-payment="ceded" type="text" tabindex="0" 
                                class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" 
                                :value="auth()->user()->teacherProfile?->beneficiary_iban ?? ''"
                                placeholder="ES00 0000 0000 0000 0000"
@@ -399,10 +399,10 @@
                 
                 <div>
                     <x-input-label for="beneficiary_titular" :value="__('Titular del Compte') . ' *'" />
-                    <x-text-input id="beneficiary_titular" name="beneficiary_titular" type="text" tabindex="0" 
+                    <x-text-input id="beneficiary_titular" name="beneficiary_titular" data-payment="ceded" type="text" tabindex="0" 
                                class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" 
                                :value="auth()->user()->teacherProfile?->beneficiary_titular ?? ''"
-                               required tabindex="0" />
+                                tabindex="0" />
                     <x-input-error class="mt-2" :messages="$errors->get('beneficiary_titular')" />
                 </div>
             </div>
@@ -412,7 +412,7 @@
                     <x-input-label for="beneficiary_fiscal_situation" :value="__('Situació Fiscal del Beneficiari') . ' *'" />
                     <select tabindex="0" id="beneficiary_fiscal_situation" name="beneficiary_fiscal_situation" 
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
-                            required>
+                            >
                         <option value="">{{ __('Selecciona una opció') }}</option>
                         <option value="autonom" @if(auth()->user()->teacherProfile?->beneficiary_fiscal_situation === 'autonom') selected @endif>
                             {{ __('Autònom/a') }}
@@ -436,8 +436,8 @@
     {{-- CONFIRMACIÓ --}}
     <div class="border-t pt-4 mt-6">
         <label class="flex items-start cursor-pointer">
-            <input type="checkbox" tabindex="0" name="ceded_confirmation" value="1" 
-                   class="mt-1 mr-3" required
+            <input type="checkbox" tabindex="0" name="ceded_confirmation" data-payment="ceded" value="1" 
+                   class="mt-1 mr-3" 
                    tabindex="0"
                    @if(auth()->user()->teacherProfile?->ceded_confirmation) checked @endif>
             <div class="text-sm">

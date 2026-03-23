@@ -11,6 +11,36 @@
     </x-slot>
 
     <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+        @if(session('success'))
+        <div class="mb-4 bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg">
+            <div class="flex">
+                <svg class="flex-shrink-0 h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 016 0zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 0l-2 2a1 1 0 001.414 1.414l2-2z" clip-rule="evenodd"></path>
+                </svg>
+                <div class="ml-3">
+                    <p class="text-sm font-medium text-green-800">
+                        {{ session('success') }}
+                    </p>
+                </div>
+            </div>
+        </div>
+        @endif
+        
+        @if(session('error'))
+        <div class="mb-4 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
+            <div class="flex">
+                <svg class="flex-shrink-0 h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 016 0zM8.707 7.293a1 1 0 00-1.414 0L3 11.586 1.707 13.293a1 1 0 001.414 1.414l3-3z" clip-rule="evenodd"></path>
+                </svg>
+                <div class="ml-3">
+                    <p class="text-sm font-medium text-red-800">
+                        {{ session('error') }}
+                    </p>
+                </div>
+            </div>
+        </div>
+        @endif
+        
         @section('breadcrumbs')
             <nav class="flex mb-6" aria-label="Breadcrumb">
                 <ol class="inline-flex items-center space-x-1 md:space-x-3">
@@ -131,11 +161,25 @@
         });
     }
 
+    // Gestionar camps required dinàmicament segons tipus de pagament
+    function updateRequiredFields(type) {
+        // Eliminar required de tots els camps
+        document.querySelectorAll('[data-payment]').forEach(el => {
+            el.removeAttribute('required');
+        });
+
+        // Activar required només als camps del tipus seleccionat
+        document.querySelectorAll(`[data-payment="${type}"]`).forEach(el => {
+            el.setAttribute('required', 'required');
+        });
+    }
+
     // Inicialitzar formulari segons tipus seleccionat
     document.addEventListener('DOMContentLoaded', function() {
         const selectedType = document.querySelector('input[name="payment_type"]:checked');
         if (selectedType) {
             selectPaymentType(selectedType.value);
+            updateRequiredFields(selectedType.value);
         }
     });
     </script>

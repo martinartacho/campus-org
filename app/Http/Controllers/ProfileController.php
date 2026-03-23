@@ -213,63 +213,151 @@ class ProfileController extends Controller
     /**
      * Update the teacher profile.
      */
+/**
+     * Update the teacher profile.
+     */
     public function teacherUpdate(Request $request): RedirectResponse
     {
         $user = Auth::user();
         $teacher = $user->teacherProfile;
-        
+ 
         if (!$teacher) {
             return redirect()->route('dashboard')
                 ->with('error', __('No tens perfil de professor associat.'));
         }
-        
-        $validated = $request->validate([
+ 
+        // Validació base per a tots els tipus
+        $baseRules = [
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255'],
             'phone' => ['nullable', 'string', 'max:20'],
-            'dni' => ['required', 'string', 'max:20'],
             'address' => ['nullable', 'string', 'max:255'],
             'postal_code' => ['nullable', 'string', 'max:10'],
             'city' => ['nullable', 'string', 'max:100'],
-            
-            // Banking data
-            'iban' => ['nullable', 'string', 'regex:/^ES\d{2}\s?\d{4}\s?\d{4}\s?\d{2}\s?\d{10}$/'],
-            'bank_titular' => ['nullable', 'required_with:iban', 'string', 'max:255'],
-            'fiscal_id' => ['nullable', 'string', 'max:20'],
-            'fiscal_situation' => ['nullable', 'in:autonom,employee,pensioner,altre'],
-            'invoice' => ['nullable', 'boolean'],
-        ], [
+            'payment_type' => ['required', 'in:waived,own,ceded'],
+        ];
+ 
+        // Validació específica segons tipus de pagament
+        $paymentType = $request->input('payment_type');
+ 
+        if ($paymentType === 'waived') {
+            $baseRules['waived_confirmation'] = ['required', 'accepted'];
+        } elseif ($paymentType === 'own') {
+            $baseRules = array_merge($baseRules, [
+                'dni' => ['required', 'string', 'max:20'],
+                'iban' => ['required', 'string', 'regex:/^ES\d{2}\s?\d{4}\s?\d{4}\s?\d{2}\s?\d{10}$/'],
+                'bank_titular' => ['required', 'string', 'max:255'],
+                'fiscal_id' => ['nullable', 'string', 'max:20'],
+                'fiscal_situation' => ['required', 'in:autonom,employee,pensioner,other'],
+                'invoice' => ['nullable', 'boolean'],
+                'own_confirmation' => ['required', 'accepted'],
+            ]);
+        } elseif ($paymentType === 'ceded') {
+            $baseRules = array_merge($baseRules, [
+                'beneficiary_dni' => ['required', 'string', 'max:20'],
+                'beneficiary_iban' => ['required', 'string', 'regex:/^ES\d{2}\s?\d{4}\s?\d{4}\s?\d{2}\s?\d{10}$/'],
+                'beneficiary_titular' => ['required', 'string', 'max:255'],
+                'beneficiary_fiscal_situation' => ['required', 'in:autonom,employee,pensioner,other'],
+                'beneficiary_city' => ['required', 'string', 'max:100'],
+                'beneficiary_postal_code' => ['nullable', 'string', 'max:10'],
+                'beneficiary_invoice' => ['nullable', 'boolean'],
+                'ceded_confirmation' => ['required', 'accepted'],
+            ]);
+        }
+ 
+        $validated = $request->validate($baseRules, [
+            // Missatges base
             'first_name.required' => __('El nom és obligatori'),
             'last_name.required' => __('Els cognoms són obligatoris'),
             'email.required' => __('El correu és obligatori'),
             'email.email' => __('El correu no és vàlid'),
+            'payment_type.required' => __('Has de seleccionar un tipus de cobrament'),
+            'payment_type.in' => __('El tipus de cobrament seleccionat no és vàlid'),
+ 
+            // Missatges waived
+            'waived_confirmation.required' => __('Has de confirmar que no cobraràs'),
+            'waived_confirmation.accepted' => __('Has de confirmar que no cobraràs'),
+ 
+            // Missatges own
             'dni.required' => __('El DNI és obligatori'),
             'iban.required' => __('L\'IBAN és obligatori'),
             'iban.regex' => __('L\'IBAN no té el format correcte'),
-            'bank_titular.required_with' => __('El titular del compte és obligatori si has posat IBAN'),
+            'bank_titular.required' => __('El titular del compte és obligatori'),
+            'fiscal_situation.required' => __('La situació fiscal és obligatòria'),
             'fiscal_situation.in' => __('La situació fiscal seleccionada no és vàlida'),
+            'own_confirmation.required' => __('Has de confirmar que cobraràs'),
+            'own_confirmation.accepted' => __('Has de confirmar que cobraràs'),
+ 
+            // Missatges ceded
+            'beneficiary_dni.required' => __('El DNI del beneficiari és obligatori'),
+            'beneficiary_iban.required' => __('L\'IBAN del beneficiari és obligatori'),
+            'beneficiary_iban.regex' => __('L\'IBAN del beneficiari no té el format correcte'),
+            'beneficiary_titular.required' => __('El titular del beneficiari és obligatori'),
+            'beneficiary_fiscal_situation.required' => __('La situació fiscal del beneficiari és obligatòria'),
+            'beneficiary_fiscal_situation.in' => __('La situació fiscal del beneficiari no és vàlida'),
+            'beneficiary_city.required' => __('La ciutat del beneficiari és obligatòria'),
+            'ceded_confirmation.required' => __('Has de confirmar que cedeixes el cobrament'),
+            'ceded_confirmation.accepted' => __('Has de confirmar que cedeixes el cobrament'),
         ]);
-        
-        // Update teacher data
-        $teacher->update([
+ 
+        // Actualitzar dades base
+        $updateData = [
             'first_name' => $validated['first_name'],
             'last_name' => $validated['last_name'],
             'email' => $validated['email'],
             'phone' => $validated['phone'],
-            'dni' => $validated['dni'],
             'address' => $validated['address'],
             'postal_code' => $validated['postal_code'],
             'city' => $validated['city'],
-            'iban' => $validated['iban'] ?? null,
-            'bank_titular' => $validated['bank_titular'] ?? null,
-            'fiscal_id' => $validated['fiscal_id'] ?? null,
-            'fiscal_situation' => $validated['fiscal_situation'] ?? null,
-            'invoice' => $validated['invoice'] ?? '0',
-        ]);
-        
+            'payment_type' => $validated['payment_type'],
+        ];
+ 
+        // Actualitzar dades específiques segons tipus
+        if ($paymentType === 'waived') {
+            $updateData['waived_confirmation'] = true;
+            $updateData['payment_status'] = 'confirmed';
+            $updateData['payment_confirmed_at'] = now();
+        } elseif ($paymentType === 'own') {
+            $updateData = array_merge($updateData, [
+                'dni' => $validated['dni'],
+                'iban' => $validated['iban'],
+                'bank_titular' => $validated['bank_titular'],
+                'fiscal_id' => $validated['fiscal_id'] ?? null,
+                'fiscal_situation' => $validated['fiscal_situation'],
+                'invoice' => $validated['invoice'] ?? false,
+                'own_confirmation' => true,
+                'payment_status' => 'confirmed',
+                'payment_confirmed_at' => now(),
+            ]);
+        } elseif ($paymentType === 'ceded') {
+            $updateData = array_merge($updateData, [
+                'beneficiary_dni' => $validated['beneficiary_dni'],
+                'beneficiary_iban' => $validated['beneficiary_iban'],
+                'beneficiary_titular' => $validated['beneficiary_titular'],
+                'beneficiary_fiscal_situation' => $validated['beneficiary_fiscal_situation'],
+                'beneficiary_city' => $validated['beneficiary_city'],
+                'beneficiary_postal_code' => $validated['beneficiary_postal_code'] ?? null,
+                'beneficiary_invoice' => $validated['beneficiary_invoice'] ?? false,
+                'ceded_confirmation' => true,
+                'payment_status' => 'confirmed',
+                'payment_confirmed_at' => now(),
+            ]);
+        }
+ 
+        // Actualitzar professor
+        $teacher->update($updateData);
+ 
+        // Missatge d'èxit segons tipus
+        $successMessage = match($paymentType) {
+            'waived' => __('Dades de no cobrament guardades correctament'),
+            'own' => __('Dades de cobrament propi guardades correctament'),
+            'ceded' => __('Dades de cobrament cedit guardades correctament'),
+            default => __('Dades guardades correctament'),
+        };
+ 
         return redirect()->route('teacher.profile')
-            ->with('status', 'profile-updated');
+            ->with('success', $successMessage);
     }
 
     /**
