@@ -269,13 +269,13 @@
                             <i class="bi bi-envelope mr-2"></i>Enviar notificació d'estat
                         </button>
                         
-                        @if($supportRequest->url)
+                        <!-- @if($supportRequest->url)
                             <a href="{{ $supportRequest->url }}" 
                                target="_blank"
                                class="w-full bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors inline-flex items-center justify-center">
                                 <i class="bi bi-box-arrow-up-right mr-2"></i>Obrir URL
                             </a>
-                        @endif
+                        @endif -->
                         
                         <form method="POST" 
                               action="{{ route('admin.support-requests.destroy', $supportRequest) }}" 

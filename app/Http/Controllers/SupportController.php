@@ -67,7 +67,7 @@ class SupportController extends Controller
             $user = User::where('email', $supportRequest->email)->first();
             
             if ($user) {
-                Notification::create([
+                $notification = Notification::create([
                     'title' => "Confirmación Ticket #{$ticketNumber}",
                     'content' => $this->getConfirmationMessage($supportRequest, $ticketNumber),
                     'type' => 'support',
@@ -77,13 +77,17 @@ class SupportController extends Controller
                     'is_published' => true,
                     'published_at' => now(),
                 ]);
+                
+                // Assign recipients and send channels
+                $this->assignNotificationRecipients($notification, [$user->id]);
+                $this->sendNotificationChannels($notification);
             }
 
             // 2. Notificación al departamento responsable
             $departmentRole = $this->getDepartmentRole($supportRequest->department);
             
             if ($departmentRole) {
-                Notification::create([
+                $notification = Notification::create([
                     'title' => "Nova Sol·licitud de Suport #{$ticketNumber}",
                     'content' => $this->getDepartmentNotificationMessage($supportRequest, $ticketNumber),
                     'type' => 'support',
@@ -93,10 +97,14 @@ class SupportController extends Controller
                     'is_published' => true,
                     'published_at' => now(),
                 ]);
+                
+                // Assign recipients and send channels
+                $this->assignNotificationRecipients($notification, []);
+                $this->sendNotificationChannels($notification);
             }
 
             // 3. Notificación a administradores para seguimiento general
-            Notification::create([
+            $notification = Notification::create([
                 'title' => "Seguiment: Sol·licitud #{$ticketNumber}",
                 'content' => $this->getAdminNotificationMessage($supportRequest, $ticketNumber),
                 'type' => 'support',
@@ -106,6 +114,10 @@ class SupportController extends Controller
                 'is_published' => true,
                 'published_at' => now(),
             ]);
+            
+            // Assign recipients and send channels
+            $this->assignNotificationRecipients($notification, []);
+            $this->sendNotificationChannels($notification);
 
         } catch (\Exception $e) {
             // Log error pero no interrumpir el flujo
@@ -206,5 +218,110 @@ Podeu gestionar aquesta sol·licitud a través del sistema de notificaciones o c
 ✅ **Estat:** Notificacions enviades al remitent i al departament responsable.
 
 Aquesta sol·licitud està sent gestionada pel departament corresponent. Podeu fer seguiment a través del panell d'administració.";
+    }
+
+    /**
+     * Assign recipients to notification_user table
+     */
+    private function assignNotificationRecipients(Notification $notification, array $recipientIds)
+    {
+        if ($notification->recipient_type === 'specific') {
+            $notification->recipients()->syncWithPivotValues($recipientIds, [
+                'email_sent' => false,
+                'web_sent' => false,
+                'push_sent' => false,
+                'read' => false,
+            ]);
+        } elseif ($notification->recipient_type === 'role') {
+            // For role-based notifications, get all users with that role
+            $roleUsers = User::role($notification->recipient_role)->pluck('id')->toArray();
+            $notification->recipients()->syncWithPivotValues($roleUsers, [
+                'email_sent' => false,
+                'web_sent' => false,
+                'push_sent' => false,
+                'read' => false,
+            ]);
+        }
+    }
+
+    /**
+     * Send notification through all channels (email, web, push)
+     */
+    private function sendNotificationChannels(Notification $notification)
+    {
+        try {
+            // Send email channel
+            $this->sendEmailChannel($notification);
+            
+            // Send web channel
+            $this->sendWebChannel($notification);
+            
+        } catch (\Exception $e) {
+            \Log::error('Error sending notification channels: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Send email channel
+     */
+    private function sendEmailChannel(Notification $notification)
+    {
+        $recipients = $this->getNotificationRecipients($notification);
+        
+        foreach ($recipients as $user) {
+            try {
+                // Verify email is valid
+                if (!filter_var($user->email, FILTER_VALIDATE_EMAIL)) {
+                    continue;
+                }
+
+                // Use Mailable class
+                $mail = new \App\Mail\NotificationMail($notification, $user);
+                
+                \Mail::to($user->email)->send($mail);
+                
+                // Mark as sent in pivot table
+                $notification->recipients()->updateExistingPivot($user->id, [
+                    'email_sent' => true,
+                    'email_sent_at' => now(),
+                ]);
+
+            } catch (\Exception $e) {
+                \Log::error("Error sending email to {$user->email}: " . $e->getMessage());
+            }
+        }
+    }
+
+    /**
+     * Send web channel
+     */
+    private function sendWebChannel(Notification $notification)
+    {
+        $users = $this->getNotificationRecipients($notification);
+
+        foreach ($users as $user) {
+            // Mark as web sent (notification is already available in web)
+            $notification->recipients()->updateExistingPivot($user->id, [
+                'web_sent' => true,
+                'web_sent_at' => now(),
+            ]);
+        }
+    }
+
+    /**
+     * Get notification recipients based on type
+     */
+    private function getNotificationRecipients(Notification $notification)
+    {
+        switch ($notification->recipient_type) {
+            case 'specific':
+                return User::whereIn('id', $notification->recipient_ids ?? [])->get();
+                
+            case 'role':
+                return User::role($notification->recipient_role)->get();
+                
+            default:
+                return collect();
+        }
     }
 }

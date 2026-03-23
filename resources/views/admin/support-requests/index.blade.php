@@ -222,6 +222,11 @@
                                                     {{ $request->urgency == 'critical' ? 'bg-red-100 text-red-800' : '' }}">
                                                     {{ $request->urgency_label }}
                                                 </span>
+                                                @if($request->department)
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                                        <i class="bi bi-building mr-1"></i>{{ $request->department }}
+                                                    </span>
+                                                @endif
                                             </div>
                                         </td>
                                         <td class="px-6 py-4">
