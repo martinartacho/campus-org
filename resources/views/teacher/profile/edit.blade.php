@@ -118,11 +118,12 @@
         const ibanInput = document.getElementById('iban');
         const toggleText = document.getElementById('iban-toggle-text');
         
-        if (ibanInput.type === 'text') {
-            ibanInput.type = 'password';
-            toggleText.textContent = 'Mostrar';
-        } else {
+        // Per defecte mostrem l'IBAN com a text (visible)
+        if (ibanInput.type === 'password') {
             ibanInput.type = 'text';
+            toggleText.textContent = 'Ocultar';
+        } else {
+            ibanInput.type = 'password';
             toggleText.textContent = 'Mostrar';
         }
     }
