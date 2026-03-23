@@ -218,6 +218,12 @@ class ProfileController extends Controller
      */
     public function teacherUpdate(Request $request): RedirectResponse
     {
+        \Log::info('teacherUpdate called', [
+            'user_id' => Auth::id(),
+            'payment_type' => $request->input('payment_type'),
+            'all_data' => $request->all()
+        ]);
+        
         $user = Auth::user();
         $teacher = $user->teacherProfile;
  
@@ -346,7 +352,17 @@ class ProfileController extends Controller
         }
  
         // Actualitzar professor
+        \Log::info('About to update teacher', [
+            'teacher_id' => $teacher->id,
+            'update_data' => $updateData
+        ]);
+        
         $teacher->update($updateData);
+        
+        \Log::info('Teacher updated successfully', [
+            'teacher_id' => $teacher->id,
+            'new_data' => $teacher->fresh()->toArray()
+        ]);
  
         // Missatge d'èxit segons tipus
         $successMessage = match($paymentType) {
