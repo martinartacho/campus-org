@@ -330,6 +330,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Nueva ruta para actualizar preferencias de notificación
         Route::put('/profile/notifications', [ProfileController::class, 'updateNotifications'])
             ->name('profile.notifications.update');
+        
+        // Nuevas rutas para datos bancarios
+        Route::put('/profile/banking-data', [ProfileController::class, 'updateBankingData'])
+            ->name('profile.banking-data.update');
+        Route::post('/profile/banking-data/pdf', [ProfileController::class, 'generateBankingPDF'])
+            ->name('profile.banking-data.pdf');
 });
     Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
        Route::get('/feedback', [AdminFeedbackController::class, 'index'])->name('admin.feedback.index');
