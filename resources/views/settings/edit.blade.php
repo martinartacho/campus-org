@@ -32,7 +32,7 @@
                     </x-dashboard.card>
 
                     <!-- Idioma del usuario (si está configurado) -->
-                    @if($userLanguage = auth()->user()->settings()->where('key', 'language')->value('value'))
+                    @if($userLanguage = auth()->user()->getLanguage())
                     <x-dashboard.card title="{{ __('site.User_Language') }}" color="purple">
                         <i class="bi bi-person"></i>
                         @switch($userLanguage)

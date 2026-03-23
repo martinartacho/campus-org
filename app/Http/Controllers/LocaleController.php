@@ -43,10 +43,7 @@ class LocaleController extends Controller
 
             case 'update_preference':
                 // Actualizar preferencia del usuario al idioma de sesión
-                $user->settings()->updateOrCreate(
-                    ['key' => 'language'],
-                    ['value' => $conflict['session_language']]
-                );
+                $user->setLanguage($conflict['session_language']);
                 break;
         }
 

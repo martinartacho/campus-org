@@ -270,6 +270,12 @@ Aquesta sol·licitud està sent gestionada pel departament corresponent. Podeu f
         
         foreach ($recipients as $user) {
             try {
+                // Check user's email notification preference
+                if (!$user->wantsEmailNotification($notification->type)) {
+                    \Log::info("User {$user->email} has disabled {$notification->type} email notifications");
+                    continue;
+                }
+
                 // Verify email is valid
                 if (!filter_var($user->email, FILTER_VALIDATE_EMAIL)) {
                     continue;
@@ -300,6 +306,12 @@ Aquesta sol·licitud està sent gestionada pel departament corresponent. Podeu f
         $users = $this->getNotificationRecipients($notification);
 
         foreach ($users as $user) {
+            // Check user's web notification preference
+            if (!$user->wantsWebNotification($notification->type)) {
+                \Log::info("User {$user->email} has disabled {$notification->type} web notifications");
+                continue;
+            }
+
             // Mark as web sent (notification is already available in web)
             $notification->recipients()->updateExistingPivot($user->id, [
                 'web_sent' => true,

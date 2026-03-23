@@ -326,6 +326,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Nueva ruta para actualizar idioma de usuario
         Route::put('/profile/language', [ProfileController::class, 'updateLanguage'])
             ->name('profile.language.update');
+        
+        // Nueva ruta para actualizar preferencias de notificación
+        Route::put('/profile/notifications', [ProfileController::class, 'updateNotifications'])
+            ->name('profile.notifications.update');
 });
     Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
        Route::get('/feedback', [AdminFeedbackController::class, 'index'])->name('admin.feedback.index');

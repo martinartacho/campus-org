@@ -97,9 +97,45 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         return $this->hasMany(FcmToken::class); // Relación 1:N  
     }
 
-       public function settings(): HasMany
+    /**
+     * Get user settings relationship
+     */
+    public function settings()
     {
         return $this->hasMany(UserSetting::class);
+    }
+
+    /**
+     * Get user preferences relationship (new JSON-based)
+     */
+    public function userPreference()
+    {
+        return $this->hasOne(UserPreference::class);
+    }
+
+    /**
+     * Get or create user preferences
+     */
+    public function preferences()
+    {
+        return $this->userPreference()->first() ?? $this->userPreference()->create([
+            'preferences' => [
+                'notifications' => [
+                    'email_enabled' => true,
+                    'web_enabled' => true,
+                    'support_email' => true,
+                    'support_web' => true,
+                    'department_email' => true,
+                    'department_web' => true,
+                    'admin_email' => true,
+                    'admin_web' => true,
+                    'frequency' => 'immediate',
+                ],
+                'ui' => [
+                    'language' => 'ca',
+                ]
+            ]
+        ]);
     }
     
     public function getSetting($key, $default = null)
@@ -107,6 +143,7 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         $setting = $this->settings()->where('key', $key)->first();
         return $setting ? $setting->value : $default;
     }
+
     
     public function setSetting($key, $value)
     {
@@ -191,6 +228,51 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
     public function getUnreadNotificationCountAttribute()
     {
         return $this->unreadNotifications()->where('is_published', true)->count();
+    }
+
+    /**
+     * Get user's language preference
+     */
+    public function getLanguage()
+    {
+        $preferences = $this->preferences();
+        return $preferences ? $preferences->getPreference('ui.language', config('app.locale')) : config('app.locale');
+    }
+
+    /**
+     * Set user's language preference
+     */
+    public function setLanguage($language)
+    {
+        $preferences = $this->preferences();
+        $preferences->setPreference('ui.language', $language);
+    }
+
+    /**
+     * Check if user wants to receive email notifications for a specific type
+     */
+    public function wantsEmailNotification($type)
+    {
+        $pref = $this->preferences();
+        return $pref ? $pref->wantsEmailNotification($type) : true;
+    }
+
+    /**
+     * Check if user wants to receive web notifications for a specific type
+     */
+    public function wantsWebNotification($type)
+    {
+        $pref = $this->preferences();
+        return $pref ? $pref->wantsWebNotification($type) : true;
+    }
+
+    /**
+     * Get user's notification frequency preference
+     */
+    public function getNotificationFrequency()
+    {
+        $pref = $this->preferences();
+        return $pref ? $pref->getNotificationFrequency() : 'immediate';
     }
 
 }

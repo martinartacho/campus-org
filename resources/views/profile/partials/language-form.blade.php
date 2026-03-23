@@ -20,7 +20,7 @@
                                     <input type="radio" 
                                         name="language" 
                                         value="{{ $code }}"
-                                        {{ $code == auth()->user()->getSetting('language', config('app.locale')) ? 'checked' : '' }}
+                                        {{ $code == auth()->user()->getLanguage() ? 'checked' : '' }}
                                         class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
                                     <span class="ml-2 text-sm text-gray-600">{{ $label }}</span>
                                 </label>

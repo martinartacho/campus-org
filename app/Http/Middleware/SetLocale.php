@@ -35,7 +35,7 @@ class SetLocale
             
             // Verificar conflicto con preferencia de usuario solo si está autenticado
             if (Auth::check() && !session()->has('language_conflict')) {
-                $userLang = Auth::user()->settings()->where('key', 'language')->value('value');
+                $userLang = Auth::user()->getLanguage();
                 
                 if ($userLang && $userLang !== $locale) {
                     session()->flash('language_conflict', [
@@ -50,7 +50,7 @@ class SetLocale
 
         // Prioridad 2: Idioma del usuario (si está autenticado)
         if (Auth::check()) {
-            $userLang = Auth::user()->settings()->where('key', 'language')->value('value');
+            $userLang = Auth::user()->getLanguage();
             
             if ($userLang) {
                 App::setLocale($userLang);
