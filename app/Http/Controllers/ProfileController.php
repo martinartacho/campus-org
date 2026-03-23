@@ -297,6 +297,145 @@ class ProfileController extends Controller
     }
 
     /**
+     * Generate payment data PDF.
+     */
+    public function generatePaymentPDF(Request $request): JsonResponse
+    {
+        $user = Auth::user();
+        $teacher = $user->teacherProfile;
+        
+        if (!$teacher) {
+            return response()->json([
+                'success' => false,
+                'message' => __('No hi ha dades de pagament disponibles')
+            ], 404);
+        }
+
+        // Generar PDF segons tipus de cobrament
+        try {
+            $pdfContent = $this->generatePaymentPDFContent($teacher);
+            
+            // Guardar PDF a storage privat
+            $filename = 'dades_pagament_' . $user->id . '_' . $teacher->payment_type . '_' . date('Y-m-d_H-i-s') . '.pdf';
+            Storage::disk('local')->put('pdfs/tresoreria/' . $teacher->id . '/' . $filename, $pdfContent);
+            
+            // Crear URL temporal per descarregar
+            $temporaryUrl = URL::temporarySignedRoute(
+                'pdfs.download', 
+                now()->addMinutes(15), 
+                ['path' => 'pdfs/tresoreria/' . $teacher->id . '/' . $filename]
+            );
+            
+            return response()->json([
+                'success' => true,
+                'message' => __('PDF de pagament generat correctament'),
+                'filename' => $filename,
+                'url' => $temporaryUrl,
+                'download_url' => $temporaryUrl
+            ]);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => __('Error generant el PDF de pagament') . ': ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Generate PDF content for payment data.
+     */
+    private function generatePaymentPDFContent(CampusTeacher $teacher): string
+    {
+        $user = $teacher->user;
+        $paymentType = $teacher->payment_type;
+        
+        // Contingut segons tipus de cobrament
+        $content = match($paymentType) {
+            'waived' => $this->generateWaivedPDFContent($teacher, $user),
+            'own' => $this->generateOwnPDFContent($teacher, $user),
+            'ceded' => $this->generateCededPDFContent($teacher, $user),
+            default => 'Tipus de cobrament no vàlid'
+        };
+        
+        return $content;
+    }
+    
+    /**
+     * Generate PDF content for waived payment.
+     */
+    private function generateWaivedPDFContent(CampusTeacher $teacher, User $user): string
+    {
+        return "
+        <h1>Confirmació de No Cobrament</h1>
+        <h2>Dades del Professor</h2>
+        <p><strong>Nom:</strong> {$teacher->first_name} {$teacher->last_name}</p>
+        <p><strong>Correu:</strong> {$teacher->email}</p>
+        <p><strong>DNI:</strong> {$teacher->dni}</p>
+        <p><strong>Telèfon:</strong> {$teacher->phone}</p>
+        <p><strong>Adreça:</strong> {$teacher->address}</p>
+        <p><strong>Ciutat:</strong> {$teacher->city}</p>
+        <p><strong>CP:</strong> {$teacher->postal_code}</p>
+        
+        <h2>Confirmació</h2>
+        <p><strong>Opció seleccionada:</strong> No cobraré per la meva docència</p>
+        <p><strong>Data de confirmació:</strong> " . now()->format('d/m/Y H:i') . "</p>
+        <p><strong>ID Professor:</strong> {$teacher->id}</p>
+        ";
+    }
+    
+    /**
+     * Generate PDF content for own payment.
+     */
+    private function generateOwnPDFContent(CampusTeacher $teacher, User $user): string
+    {
+        return "
+        <h1>Dades de Cobrament Propi</h1>
+        <h2>Dades del Professor</h2>
+        <p><strong>Nom:</strong> {$teacher->first_name} {$teacher->last_name}</p>
+        <p><strong>Correu:</strong> {$teacher->email}</p>
+        <p><strong>DNI:</strong> {$teacher->dni}</p>
+        
+        <h2>Dades Bancàries</h2>
+        <p><strong>IBAN:</strong> {$teacher->iban}</p>
+        <p><strong>Titular:</strong> {$teacher->bank_titular}</p>
+        <p><strong>Situació Fiscal:</strong> {$teacher->fiscal_situation}</p>
+        <p><strong>Presentarà factura:</strong> " . ($teacher->invoice ? 'Sí' : 'No') . "</p>
+        
+        <h2>Confirmació</h2>
+        <p><strong>Opció seleccionada:</strong> Cobraré jo mateix/a</p>
+        <p><strong>Data de confirmació:</strong> " . now()->format('d/m/Y H:i') . "</p>
+        <p><strong>ID Professor:</strong> {$teacher->id}</p>
+        ";
+    }
+    
+    /**
+     * Generate PDF content for ceded payment.
+     */
+    private function generateCededPDFContent(CampusTeacher $teacher, User $user): string
+    {
+        return "
+        <h1>Dades de Cobrament Cedit</h1>
+        <h2>Dades del Professor</h2>
+        <p><strong>Nom:</strong> {$teacher->first_name} {$teacher->last_name}</p>
+        <p><strong>Correu:</strong> {$teacher->email}</p>
+        
+        <h2>Dades del Beneficiari</h2>
+        <p><strong>DNI Beneficiari:</strong> {$teacher->beneficiary_dni}</p>
+        <p><strong>IBAN Beneficiari:</strong> {$teacher->beneficiary_iban}</p>
+        <p><strong>Titular Beneficiari:</strong> {$teacher->beneficiary_titular}</p>
+        <p><strong>Situació Fiscal Beneficiari:</strong> {$teacher->beneficiary_fiscal_situation}</p>
+        <p><strong>Ciutat Beneficiari:</strong> {$teacher->beneficiary_city}</p>
+        <p><strong>Presentarà factura:</strong> " . ($teacher->beneficiary_invoice ? 'Sí' : 'No') . "</p>
+        
+        <h2>Confirmació</h2>
+        <p><strong>Opció seleccionada:</strong> Cedeixo el cobrament al beneficiari</p>
+        <p><strong>Data de confirmació:</strong> " . now()->format('d/m/Y H:i') . "</p>
+        <p><strong>ID Professor:</strong> {$teacher->id}</p>
+        ";
+    }
+
+    /**
      * Generate banking data PDF.
      */
     public function generateBankingPDF(Request $request): JsonResponse

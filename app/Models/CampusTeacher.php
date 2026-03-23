@@ -76,7 +76,6 @@ class CampusTeacher extends Model
 
     protected $fillable = [
         'user_id',
-        'teacher_code',
         'first_name',
         'last_name',
         'dni',
@@ -98,7 +97,22 @@ class CampusTeacher extends Model
         'status',
         'observacions',
         'hiring_date',
-        'metadata'
+        'metadata',
+        // Camps de pagament
+        'payment_type',
+        'beneficiary_dni',
+        'beneficiary_iban',
+        'beneficiary_titular',
+        'beneficiary_fiscal_situation',
+        'beneficiary_invoice',
+        'beneficiary_city',
+        'beneficiary_postal_code',
+        'waived_confirmation',
+        'own_confirmation',
+        'ceded_confirmation',
+        'payment_status',
+        'payment_confirmed_at',
+        'payment_pdf_path',
     ];
 
     protected $casts = [
@@ -109,6 +123,15 @@ class CampusTeacher extends Model
         'iban' => 'encrypted',
         'bank_titular' => 'encrypted',
         'fiscal_id' => 'encrypted',
+        'beneficiary_iban' => 'encrypted',
+        'beneficiary_titular' => 'encrypted',
+        'beneficiary_dni' => 'encrypted',
+        // 🔐 Dates
+        'payment_confirmed_at' => 'datetime',
+        'waived_confirmation' => 'boolean',
+        'own_confirmation' => 'boolean',
+        'ceded_confirmation' => 'boolean',
+        'beneficiary_invoice' => 'boolean',
     ];
 
     /**

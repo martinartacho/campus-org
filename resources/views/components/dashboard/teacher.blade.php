@@ -132,34 +132,44 @@
     </div>
     
 
-    {{-- CURSOS --}}
+    {{-- ELS MEUS CURSOS --}}
     <div class="bg-white p-6 rounded shadow">
-        <div class="flex justify-between items-center mb-6">
+        <div class="flex justify-between items-center mb-4">
             <h2 class="text-xl font-bold text-gray-800">@lang('campus.my_courses')</h2>
-            <div class="text-sm text-gray-500">
-                @lang('campus.active'): {{ $stats['active_courses'] ?? 0 }} | 
-                    @lang('campus.completed'): {{ $stats['completed_courses'] ?? 0 }}
-                </div>
+            <div class="text-sm text-gray-600">
+                Actiu: <span class="font-bold text-green-600">{{ $stats['active_courses'] ?? 0 }}</span> | 
+                Completat: <span class="font-bold text-blue-600">{{ $stats['completed_courses'] ?? 0 }}</span>
             </div>
-
-            @if($teacherCourses->isEmpty())
-                <div class="text-center py-12">
-                    <p class="mt-4 text-gray-500">
-                        @lang('campus.no_courses')
-                    </p>
-                </div>
-            @else
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    @foreach($teacherCourses as $course)
+        </div>
+        
+        @if(isset($teacherCourses) && count($teacherCourses) > 0)
+            @foreach($teacherCourses as $course)
+            <div class="border rounded-lg p-4 mb-4 hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-start mb-3">
+                    <div class="flex-1">
+                        <h3 class="font-bold text-lg text-gray-800">{{ $course->title }}</h3>
+                        <p class="text-sm text-gray-600 mb-2">{{ $course->description }}</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                            <div>
+                                <span class="font-semibold">Codi del curs:</span> 
+                                <span class="bg-gray-100 px-2 py-1 rounded">{{ $course->code ?? 'N/A' }}</span>
+                            </div>
+                            <div>
+                                <span class="font-semibold">Estat:</span> 
+                                <span class="bg-{{ $course->is_active ? 'green' : 'gray' }}-100 px-2 py-1 rounded">
+                                    {{ $course->is_active ? 'Actiu' : 'Completat' }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {{-- ESTAT DE COBRAMENT --}}
+                    <div class="ml-4">
                         @php
-                            // Status del curso
-                            $statusColors = [
-                                'active' => ['bg' => 'bg-green-100', 'text' => 'text-green-800'],
-                                'upcoming' => ['bg' => 'bg-blue-100', 'text' => 'text-blue-800'],
-                                'completed' => ['bg' => 'bg-gray-100', 'text' => 'text-gray-800']
-                            ];
-                            $statusColor = $statusColors[$course->status] ?? $statusColors['upcoming'];
-                            
+                            $hasPaymentData = auth()->user()->teacherProfile && 
+                                           !empty(auth()->user()->teacherProfile->payment_type);
+                            $paymentStatus = $hasPaymentData ? 'generated' : 'pending';
                             // Información del profesor actual en este curso
                             $myRole = trans('campus.teacher_role.' . ($course->pivot->role ?? 'assistant'));
                             $myHours = $course->pivot->sessions_assigned ?? 0;
@@ -168,6 +178,12 @@
                             $hasClassToday = !empty($course->schedule_info['today_classes']);
                             $currentClass = $hasClassToday ? 
                                 collect($course->schedule_info['today_classes'])->firstWhere('is_current', true) : null;
+                            
+                            // Color según estado del curso
+                            $statusColor = [
+                                'bg' => $course->is_active ? 'bg-green-100' : 'bg-gray-100',
+                                'text' => $course->is_active ? 'text-green-800' : 'text-gray-800'
+                            ];
                         @endphp
                         
                         <div class="border rounded-lg p-5 hover:shadow-lg transition-shadow duration-200 bg-white">

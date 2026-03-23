@@ -343,6 +343,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('/teacher/profile', [ProfileController::class, 'teacherUpdate'])
             ->name('teacher.profile.update');
         
+        // Rutas para PDFs de pago
+        Route::post('/profile/payment/pdf', [ProfileController::class, 'generatePaymentPDF'])
+            ->name('profile.payment.pdf');
+        
         // Ruta segura para descargar PDFs privados
         Route::get('/pdfs/download/{path}', [ProfileController::class, 'downloadPDF'])
             ->name('pdfs.download')

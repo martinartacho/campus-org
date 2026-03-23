@@ -82,36 +82,39 @@
         // Variable para controlar llamadas simultáneas
         let isUpdating = false;
         
-        // Actualizar contador
+        // Actualizar contador con debounce para evitar múltiples llamadas
+        let updateTimeout;
         function updateUnreadCount() {
             @auth
-            if (isUpdating) return; // Evitar llamadas simultáneas
-            isUpdating = true;
+            // Limpiar timeout anterior si existe
+            if (updateTimeout) {
+                clearTimeout(updateTimeout);
+            }
             
-            fetch('{{ route("notifications.unread-count") }}')
-                .then(res => res.json())
-                .then(data => {
-                    const counter = document.getElementById('unread-count');
-                    if (data.count > 0) {
-                        if (!counter) {
-                            const badge = document.createElement('span');
-                            badge.id = 'unread-count';
-                            badge.className = 'absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white bg-red-600 rounded-full transform translate-x-1/2 -translate-y-1/2';
-                            badge.textContent = data.count;
-                            document.querySelector('[data-bell-button]').appendChild(badge);
-                        } else {
-                            counter.textContent = data.count;
+            // Esperar 500ms antes de hacer la llamada
+            updateTimeout = setTimeout(() => {
+                fetch('{{ route("notifications.unread-count") }}')
+                    .then(res => res.json())
+                    .then(data => {
+                        const counter = document.getElementById('unread-count');
+                        if (data.count > 0) {
+                            if (!counter) {
+                                const badge = document.createElement('span');
+                                badge.id = 'unread-count';
+                                badge.className = 'absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white bg-red-600 rounded-full transform translate-x-1/2 -translate-y-1/2';
+                                badge.textContent = data.count;
+                                document.querySelector('[data-bell-button]').appendChild(badge);
+                            } else {
+                                counter.textContent = data.count;
+                            }
+                        } else if (counter) {
+                            counter.remove();
                         }
-                    } else if (counter) {
-                        counter.remove();
-                    }
-                })
-                .catch(error => {
-                    console.log('Error obtenint notificacions:', error);
-                })
-                .finally(() => {
-                    isUpdating = false;
-                });
+                    })
+                    .catch(error => {
+                        console.log('Error obtenint notificacions:', error);
+                    });
+            }, 500);
             @else
             // Si no està autenticat, no fer res
             @endif
