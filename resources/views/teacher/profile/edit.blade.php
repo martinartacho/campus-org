@@ -77,7 +77,7 @@
             </div>
 
             <div class="px-4 py-5 sm:p-6">
-                <form method="POST" action="{{ route('teacher.profile.update') }}" class="space-y-6">
+                <form method="PUT" action="{{ route('teacher.profile.update') }}" class="space-y-6">
                     @csrf
                     
                     {{-- SELECCIÓ DE TIPUS DE COBRAMENT --}}
