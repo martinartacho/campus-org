@@ -118,11 +118,11 @@
         const ibanInput = document.getElementById('iban');
         const toggleText = document.getElementById('iban-toggle-text');
         
-        if (ibanInput.type === 'password') {
-            ibanInput.type = 'text';
-            toggleText.textContent = 'Ocultar';
-        } else {
+        if (ibanInput.type === 'text') {
             ibanInput.type = 'password';
+            toggleText.textContent = 'Mostrar';
+        } else {
+            ibanInput.type = 'text';
             toggleText.textContent = 'Mostrar';
         }
     }
@@ -161,25 +161,11 @@
         });
     }
 
-    // Gestionar camps required dinàmicament segons tipus de pagament
-    function updateRequiredFields(type) {
-        // Eliminar required de tots els camps
-        document.querySelectorAll('[data-payment]').forEach(el => {
-            el.removeAttribute('required');
-        });
-
-        // Activar required només als camps del tipus seleccionat
-        document.querySelectorAll(`[data-payment="${type}"]`).forEach(el => {
-            el.setAttribute('required', 'required');
-        });
-    }
-
     // Inicialitzar formulari segons tipus seleccionat
     document.addEventListener('DOMContentLoaded', function() {
         const selectedType = document.querySelector('input[name="payment_type"]:checked');
         if (selectedType) {
             selectPaymentType(selectedType.value);
-            updateRequiredFields(selectedType.value);
         }
     });
     </script>
