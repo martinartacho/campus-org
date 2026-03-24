@@ -169,30 +169,15 @@
             <div class="space-y-4">
                 <div>
                     <x-input-label for="iban" :value="__('IBAN') . ' *'" />
-                    <div class="mt-1 relative">
-                        <x-text-input id="iban" name="iban"  type="text" tabindex="0" 
-                                   class="mt-1 block w-full pr-20 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" 
-                                   :value="auth()->user()->teacherProfile?->masked_iban ?? ''"
-                                   placeholder="ES00 0000 0000 0000 0000"
-                                   pattern="^ES\d{2}\s?\d{4}\s?\d{4}\s?\d{2}\s?\d{10}$"
-                                   title="Format: ES00 0000 0000 0000 0000"
-                                   tabindex="0" />
-                        
-                        <button type="button" 
-                                onclick="toggleIbanVisibility()"
-                                class="absolute inset-y-0 right-0 px-3 py-2 bg-gray-100 text-gray-600 hover:bg-gray-200 text-xs font-medium rounded-r-md"
-                                tabindex="0">
-                            @php
-                                $hasIban = false;
-                                try {
-                                    $hasIban = auth()->user()->teacherProfile && !empty(auth()->user()->teacherProfile->iban);
-                                } catch (\Exception $e) {
-                                    $hasIban = false;
-                                }
-                            @endphp
-                            <span id="iban-toggle-text">{{ $hasIban ? 'Mostrar' : 'Editar' }}</span>
-                        </button>
+                    <div class="text-sm font-medium text-gray-700 mb-2">
+                        {{ __('IBAN actual:') }} <span class="font-mono bg-gray-100 px-2 py-1 rounded">{{ auth()->user()->teacherProfile?->formatted_iban }}</span>
                     </div>
+                    <input type="hidden" id="iban" name="iban" value="{{ auth()->user()->teacherProfile?->iban ?? '' }}" />
+                    <input type="text" id="iban_new" name="iban_new" 
+                           class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" 
+                           placeholder="{{ __('Nou IBAN (opcional)') }}"
+                           pattern="^ES\d{2}\s?\d{4}\s?\d{4}\s?\d{2}\s?\d{10}$"
+                           title="{{ __('Format: ES00 0000 0000 0000 0000') }}" />
                     <p class="mt-1 text-xs text-gray-500">{{ __('Format: ES00 0000 0000 0000 0000') }}</p>
                     <x-input-error class="mt-2" :messages="$errors->get('iban')" />
                 </div>

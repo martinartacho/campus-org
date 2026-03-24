@@ -114,20 +114,6 @@
     </div>
 
     <script>
-    function toggleIbanVisibility() {
-        const ibanInput = document.getElementById('iban');
-        const toggleText = document.getElementById('iban-toggle-text');
-        
-        // Per defecte mostrem l'IBAN com a text (visible)
-        if (ibanInput.type === 'password') {
-            ibanInput.type = 'text';
-            toggleText.textContent = 'Ocultar';
-        } else {
-            ibanInput.type = 'password';
-            toggleText.textContent = 'Mostrar';
-        }
-    }
-
     function generatePaymentPDF() {
         const button = event.target;
         button.disabled = true;

@@ -357,6 +357,16 @@ class ProfileController extends Controller
             'update_data' => $updateData
         ]);
         
+        // Si hi ha un IBAN nou i és diferent, actualitzar-lo
+        if ($request->filled('iban_new') && $request->input('iban_new') !== $teacher->iban) {
+            $updateData['iban'] = $request->input('iban_new');
+            \Log::info('IBAN actualitzat', [
+                'teacher_id' => $teacher->id,
+                'old_iban' => $teacher->iban,
+                'new_iban' => $request->input('iban_new')
+            ]);
+        }
+        
         $teacher->update($updateData);
         
         \Log::info('Teacher updated successfully', [
