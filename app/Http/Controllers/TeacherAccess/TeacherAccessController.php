@@ -241,7 +241,17 @@ class TeacherAccessController extends Controller
                 }
             }
 
-            return back()->with('success', 'Dades actualitzades correctament');
+            // Mensaje de éxito específico para borrador guardado
+            $successMessage = '✅ Esborrany guardat correctament! Les teves dades s\'han desat correctament.';
+            
+            // Si hay errores de validación específicos, añadirlos al mensaje
+            if ($needsPayment === 'own_fee' && empty($validated['iban'])) {
+                $successMessage .= ' ⚠️ Recorda completar l\'IBAN abans de finalitzar.';
+            } elseif ($needsPayment === 'ceded_fee' && empty($validated['beneficiary_iban'])) {
+                $successMessage .= ' ⚠️ Recorda completar l\'IBAN del beneficiari abans de finalitzar.';
+            }
+
+            return back()->with('success', $successMessage);
         }
 
         

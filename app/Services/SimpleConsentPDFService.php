@@ -33,8 +33,9 @@ class SimpleConsentPDFService
         // Escribir HTML
         $pdf->writeHTML($html, true, false, true, false, '');
         
-        // Generar ruta
-        $filename = "simple_consent_{$season->slug}_{$course->id}.pdf";
+        // Generar ruta con timestamp para evitar sobreescribir
+        $timestamp = date('Y-m-d_H-i-s');
+        $filename = "simple_consent_{$season->slug}_{$course->id}_{$timestamp}.pdf";
         $path = "consents/teachers/{$teacher->id}/{$filename}";
         
         // Asegurar directorio
@@ -43,8 +44,19 @@ class SimpleConsentPDFService
             mkdir($directory, 0775, true);
         }
         
+        // Eliminar PDF anterior si existe (mantener solo el más reciente)
+        $existingFiles = glob(storage_path("app/consents/teachers/{$teacher->id}/simple_consent_{$season->slug}_{$course->id}_*.pdf"));
+        foreach ($existingFiles as $existingFile) {
+            if (is_file($existingFile)) {
+                unlink($existingFile);
+                \Log::info('PDF anterior eliminado: ' . basename($existingFile));
+            }
+        }
+        
         // Guardar PDF
         $pdf->Output(storage_path("app/{$path}"), 'F');
+        
+        \Log::info('PDF generado: ' . $path);
         
         return $path;
     }
