@@ -24,6 +24,27 @@
         </div>
     @endif
 
+    @if(session('success'))
+        <div class="bg-green-100 border-2 border-green-400 text-green-700 px-6 py-4 rounded-lg mb-6 shadow-md">
+            <div class="flex items-start">
+                <div class="flex-shrink-0">
+                    <svg class="h-6 w-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-lg font-medium text-green-800">✅ Dades guardades correctament</h3>
+                    <div class="mt-2 text-sm text-green-700">
+                        {{ session('success') }}
+                    </div>
+                    <div class="mt-3 text-xs text-green-600 bg-green-50 p-2 rounded">
+                        🎯 <strong>Següent pas:</strong> Marca les autoritzacions i fes clic a "Guardar dades, crear PDF i finalitzar"
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
     
 
     <!-- Formulari únic: Dades de cobrament -->
@@ -186,7 +207,7 @@
                                 @enderror
 
                                 <label class="block font-medium">IBAN:</label>
-                                <input type="text" name="iban" 
+                                <input type="text" id="iban-profesor" name="iban" 
                                     value="{{ old('iban', ($needs == 'own_fee') ? ($payment?->iban ?? '') : '') }}"
                                     class="border p-2 w-full" 
                                     placeholder="ES00 0000 0000 0000 0000 0000"
@@ -691,7 +712,7 @@ document.addEventListener('DOMContentLoaded', function () {
         
         const fieldsToSync = [
             'first_name', 'last_name', 'email', 'phone', 'dni', 
-            'address', 'postal_code', 'city', 'needs_payment', 'observacions'
+            'address', 'postal_code', 'city', 'observacions'
         ];
         
         fieldsToSync.forEach(fieldName => {
@@ -709,9 +730,22 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
         
+        // Sincronitzar needs_payment (radio button especial)
+        const needsPaymentSource = document.querySelector('#form-borrador [name="needs_payment"]:checked');
+        const needsPaymentHidden = document.querySelector('#form-final [name="needs_payment"]');
+        
+        if (needsPaymentSource && needsPaymentHidden) {
+            needsPaymentHidden.value = needsPaymentSource.value;
+            console.log(`✅ Sincronizado needs_payment: ${needsPaymentSource.value}`);
+        } else {
+            console.log(`🔍 needs_payment:`, {
+                source: needsPaymentSource ? needsPaymentSource.value : 'NO SELECCIONADO',
+                hidden: needsPaymentHidden ? needsPaymentHidden.value : 'NO ENCONTRADO'
+            });
+        }
+        
         // Sincronitzar camps bancaris si són own_fee
-        const needsPayment = document.querySelector('#form-borrador [name="needs_payment"]:checked');
-        if (needsPayment && needsPayment.value === 'own_fee') {
+        if (needsPaymentSource && needsPaymentSource.value === 'own_fee') {
             const bankFields = ['fiscal_id', 'iban', 'bank_titular', 'fiscal_situation', 'invoice'];
             bankFields.forEach(fieldName => {
                 const sourceField = document.querySelector(`#form-borrador [name="${fieldName}"]`);
@@ -719,12 +753,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 
                 if (sourceField && hiddenField) {
                     hiddenField.value = sourceField.value;
+                    console.log(`✅ Sincronizado banco ${fieldName}: ${sourceField.value}`);
                 }
             });
         }
         
         // Sincronitzar camps del beneficiari si són ceded_fee
-        if (needsPayment && needsPayment.value === 'ceded_fee') {
+        if (needsPaymentSource && needsPaymentSource.value === 'ceded_fee') {
             const beneficiaryFields = [
                 'beneficiary_first_name', 'beneficiary_email', 'beneficiary_phone',
                 'beneficiary_address', 'beneficiary_postal_code', 'beneficiary_city',
@@ -737,6 +772,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 
                 if (sourceField && hiddenField) {
                     hiddenField.value = sourceField.value;
+                    console.log(`✅ Sincronizado beneficiario ${fieldName}: ${sourceField.value}`);
                 }
             });
         }
