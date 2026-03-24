@@ -685,6 +685,55 @@ document.addEventListener('DOMContentLoaded', function () {
         // Opció 1 (waived_fee): No fer res, els camps queden nets i sense required
     }
 
+    // Sincronitzar camps del Formulari 1 amb els camps ocults del Formulari 2
+    function syncHiddenFields() {
+        const fieldsToSync = [
+            'first_name', 'last_name', 'email', 'phone', 'dni', 
+            'address', 'postal_code', 'city', 'needs_payment', 'observacions'
+        ];
+        
+        fieldsToSync.forEach(fieldName => {
+            const sourceField = document.querySelector(`form:first-of-type [name="${fieldName}"]`);
+            const hiddenField = document.querySelector(`form:last-of-type [name="${fieldName}"]`);
+            
+            if (sourceField && hiddenField) {
+                hiddenField.value = sourceField.value;
+            }
+        });
+        
+        // Sincronitzar camps bancaris si són own_fee
+        const needsPayment = document.querySelector('form:first-of-type [name="needs_payment"]:checked');
+        if (needsPayment && needsPayment.value === 'own_fee') {
+            const bankFields = ['fiscal_id', 'iban', 'bank_titular', 'fiscal_situation', 'invoice'];
+            bankFields.forEach(fieldName => {
+                const sourceField = document.querySelector(`form:first-of-type [name="${fieldName}"]`);
+                const hiddenField = document.querySelector(`form:last-of-type [name="${fieldName}"]`);
+                
+                if (sourceField && hiddenField) {
+                    hiddenField.value = sourceField.value;
+                }
+            });
+        }
+        
+        // Sincronitzar camps del beneficiari si són ceded_fee
+        if (needsPayment && needsPayment.value === 'ceded_fee') {
+            const beneficiaryFields = [
+                'beneficiary_first_name', 'beneficiary_email', 'beneficiary_phone',
+                'beneficiary_address', 'beneficiary_postal_code', 'beneficiary_city',
+                'beneficiary_fiscal_id', 'beneficiary_iban', 'beneficiary_bank_titular',
+                'beneficiary_fiscal_situation', 'beneficiary_invoice'
+            ];
+            beneficiaryFields.forEach(fieldName => {
+                const sourceField = document.querySelector(`form:first-of-type [name="${fieldName}"]`);
+                const hiddenField = document.querySelector(`form:last-of-type [name="${fieldName}"]`);
+                
+                if (sourceField && hiddenField) {
+                    hiddenField.value = sourceField.value;
+                }
+            });
+        }
+    }
+
     // Inicialització
     const selected = document.querySelector('input[name="needs_payment"]:checked');
     if (selected) {
@@ -695,8 +744,26 @@ document.addEventListener('DOMContentLoaded', function () {
     paymentRadios.forEach(radio => {
         radio.addEventListener('change', function () {
             handlePaymentChange(this.value);
+            syncHiddenFields(); // Sincronitzar quan canviï l'opció de pagament
         });
     });
+
+    // Sincronitzar tots els camps quan l'usuari escrigui
+    document.addEventListener('input', function(e) {
+        if (e.target.closest('form:first-of-type')) {
+            syncHiddenFields();
+        }
+    });
+
+    // Sincronitzar quan es canviïn els radio buttons
+    document.addEventListener('change', function(e) {
+        if (e.target.closest('form:first-of-type')) {
+            syncHiddenFields();
+        }
+    });
+
+    // Sincronització inicial
+    syncHiddenFields();
 });
 
 
