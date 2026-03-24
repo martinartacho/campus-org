@@ -175,9 +175,7 @@
                     <input type="hidden" id="iban" name="iban" value="{{ auth()->user()->teacherProfile?->iban ?? '' }}" />
                     <input type="text" id="iban_new" name="iban_new" 
                            class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" 
-                           placeholder="{{ __('Nou IBAN (opcional)') }}"
-                           pattern="^ES\d{2}\s?\d{4}\s?\d{4}\s?\d{2}\s?\d{10}$"
-                           title="{{ __('Format: ES00 0000 0000 0000 0000') }}" />
+                           placeholder="{{ __('Nou IBAN (opcional)') }}" />
                     <p class="mt-1 text-xs text-gray-500">{{ __('Format: ES00 0000 0000 0000 0000') }}</p>
                     <x-input-error class="mt-2" :messages="$errors->get('iban')" />
                 </div>

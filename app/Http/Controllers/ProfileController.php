@@ -164,13 +164,12 @@ class ProfileController extends Controller
         
         // Validar dades
         $validated = $request->validate([
-            'iban' => ['required', 'string', 'regex:/^ES\d{2}\s?\d{4}\s?\d{4}\s?\d{2}\s?\d{10}$/'],
-            'bank_titular' => ['required', 'string', 'max:255'],
+            'iban' => ['nullable', 'string'],
+            'bank_titular' => ['nullable', 'string', 'max:255'],
             'fiscal_id' => ['nullable', 'string', 'max:50'],
             'fiscal_situation' => ['required', 'string', 'in:autonom,employee,pensioner,altre'],
             'invoice' => ['nullable', 'boolean'],
         ], [
-            'iban.required' => __('L\'IBAN és obligatori'),
             'iban.regex' => __('L\'IBAN no té el format correcte'),
             'bank_titular.required' => __('El titular del compte és obligatori'),
             'fiscal_situation.required' => __('La situació fiscal és obligatòria'),
@@ -252,7 +251,7 @@ class ProfileController extends Controller
         } elseif ($paymentType === 'own') {
             $baseRules = array_merge($baseRules, [
                 'dni' => ['required', 'string', 'max:20'],
-                'iban' => ['required', 'string', 'regex:/^ES\d{2}\s?\d{4}\s?\d{4}\s?\d{2}\s?\d{10}$/'],
+                'iban' => ['required', 'string'],
                 'bank_titular' => ['required', 'string', 'max:255'],
                 'fiscal_id' => ['nullable', 'string', 'max:20'],
                 'fiscal_situation' => ['required', 'in:autonom,employee,pensioner,other'],
@@ -262,7 +261,7 @@ class ProfileController extends Controller
         } elseif ($paymentType === 'ceded') {
             $baseRules = array_merge($baseRules, [
                 'beneficiary_dni' => ['required', 'string', 'max:20'],
-                'beneficiary_iban' => ['required', 'string', 'regex:/^ES\d{2}\s?\d{4}\s?\d{4}\s?\d{2}\s?\d{10}$/'],
+                'beneficiary_iban' => ['required', 'string'],
                 'beneficiary_titular' => ['required', 'string', 'max:255'],
                 'beneficiary_fiscal_situation' => ['required', 'in:autonom,employee,pensioner,other'],
                 'beneficiary_city' => ['required', 'string', 'max:100'],
