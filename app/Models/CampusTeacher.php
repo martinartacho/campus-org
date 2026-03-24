@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Crypt;
 
 /**
  * App\Models\CampusTeacher
@@ -119,8 +120,8 @@ class CampusTeacher extends Model
         'hiring_date' => 'date',
         'areas' => 'array',
         'metadata' => 'array',
-        // 🔐 Dades sensibles xifrades (RGPD)
-        'iban' => 'encrypted',
+        // 🔐 Dades sensibles xifrades (RGPD) - Accessors personalitzats
+        // 'iban' => 'encrypted', // Desactivat per problema de serialització
         'bank_titular' => 'encrypted',
         'fiscal_id' => 'encrypted',
         'beneficiary_iban' => 'encrypted',
@@ -133,6 +134,39 @@ class CampusTeacher extends Model
         'ceded_confirmation' => 'boolean',
         'beneficiary_invoice' => 'boolean',
     ];
+
+    /**
+     * Get IBAN attribute with manual decryption.
+     */
+    public function getIbanAttribute($value)
+    {
+        if (empty($value)) {
+            return '';
+        }
+        
+        try {
+            return Crypt::decrypt($value);
+        } catch (\Exception $e) {
+            return '';
+        }
+    }
+    
+    /**
+     * Set IBAN attribute with manual encryption.
+     */
+    public function setIbanAttribute($value)
+    {
+        if (empty($value)) {
+            $this->attributes['iban'] = null;
+            return;
+        }
+        
+        try {
+            $this->attributes['iban'] = Crypt::encrypt($value);
+        } catch (\Exception $e) {
+            $this->attributes['iban'] = null;
+        }
+    }
 
     /**
      * Get the formatted IBAN attribute.
