@@ -212,7 +212,8 @@
                                     class="border p-2 w-full" 
                                     placeholder="ES00 0000 0000 0000 0000 0000"
                                     pattern="^ES\d{2}\s?\d{4}\s?\d{4}\s?\d{2}\s?\d{10}$"
-                                    title="Format: ES00 0000 0000 0000 0000 0000">
+                                    title="Format: ES00 0000 0000 0000 0000 0000"
+                                    required>
                                 <p class="text-xs text-gray-500 mt-1">Format: ES00 0000 0000 0000 0000 0000</p>
                                 @error('iban')
                                     <span class="text-red-600 text-sm">{{ $message }}</span>
@@ -222,7 +223,8 @@
                                 <input type="text" name="bank_titular" 
                                     value="{{ old('bank_titular', ($needs == 'own_fee') ? ($payment?->bank_titular ?? '') : '') }}"
                                     class="border p-2 w-full"
-                                    placeholder="Nom i cognoms del titular">
+                                    placeholder="Nom i cognoms del titular"
+                                    required>
                                 @error('bank_titular')
                                     <span class="text-red-600 text-sm">{{ $message }}</span>
                                 @enderror
@@ -258,14 +260,14 @@
                         <div class="space-y-2 mb-4">
                             <label class="flex items-center">
                                 <input type="radio" name="fiscal_situation" value="autonom" 
-                                    class="mr-2" 
+                                    class="mr-2" required
                                     {{ old('fiscal_situation') == 'autonom' ? 'checked' : '' }}>
                                 <span>Autònom/a</span>
                             </label>
                             
                             <label class="flex items-center">
                                 <input type="radio" name="fiscal_situation" value="employee" 
-                                    class="mr-2" 
+                                    class="mr-2" required
                                     {{ old('fiscal_situation') == 'employee' ? 'checked' : '' }}>
                                 <span>Treballador/a per compte alié</span>
                             </label>
@@ -278,17 +280,18 @@
                             </label>
 
                             <label class="flex items-center">
-                                <input type="radio" name="fiscal_situation" value="pensioner" 
-                                    class="mr-2" 
-                                    {{ old('fiscal_situation') == 'pensioner' ? 'checked' : '' }}>
+                                <input type="radio" name="fiscal_situation" value="special_pensioner" 
+                                    class="mr-2" required
+                                    {{ old('fiscal_situation') == 'special_pensioner' ? 'checked' : '' }}>
                                 <span>Jubilat/jubilada amb conveni especial amb la Seguretat Social o amb jubilació activa</span>
                             </label>
                             
                             <label class="flex items-center">
-                            <input type="radio" name="fiscal_situation" value="altre"
-                                class="mr-2" {{ old('fiscal_situation') == 'altre' ? 'checked' : '' }}>
-                            Altre (no llistat)
-                        </label>
+                                <input type="radio" name="fiscal_situation" value="other" 
+                                    class="mr-2" required
+                                    {{ old('fiscal_situation') == 'other' ? 'checked' : '' }}>
+                                <span>Altre (no llistat)</span>
+                            </label>
                         </div>
                     </div>
                     {{-- END Accepto cobrament (own_fee) --}}

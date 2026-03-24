@@ -78,9 +78,9 @@ class TeacherAccessController extends Controller
 
                 $rules = array_merge($rules, [
                     'fiscal_id'        => 'nullable|string|max:20',
-                    'iban' => 'nullable|string|max:34|regex:/^ES\d{2}\s?\d{4}\s?\d{4}\s?\d{2}\s?\d{10}$/',
-                    'bank_titular'     => 'nullable|string|max:255',
-                    'fiscal_situation' => 'nullable|string|max:255',
+                    'iban' => 'required|string|max:34|regex:/^ES\d{2}\s?\d{4}\s?\d{4}\s?\d{2}\s?\d{10}$/',
+                    'bank_titular'     => 'required|string|max:255',
+                    'fiscal_situation' => 'required|string|max:255',
                 ]);
 
             } elseif ($needsPayment === 'ceded_fee') {
