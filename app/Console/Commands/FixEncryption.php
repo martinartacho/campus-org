@@ -33,59 +33,38 @@ class FixEncryption extends Command
             // Obtenir tots els teachers amb IBAN no xifrat
             $teachers = DB::table('campus_teachers')
                 ->whereNotNull('iban')
-                ->whereRaw("iban NOT LIKE 'eyJpdiI6%'")
                 ->get();
             
-            $this->info("Trobats {$teachers->count()} professors amb IBAN no xifrat...");
+            $count = 0;
             
             foreach ($teachers as $teacher) {
-                $this->info("Processant professor ID: {$teacher->id}");
+                $iban = $teacher->iban;
                 
-                try {
-                    // Xifrar l'IBAN
-                    if (!empty($teacher->iban)) {
-                        $encryptedIban = Crypt::encrypt($teacher->iban);
+                // Si està encriptat però mal format (comença amb s:)
+                if (strpos($iban, 's:') === 0) {
+                    // Extreure el valor real de la cadena serialitzada
+                    preg_match('/s:\d+:"([^"]+)"/', $iban, $matches);
+                    
+                    if (isset($matches[1])) {
+                        $realIban = $matches[1];
+                        
+                        // Guardar correctament amb xifratge manual
+                        $encryptedIban = Crypt::encrypt($realIban);
+                        
                         DB::table('campus_teachers')
                             ->where('id', $teacher->id)
                             ->update(['iban' => $encryptedIban]);
                         
-                        $this->info("  - IBAN xifrat correctament");
+                        $count++;
+                        $this->line("Teacher ID {$teacher->id}: {$realIban}");
                     }
-                    
-                    // Xifrar el titular
-                    if (!empty($teacher->bank_titular)) {
-                        $encryptedTitular = Crypt::encrypt($teacher->bank_titular);
-                        DB::table('campus_teachers')
-                            ->where('id', $teacher->id)
-                            ->update(['bank_titular' => $encryptedTitular]);
-                        
-                        $this->info("  - Bank titular xifrat correctament");
-                    }
-                    
-                    // Xifrar el fiscal ID
-                    if (!empty($teacher->fiscal_id)) {
-                        $encryptedFiscalId = Crypt::encrypt($teacher->fiscal_id);
-                        DB::table('campus_teachers')
-                            ->where('id', $teacher->id)
-                            ->update(['fiscal_id' => $encryptedFiscalId]);
-                        
-                        $this->info("  - Fiscal ID xifrat correctament");
-                    }
-                    
-                    $this->info("  - Professor {$teacher->id} processat ✓");
-                    
-                } catch (\Exception $e) {
-                    $this->error("  - Error processant professor {$teacher->id}: " . $e->getMessage());
                 }
             }
             
-            $this->info('✅ Correcció de xifrat completada!');
+            $this->info("S'han corregit {$count} registres d'IBAN");
             
         } catch (\Exception $e) {
-            $this->error('❌ Error durant la correcció: ' . $e->getMessage());
-            return 1;
+            $this->error('Error: ' . $e->getMessage());
         }
-        
-        return 0;
     }
 }

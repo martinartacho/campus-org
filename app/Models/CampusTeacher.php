@@ -169,7 +169,7 @@ class CampusTeacher extends Model
     }
 
     /**
-     * Get the formatted IBAN attribute.
+     * Get formatted IBAN attribute.
      */
     public function getFormattedIbanAttribute(): string
     {
@@ -179,12 +179,17 @@ class CampusTeacher extends Model
             return '';
         }
         
-        // Si está encriptado, Laravel lo desencripta automáticamente
-        // Formatear para mostrar solo primeros y últimos dígitos
-        $clean = str_replace(' ', '', $iban);
+        // Treure espais i assegurar que és un IBAN net
+        $clean = preg_replace('/\s+/', '', $iban);
         
+        // Si comença amb 's:' és dades serialitzades, extreure el valor real
+        if (strpos($clean, 's:') === 0) {
+            return 'Dades en procés de correcció';
+        }
+        
+        // Format correcte: ES00 **** **** **** 0000
         if (strlen($clean) >= 24) {
-            return substr($clean, 0, 4) . ' **** ' . substr($clean, -4);
+            return substr($clean, 0, 4) . ' **** **** **** ' . substr($clean, -4);
         }
         
         return $iban;
