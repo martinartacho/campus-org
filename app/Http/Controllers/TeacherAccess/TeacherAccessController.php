@@ -629,40 +629,37 @@ class TeacherAccessController extends Controller
                 'payment_option' => $payment?->payment_option
             ]);
 
-            // SIEMPRE crear un payment temporal con los datos del request actual
-            $tempPayment = new \stdClass();
-            $tempPayment->payment_option = $request->input('needs_payment', 'waived_fee');
-            $tempPayment->fiscal_id = $request->input('fiscal_id', $teacher->dni);
-            $tempPayment->iban = $request->input('iban', $teacher->masked_iban);
-            $tempPayment->bank_titular = $request->input('bank_titular', $teacher->first_name . ' ' . $teacher->last_name);
-            $tempPayment->metadata = [];
-            
-            // Usar siempre el payment temporal del request actual
-            $payment = $tempPayment;
-            
-            \Log::info('Usando payment temporal del request:', [
-                'payment_option' => $payment->payment_option,
-                'fiscal_id' => $payment->fiscal_id,
-                'iban' => $payment->iban
-            ]);
-            
+            // Si no hay payment, crear uno nuevo con los datos del request
             if (!$payment) {
-                // Este bloque ya no debería ejecutarse nunca
-                \Log::warning('Payment temporal es null - no debería pasar');
-                // En lugar de fallar, generar PDF con datos básicos del profesor
-                \Log::warning('No se encontraron datos de pago específicos, usando datos básicos del profesor', [
+                \Log::info('Creando nuevo payment con datos del request');
+                $payment = CampusTeacherPayment::create([
                     'teacher_id' => $teacher->id,
                     'course_id' => $request->input('course_id'),
-                    'season_id' => $request->input('season_id')
+                    'season_id' => $request->input('season_id'),
+                    'payment_option' => $request->input('needs_payment', 'waived_fee'),
+                    'first_name' => $teacher->first_name,
+                    'last_name' => $teacher->last_name,
+                    'fiscal_id' => $request->input('fiscal_id', $teacher->dni),
+                    'address' => $request->input('address', $teacher->address),
+                    'postal_code' => $request->input('postal_code', $teacher->postal_code),
+                    'city' => $request->input('city', $teacher->city),
+                    'iban' => $request->input('iban', $teacher->masked_iban),
+                    'bank_titular' => $request->input('bank_titular', $teacher->first_name . ' ' . $teacher->last_name),
+                    'fiscal_situation' => $request->input('fiscal_situation', $teacher->fiscal_situation),
+                    'invoice' => $request->input('invoice') == '1',
+                    'observacions' => $request->input('observacions'),
+                    'completed_at' => now(),
                 ]);
                 
-                // Crear un objeto payment básico para que el PDF funcione
-                $payment = new \stdClass();
-                $payment->payment_option = 'own_fee'; // Asumimos que cobra
-                $payment->fiscal_id = $teacher->dni;
-                $payment->iban = $teacher->masked_iban;
-                $payment->bank_titular = $teacher->first_name . ' ' . $teacher->last_name;
-                $payment->metadata = [];
+                \Log::info('Payment creado exitosamente:', [
+                    'payment_id' => $payment->id,
+                    'payment_option' => $payment->payment_option
+                ]);
+            } else {
+                \Log::info('Usando payment existente:', [
+                    'payment_id' => $payment->id,
+                    'payment_option' => $payment->payment_option
+                ]);
             }
 
             // 3. Obtener temporada y curso

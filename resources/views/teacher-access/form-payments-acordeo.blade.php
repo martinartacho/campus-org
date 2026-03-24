@@ -48,7 +48,7 @@
             </div>
         </div>
 
-        <form method="POST" action="{{ route('teacher.access.personal-data.update', $token->token) }}">
+        <form id="form-borrador" method="POST" action="{{ route('teacher.access.personal-data.update', $token->token) }}">
             @csrf
 
             <input type="hidden" name="course_id" value="{{ $course->id }}">
@@ -489,7 +489,7 @@
                     </div>
                 </form>
 
-                <form method="POST" action="{{ route('teacher.access.personal-data.update', $token->token) }}" 
+                <form id="form-final" method="POST" action="{{ route('teacher.access.personal-data.update', $token->token) }}" 
                     onsubmit="return validateFinalForm();">
                     @csrf
 
@@ -687,27 +687,35 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Sincronitzar camps del Formulari 1 amb els camps ocults del Formulari 2
     function syncHiddenFields() {
+        console.log('🔄 syncHiddenFields() iniciado');
+        
         const fieldsToSync = [
             'first_name', 'last_name', 'email', 'phone', 'dni', 
             'address', 'postal_code', 'city', 'needs_payment', 'observacions'
         ];
         
         fieldsToSync.forEach(fieldName => {
-            const sourceField = document.querySelector(`form:first-of-type [name="${fieldName}"]`);
-            const hiddenField = document.querySelector(`form:last-of-type [name="${fieldName}"]`);
+            const sourceField = document.querySelector(`#form-borrador [name="${fieldName}"]`);
+            const hiddenField = document.querySelector(`#form-final [name="${fieldName}"]`);
+            
+            console.log(`🔍 Campo ${fieldName}:`, {
+                source: sourceField ? sourceField.value : 'NO ENCONTRADO',
+                hidden: hiddenField ? hiddenField.value : 'NO ENCONTRADO'
+            });
             
             if (sourceField && hiddenField) {
                 hiddenField.value = sourceField.value;
+                console.log(`✅ Sincronizado ${fieldName}: ${sourceField.value}`);
             }
         });
         
         // Sincronitzar camps bancaris si són own_fee
-        const needsPayment = document.querySelector('form:first-of-type [name="needs_payment"]:checked');
+        const needsPayment = document.querySelector('#form-borrador [name="needs_payment"]:checked');
         if (needsPayment && needsPayment.value === 'own_fee') {
             const bankFields = ['fiscal_id', 'iban', 'bank_titular', 'fiscal_situation', 'invoice'];
             bankFields.forEach(fieldName => {
-                const sourceField = document.querySelector(`form:first-of-type [name="${fieldName}"]`);
-                const hiddenField = document.querySelector(`form:last-of-type [name="${fieldName}"]`);
+                const sourceField = document.querySelector(`#form-borrador [name="${fieldName}"]`);
+                const hiddenField = document.querySelector(`#form-final [name="${fieldName}"]`);
                 
                 if (sourceField && hiddenField) {
                     hiddenField.value = sourceField.value;
@@ -724,8 +732,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 'beneficiary_fiscal_situation', 'beneficiary_invoice'
             ];
             beneficiaryFields.forEach(fieldName => {
-                const sourceField = document.querySelector(`form:first-of-type [name="${fieldName}"]`);
-                const hiddenField = document.querySelector(`form:last-of-type [name="${fieldName}"]`);
+                const sourceField = document.querySelector(`#form-borrador [name="${fieldName}"]`);
+                const hiddenField = document.querySelector(`#form-final [name="${fieldName}"]`);
                 
                 if (sourceField && hiddenField) {
                     hiddenField.value = sourceField.value;
@@ -750,14 +758,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Sincronitzar tots els camps quan l'usuari escrigui
     document.addEventListener('input', function(e) {
-        if (e.target.closest('form:first-of-type')) {
+        if (e.target.closest('#form-borrador')) {
             syncHiddenFields();
         }
     });
 
     // Sincronitzar quan es canviïn els radio buttons
     document.addEventListener('change', function(e) {
-        if (e.target.closest('form:first-of-type')) {
+        if (e.target.closest('#form-borrador')) {
             syncHiddenFields();
         }
     });
