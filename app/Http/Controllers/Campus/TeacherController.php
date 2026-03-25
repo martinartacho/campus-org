@@ -137,6 +137,7 @@ class TeacherController extends Controller
         
         // Mensajes de error personalizados
         $messages = [
+            'teacher_code.unique' => 'El codi de professor ja existeix. Si us plau, tria un altre codi.',
             'iban.regex' => 'El format IBAN no és vàlid. Ha de seguir el patró: ES00 0000 0000 0000 0000 0000',
         ];
         
@@ -144,6 +145,7 @@ class TeacherController extends Controller
         $validated = $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
+            'teacher_code' => 'nullable|string|max:20',
             'email' => 'required|email|unique:users,email',
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:255',
@@ -255,10 +257,26 @@ class TeacherController extends Controller
                     }
                 }
                 
-                // Generar código de profesor único con TeacherCodeService
-                $codeService = new TeacherCodeService();
-                $teacherCode = $codeService->generateAmicableTeacherCode($validated['first_name'], $validated['last_name']);
-                \Log::info('Teacher code generated:', ['code' => $teacherCode]);
+                // Generar código de profesor único con TeacherCodeService si no se proporciona
+                $teacherCode = $validated['teacher_code'] ?? null;
+                
+                // Validar unicidad manualmente si se proporciona un código
+                if ($teacherCode) {
+                    $existingTeacher = CampusTeacher::where('teacher_code', $teacherCode)->first();
+                    if ($existingTeacher) {
+                        return redirect()->back()
+                            ->withInput()
+                            ->with('error', 'El codi de professor "' . $teacherCode . '" ja existeix. Si us plau, tria un altre codi.');
+                    }
+                }
+                
+                if (!$teacherCode) {
+                    $codeService = new TeacherCodeService();
+                    $teacherCode = $codeService->generateAmicableTeacherCode($validated['first_name'], $validated['last_name']);
+                    \Log::info('Teacher code generated automatically:', ['code' => $teacherCode]);
+                } else {
+                    \Log::info('Teacher code provided manually:', ['code' => $teacherCode]);
+                }
                //  dd('here end '. $teacherCode);
                 // Crear usuario
                 Log::info('Creating user...');
@@ -417,6 +435,7 @@ class TeacherController extends Controller
         
         // Mensajes de error personalizados
         $messages = [
+            'teacher_code.unique' => 'El codi de professor ja existeix. Si us plau, tria un altre codi.',
             'iban.regex' => 'El format IBAN no és vàlid. Ha de seguir el patró: ES00 0000 0000 0000 0000 0000',
         ];
         
@@ -424,6 +443,7 @@ class TeacherController extends Controller
             $validated = $request->validate([
                 'first_name' => 'required|string|max:255',
                 'last_name' => 'required|string|max:255',
+                'teacher_code' => 'nullable|string|max:20',
                 'email' => [
                     'required',
                     'email',
@@ -469,9 +489,40 @@ class TeacherController extends Controller
 
             // Actualizar profesor
             \Log::info('Updating teacher...');
+            
+            // Validar que el teacher_code sea único si se proporciona
+            $teacherCode = $validated['teacher_code'] ?? null;
+            \Log::info('Teacher code validation:', [
+                'provided_code' => $teacherCode,
+                'current_code' => $teacher->teacher_code,
+                'teacher_id' => $teacher->id
+            ]);
+            
+            if ($teacherCode && $teacherCode !== $teacher->teacher_code) {
+                \Log::info('Checking for duplicate code:', ['code' => $teacherCode]);
+                $existingTeacher = CampusTeacher::where('teacher_code', $teacherCode)
+                    ->where('id', '!=', $teacher->id)
+                    ->first();
+                
+                if ($existingTeacher) {
+                    \Log::info('Duplicate code found:', ['existing_id' => $existingTeacher->id, 'existing_code' => $existingTeacher->teacher_code]);
+                    return redirect()->back()
+                        ->withInput()
+                        ->with('error', 'El codi de professor "' . $teacherCode . '" ja existeix. Si us plau, tria un altre codi.');
+                } else {
+                    \Log::info('No duplicate code found, proceeding with update');
+                }
+            } else {
+                \Log::info('Code not changed or empty, keeping current');
+                $teacherCode = $teacher->teacher_code;
+            }
+            
+            \Log::info('Using teacher code:', ['code' => $teacherCode]);
+            
             $teacher->update([
             'first_name' => $validated['first_name'],
             'last_name' => $validated['last_name'],
+            'teacher_code' => $teacherCode,
             'email' => $validated['email'],
             'phone' => $validated['phone'] ?? null,
             'address' => $validated['address'] ?? null,
@@ -489,6 +540,8 @@ class TeacherController extends Controller
             'hiring_date' => $validated['hiring_date'] ?? now()->format('Y-m-d'),
             'status' => $validated['status'] ?? 'active',
         ]);
+        
+        \Log::info('Teacher updated with code:', ['teacher_id' => $teacher->id, 'teacher_code' => $teacher->teacher_code]);
             \Log::info('Teacher updated successfully');
 
         } catch (\Exception $e) {
@@ -779,5 +832,24 @@ class TeacherController extends Controller
                 'Content-Disposition' => 'attachment; filename="' . $filename . '"'
             ]
         );
+    }
+    
+    /**
+     * Generate teacher code based on name
+     */
+    public function generateCode(Request $request)
+    {
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+        ]);
+        
+        $firstName = $request->input('first_name');
+        $lastName = $request->input('last_name');
+        
+        $service = new TeacherCodeService();
+        $code = $service->generateAmicableTeacherCode($firstName, $lastName);
+        
+        return response()->json(['code' => $code]);
     }
 }

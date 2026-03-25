@@ -616,6 +616,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('teachers', \App\Http\Controllers\Campus\TeacherController::class)
             ->middleware('can:campus.teachers.index');
         
+        Route::post('teachers/generate-code', [\App\Http\Controllers\Campus\TeacherController::class, 'generateCode'])
+            ->name('campus.teachers.generate-code')
+            ->middleware('can:campus.teachers.edit');
+        
         Route::get('teachers/template', [\App\Http\Controllers\Campus\TeacherController::class, 'template'])
             ->name('teachers.template');
                 

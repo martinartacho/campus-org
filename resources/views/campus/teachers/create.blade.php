@@ -80,6 +80,19 @@
                         </div>
 
                         <div>
+                            <label for="teacher_code" class="block text-sm font-medium text-gray-700 mb-2">
+                                Codi de Professor
+                            </label>
+                            <input type="text" 
+                                   id="teacher_code" 
+                                   name="teacher_code" 
+                                   value="{{ old('teacher_code') }}"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                   placeholder="Codi únic del professor">
+                            <small class="text-gray-500 text-xs mt-1 block">Introdueix un codi únic per al professor</small>
+                        </div>
+
+                        <div>
                             <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
                                 Email <span class="text-red-500">*</span>
                             </label>
@@ -359,3 +372,61 @@
     </div>
 </div>
 
+<script>
+function generateTeacherCode() {
+    const firstName = document.getElementById('first_name').value;
+    const lastName = document.getElementById('last_name').value;
+    
+    if (!firstName || !lastName) {
+        alert('Per generar el codi, primer omple el nom i els cognoms');
+        return;
+    }
+    
+    // Mostrar loading
+    const button = event.target.closest('button');
+    const originalContent = button.innerHTML;
+    button.innerHTML = '<i class="bi bi-hourglass-split"></i>';
+    button.disabled = true;
+    
+    fetch('{{ route("campus.campus.teachers.generate-code") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({
+            first_name: firstName,
+            last_name: lastName
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.code) {
+            document.getElementById('teacher_code').value = data.code;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error en generar el codi. Intenta-ho de nou.');
+    })
+    .finally(() => {
+        // Restaurar botó
+        button.innerHTML = originalContent;
+        button.disabled = false;
+    });
+}
+
+// Auto-generate codi quan canvien nom o cognoms
+document.getElementById('first_name').addEventListener('input', function() {
+    if (this.value && document.getElementById('last_name').value) {
+        generateTeacherCode();
+    }
+});
+
+document.getElementById('last_name').addEventListener('input', function() {
+    if (this.value && document.getElementById('first_name').value) {
+        generateTeacherCode();
+    }
+});
+</script>
+@endsection
