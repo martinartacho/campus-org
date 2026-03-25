@@ -715,6 +715,31 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->name('categories.toggle-active');
     });
 
+    // Release System Routes - Admin
+    Route::middleware(['auth', 'role:admin'])
+    ->prefix('admin/releases')
+    ->name('admin.releases.')
+    ->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\ReleaseController::class, 'index'])
+            ->name('index');
+        Route::get('/create', [App\Http\Controllers\Admin\ReleaseController::class, 'create'])
+            ->name('create');
+        Route::post('/', [App\Http\Controllers\Admin\ReleaseController::class, 'store'])
+            ->name('store');
+        Route::get('/{release}', [App\Http\Controllers\Admin\ReleaseController::class, 'show'])
+            ->name('show');
+        Route::get('/{release}/edit', [App\Http\Controllers\Admin\ReleaseController::class, 'edit'])
+            ->name('edit');
+        Route::put('/{release}', [App\Http\Controllers\Admin\ReleaseController::class, 'update'])
+            ->name('update');
+        Route::delete('/{release}', [App\Http\Controllers\Admin\ReleaseController::class, 'destroy'])
+            ->name('destroy');
+        Route::post('/{release}/publish', [App\Http\Controllers\Admin\ReleaseController::class, 'publish'])
+            ->name('publish');
+        Route::post('/{release}/archive', [App\Http\Controllers\Admin\ReleaseController::class, 'archive'])
+            ->name('archive');
+    });
+
     Route::middleware(['auth', 'role:teacher'])
     ->prefix('campus/teacher')
     ->name('campus.teacher.')
