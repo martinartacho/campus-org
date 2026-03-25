@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\CampusCourse;
 use App\Models\CampusTeacher;
 use App\Models\CampusTeacherPayment;
+use App\Services\TeacherCodeService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -254,10 +255,9 @@ class TeacherController extends Controller
                     }
                 }
                 
-                // Generar código de profesor único
-                $lastTeacher = CampusTeacher::orderBy('id', 'desc')->first();
-                $lastCode = $lastTeacher ? (int)str_replace('PROF_', '', $lastTeacher->teacher_code) : 0;
-                $teacherCode = 'PROF_' . str_pad($lastCode + 1, 4, '0', STR_PAD_LEFT);
+                // Generar código de profesor único con TeacherCodeService
+                $codeService = new TeacherCodeService();
+                $teacherCode = $codeService->generateAmicableTeacherCode($validated['first_name'], $validated['last_name']);
                 \Log::info('Teacher code generated:', ['code' => $teacherCode]);
                //  dd('here end '. $teacherCode);
                 // Crear usuario
