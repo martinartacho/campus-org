@@ -180,7 +180,7 @@ class SimpleConsentPDFService
         if ($declaracioFiscal) {
             $html .= '
             <div class="declaration">
-                <strong>✅ DECLARACIÓ FISCAL:</strong> Declara sota la meva responsabilitat que les dades facilitades són certes 
+                <strong>DECLARACIÓ FISCAL:</strong> Declara sota la meva responsabilitat que les dades facilitades són certes 
                 i que es troba en alguna de les següents situacions fiscals:
                 <ul style="margin-left: 20px; font-size: 11px;">
                     <li>Soc autònom i presento declaracions trimestrals d\'IVA</li>
@@ -192,20 +192,20 @@ class SimpleConsentPDFService
         } else {
             $html .= '
             <div class="declaration">
-                <strong>❌ No procedeix declaració fiscal</strong>
+                <strong>No procedeix declaració fiscal</strong>
             </div>';
         }
         
         if ($autoritzacioDades) {
             $html .= '
             <div class="declaration">
-                <strong>✅ AUTORITZACIÓ TRACTAMENT DE DADES:</strong> Autoritzo el tractament de les meves dades personals 
+                <strong>AUTORITZACIÓ TRACTAMENT DE DADES:</strong> Autoritzo el tractament de les meves dades personals 
                 amb finalitats fiscals i administratives, d\'acord amb la normativa vigent de protecció de dades.
             </div>';
         } else {
             $html .= '
             <div class="declaration">
-                <strong>❌ No s\'ha registrat l\'autorització de dades</strong>
+                <strong>No s\'ha registrat l\'autorització de dades</strong>
             </div>';
         }
         
@@ -213,7 +213,7 @@ class SimpleConsentPDFService
         </div>
         
         <div class="signature">
-            <p>_____________________________</p>
+            <p>____________</p>
             <p><strong>' . htmlspecialchars($teacher->first_name . ' ' . $teacher->last_name) . '</strong></p>
             <p>DNI: ' . htmlspecialchars($teacher->dni ?? 'N/A') . '</p>
         </div>
@@ -229,7 +229,6 @@ class SimpleConsentPDFService
             $html .= '<div style="margin-top: 15px; padding: 8px; background: #f0f0f0; border-radius: 3px;">';
             if ($token) {
                 $html .= '<p><strong>Token:</strong> ' . htmlspecialchars($token) . '</p>';
-                $html .= '<p><strong>URL formulari:</strong> https://campus.upg.cat/teacher/access/' . htmlspecialchars($token) . '</p>';
             }
             if ($ipAddress) {
                 $html .= '<p><strong>IP:</strong> ' . htmlspecialchars($ipAddress) . '</p>';
@@ -246,9 +245,9 @@ class SimpleConsentPDFService
     private function getPaymentLabel(string $option): string
     {
         $labels = [
-            'own_fee' => '✅ Accepto el cobrament',
-            'ceded_fee' => '✅ Cedo el cobrament a tercer',
-            'waived_fee' => '✅ Renuncio al cobrament',
+            'own_fee' => 'Accepto el cobrament',
+            'ceded_fee' => 'Cedo el cobrament a tercer',
+            'waived_fee' => 'Renuncio al cobrament',
         ];
         
         return $labels[$option] ?? $option;
