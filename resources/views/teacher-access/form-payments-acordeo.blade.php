@@ -787,6 +787,27 @@ document.addEventListener('DOMContentLoaded', function () {
         handlePaymentChange(selected.value);
     }
 
+    // Sincronitzar radio buttons desde formulari ocult a visible
+    function syncRadioButtonsFromHidden() {
+        console.log('🔄 syncRadioButtonsFromHidden() iniciado');
+        
+        const needsPaymentHidden = document.querySelector('#form-final [name="needs_payment"]');
+        const needsPaymentRadios = document.querySelectorAll('#form-borrador [name="needs_payment"]');
+        
+        if (needsPaymentHidden && needsPaymentRadios) {
+            console.log(`🔍 needs_payment hidden: ${needsPaymentHidden.value}`);
+            
+            needsPaymentRadios.forEach(radio => {
+                const shouldBeChecked = radio.value === needsPaymentHidden.value;
+                radio.checked = shouldBeChecked;
+                console.log(`📝 Radio ${radio.value}: ${shouldBeChecked ? 'marcado' : 'desmarcado'}`);
+            });
+        }
+    }
+
+    // Ejecutar sincronización al cargar
+    syncRadioButtonsFromHidden();
+
     // Listeners
     paymentRadios.forEach(radio => {
         radio.addEventListener('change', function () {
