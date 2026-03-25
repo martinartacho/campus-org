@@ -532,10 +532,10 @@
                 <!-- Camps bancaris ocults (només si són necessaris) -->
                 @if(old('needs_payment', $teacher->needs_payment ?? '') === 'own_fee')
                     <input type="hidden" name="fiscal_id" value="{{ old('fiscal_id', $teacher->fiscal_id ?? '') }}">
-                    <input type="hidden" name="iban" value="{{ old('iban', $payment?->iban ?? '') }}">
-                    <input type="hidden" name="bank_titular" value="{{ old('bank_titular', $payment?->bank_titular ?? '') }}">
+                    <input type="hidden" name="iban" value="{{ old('iban', $teacher->iban ?? '') }}">
+                    <input type="hidden" name="bank_titular" value="{{ old('bank_titular', $teacher->bank_titular ?? '') }}">
                     <input type="hidden" name="fiscal_situation" value="{{ old('fiscal_situation', $teacher->fiscal_situation ?? '') }}">
-                    <input type="hidden" name="invoice" value="{{ old('invoice', ($needs == 'own_fee' ? $payment?->invoice : '0')) }}">
+                    <input type="hidden" name="invoice" value="{{ old('invoice', $teacher->invoice ?? '0') }}">
                 @endif
                 
                 <!-- Camps del beneficiari ocults (només si són necessaris) -->
