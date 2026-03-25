@@ -217,6 +217,12 @@ class ProfileController extends Controller
      */
     public function teacherUpdate(Request $request): RedirectResponse
     {
+        \Log::info('teacherUpdate STARTED', [
+            'method' => $request->method(),
+            'all_data' => $request->all(),
+            'user_id' => Auth::id(),
+        ]);
+        
         \Log::info('teacherUpdate called', [
             'user_id' => Auth::id(),
             'payment_type' => $request->input('payment_type'),
