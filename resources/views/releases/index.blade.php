@@ -1,5 +1,24 @@
 @extends('campus.shared.layout')
 
+@section('breadcrumbs')
+    <li>
+        <div class="flex items-center">
+            <i class="bi bi-chevron-right text-gray-400 mx-1"></i>
+            <a href="{{ route('dashboard') }}" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2">
+                @lang('campus.dashboard')
+            </a>
+        </div>
+    </li>
+    <li aria-current="page">
+        <div class="flex items-center">
+            <i class="bi bi-chevron-right text-gray-400 mx-1"></i>
+            <span class="ms-1 text-sm font-medium text-gray-500 md:ms-2">
+                {{ __('Release Notes') }}
+            </span>
+        </div>
+    </li>
+@endsection
+
 @section('title', 'Release Notes')
 @section('subtitle', 'Historial de canvis i novetats de Campus UPG')
 
