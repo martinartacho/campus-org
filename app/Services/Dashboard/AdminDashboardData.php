@@ -11,6 +11,7 @@ use App\Models\CampusStudent;
 use App\Models\Event;
 use App\Models\Feedback;
 use App\Models\CampusRegistration;
+use App\Models\ReleaseNote;
 
 use Illuminate\Support\Facades\Log;
 
@@ -59,6 +60,10 @@ class AdminDashboardData
                     
                     // Subtotales de matrículas por academic_status
                     'registrations_by_status' => $this->getRegistrationsByStatus(),
+                    
+                    // Release Notes
+                    'latest_release' => ReleaseNote::published()->latest()->first(),
+                    'total_releases' => ReleaseNote::published()->count(),
                 ],
             ];
 
@@ -130,6 +135,10 @@ class AdminDashboardData
             'total_feedback'         => Feedback::count(),
             'pending_feedback'       => Feedback::where('status', 'pending')->count(),
             'responded_feedback'     => Feedback::where('status', 'responded')->count(),
+            
+            // Release Notes
+            'latest_release'        => ReleaseNote::published()->latest()->first(),
+            'total_releases'         => ReleaseNote::published()->count(),
         ];
     }
 

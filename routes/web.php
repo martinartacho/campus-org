@@ -19,6 +19,7 @@ use App\Http\Controllers\Campus\CategoryController;
 use App\Http\Controllers\Campus\CourseController;
 use App\Http\Controllers\Campus\CourseTeacherController;
 use App\Http\Controllers\WebHelpController;
+use App\Http\Controllers\ReleaseController;
 use App\Http\Controllers\Campus\TeacherController;
 use App\Http\Controllers\Campus\CourseRegistrationController;
 use App\Http\Controllers\Campus\CampusImportController;
@@ -800,6 +801,19 @@ Route::get('help/{slug}', [WebHelpController::class, 'show'])
 
 Route::post('help/feedback', [WebHelpController::class, 'feedback'])
     ->name('help.feedback');
+
+// Rutas de Release Notes (públiques)
+Route::get('releases', [ReleaseController::class, 'index'])
+    ->name('releases.index');
+
+Route::get('releases/feed', [ReleaseController::class, 'feed'])
+    ->name('releases.feed');
+
+Route::get('releases/latest', [ReleaseController::class, 'latest'])
+    ->name('releases.latest');
+
+Route::get('releases/{slug}', [ReleaseController::class, 'show'])
+    ->name('releases.show');
 
 // Rutas de Soporte (públicas)
 Route::get('support', [SupportController::class, 'create'])
