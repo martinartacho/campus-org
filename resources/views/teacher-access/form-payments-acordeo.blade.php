@@ -208,7 +208,7 @@
 
                                 <label class="block font-medium">IBAN:</label>
                                 <input type="text" id="iban-profesor" name="iban" 
-                                    value="{{ old('iban', ($needs == 'own_fee') ? ($payment?->iban ?? '') : '') }}"
+                                    value="{{ old('iban', $teacher->iban ?? '') }}"
                                     class="border p-2 w-full" 
                                     placeholder="ES00 0000 0000 0000 0000 0000"
                                     pattern="^ES\d{2}\s?\d{4}\s?\d{4}\s?\d{2}\s?\d{10}$"
@@ -221,7 +221,7 @@
                             
                                 <label class="block font-medium">Titular del compte:</label>
                                 <input type="text" name="bank_titular" 
-                                    value="{{ old('bank_titular', ($needs == 'own_fee') ? ($payment?->bank_titular ?? '') : '') }}"
+                                    value="{{ old('bank_titular', $teacher->bank_titular ?? '') }}"
                                     class="border p-2 w-full"
                                     placeholder="Nom i cognoms del titular"
                                     required>
@@ -234,13 +234,13 @@
                                 <div class="flex items-center space-x-4 mt-2">
                                     <label class="flex items-center">
                                         <input type="radio" name="invoice" value="1" 
-                                            {{ old('invoice', ($needs == 'own_fee' ? ($payment?->invoice) == '1' : false)) ? 'checked' : '' }}
+                                            {{ old('invoice', $teacher->invoice == '1') ? 'checked' : '' }}
                                             class="mr-2">
                                         <span class="text-sm">Sí</span>
                                     </label>
                                     <label class="flex items-center">
                                         <input type="radio" name="invoice" value="0" 
-                                            {{ old('invoice', ($needs == 'own_fee' ? ($payment?->invoice) == '0' : true)) ? 'checked' : '' }}
+                                            {{ old('invoice', $teacher->invoice == '0') ? 'checked' : '' }}
                                             class="mr-2">
                                         <span class="text-sm">No</span>
                                     </label>
@@ -261,35 +261,35 @@
                             <label class="flex items-center">
                                 <input type="radio" name="fiscal_situation" value="autonom" 
                                     class="mr-2" required
-                                    {{ old('fiscal_situation') == 'autonom' ? 'checked' : '' }}>
+                                    {{ old('fiscal_situation', $teacher->fiscal_situation) == 'autonom' ? 'checked' : '' }}>
                                 <span>Autònom/a</span>
                             </label>
                             
                             <label class="flex items-center">
                                 <input type="radio" name="fiscal_situation" value="employee" 
                                     class="mr-2" required
-                                    {{ old('fiscal_situation') == 'employee' ? 'checked' : '' }}>
+                                    {{ old('fiscal_situation', $teacher->fiscal_situation) == 'employee' ? 'checked' : '' }}>
                                 <span>Treballador/a per compte alié</span>
                             </label>
                             
                             <label class="flex items-center">
                                 <input type="radio" name="fiscal_situation" value="pensioner" 
                                     class="mr-2" 
-                                    {{ old('fiscal_situation') == 'pensioner' ? 'checked' : '' }}>
+                                    {{ old('fiscal_situation', $teacher->fiscal_situation) == 'pensioner' ? 'checked' : '' }}>
                                 <span>Pensionista o jubilat/jubilada</span>
                             </label>
 
                             <label class="flex items-center">
                                 <input type="radio" name="fiscal_situation" value="special_pensioner" 
                                     class="mr-2" required
-                                    {{ old('fiscal_situation') == 'special_pensioner' ? 'checked' : '' }}>
+                                    {{ old('fiscal_situation', $teacher->fiscal_situation) == 'special_pensioner' ? 'checked' : '' }}>
                                 <span>Jubilat/jubilada amb conveni especial amb la Seguretat Social o amb jubilació activa</span>
                             </label>
                             
                             <label class="flex items-center">
                                 <input type="radio" name="fiscal_situation" value="other" 
                                     class="mr-2" required
-                                    {{ old('fiscal_situation') == 'other' ? 'checked' : '' }}>
+                                    {{ old('fiscal_situation', $teacher->fiscal_situation) == 'other' ? 'checked' : '' }}>
                                 <span>Altre (no llistat)</span>
                             </label>
                         </div>
