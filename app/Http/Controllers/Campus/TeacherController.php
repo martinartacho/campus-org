@@ -133,7 +133,7 @@ class TeacherController extends Controller
     public function store(Request $request)
     {
         \Log::info('=== STORE START TeacherController ===');
-        \Log::info('Request data:', $request->all());
+        \Log::info('Request data:', ['data' => $request->all()]);
         
         // Mensajes de error personalizados
         $messages = [
@@ -200,7 +200,7 @@ class TeacherController extends Controller
             }
         }
             
-            \Log::info('Validation passed:', $validated);
+            \Log::info('Validation passed:', ['validated' => $validated]);
             
             try {
                 // Procesar nuevos cursos primero (versión simplificada)
@@ -426,7 +426,7 @@ class TeacherController extends Controller
     public function update(Request $request, CampusTeacher $teacher)
     {
         \Log::info('=== TEACHER UPDATE START ===');
-        \Log::info('Request data:', $request->all());
+        \Log::info('Request data:', ['data' => $request->all()]);
         \Log::info('Teacher data:', [
             'id' => $teacher->id,
             'user_id' => $teacher->user_id,
@@ -475,7 +475,7 @@ class TeacherController extends Controller
             throw $e;
         }
 
-        \Log::info('Validated data:', $validated);
+        \Log::info('Validated data:', ['data' => $validated]);
         \Log::info('VALIDATION PASSED');
         
         try {
@@ -575,9 +575,9 @@ class TeacherController extends Controller
 
         // Sincronizar cursos solo los que no están restringidos
         \Log::info('=== COURSE SYNC START ===');
-        \Log::info('Courses in validated:', $validated['courses'] ?? 'none');
-        \Log::info('Sessions assigned:', $validated['sessions_assigned'] ?? 'none');
-        \Log::info('Roles:', $validated['role'] ?? 'none');
+        \Log::info('Courses in validated:', ['courses' => $validated['courses'] ?? 'none']);
+        \Log::info('Sessions assigned:', ['sessions' => $validated['sessions_assigned'] ?? 'none']);
+        \Log::info('Roles:', ['roles' => $validated['role'] ?? 'none']);
         \Log::info('COURSE SYNC START');
         
         if (!empty($validated['courses'])) {
@@ -611,7 +611,7 @@ class TeacherController extends Controller
                 \Log::info("Added to syncData: {$courseId} => " . json_encode($syncData[$courseId]));
             }
             
-            \Log::info('Final syncData:', $syncData);
+            \Log::info('Final syncData:', ['syncData' => $syncData]);
             
             // Obtener cursos actuales que no están restringidos
             $currentUnrestrictedCourses = $teacher->courses()
@@ -619,21 +619,21 @@ class TeacherController extends Controller
                 ->pluck('campus_courses.id')
                 ->toArray();
             
-            \Log::info('Current unrestricted courses:', $currentUnrestrictedCourses);
-            \Log::info('Restricted courses:', $restrictedCourses);
+            \Log::info('Current unrestricted courses:', ['courses' => $currentUnrestrictedCourses]);
+            \Log::info('Restricted courses:', ['restricted' => $restrictedCourses]);
             
             // Separar cursos a añadir, actualizar y eliminar
             $coursesToAdd = array_diff(array_keys($syncData), $currentUnrestrictedCourses);
             $coursesToUpdate = array_intersect(array_keys($syncData), $currentUnrestrictedCourses);
             $coursesToRemove = array_diff($currentUnrestrictedCourses, array_keys($syncData));
             
-            \Log::info('Courses to add:', $coursesToAdd);
-            \Log::info('Courses to update:', $coursesToUpdate);
-            \Log::info('Courses to remove:', $coursesToRemove);
+            \Log::info('Courses to add:', ['to_add' => $coursesToAdd]);
+            \Log::info('Courses to update:', ['to_update' => $coursesToUpdate]);
+            \Log::info('Courses to remove:', ['to_remove' => $coursesToRemove]);
             
             // Eliminar cursos que se quitaron del formulario
             if (!empty($coursesToRemove)) {
-                \Log::info('Removing courses:', $coursesToRemove);
+                \Log::info('Removing courses:', ['courses' => $coursesToRemove]);
                 $teacher->courses()->detach($coursesToRemove);
             }
             
