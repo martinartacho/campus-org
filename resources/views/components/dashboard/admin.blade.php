@@ -89,6 +89,32 @@
                     </div>
                 </div>
             </a>
+
+                        
+            {{-- PROFESSORS --}}
+            <a href="{{ route('campus.teachers.index') }}" class="block transition-transform hover:scale-[1.02]">
+                <div class="bg-gradient-to-br from-orange-50 to-orange-100 p-4 rounded-lg border border-orange-200 hover:border-orange-300">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-orange-800">{{ __('Professorat') }}</p>
+                            <p class="text-2xl font-bold text-orange-900">{{ $stats['teacher_count'] ?? 0 }}</p>
+                        </div>
+                        <div class="p-2 bg-orange-200 rounded-lg">
+                            <i class="bi bi-person-workspace text-orange-600 text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="mt-2 grid grid-cols-3 gap-1 text-xs">
+                        <span class="text-orange-700">Professorat: {{ $stats['teacher_role_count'] ?? 0 }}</span>
+                        <span class="text-orange-700">Registrats: {{ $stats['teacher_count'] ?? 0 }}</span>
+                        <span class="text-orange-700">Actius: {{ $stats['active_teachers'] ?? 0 }}</span>
+                    </div>
+                    <div class="mt-3 pt-2 border-t border-orange-200">
+                        <span class="text-xs text-orange-600 hover:text-orange-800 flex items-center">
+                            Gestionar professorat <i class="bi bi-arrow-right-short ms-1"></i>
+                        </span>
+                    </div>
+                </div>
+            </a>
             
             {{-- CURSOS --}}
             <a href="{{ route('campus.courses.index') }}" class="block transition-transform hover:scale-[1.02]">
@@ -137,6 +163,8 @@
                 </div>
             </a>
             
+        
+           {{-- Segona fila --}}
             {{-- MATRICULACIONS --}}
             <a href="{{ route('campus.registrations.index') }}" class="block transition-transform hover:scale-[1.02]">
                 <div class="bg-gradient-to-br from-amber-50 to-amber-100 p-4 rounded-lg border border-amber-200 hover:border-amber-300">
@@ -161,10 +189,6 @@
                 </div>
             </a>
             
-        </div>
-        
-        {{-- Segona fila --}}
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
             
             {{-- TEMPORADES --}}
             <a href="{{ route('campus.seasons.index') }}" class="block transition-transform hover:scale-[1.02]">

@@ -28,8 +28,10 @@ class AdminDashboardData
                 'stats' => [
                     'total_users'    => User::count(),
                     'admin_count'    => User::role('admin')->count(),
-                    'teacher_count'  => User::role('teacher')->count(),
-                    'student_count'  => User::role('student')->count(),
+                    'teacher_count'  => CampusTeacher::count(),
+                    'teacher_role_count' => User::role('teacher')->count(),
+                    'active_teachers' => CampusTeacher::where('status', 'active')->count(),
+                    'student_count'  => CampusStudent::count(),
 
                     'total_courses'  => CampusCourse::count(),
                     'active_courses' => CampusCourse::where('is_active', true)->count(),
@@ -107,6 +109,8 @@ class AdminDashboardData
             'total_users'            => User::count(),
             'admin_count'            => User::role('admin')->count(),
             'teacher_count'          => CampusTeacher::count(),
+            'teacher_role_count'      => User::role('teacher')->count(),
+            'active_teachers'        => CampusTeacher::where('status', 'active')->count(),
             'student_count'            => CampusStudent::count(),
 
             'total_courses'          => CampusCourse::count(),
