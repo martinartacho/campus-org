@@ -17,7 +17,9 @@ class SimpleConsentPDFService
         CampusCourse $course,
         ?CampusTeacherPayment $payment,
         bool $autoritzacioDades = false,
-        bool $declaracioFiscal = false
+        bool $declaracioFiscal = false,
+        ?string $token = null,
+        ?string $ipAddress = null
     ): string {
         // Crear instancia TCPDF
         $pdf = new TCPDF();
@@ -28,13 +30,13 @@ class SimpleConsentPDFService
         $pdf->AddPage();
         
         // Construir HTML simple
-        $html = $this->buildSimpleHTML($teacher, $season, $course, $payment, $autoritzacioDades, $declaracioFiscal);
+        $html = $this->buildSimpleHTML($teacher, $season, $course, $payment, $autoritzacioDades, $declaracioFiscal, $token, $ipAddress);
         
         // Escribir HTML
         $pdf->writeHTML($html, true, false, true, false, '');
         
         // Generar ruta con timestamp para evitar sobreescribir
-        $timestamp = date('Y-m-d_H-i-s');
+        $timestamp = date('Y-m_d_H-i-s');
         $filename = "simple_consent_{$season->slug}_{$course->id}_{$timestamp}.pdf";
         $path = "consents/teachers/{$teacher->id}/{$filename}";
         
@@ -67,7 +69,9 @@ class SimpleConsentPDFService
         CampusCourse $course,
         ?CampusTeacherPayment $payment,
         bool $autoritzacioDades,
-        bool $declaracioFiscal
+        bool $declaracioFiscal,
+        ?string $token = null,
+        ?string $ipAddress = null
     ): string {
         $paymentOption = $payment->payment_option ?? 'unknown';
         $paymentLabel = $this->getPaymentLabel($paymentOption);
@@ -218,9 +222,23 @@ class SimpleConsentPDFService
             <p><strong>PROTECCIÓ DE DADES - RGPD</strong></p>
             <p>A la UPG tractem la informació que ens faciliteu exclusivament per oferir el servei sol·licitat. Les dades proporcionades es conservaran mentre es mantingui la relació formativa, o durant els anys necessaris per complir amb les obligacions legals. Les dades no se cediran a tercers excepte en els casos d\'obligació legal.</p>
             <p>Teniu dret a obtenir confirmació i accés quant al tractament de les vostres dades personals per part de l\'Associació per a l\'Impuls d\'Estudis Populars (AIEP). Podeu rectificar les vostres dades o sol·licitar la seva supressió quan aquestes no siguin necessàries.</p>
-            <p><strong>' . htmlspecialchars($aiepInfo) . '</strong></p>
-            <p><small>Document generat electrònicament el ' . date('d/m/Y H:i:s') . '</small></p>
-        </div>';
+            <p><strong>' . htmlspecialchars($aiepInfo) . '</strong></p>';
+        
+        // Añadir metadata si está disponible
+        if ($token || $ipAddress) {
+            $html .= '<div style="margin-top: 15px; padding: 8px; background: #f0f0f0; border-radius: 3px;">';
+            if ($token) {
+                $html .= '<p><strong>Token:</strong> ' . htmlspecialchars($token) . '</p>';
+                $html .= '<p><strong>URL formulari:</strong> https://campus.upg.cat/teacher/access/' . htmlspecialchars($token) . '</p>';
+            }
+            if ($ipAddress) {
+                $html .= '<p><strong>IP:</strong> ' . htmlspecialchars($ipAddress) . '</p>';
+            }
+            $html .= '</div>';
+        }
+        
+        $html .= '<p><small>Document generat electrònicament el ' . date('d/m/Y H:i:s') . '</small></p>';
+        $html .= '</div>';
         
         return $html;
     }

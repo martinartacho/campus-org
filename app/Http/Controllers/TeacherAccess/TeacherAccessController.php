@@ -695,7 +695,9 @@ class TeacherAccessController extends Controller
                 $course,
                 $payment,
                 $payment->metadata['end_autoritzacio_dades'] ?? false,
-                $payment->metadata['end_declaracio_fiscal'] ?? false
+                $payment->metadata['end_declaracio_fiscal'] ?? false,
+                $teacherAccess->token, // Token del formulario
+                $request->ip() // IP address
             );
 
             // 5. Actualizar metadatos del payment con las autorizaciones
