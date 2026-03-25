@@ -2,6 +2,7 @@
 // lang/ca/campus.php
 return [
     'campus' => 'Campus',
+    'denominacio_UPG' => 'UPG - Universitat Popular de Granollers',
     'denominacio_AIEP' => 'Associació per l\'impuls d\'Estudis Populars (AIEP) - CIF G-66314998 -Carrer Mare de Deu de Montserrat, edifici Roca Umbert, 36 - 08401 Granollers',
     
     // Seasons

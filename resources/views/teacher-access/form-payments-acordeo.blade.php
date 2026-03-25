@@ -24,6 +24,27 @@
         </div>
     @endif
 
+    @if(session('success'))
+        <div class="bg-green-100 border-2 border-green-400 text-green-700 px-6 py-4 rounded-lg mb-6 shadow-md">
+            <div class="flex items-start">
+                <div class="flex-shrink-0">
+                    <svg class="h-6 w-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-lg font-medium text-green-800">✅ Dades guardades correctament</h3>
+                    <div class="mt-2 text-sm text-green-700">
+                        {{ session('success') }}
+                    </div>
+                    <div class="mt-3 text-xs text-green-600 bg-green-50 p-2 rounded">
+                        🎯 <strong>Següent pas:</strong> Marca les autoritzacions i fes clic a "Guardar dades, crear PDF i finalitzar"
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
     
 
     <!-- Formulari únic: Dades de cobrament -->
@@ -48,7 +69,7 @@
             </div>
         </div>
 
-        <form method="POST" action="{{ route('teacher.access.personal-data.update', $token->token) }}">
+        <form id="form-borrador" method="POST" action="{{ route('teacher.access.personal-data.update', $token->token) }}">
             @csrf
 
             <input type="hidden" name="course_id" value="{{ $course->id }}">
@@ -186,12 +207,13 @@
                                 @enderror
 
                                 <label class="block font-medium">IBAN:</label>
-                                <input type="text" name="iban" 
-                                    value="{{ old('iban', ($needs == 'own_fee') ? ($payment?->iban ?? '') : '') }}"
+                                <input type="text" id="iban-profesor" name="iban" 
+                                    value="{{ old('iban', $teacher->iban ?? '') }}"
                                     class="border p-2 w-full" 
                                     placeholder="ES00 0000 0000 0000 0000 0000"
                                     pattern="^ES\d{2}\s?\d{4}\s?\d{4}\s?\d{2}\s?\d{10}$"
-                                    title="Format: ES00 0000 0000 0000 0000 0000">
+                                    title="Format: ES00 0000 0000 0000 0000 0000"
+                                    required>
                                 <p class="text-xs text-gray-500 mt-1">Format: ES00 0000 0000 0000 0000 0000</p>
                                 @error('iban')
                                     <span class="text-red-600 text-sm">{{ $message }}</span>
@@ -199,9 +221,10 @@
                             
                                 <label class="block font-medium">Titular del compte:</label>
                                 <input type="text" name="bank_titular" 
-                                    value="{{ old('bank_titular', ($needs == 'own_fee') ? ($payment?->bank_titular ?? '') : '') }}"
+                                    value="{{ old('bank_titular', $teacher->bank_titular ?? '') }}"
                                     class="border p-2 w-full"
-                                    placeholder="Nom i cognoms del titular">
+                                    placeholder="Nom i cognoms del titular"
+                                    required>
                                 @error('bank_titular')
                                     <span class="text-red-600 text-sm">{{ $message }}</span>
                                 @enderror
@@ -211,13 +234,13 @@
                                 <div class="flex items-center space-x-4 mt-2">
                                     <label class="flex items-center">
                                         <input type="radio" name="invoice" value="1" 
-                                            {{ old('invoice', ($needs == 'own_fee' ? ($payment?->invoice) == '1' : false)) ? 'checked' : '' }}
+                                            {{ old('invoice', $teacher->invoice == '1') ? 'checked' : '' }}
                                             class="mr-2">
                                         <span class="text-sm">Sí</span>
                                     </label>
                                     <label class="flex items-center">
                                         <input type="radio" name="invoice" value="0" 
-                                            {{ old('invoice', ($needs == 'own_fee' ? ($payment?->invoice) == '0' : true)) ? 'checked' : '' }}
+                                            {{ old('invoice', $teacher->invoice == '0') ? 'checked' : '' }}
                                             class="mr-2">
                                         <span class="text-sm">No</span>
                                     </label>
@@ -237,37 +260,38 @@
                         <div class="space-y-2 mb-4">
                             <label class="flex items-center">
                                 <input type="radio" name="fiscal_situation" value="autonom" 
-                                    class="mr-2" 
-                                    {{ old('fiscal_situation') == 'autonom' ? 'checked' : '' }}>
+                                    class="mr-2" required
+                                    {{ old('fiscal_situation', $teacher->fiscal_situation) == 'autonom' ? 'checked' : '' }}>
                                 <span>Autònom/a</span>
                             </label>
                             
                             <label class="flex items-center">
                                 <input type="radio" name="fiscal_situation" value="employee" 
-                                    class="mr-2" 
-                                    {{ old('fiscal_situation') == 'employee' ? 'checked' : '' }}>
+                                    class="mr-2" required
+                                    {{ old('fiscal_situation', $teacher->fiscal_situation) == 'employee' ? 'checked' : '' }}>
                                 <span>Treballador/a per compte alié</span>
                             </label>
                             
                             <label class="flex items-center">
                                 <input type="radio" name="fiscal_situation" value="pensioner" 
                                     class="mr-2" 
-                                    {{ old('fiscal_situation') == 'pensioner' ? 'checked' : '' }}>
+                                    {{ old('fiscal_situation', $teacher->fiscal_situation) == 'pensioner' ? 'checked' : '' }}>
                                 <span>Pensionista o jubilat/jubilada</span>
                             </label>
 
                             <label class="flex items-center">
-                                <input type="radio" name="fiscal_situation" value="pensioner" 
-                                    class="mr-2" 
-                                    {{ old('fiscal_situation') == 'pensioner' ? 'checked' : '' }}>
+                                <input type="radio" name="fiscal_situation" value="special_pensioner" 
+                                    class="mr-2" required
+                                    {{ old('fiscal_situation', $teacher->fiscal_situation) == 'special_pensioner' ? 'checked' : '' }}>
                                 <span>Jubilat/jubilada amb conveni especial amb la Seguretat Social o amb jubilació activa</span>
                             </label>
                             
                             <label class="flex items-center">
-                            <input type="radio" name="fiscal_situation" value="altre"
-                                class="mr-2" {{ old('fiscal_situation') == 'altre' ? 'checked' : '' }}>
-                            Altre (no llistat)
-                        </label>
+                                <input type="radio" name="fiscal_situation" value="other" 
+                                    class="mr-2" required
+                                    {{ old('fiscal_situation', $teacher->fiscal_situation) == 'other' ? 'checked' : '' }}>
+                                <span>Altre (no llistat)</span>
+                            </label>
                         </div>
                     </div>
                     {{-- END Accepto cobrament (own_fee) --}}
@@ -378,7 +402,7 @@
                                     value="{{ old('beneficiary_iban', ($needs == 'ceded_fee') ? ($payment?->iban ?? '') : '') }}"
                                     class="border p-2 w-full" 
                                     placeholder="ES00 0000 0000 0000 0000 0000"
-                                    pattern="^ES\d{2}\s?\d{4}\s?\d{4}\s?\d{2}\s?\d{10}$"
+                                    pattern="^ES\d{2}(\s?\d{4}){5}$"
                                     title="Format: ES00 0000 0000 0000 0000 0000">
                                 <p class="text-xs text-gray-500 mt-1">Format: ES00 0000 0000 0000 0000 0000</p>
                                 @error('beneficiary_iban')
@@ -489,7 +513,7 @@
                     </div>
                 </form>
 
-                <form method="POST" action="{{ route('teacher.access.personal-data.update', $token->token) }}" 
+                <form id="form-final" method="POST" action="{{ route('teacher.access.personal-data.update', $token->token) }}" 
                     onsubmit="return validateFinalForm();">
                     @csrf
 
@@ -508,10 +532,10 @@
                 <!-- Camps bancaris ocults (només si són necessaris) -->
                 @if(old('needs_payment', $teacher->needs_payment ?? '') === 'own_fee')
                     <input type="hidden" name="fiscal_id" value="{{ old('fiscal_id', $teacher->fiscal_id ?? '') }}">
-                    <input type="hidden" name="iban" value="{{ old('iban', $payment?->iban ?? '') }}">
-                    <input type="hidden" name="bank_titular" value="{{ old('bank_titular', $payment?->bank_titular ?? '') }}">
+                    <input type="hidden" name="iban" value="{{ old('iban', $teacher->iban ?? '') }}">
+                    <input type="hidden" name="bank_titular" value="{{ old('bank_titular', $teacher->bank_titular ?? '') }}">
                     <input type="hidden" name="fiscal_situation" value="{{ old('fiscal_situation', $teacher->fiscal_situation ?? '') }}">
-                    <input type="hidden" name="invoice" value="{{ old('invoice', ($needs == 'own_fee' ? $payment?->invoice : '0')) }}">
+                    <input type="hidden" name="invoice" value="{{ old('invoice', $teacher->invoice ?? '0') }}">
                 @endif
                 
                 <!-- Camps del beneficiari ocults (només si són necessaris) -->
@@ -665,6 +689,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    /** 
     function handlePaymentChange(value) {
         // Netejar tots els camps opcions
         clearBeneficiaryFields();
@@ -684,19 +709,151 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         // Opció 1 (waived_fee): No fer res, els camps queden nets i sense required
     }
+    */
+   function handlePaymentChange(value, isInit = false) {
+        if (!isInit) {
+            clearBeneficiaryFields();
+            clearProfessorBankFields();
+        }
+
+        if (value === 'ceded_fee') {
+            activateBeneficiaryRequired();
+        } else if (value === 'own_fee') {
+            professorBankFields.forEach(name => {
+                const field = document.querySelector(`[name="${name}"]`);
+                if (field) {
+                    field.setAttribute('required', 'required');
+                }
+            });
+        }
+    }
+
+    // Sincronitzar camps del Formulari 1 amb els camps ocults del Formulari 2
+    function syncHiddenFields() {
+        console.log('🔄 syncHiddenFields() iniciado');
+        
+        const fieldsToSync = [
+            'first_name', 'last_name', 'email', 'phone', 'dni', 
+            'address', 'postal_code', 'city', 'observacions'
+        ];
+        
+        fieldsToSync.forEach(fieldName => {
+            const sourceField = document.querySelector(`#form-borrador [name="${fieldName}"]`);
+            const hiddenField = document.querySelector(`#form-final [name="${fieldName}"]`);
+            
+            console.log(`🔍 Campo ${fieldName}:`, {
+                source: sourceField ? sourceField.value : 'NO ENCONTRADO',
+                hidden: hiddenField ? hiddenField.value : 'NO ENCONTRADO'
+            });
+            
+            if (sourceField && hiddenField) {
+                hiddenField.value = sourceField.value;
+                console.log(`✅ Sincronizado ${fieldName}: ${sourceField.value}`);
+            }
+        });
+        
+        // Sincronitzar needs_payment (radio button especial)
+        const needsPaymentSource = document.querySelector('#form-borrador [name="needs_payment"]:checked');
+        const needsPaymentHidden = document.querySelector('#form-final [name="needs_payment"]');
+        
+        if (needsPaymentSource && needsPaymentHidden) {
+            needsPaymentHidden.value = needsPaymentSource.value;
+            console.log(`✅ Sincronizado needs_payment: ${needsPaymentSource.value}`);
+        } else {
+            console.log(`🔍 needs_payment:`, {
+                source: needsPaymentSource ? needsPaymentSource.value : 'NO SELECCIONADO',
+                hidden: needsPaymentHidden ? needsPaymentHidden.value : 'NO ENCONTRADO'
+            });
+        }
+        
+        // Sincronitzar camps bancaris si són own_fee
+        if (needsPaymentSource && needsPaymentSource.value === 'own_fee') {
+            const bankFields = ['fiscal_id', 'iban', 'bank_titular', 'fiscal_situation', 'invoice'];
+            bankFields.forEach(fieldName => {
+                const sourceField = document.querySelector(`#form-borrador [name="${fieldName}"]`);
+                const hiddenField = document.querySelector(`#form-final [name="${fieldName}"]`);
+                
+                if (sourceField && hiddenField) {
+                    hiddenField.value = sourceField.value;
+                    console.log(`✅ Sincronizado banco ${fieldName}: ${sourceField.value}`);
+                }
+            });
+        }
+        
+        // Sincronitzar camps del beneficiari si són ceded_fee
+        if (needsPaymentSource && needsPaymentSource.value === 'ceded_fee') {
+            const beneficiaryFields = [
+                'beneficiary_first_name', 'beneficiary_email', 'beneficiary_phone',
+                'beneficiary_address', 'beneficiary_postal_code', 'beneficiary_city',
+                'beneficiary_fiscal_id', 'beneficiary_iban', 'beneficiary_bank_titular',
+                'beneficiary_fiscal_situation', 'beneficiary_invoice'
+            ];
+            beneficiaryFields.forEach(fieldName => {
+                const sourceField = document.querySelector(`#form-borrador [name="${fieldName}"]`);
+                const hiddenField = document.querySelector(`#form-final [name="${fieldName}"]`);
+                
+                if (sourceField && hiddenField) {
+                    hiddenField.value = sourceField.value;
+                    console.log(`✅ Sincronizado beneficiario ${fieldName}: ${sourceField.value}`);
+                }
+            });
+        }
+    }
 
     // Inicialització
     const selected = document.querySelector('input[name="needs_payment"]:checked');
-    if (selected) {
+    /* if (selected) {
         handlePaymentChange(selected.value);
+    } */
+
+    if (selected) {
+        handlePaymentChange(selected.value, true); // 👈 IMPORTANTE
     }
+    // Sincronitzar radio buttons desde formulari ocult a visible
+    /* function syncRadioButtonsFromHidden() {
+        console.log('🔄 syncRadioButtonsFromHidden() iniciado');
+        
+        const needsPaymentHidden = document.querySelector('#form-final [name="needs_payment"]');
+        const needsPaymentRadios = document.querySelectorAll('#form-borrador [name="needs_payment"]');
+        
+        if (needsPaymentHidden && needsPaymentRadios) {
+            console.log(`🔍 needs_payment hidden: ${needsPaymentHidden.value}`);
+            
+            needsPaymentRadios.forEach(radio => {
+                const shouldBeChecked = radio.value === needsPaymentHidden.value;
+                radio.checked = shouldBeChecked;
+                console.log(`📝 Radio ${radio.value}: ${shouldBeChecked ? 'marcado' : 'desmarcado'}`);
+            });
+        }
+    } */
+
+    // Ejecutar sincronización al cargar
+   // syncRadioButtonsFromHidden();
 
     // Listeners
     paymentRadios.forEach(radio => {
         radio.addEventListener('change', function () {
             handlePaymentChange(this.value);
+            syncHiddenFields(); // Sincronitzar quan canviï l'opció de pagament
         });
     });
+
+    // Sincronitzar tots els camps quan l'usuari escrigui
+    document.addEventListener('input', function(e) {
+        if (e.target.closest('#form-borrador')) {
+            syncHiddenFields();
+        }
+    });
+
+    // Sincronitzar quan es canviïn els radio buttons
+    document.addEventListener('change', function(e) {
+        if (e.target.closest('#form-borrador')) {
+            syncHiddenFields();
+        }
+    });
+
+    // Sincronització inicial
+    syncHiddenFields();
 });
 
 
