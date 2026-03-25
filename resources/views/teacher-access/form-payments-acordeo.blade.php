@@ -402,7 +402,7 @@
                                     value="{{ old('beneficiary_iban', ($needs == 'ceded_fee') ? ($payment?->iban ?? '') : '') }}"
                                     class="border p-2 w-full" 
                                     placeholder="ES00 0000 0000 0000 0000 0000"
-                                    pattern="^ES\d{2}\s?\d{4}\s?\d{4}\s?\d{2}\s?\d{10}$"
+                                    pattern="^ES\d{2}(\s?\d{4}){5}$"
                                     title="Format: ES00 0000 0000 0000 0000 0000">
                                 <p class="text-xs text-gray-500 mt-1">Format: ES00 0000 0000 0000 0000 0000</p>
                                 @error('beneficiary_iban')
@@ -689,6 +689,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    /** 
     function handlePaymentChange(value) {
         // Netejar tots els camps opcions
         clearBeneficiaryFields();
@@ -707,6 +708,24 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
         // Opció 1 (waived_fee): No fer res, els camps queden nets i sense required
+    }
+    */
+   function handlePaymentChange(value, isInit = false) {
+        if (!isInit) {
+            clearBeneficiaryFields();
+            clearProfessorBankFields();
+        }
+
+        if (value === 'ceded_fee') {
+            activateBeneficiaryRequired();
+        } else if (value === 'own_fee') {
+            professorBankFields.forEach(name => {
+                const field = document.querySelector(`[name="${name}"]`);
+                if (field) {
+                    field.setAttribute('required', 'required');
+                }
+            });
+        }
     }
 
     // Sincronitzar camps del Formulari 1 amb els camps ocults del Formulari 2
@@ -783,12 +802,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Inicialització
     const selected = document.querySelector('input[name="needs_payment"]:checked');
-    if (selected) {
+    /* if (selected) {
         handlePaymentChange(selected.value);
-    }
+    } */
 
+    if (selected) {
+        handlePaymentChange(selected.value, true); // 👈 IMPORTANTE
+    }
     // Sincronitzar radio buttons desde formulari ocult a visible
-    function syncRadioButtonsFromHidden() {
+    /* function syncRadioButtonsFromHidden() {
         console.log('🔄 syncRadioButtonsFromHidden() iniciado');
         
         const needsPaymentHidden = document.querySelector('#form-final [name="needs_payment"]');
@@ -803,10 +825,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.log(`📝 Radio ${radio.value}: ${shouldBeChecked ? 'marcado' : 'desmarcado'}`);
             });
         }
-    }
+    } */
 
     // Ejecutar sincronización al cargar
-    syncRadioButtonsFromHidden();
+   // syncRadioButtonsFromHidden();
 
     // Listeners
     paymentRadios.forEach(radio => {
