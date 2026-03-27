@@ -85,31 +85,30 @@
     </div>
 </x-app-layout>
 
-@push('styles')
+<!-- Summernote CSS i JS directes -->
 <link href="{{ asset('vendor/summernote/summernote.min.css') }}" rel="stylesheet">
-@endpush
-
-@push('scripts')
-<script>
-// Verificar si jQuery ja està carregat
-if (typeof jQuery === 'undefined') {
-    document.write('<script src="https://code.jquery.com/jquery-3.6.0.min.js"><\/script>');
-}
-</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="{{ asset('vendor/summernote/summernote.min.js') }}"></script>
+
 <script>
 jQuery(document).ready(function($) {
-    // Verificar que Summernote estigui disponible
+    console.log('🔍 DIAGNÒSTIC SUMMERNOTE:');
+    console.log('jQuery carregat:', typeof $ !== 'undefined');
+    console.log('Summernote disponible:', typeof $.summernote !== 'undefined');
+    console.log('Element #content-editor trobat:', $('#content-editor').length > 0);
+    
     if (typeof $.summernote === 'undefined') {
-        console.error('Summernote no està carregat');
-        console.log('jQuery:', typeof $ !== 'undefined');
-        console.log('Summernote:', typeof $.summernote !== 'undefined');
+        console.error('❌ Summernote NO està carregat');
         return;
     }
     
-    console.log('Inicialitzant Summernote per a notificacions...');
+    if ($('#content-editor').length === 0) {
+        console.error('❌ Element #content-editor NO trobat');
+        return;
+    }
     
-    // Initialize Summernote
+    console.log('✅ Inicialitzant Summernote...');
+    
     $('#content-editor').summernote({
         lang: 'ca-ES',
         height: 300,
@@ -122,11 +121,10 @@ jQuery(document).ready(function($) {
         ],
         callbacks: {
             onInit: function() {
-                console.log('Summernote inicialitzat correctament per a notificacions');
+                console.log('🎉 Summernote inicialitzat correctament!');
                 $('.note-editable').css('min-height', '200px');
             }
         }
     });
 });
 </script>
-@endpush
