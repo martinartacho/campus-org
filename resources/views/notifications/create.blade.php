@@ -85,30 +85,9 @@
     </div>
 </x-app-layout>
 
-<!-- Summernote CSS i JS directes -->
-<link href="{{ asset('vendor/summernote/summernote.min.css') }}" rel="stylesheet">
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="{{ asset('vendor/summernote/summernote.min.js') }}"></script>
-
+@stack('scripts')
 <script>
-jQuery(document).ready(function($) {
-    console.log('🔍 DIAGNÒSTIC SUMMERNOTE:');
-    console.log('jQuery carregat:', typeof $ !== 'undefined');
-    console.log('Summernote disponible:', typeof $.summernote !== 'undefined');
-    console.log('Element #content-editor trobat:', $('#content-editor').length > 0);
-    
-    if (typeof $.summernote === 'undefined') {
-        console.error('❌ Summernote NO està carregat');
-        return;
-    }
-    
-    if ($('#content-editor').length === 0) {
-        console.error('❌ Element #content-editor NO trobat');
-        return;
-    }
-    
-    console.log('✅ Inicialitzant Summernote...');
-    
+$(document).ready(function() {
     $('#content-editor').summernote({
         lang: 'ca-ES',
         height: 300,
@@ -121,10 +100,10 @@ jQuery(document).ready(function($) {
         ],
         callbacks: {
             onInit: function() {
-                console.log('🎉 Summernote inicialitzat correctament!');
                 $('.note-editable').css('min-height', '200px');
             }
         }
     });
 });
 </script>
+@endstack

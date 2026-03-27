@@ -82,8 +82,14 @@
         <!-- SweetAlert2 JS -->
         <script src="{{ asset('vendor/sweetalert2/sweetalert2.min.js') }}"></script>
         
+        <!-- Bootstrap CSS (required for Summernote tooltips) -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        
         <!-- jQuery (required for Summernote) -->
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        
+        <!-- Bootstrap JS (required for tooltips) -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
         
         <!-- Summernote Editor CSS -->
         <link href="{{ asset('vendor/summernote/summernote.min.css') }}" rel="stylesheet">
