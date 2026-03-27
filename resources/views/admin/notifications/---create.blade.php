@@ -14,6 +14,7 @@
             </h1>
             <p class="text-gray-600">
                 Envia notificacions a usuaris específics, per rol o segons filtres
+                (path - resources/views/admin/notifications/create.blade.php)
             </p>
         </div>
 

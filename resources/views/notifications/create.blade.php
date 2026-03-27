@@ -1,6 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ __('site.Create Notification') }}</h2>
+        (paht - resources/views/notifications/create.blade.php)
     </x-slot>
 
     <div class="py-12">
@@ -89,13 +90,20 @@
 @endpush
 
 @push('scripts')
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+// Verificar si jQuery ja està carregat
+if (typeof jQuery === 'undefined') {
+    document.write('<script src="https://code.jquery.com/jquery-3.6.0.min.js"><\/script>');
+}
+</script>
 <script src="{{ asset('vendor/summernote/summernote.min.js') }}"></script>
 <script>
-$(document).ready(function() {
+jQuery(document).ready(function($) {
     // Verificar que Summernote estigui disponible
     if (typeof $.summernote === 'undefined') {
         console.error('Summernote no està carregat');
+        console.log('jQuery:', typeof $ !== 'undefined');
+        console.log('Summernote:', typeof $.summernote !== 'undefined');
         return;
     }
     
