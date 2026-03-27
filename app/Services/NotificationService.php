@@ -24,6 +24,9 @@ class NotificationService
             'recipient_ids' => $userIds,
             'is_published' => true,
             'published_at' => now(),
+            'ticket_id' => $options['ticket_id'] ?? null,
+            'template_type' => $options['template_type'] ?? null,
+            'is_support_ticket' => $options['is_support_ticket'] ?? false,
         ]);
 
         $this->sendEmailNotifications($notification, $userIds);
@@ -45,6 +48,9 @@ class NotificationService
             'recipient_role' => $role,
             'is_published' => true,
             'published_at' => now(),
+            'ticket_id' => $options['ticket_id'] ?? null,
+            'template_type' => $options['template_type'] ?? null,
+            'is_support_ticket' => $options['is_support_ticket'] ?? false,
         ]);
 
         $roleUsers = User::whereHas('roles', function($query) use ($role) {
@@ -67,9 +73,12 @@ class NotificationService
             'type' => $options['type'] ?? 'general',
             'sender_id' => Auth::id(),
             'recipient_type' => 'roles',
-            'recipient_role' => implode(',', $roles),
+            'recipient_roles' => $roles,
             'is_published' => true,
             'published_at' => now(),
+            'ticket_id' => $options['ticket_id'] ?? null,
+            'template_type' => $options['template_type'] ?? null,
+            'is_support_ticket' => $options['is_support_ticket'] ?? false,
         ]);
 
         $roleUsers = User::whereHas('roles', function($query) use ($roles) {
@@ -107,20 +116,22 @@ class NotificationService
         }
 
         $users = $query->get();
-        $userIds = $users->pluck('id')->toArray();
 
         $notification = Notification::create([
             'title' => $title,
             'content' => $content,
             'type' => $options['type'] ?? 'general',
             'sender_id' => Auth::id(),
-            'recipient_type' => 'specific',
-            'recipient_ids' => $userIds,
+            'recipient_type' => 'filtered',
+            'recipient_ids' => $users->pluck('id')->toArray(),
             'is_published' => true,
             'published_at' => now(),
+            'ticket_id' => $options['ticket_id'] ?? null,
+            'template_type' => $options['template_type'] ?? null,
+            'is_support_ticket' => $options['is_support_ticket'] ?? false,
         ]);
 
-        $this->sendEmailNotifications($notification, $userIds);
+        $this->sendEmailNotifications($notification, $users->pluck('id')->toArray());
         
         return $notification;
     }
