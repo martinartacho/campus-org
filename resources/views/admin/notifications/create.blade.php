@@ -3,14 +3,6 @@
 @section('title', 'Crear Notificació')
 @section('subtitle', 'Enviar notificacions als usuaris')
 
-@push('styles')
-<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
-@endpush
-
-@push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
-@endpush
-
 @section('content')
 <div class="container mx-auto py-8">
     <div class="max-w-4xl mx-auto">
@@ -45,22 +37,15 @@
                     <!-- Contenido -->
                     <div class="md:col-span-2">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Contingut *</label>
-                        <div class="border rounded-lg overflow-hidden">
-                            <div id="editor-toolbar" class="bg-gray-50 border-b p-2 flex items-center gap-2">
-                                <button type="button" id="template-btn" class="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors">
-                                    <i class="bi bi-file-earmark-text mr-1"></i>Plantilla
-                                </button>
-                                <div class="text-sm text-gray-600">
-                                    <span id="char-count">0</span> caràcters
-                                </div>
-                            </div>
-                            <textarea id="content-editor" 
-                                      name="content" 
-                                      required
-                                      rows="12"
-                                      class="w-full border-0 focus:ring-0"
-                                      placeholder="Introdueix el contingut de la notificació"></textarea>
-                        </div>
+                        <textarea name="content" 
+                                  id="content-editor" 
+                                  class="w-full border p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                  rows="10" 
+                                  required
+                                  placeholder="Introdueix el contingut de la notificació">{{ old('content') }}</textarea>
+                        @error('content')
+                            <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
+                        @enderror
                     </div>
 
                     <!-- Tipo de destinatario -->
@@ -196,137 +181,34 @@
     </div>
 </div>
 
+@stack('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const recipientType = document.getElementById('recipientType');
-    const specificRecipients = document.getElementById('specificRecipients');
-    const roleRecipient = document.getElementById('roleRecipient');
-    const rolesRecipients = document.getElementById('rolesRecipients');
-    const filteredRecipients = document.getElementById('filteredRecipients');
-    const userSelect = document.getElementById('userSelect');
-    const notificationType = document.getElementById('notification-type');
-    const templateBtn = document.getElementById('template-btn');
-    const contentEditor = document.getElementById('content-editor');
-    const charCount = document.getElementById('char-count');
-
+$(document).ready(function() {
     // Initialize Summernote
-    $(contentEditor).summernote({
+    $('#content-editor').summernote({
         lang: 'ca-ES',
         height: 300,
         toolbar: [
             ['style', ['style', 'bold', 'italic', 'underline', 'clear']],
             ['font', ['strikethrough', 'superscript', 'subscript']],
-            ['para', ['ul', 'ol', 'paragraph', 'height']],
+            ['para', ['ul', 'ol', 'paragraph']],
             ['insert', ['link', 'picture', 'video', 'table', 'hr']],
             ['view', ['fullscreen', 'codeview', 'help']]
         ],
         callbacks: {
             onInit: function() {
                 $('.note-editable').css('min-height', '200px');
-                updateCharCount();
-            },
-            onChange: function() {
-                updateCharCount();
             }
         }
     });
 
-    // Character counter
-    function updateCharCount() {
-        const content = $(contentEditor).summernote('code');
-        const cleanContent = content.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ');
-        charCount.textContent = cleanContent.length;
-    }
-
-    // Template dropdown
-    const templates = {
-        support: {
-            name: '⚠️ Plantilla de Suport',
-            content: `⚠️ **NOVA SOL·LICITUD DE SUPORT ASSIGNADA**
-
-📋 **Detalls del Ticket:**
-- **Número de Ticket:** [TICKET_ID]
-- **Remitent:** [SENDER_NAME] ([SENDER_EMAIL])
-- **Departament:** [DEPARTMENT]
-- **Tipus:** [TYPE]
-- **Urgència:** [URGENCY]
-- **Data:** [DATE]
-
-📝 **Descripció:** 
-[DESCRIPTION]
-
-🎯 **Acció Requerida:**
-[ACTION_REQUIRED]
-
-Podeu gestionar aquesta sol·licitud a través del sistema de notificaciones o contactar directament amb el remitent.
-Destinataris: Usuaris amb rol: [TARGET_ROLES]
-Estat: Publicat el [PUBLISHED_DATE]`
-        },
-        academic: {
-            name: '📚 Plantilla Acadèmica',
-            content: `📚 **COMUNICACIÓ ACADÈMICA**
-
-📅 **Data:** ${new Date().toLocaleDateString('ca-ES')}
-
-📝 **Contingut:**
-[AQUÍ EL CONTINGUT]
-
----
-*Departament d'Acadèmia - Campus UPG*`
-        },
-        administrative: {
-            name: '⚙️ Plantilla Administrativa',
-            content: `⚙️ **COMUNICACIÓ ADMINISTRATIVA**
-
-📅 **Data:** ${new Date().toLocaleDateString('ca-ES')}
-
-📝 **Contingut:**
-[AQUÍ EL CONTINGUT]
-
----
-*Departament d'Administració - Campus UPG*`
-        }
-    };
-
-    // Template button functionality
-    let currentTemplate = null;
-    
-    templateBtn.addEventListener('click', function() {
-        const type = notificationType.value;
-        
-        if (!type || !templates[type]) {
-            alert('Selecciona un tipus de notificació per veure les plantilles disponibles');
-            return;
-        }
-
-        const template = templates[type];
-        
-        if (currentTemplate === type) {
-            // If same template is selected, clear content
-            $(contentEditor).summernote('code', '');
-            currentTemplate = null;
-            templateBtn.innerHTML = '<i class="bi bi-file-earmark-text mr-1"></i>Plantilla';
-            templateBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
-            templateBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
-        } else {
-            // Apply template
-            $(contentEditor).summernote('code', template.content);
-            currentTemplate = type;
-            templateBtn.innerHTML = '<i class="bi bi-check-circle mr-1"></i>Aplicada';
-            templateBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
-            templateBtn.classList.add('bg-green-600', 'hover:bg-green-700');
-        }
-        
-        updateCharCount();
-    });
-
-    // Update template button when type changes
-    notificationType.addEventListener('change', function() {
-        currentTemplate = null;
-        templateBtn.innerHTML = '<i class="bi bi-file-earmark-text mr-1"></i>Plantilla';
-        templateBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
-        templateBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
-    });
+    // Recipient type functionality
+    const recipientType = document.getElementById('recipientType');
+    const specificRecipients = document.getElementById('specificRecipients');
+    const roleRecipient = document.getElementById('roleRecipient');
+    const rolesRecipients = document.getElementById('rolesRecipients');
+    const filteredRecipients = document.getElementById('filteredRecipients');
+    const userSelect = document.getElementById('userSelect');
 
     // Load users for specific recipients
     fetch('/admin/notifications/users')
@@ -365,4 +247,5 @@ Estat: Publicat el [PUBLISHED_DATE]`
     });
 });
 </script>
+@endstack
 @endsection
