@@ -3,6 +3,14 @@
 @section('title', 'Crear Notificació')
 @section('subtitle', 'Enviar notificacions als usuaris')
 
+@push('styles')
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
+@endpush
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
+@endpush
+
 @section('content')
 <div class="container mx-auto py-8">
     <div class="max-w-4xl mx-auto">
@@ -210,8 +218,7 @@ document.addEventListener('DOMContentLoaded', function() {
             ['font', ['strikethrough', 'superscript', 'subscript']],
             ['para', ['ul', 'ol', 'paragraph', 'height']],
             ['insert', ['link', 'picture', 'video', 'table', 'hr']],
-            ['view', ['fullscreen', 'codeview', 'help']],
-            ['template', ['templateBtn']]
+            ['view', ['fullscreen', 'codeview', 'help']]
         ],
         callbacks: {
             onInit: function() {
