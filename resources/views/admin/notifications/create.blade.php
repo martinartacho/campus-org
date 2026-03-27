@@ -184,6 +184,14 @@
 @stack('scripts')
 <script>
 $(document).ready(function() {
+    // Verificar que Summernote estigui disponible
+    if (typeof $.summernote === 'undefined') {
+        console.error('Summernote no està carregat');
+        return;
+    }
+    
+    console.log('Inicialitzant Summernote...');
+    
     // Initialize Summernote
     $('#content-editor').summernote({
         lang: 'ca-ES',
@@ -197,6 +205,7 @@ $(document).ready(function() {
         ],
         callbacks: {
             onInit: function() {
+                console.log('Summernote inicialitzat correctament');
                 $('.note-editable').css('min-height', '200px');
             }
         }

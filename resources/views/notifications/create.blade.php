@@ -21,7 +21,7 @@
                         <!-- Contenido -->
                         <div>
                            <x-input-label for="content" value="{{__('site.Content')}}" /> 
-                            <textarea id="content" name="content" rows="5"
+                            <textarea id="content-editor" name="content" rows="5"
                                       class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                                       required>{{ old('content') }}</textarea>
                         </div>
@@ -83,3 +83,42 @@
         </div>
     </div>
 </x-app-layout>
+
+@push('styles')
+<link href="{{ asset('vendor/summernote/summernote.min.css') }}" rel="stylesheet">
+@endpush
+
+@push('scripts')
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="{{ asset('vendor/summernote/summernote.min.js') }}"></script>
+<script>
+$(document).ready(function() {
+    // Verificar que Summernote estigui disponible
+    if (typeof $.summernote === 'undefined') {
+        console.error('Summernote no està carregat');
+        return;
+    }
+    
+    console.log('Inicialitzant Summernote per a notificacions...');
+    
+    // Initialize Summernote
+    $('#content-editor').summernote({
+        lang: 'ca-ES',
+        height: 300,
+        toolbar: [
+            ['style', ['style', 'bold', 'italic', 'underline', 'clear']],
+            ['font', ['strikethrough', 'superscript', 'subscript']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['insert', ['link', 'picture', 'video', 'table', 'hr']],
+            ['view', ['fullscreen', 'codeview', 'help']]
+        ],
+        callbacks: {
+            onInit: function() {
+                console.log('Summernote inicialitzat correctament per a notificacions');
+                $('.note-editable').css('min-height', '200px');
+            }
+        }
+    });
+});
+</script>
+@endpush
