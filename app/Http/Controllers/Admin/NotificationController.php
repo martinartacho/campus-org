@@ -146,7 +146,7 @@ class NotificationController extends Controller
     /**
      * Generate unique ticket ID
      */
-    private function generateUniqueTicketId(): string
+    public function generateUniqueTicketId(): string
     {
         do {
             $date = now()->format('Ymd');
