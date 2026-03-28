@@ -542,11 +542,21 @@ class CampusCourse extends Model
             return PHP_INT_MAX;
         }
         
-        $currentEnrollment = $this->registrations()
-                                ->whereIn('status', ['confirmed', 'completed'])
-                                ->count();
+        $currentEnrollment = $this->students()
+            ->wherePivot('academic_status', 'active')
+            ->count();
         
         return max(0, $this->max_students - $currentEnrollment);
+    }
+
+    /**
+     * Get confirmed students count.
+     */
+    public function getConfirmedStudentsCountAttribute(): int
+    {
+        return $this->students()
+            ->wherePivot('academic_status', 'active')
+            ->count();
     }
 
     /**
