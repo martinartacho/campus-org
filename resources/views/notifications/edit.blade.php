@@ -25,7 +25,7 @@
                         <!-- Contenido -->
                         <div>
                            <x-input-label for="content" value="{{__('site.Content')}}" />
-                            <textarea id="content" name="content" rows="5"
+                            <textarea id="content-editor" name="content" rows="5"
                                       class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                                       required>{{ old('content', $notification->content) }}</textarea>
                         </div>
@@ -71,3 +71,60 @@
         </div>
     </div>
 </x-app-layout>
+
+@push('styles')
+<style>
+.content {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+.content h3 {
+    color: #333;
+    margin-bottom: 15px;
+    margin-top: 25px;
+}
+.content p {
+    margin-bottom: 15px;
+}
+.content ul {
+    margin-bottom: 15px;
+    padding-left: 20px;
+}
+.content li {
+    margin-bottom: 5px;
+}
+.content strong {
+    color: #007bff;
+}
+</style>
+@endpush
+
+@stack('scripts')
+<script>
+$(document).ready(function() {
+    $('#content-editor').summernote({
+        lang: 'ca-ES',
+        height: 300,
+        toolbar: [
+            ['style', ['style', 'bold', 'italic', 'underline', 'clear']],
+            ['font', ['strikethrough', 'superscript', 'subscript']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['insert', ['link', 'picture', 'video', 'table', 'hr']],
+            ['view', ['fullscreen', 'codeview', 'help']]
+        ],
+        callbacks: {
+            onInit: function() {
+                $('.note-editable').css('min-height', '200px');
+            }
+        }
+    });
+});
+</script>
+@endstack

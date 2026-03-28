@@ -155,14 +155,18 @@ class SupportController extends Controller
 
 La seva sol·licitud de suport ha estat rebuda correctament.
 
-📋 **Detalls del Ticket:**
-- **Número de Ticket:** {$ticketNumber}
-- **Tipus:** {$supportRequest->type}
-- **Urgència:** {$supportRequest->urgency}
-- **Departament:** {$supportRequest->department}
-- **Data:** {$supportRequest->created_at->format('d/m/Y H:i')}
+📋 <strong>Detalls del Ticket:</strong>
+<ul>
+<li><strong>Número de Ticket:</strong> {$ticketNumber}</li>
+<li><strong>Remitent:</strong> {$supportRequest->name} ({$supportRequest->email})</li>
+<li><strong>Departament:</strong> {$supportRequest->department}</li>
+<li><strong>Tipus:</strong> {$supportRequest->type}</li>
+<li><strong>Urgència:</strong> {$supportRequest->urgency}</li>
+<li><strong>Data:</strong> {$supportRequest->created_at->format('d/m/Y H:i')}</li>
+</ul>
 
-📝 **Descripció:** {$supportRequest->description}
+
+📝 <strong>Descripció:</strong> {$supportRequest->description}
 
 Procedirem a revisar la seva sol·licitud i li respondrem el més aviat possible.
 
@@ -179,22 +183,25 @@ AIEP Campus";
      */
     private function getDepartmentNotificationMessage($supportRequest, $ticketNumber)
     {
-        return "⚠️ **NOVA SOL·LICITUD DE SUPORT ASSIGNADA**
+        return "<strong>⚠️ NOVA SOL·LICITUD DE SUPORT ASSIGNADA</strong>
 
-📋 **Detalls del Ticket:**
-- **Número de Ticket:** {$ticketNumber}
-- **Remitent:** {$supportRequest->name} ({$supportRequest->email})
-- **Departament:** {$supportRequest->department}
-- **Tipus:** {$supportRequest->type}
-- **Urgència:** {$supportRequest->urgency}
-- **Data:** {$supportRequest->created_at->format('d/m/Y H:i')}
+<strong>📋 <strong>Detalls del Ticket:</strong></strong>
+<ul>
+<li><strong>Número de Ticket:</strong> {$ticketNumber}</li>
+<li><strong>Remitent:</strong> {$supportRequest->name} ({$supportRequest->email})</li>
+<li><strong>Departament:</strong> {$supportRequest->department}</li>
+<li><strong>Tipus:</strong> {$supportRequest->type}</li>
+<li><strong>Urgència:</strong> {$supportRequest->urgency}</li>
+<li><strong>Data:</strong> {$supportRequest->created_at->format('d/m/Y H:i')}</li>
+</ul>
 
-📝 **Descripció:** {$supportRequest->description}
+<strong>📝Descripció:</strong>
+<p>{$supportRequest->description}</p>
 
-🎯 **Acció Requerida:**
-Aquesta sol·licitud ha estat assignada al vostre departament. Si us plau, reviseu-la i proporcioneu una resposta al més aviat possible.
+<h5>🎯 <strong>Acció Requerida:</strong></h5>
+<p>Aquesta sol·licitud ha estat assignada al vostre departament. Si us plau, reviseu-la i proporcioneu una resposta al més aviat possible.</p>
 
-Podeu gestionar aquesta sol·licitud a través del sistema de notificaciones o contactar directament amb el remitent.";
+<p>Podeu gestionar aquesta sol·licitud a través del sistema de notificaciones o contactar directament amb el remitent.</p>";
     }
 
     /**
@@ -202,22 +209,24 @@ Podeu gestionar aquesta sol·licitud a través del sistema de notificaciones o c
      */
     private function getAdminNotificationMessage($supportRequest, $ticketNumber)
     {
-        return "📊 **SEGUIMENT DE SOL·LICITUD DE SUPORT**
+        return "📊 <strong>SEGUIMENT DE SOL·LICITUD DE SUPORT</strong>
 
-📋 **Detalls del Ticket:**
-- **Número de Ticket:** {$ticketNumber}
-- **Remitent:** {$supportRequest->name} ({$supportRequest->email})
-- **Departament Assignat:** {$supportRequest->department}
-- **Tipus:** {$supportRequest->type}
-- **Urgència:** {$supportRequest->urgency}
-- **Mòdul:** {$supportRequest->module}
-- **URL:** {$supportRequest->url}
+<strong>📋 <strong>Detalls del Ticket:</strong></strong>
+<ul>
+<li><strong>Número de Ticket:</strong> {$ticketNumber}</li>
+<li><strong>Remitent:</strong> {$supportRequest->name} ({$supportRequest->email})</li>
+<li><strong>Departament:</strong> {$supportRequest->department}</li>
+<li><strong>Tipus:</strong> {$supportRequest->type}</li>
+<li><strong>Urgència:</strong> {$supportRequest->urgency}</li>
+<li><strong>Data:</strong> {$supportRequest->created_at->format('d/m/Y H:i')}</li>
+</ul>
 
-📝 **Descripció:** {$supportRequest->description}
+<strong>📝 <strong>Descripció:</strong></strong>
+<p>{$supportRequest->description}</p>
 
-✅ **Estat:** Notificacions enviades al remitent i al departament responsable.
+<strong>✅ <strong>Estat:</strong></strong> Notificacions enviades al remitent i al departament responsable.
 
-Aquesta sol·licitud està sent gestionada pel departament corresponent. Podeu fer seguiment a través del panell d'administració.";
+<p>Aquesta sol·licitud està sent gestionada pel departament corresponent. Podeu fer seguiment a través del panell d'administració.</p>";
     }
 
     /**

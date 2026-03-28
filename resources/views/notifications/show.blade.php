@@ -7,6 +7,40 @@
         </div>
     </x-slot>
 
+@push('styles')
+<style>
+.content {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+.content h3 {
+    color: #333;
+    margin-bottom: 15px;
+    margin-top: 25px;
+}
+.content p {
+    margin-bottom: 15px;
+}
+.content ul {
+    margin-bottom: 15px;
+    padding-left: 20px;
+}
+.content li {
+    margin-bottom: 5px;
+}
+.content strong {
+    color: #007bff;
+}
+</style>
+@endpush
+
     <div class="py-12">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white shadow sm:rounded-lg p-6 space-y-6">
@@ -21,8 +55,8 @@
                 </div>
 
                 <!-- Contenido -->
-                <div class="prose max-w-none text-gray-700">
-                    {!! nl2br(e($notification->content)) !!}
+                <div class="content">
+                    {!! $notification->content !!}
                 </div>
 
                 <!-- Destinatarios -->

@@ -3,6 +3,29 @@
 @section('title', 'Mostrar Article d\'Ajuda')
 @section('subtitle', 'Vista prèvia de l\'article')
 
+@push('styles')
+<style>
+.content h3 {
+    color: #333;
+    margin-bottom: 15px;
+    margin-top: 25px;
+}
+.content p {
+    margin-bottom: 15px;
+}
+.content ul {
+    margin-bottom: 15px;
+    padding-left: 20px;
+}
+.content li {
+    margin-bottom: 5px;
+}
+.content strong {
+    color: #007bff;
+}
+</style>
+@endpush
+
 @section('content')
 <div class="container-fluid">
     <div class="row">
@@ -63,8 +86,10 @@
                     <div class="row mb-4">
                         <div class="col-12">
                             <strong>Contingut:</strong>
-                            <div class="mt-2 p-3 bg-light rounded">
-                                {!! $helpArticle->content !!}
+                            <div class="mt-2 p-4 bg-white border rounded shadow-sm" style="max-width: 600px; margin: 0 auto;">
+                                <div class="content" style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+                                    {!! $helpArticle->content !!}
+                                </div>
                             </div>
                         </div>
                     </div>
