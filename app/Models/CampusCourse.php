@@ -543,7 +543,7 @@ class CampusCourse extends Model
         }
         
         $currentEnrollment = $this->students()
-            ->wherePivot('academic_status', 'active')
+            ->wherePivotIn('academic_status', ['active', 'enrolled'])
             ->count();
         
         return max(0, $this->max_students - $currentEnrollment);
@@ -555,7 +555,7 @@ class CampusCourse extends Model
     public function getConfirmedStudentsCountAttribute(): int
     {
         return $this->students()
-            ->wherePivot('academic_status', 'active')
+            ->wherePivotIn('academic_status', ['active', 'enrolled'])
             ->count();
     }
 
