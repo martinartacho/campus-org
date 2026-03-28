@@ -116,6 +116,57 @@
                 </div>
             </a>
             
+            {{-- ALUMNAT --}}
+            <a href="{{ route('campus.students.index') }}" class="block transition-transform hover:scale-[1.02]">
+                <div class="bg-gradient-to-br from-indigo-50 to-indigo-100 p-4 rounded-lg border border-indigo-200 hover:border-indigo-300">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-indigo-800">{{ __('Alumnat') }}</p>
+                            @php
+                                $totalEnrolledStudents = App\Models\CampusCourse::where('is_active', true)
+                                    ->withCount(['students' => function($query) {
+                                        $query->where('campus_course_student.academic_status', 'active')
+                                              ->orWhere('campus_course_student.academic_status', 'enrolled');
+                                    }])
+                                    ->get()
+                                    ->sum('students_count');
+                            @endphp
+                            <p class="text-2xl font-bold text-indigo-900">{{ $totalEnrolledStudents }}</p>
+                        </div>
+                        <div class="p-2 bg-indigo-200 rounded-lg">
+                            <i class="bi bi-backpack text-indigo-600 text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="mt-2 grid grid-cols-3 gap-1 text-xs">
+                        @php
+                            $activeStudents = App\Models\CampusCourse::where('is_active', true)
+                                ->withCount(['students' => function($query) {
+                                    $query->where('campus_course_student.academic_status', 'active');
+                                }])
+                                ->get()
+                                ->sum('students_count');
+                            
+                            $enrolledStudents = App\Models\CampusCourse::where('is_active', true)
+                                ->withCount(['students' => function($query) {
+                                    $query->where('campus_course_student.academic_status', 'enrolled');
+                                }])
+                                ->get()
+                                ->sum('students_count');
+                                
+                            $totalStudentUsers = App\Models\CampusStudent::count();
+                        @endphp
+                        <span class="text-indigo-700">Actius: {{ $activeStudents }}</span>
+                        <span class="text-indigo-700">Inscrits: {{ $enrolledStudents }}</span>
+                        <span class="text-indigo-700">Total: {{ $totalStudentUsers }}</span>
+                    </div>
+                    <div class="mt-3 pt-2 border-t border-indigo-200">
+                        <span class="text-xs text-indigo-600 hover:text-indigo-800 flex items-center">
+                            Gestionar alumnat <i class="bi bi-arrow-right-short ms-1"></i>
+                        </span>
+                    </div>
+                </div>
+            </a>
+            
             {{-- CURSOS --}}
             <a href="{{ route('campus.courses.index') }}" class="block transition-transform hover:scale-[1.02]">
                 <div class="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-lg border border-green-200 hover:border-green-300">
@@ -217,48 +268,6 @@
                     </div>
                 </div>
             </a>
-            
-            {{-- ESTUDIANTS MATRICULATS --}}
-            <a href="{{ route('campus.students.index') }}" class="block transition-transform hover:scale-[1.02]">
-                <div class="bg-gradient-to-br from-teal-50 to-teal-100 p-4 rounded-lg border border-teal-200 hover:border-teal-300">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-teal-800">{{ __('Estudiants Matriculats') }}</p>
-                            @php
-                                $totalEnrolledStudents = App\Models\CampusCourse::where('is_active', true)
-                                    ->withCount(['students' => function($query) {
-                                        $query->where('campus_course_student.academic_status', 'active')
-                                              ->orWhere('campus_course_student.academic_status', 'enrolled');
-                                    }])
-                                    ->get()
-                                    ->sum('students_count');
-                            @endphp
-                            <p class="text-2xl font-bold text-teal-900">{{ $totalEnrolledStudents }}</p>
-                        </div>
-                        <div class="p-2 bg-teal-200 rounded-lg">
-                            <i class="bi bi-mortarboard text-teal-600 text-xl"></i>
-                        </div>
-                    </div>
-                    <div class="mt-2 grid grid-cols-2 gap-1 text-xs">
-                        @php
-                            $coursesWithStudents = App\Models\CampusCourse::where('is_active', true)
-                                ->whereHas('students', function($query) {
-                                    $query->where('campus_course_student.academic_status', 'active')
-                                          ->orWhere('campus_course_student.academic_status', 'enrolled');
-                                })
-                                ->count();
-                        @endphp
-                        <span class="text-teal-700">Cursos amb estudiants: {{ $coursesWithStudents }}</span>
-                        <span class="text-teal-700">Total cursos: {{ $stats['active_courses'] ?? 0 }}</span>
-                    </div>
-                    <div class="mt-3 pt-2 border-t border-teal-200">
-                        <span class="text-xs text-teal-600 hover:text-teal-800 flex items-center">
-                            Gestionar estudiants <i class="bi bi-arrow-right-short ms-1"></i>
-                        </span>
-                    </div>
-                </div>
-            </a>
-            
             
             {{-- TEMPORADES --}}
             <a href="{{ route('campus.seasons.index') }}" class="block transition-transform hover:scale-[1.02]">
