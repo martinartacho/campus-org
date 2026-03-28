@@ -69,7 +69,7 @@
                             name="type" 
                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                             required>
-                        @foreach(\App\Models\TeacherNotification::TYPES as $key => $label)
+                        @foreach(__('campus.notification_types') as $key => $label)
                             <option value="{{ $key }}" {{ old('type') == $key ? 'selected' : '' }}>
                                 {{ $label }}
                             </option>
