@@ -40,7 +40,7 @@
             </h2>
         </div>
 
-        <form method="POST" action="{{ route('campus.teacher.notifications.store', $course->id) }}" class="p-6 space-y-6">
+        <form method="POST" action="{{ route('campus.teacher.courses.notifications.store', $course->id) }}" class="p-6 space-y-6">
             @csrf
             
             {{-- Información básica --}}

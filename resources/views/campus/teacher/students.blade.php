@@ -33,7 +33,7 @@
         </a>
         
         {{-- Botón de notificaciones --}}
-        <a href="{{ route('campus.teacher.notifications.create', $course->id) }}" 
+        <a href="{{ route('campus.teacher.courses.notifications.create', $course->id) }}" 
            class="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700">
             <i class="bi bi-bell-fill mr-2"></i>
             @lang('campus.create_notification')
