@@ -756,6 +756,24 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::get('/courses/{course}/students/export', [TeacherController::class, 'exportStudentsHtml'])
             ->name('courses.students.export');
+
+        // Notificaciones de teacher
+        Route::prefix('courses/{course}/notifications')->name('courses.notifications.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Campus\TeacherNotificationController::class, 'index'])
+                ->name('index');
+            
+            Route::get('/create', [\App\Http\Controllers\Campus\TeacherNotificationController::class, 'create'])
+                ->name('create');
+            
+            Route::post('/', [\App\Http\Controllers\Campus\TeacherNotificationController::class, 'store'])
+                ->name('store');
+            
+            Route::get('/{notification}', [\App\Http\Controllers\Campus\TeacherNotificationController::class, 'show'])
+                ->name('show');
+            
+            Route::post('/{notification}/read', [\App\Http\Controllers\Campus\TeacherNotificationController::class, 'markAsRead'])
+                ->name('mark.read');
+        });
     });
 
     // Admin Support Routes
