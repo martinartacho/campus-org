@@ -275,5 +275,16 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         return $pref ? $pref->getNotificationFrequency() : 'immediate';
     }
 
+    /**
+     * Check if user has backoffice/admin role
+     */
+    public function isBackoffice()
+    {
+        return $this->hasRole([
+            'admin', 'super-admin', 'director', 'gestio', 
+            'coordinacio', 'comunicacio', 'secretaria', 'editor'
+        ]);
+    }
+
 }
 

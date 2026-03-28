@@ -33,19 +33,23 @@ class NotificationController extends Controller
 
     public function index()
     {
+        $user = auth()->user();
+        
+        // Determinar si es vista de administrador vs usuario final
+        $isAdminView = $user->isBackoffice();
+
         // Usuarios con permiso pueden ver todas, los demás solo las propias o asignadas
-        if (Auth::user()->hasRole(['admin', 'super-admin', 'director', 'gestio', 'coordinacio', 'comunicacio', 'secretaria', 'editor'])) {
+        if ($isAdminView) {
             $notifications = Notification::latest()->paginate(10);
         } else {
             // Otros ven solo las suyas (relación muchos a muchos)
-            // $notifications = Auth::user()->notifications()->latest()->paginate(10);
-            $notifications = Auth::user()->notifications()
-            ->where('is_published', true)
-            ->orderBy('created_at', 'desc')
-            ->latest()->paginate(10);
+            $notifications = $user->notifications()
+                ->where('is_published', true)
+                ->orderBy('created_at', 'desc')
+                ->latest()->paginate(10);
         }
 
-        return view('notifications.index', compact('notifications'));
+        return view('notifications.index', compact('notifications', 'isAdminView'));
     }
 
     public function create()

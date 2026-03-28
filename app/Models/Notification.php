@@ -21,10 +21,7 @@ class Notification extends Model
         'published_at',
         'email_sent',
         'web_sent',
-        'push_sent',
-        'ticket_id',
-        'template_type',
-        'is_support_ticket'
+        'push_sent'
     ];
 
     protected $casts = [
@@ -134,55 +131,5 @@ public function users()
 	    return $this->belongsToMany(Notification::class)
         	->withPivot(['read', 'read_at']);
 	}
-
-    // Support ticket methods
-    public function isSupportTicket(): bool
-    {
-        return $this->is_support_ticket ?? false;
-    }
-
-    public function generateTicketId(): string
-    {
-        $date = now()->format('Ymd');
-        $sequence = str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT);
-        return "ADM-{$date}-{$sequence}";
-    }
-
-    public function getTicketNumber(): string
-    {
-        return $this->ticket_id ?? '';
-    }
-
-    public function getFormattedTicketId(): string
-    {
-        if (!$this->isSupportTicket()) {
-            return '';
-        }
-
-        $ticketId = $this->getTicketNumber();
-        $senderName = $this->sender ? $this->sender->name : 'Sistema';
-        $senderEmail = $this->sender ? $this->sender->email : 'system@upg.cat';
-        $date = $this->published_at ? $this->published_at->format('d/m/Y H:i') : now()->format('d/m/Y H:i');
-
-        return "⚠️ **NOVA SOL·LICITUD DE SUPORT ASSIGNADA**
-
-📋 **Detalls del Ticket:**
-- **Número de Ticket:** {$ticketId}
-- **Remitent:** {$senderName} ({$senderEmail})
-- **Departament:** admin
-- **Tipus:** consultation
-- **Urgència:** medium
-- **Data:** {$date}
-
-📝 **Descripció:** 
-{$this->content}
-
-🎯 **Acció Requerida:**
-Aquesta sol·licitud ha estat assignada al vostre departament. Si us plau, reviseu-la i proporcioneu una resposta al més aviat possible.
-
-Podeu gestionar aquesta sol·licitud a través del sistema de notificaciones o contactar directament amb el remitent.
-Destinataris: Usuaris amb rol: admin
-Estat: Publicat el {$date}";
-    }
 
 }
