@@ -1,6 +1,6 @@
 @extends('campus.shared.layout')
 
-@section('title', 'Alumnos del curso')
+@section('title', 'Alumnes del curs')
 
 @section('content')
     <h2 class="text-xl font-semibold mb-4">{{ $course->name }}</h2>
@@ -8,7 +8,7 @@
     <table class="w-full bg-white shadow rounded">
         <thead>
         <tr class="text-left border-b">
-            <th class="p-3">Alumno</th>
+            <th class="p-3">Nom</th>
             <th class="p-3">Email</th>
         </tr>
         </thead>

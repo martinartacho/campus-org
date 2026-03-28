@@ -120,7 +120,6 @@
                 <tr>
                     <th>Nom Complet</th>
                     <th>Codi d'Estudiant</th>
-                    <th>Correu Electrònic</th>
                 </tr>
             </thead>
             <tbody>
@@ -128,7 +127,6 @@
                     <tr>
                         <td>{{ $student['name'] }}</td>
                         <td><span class="student-code">{{ $student['student_code'] }}</span></td>
-                        <td>{{ $student['email'] }}</td>
                     </tr>
                 @endforeach
             </tbody>

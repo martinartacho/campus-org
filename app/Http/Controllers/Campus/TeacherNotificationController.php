@@ -29,8 +29,10 @@ class TeacherNotificationController extends Controller
         
         // Obtener estudiantes del curso
         $students = $course->students()
-            ->where('campus_course_student.academic_status', 'active')
-            ->orWhere('campus_course_student.academic_status', 'enrolled')
+            ->where(function($query) {
+                $query->where('campus_course_student.academic_status', 'active')
+                      ->orWhere('campus_course_student.academic_status', 'enrolled');
+            })
             ->with('user')
             ->get();
         
@@ -175,8 +177,10 @@ class TeacherNotificationController extends Controller
             if ($recipientType === 'all') {
                 // Obtener todos los estudiantes del curso
                 $students = $notification->course->students()
-                    ->where('campus_course_student.academic_status', 'active')
-                    ->orWhere('campus_course_student.academic_status', 'enrolled')
+                    ->where(function($query) {
+                        $query->where('campus_course_student.academic_status', 'active')
+                              ->orWhere('campus_course_student.academic_status', 'enrolled');
+                    })
                     ->get();
                 
                 $recipientIds = $students->pluck('user_id')->filter()->toArray();

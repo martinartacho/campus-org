@@ -110,21 +110,6 @@
                                class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm" 
                                placeholder="@lang('campus.search_student')">
                     </div>
-                    
-                    <div class="flex items-center space-x-2">
-                        <a href="{{ route('campus.teacher.courses.students.export', $course->id) }}" 
-                           target="_blank"
-                           class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                            <i class="bi bi-download mr-2"></i>
-                            @lang('campus.export')
-                        </a>
-                        
-                        <button type="button" 
-                                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700">
-                            <i class="bi bi-envelope mr-2"></i>
-                            @lang('campus.send_email')
-                        </button>
-                    </div>
                 </div>
 
                 {{-- Tabla de estudiantes --}}
