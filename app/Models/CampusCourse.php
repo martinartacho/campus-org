@@ -486,11 +486,11 @@ class CampusCourse extends Model
     public function students()
     {
         return $this->belongsToMany(
-        CampusTeacher::class,
-        'campus_course_teacher',
-        'course_id',
-        'teacher_id'
-    );
+            CampusStudent::class,
+            'campus_course_student',
+            'course_id',
+            'student_id'
+        )->withPivot('academic_status', 'enrollment_date', 'start_date', 'end_date', 'completion_date', 'final_grade', 'grade_letter', 'attendance_status', 'attendance_percentage');
     }
 
     /**
