@@ -63,11 +63,9 @@ class TeacherDashboardData
             $coursesQuery = $teacher->courses()
                 ->with(['season', 'category'])
                 ->withCount([
-                    'registrations as confirmed_students_count' => function ($q) {
-                        $q->where('status', 'confirmed');
-                    },
-                    'registrations as completed_students_count' => function ($q) {
-                        $q->where('status', 'completed');
+                    'students as confirmed_students_count' => function ($q) {
+                        $q->where('campus_course_student.academic_status', 'active')
+                          ->orWhere('campus_course_student.academic_status', 'enrolled');
                     }
                 ]);
 

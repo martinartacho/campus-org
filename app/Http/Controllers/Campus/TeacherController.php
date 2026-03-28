@@ -746,6 +746,9 @@ class TeacherController extends Controller
         
         $this->authorizeCourse($course);
         
+        // Obtener el teacher autenticado
+        $teacher = Auth::user()->teacher;
+        
         $students = $course->registrations->map(function ($registration) {
             return [
                 'id' => $registration->student->id,
@@ -758,7 +761,7 @@ class TeacherController extends Controller
                 'registration_id' => $registration->id
             ];
         });
-        return view('campus.teacher.students', compact('course', 'students'));
+        return view('campus.teacher.students', compact('course', 'students', 'teacher'));
     }
     
     /**
