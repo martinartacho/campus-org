@@ -44,8 +44,29 @@ class NotificationMail extends Mailable
             with: [
                 'notification' => $this->notification,
                 'user' => $this->user,
+                'processedContent' => $this->processContentImages($this->notification->content),
             ]
         );
+    }
+
+    /**
+     * Process content images to make them Gmail-compatible
+     */
+    private function processContentImages($content)
+    {
+        // Convert relative image URLs to absolute URLs
+        $content = preg_replace_callback(
+            '/src="\/([^"]+)"/',
+            function($matches) {
+                return 'src="' . config('app.url') . '/' . $matches[1] . '"';
+            },
+            $content
+        );
+        
+        // Convert data URIs to embedded images (optional - more complex)
+        // For now, just ensure all images have proper absolute URLs
+        
+        return $content;
     }
 
     /**

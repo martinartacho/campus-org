@@ -3,8 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="format-detection" content="date=no">
+    <meta name="format-detection" content="address=no">
+    <meta name="format-detection" content="email=no">
     <title>{{ $notification->title }}</title>
     <style>
+        /* Reset styles */
+        body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+        body { height: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important; }
+        
+        /* Main styles */
         body {
             font-family: Arial, sans-serif;
             line-height: 1.6;
@@ -41,6 +53,12 @@
         .content p {
             margin-bottom: 15px;
         }
+        .content img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 15px 0;
+        }
         .footer {
             border-top: 1px solid #eee;
             padding-top: 20px;
@@ -52,12 +70,10 @@
             display: inline-block;
             padding: 12px 24px;
             background-color: #007bff;
-            color: white;
+            color: #ffffff;
             text-decoration: none;
             border-radius: 5px;
-            margin-top: 15px;
-        }
-        .btn:hover {
+            font-weight: bold;
             background-color: #0056b3;
         }
     </style>
@@ -71,7 +87,7 @@
         <div class="content">
             <h3>Hola {{ $user->name }},</h3>
             
-            <div>{!! $notification->content !!}</div>
+            <div>{!! $processedContent !!}</div>
             
             @if(config('app.url'))
             <p>

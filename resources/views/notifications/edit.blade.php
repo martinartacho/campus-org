@@ -6,7 +6,9 @@
         </h2>
     </x-slot>
 
-    <div class="py-12">
+    <div class="py-12" x-data="{
+        recipientType: '{{ old('recipient_type', $notification->recipient_type) }}'
+    }">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200">
@@ -33,12 +35,35 @@
                         <!-- Tipo de destinatario -->
                         <div>
                            <x-input-label for="recipient_type" value="{{__('site.Recipients')}}" />
-                            <select id="recipient_type" name="recipient_type" x-model="recipientType"
+                            <select id="recipient_type" name="recipient_type" x-model="recipientType" @change="recipientType = $event.target.value"
                                     class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
                                 @foreach($recipientTypes as $value => $label)
-                                    <option value="{{ $value }}">{{ $label }}</option>
+                                    <option value="{{ $value }}" {{ old('recipient_type', $notification->recipient_type) == $value ? 'selected' : '' }}>{{ $label }}</option>
                                 @endforeach
                             </select>
+                        </div>
+
+                        <!-- Campo para roles -->
+                        <div x-show="recipientType === 'role'" x-transition>
+                           <x-input-label for="recipient_role" value="{{__('site.Select_Role')}}" />
+                            <select id="recipient_role" name="recipient_role"
+                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                @foreach($roles as $id => $name)
+                                    <option value="{{ $name }}" {{ old('recipient_role', $notification->recipient_role) == $name ? 'selected' : '' }}>{{ $name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Campo para usuarios específicos -->
+                        <div x-show="recipientType === 'specific'" x-transition>
+                           <x-input-label for="recipient_ids" value="{{__('site.Select_Users')}}" /> 
+                            <select id="recipient_ids" name="recipient_ids[]" multiple
+                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                @foreach($users as $user)
+                                    <option value="{{ $user->id }}" {{ in_array($user->id, old('recipient_ids', $notification->recipient_ids ?? [])) ? 'selected' : '' }}>{{ $user->name }}</option>
+                                @endforeach
+                            </select>
+                            <p class="text-sm text-gray-500 mt-1">{{ __('site.info_select_multiple_users') }}.</p>
                         </div>
 
                           <!-- Tipo de notificación -->
@@ -46,9 +71,19 @@
                             <x-input-label for="type" value="{{ __('site.Notification_Type')}}" />
                             <select id="type" name="type"
                                     class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
-                                <option value="new" {{ old('type') == 'new' ? 'selected' : '' }}>{{ __('site.Type_New') }}</option>
-                                <option value="feedback" {{ old('type') == 'feedback' ? 'selected' : '' }}>{{ __('site.Type_Feedback') }}</option>
-                                <option value="system" {{ old('type') == 'system' ? 'selected' : '' }}>{{ __('site.Type_System') }}</option>
+                                <option value="new" {{ old('type', $notification->type) == 'new' ? 'selected' : '' }}>{{ __('site.Type_New') }}</option>
+                                <option value="feedback" {{ old('type', $notification->type) == 'feedback' ? 'selected' : '' }}>{{ __('site.Type_Feedback') }}</option>
+                                <option value="system" {{ old('type', $notification->type) == 'system' ? 'selected' : '' }}>{{ __('site.Type_System') }}</option>
+                            </select>
+                        </div>
+
+                        <!-- Estado de publicación -->
+                        <div>
+                            <x-input-label for="is_published" value="{{ __('site.Publish_Status') }}" />
+                            <select id="is_published" name="is_published"
+                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="0" {{ old('is_published', $notification->is_published) == 0 ? 'selected' : '' }}>{{ __('site.Draft') }}</option>
+                                <option value="1" {{ old('is_published', $notification->is_published) == 1 ? 'selected' : '' }}>{{ __('site.Published') }}</option>
                             </select>
                         </div>    
 
