@@ -16,7 +16,7 @@
         <div class="flex items-center">
             <i class="bi bi-chevron-right text-gray-400 mx-1"></i>
             <span class="ms-1 text-sm font-medium text-gray-500 md:ms-2">
-                {{ __('campus.enrolled_students') }} - {{ $course->code }} (path: resources/views/components/dashboard/student.blade.php)
+                {{ __('campus.enrolled_students') }} - {{ $course->code }}
             </span>
         </div>
     </li>

@@ -258,7 +258,7 @@
                                 </svg>
                                 <span>{{ $course->start_date?->format('d/m/Y') }} - {{ $course->end_date?->format('d/m/Y') }}</span>
                                 <span class="mx-2">•</span>
-                                <span>@lang('campus.course_hours_total'): {{ $course->hours }}h</span>
+                                <span>Sessions: {{ $course->sessions }} total</span>
                                 @if($course->credits)
                                     <span class="mx-2">•</span>
                                     <span>@lang('campus.credits'): {{ $course->credits }}</span>

@@ -738,9 +738,10 @@ class TeacherController extends Controller
         $course = CampusCourse::with([
             'season',
             'category',
-            'registrations' => function ($query) {
-                $query->whereIn('status', ['confirmed', 'completed'])
-                      ->with(['student.user']);
+            'students' => function ($query) {
+                $query->where('campus_course_student.academic_status', 'active')
+                      ->orWhere('campus_course_student.academic_status', 'enrolled')
+                      ->with('user');
             }
         ])->findOrFail($courseId);
         
@@ -749,18 +750,20 @@ class TeacherController extends Controller
         // Obtener el teacher autenticado
         $teacher = Auth::user()->teacher;
         
-        $students = $course->registrations->map(function ($registration) {
+        // Usar la relación students directamente
+        $students = $course->students->map(function ($student) {
             return [
-                'id' => $registration->student->id,
-                'name' => $registration->student->user->name ?? 
-                         ($registration->student->first_name . ' ' . $registration->student->last_name),
-                'email' => $registration->student->email ?? $registration->student->user->email,
-                'student_code' => $registration->student->student_code,
-                'registration_date' => $registration->registration_date,
-                'status' => $registration->status,
-                'registration_id' => $registration->id
+                'id' => $student->id,
+                'name' => $student->user->name ?? 
+                         ($student->first_name . ' ' . $student->last_name),
+                'email' => $student->email ?? $student->user->email,
+                'student_code' => $student->student_code,
+                'enrollment_date' => $student->pivot->enrollment_date,
+                'academic_status' => $student->pivot->academic_status,
+                'student_id' => $student->id
             ];
         });
+        
         return view('campus.teacher.students', compact('course', 'students', 'teacher'));
     }
     
