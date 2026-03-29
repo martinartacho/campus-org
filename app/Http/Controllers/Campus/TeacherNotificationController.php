@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Campus;
 
 use App\Http\Controllers\Controller;
-use App\Models\TeacherNotification;
+use App\Models\Notification;
 use App\Models\CampusCourse;
 use App\Models\User;
 use App\Models\CampusStudent;
@@ -60,13 +60,12 @@ class TeacherNotificationController extends Controller
         try {
             DB::beginTransaction();
 
-            // Crear notificación
-            $notification = TeacherNotification::create([
+            // Crear notificación usando el sistema unificado
+            $notification = Notification::create([
                 'title' => $request->title,
                 'content' => $request->content,
-                'type' => $request->type,
+                'type' => 'teacher', // Tipo específico para teacher notifications
                 'sender_id' => Auth::id(),
-                'course_id' => $course->id,
                 'recipient_type' => $request->recipient_type,
                 'recipient_ids' => $request->recipient_ids ?? [],
                 'is_published' => $request->boolean('send_immediately'),
@@ -75,7 +74,7 @@ class TeacherNotificationController extends Controller
 
             // Asignar destinatarios y enviar canales
             if ($request->boolean('send_immediately')) {
-                $this->assignNotificationRecipients($notification, $request->recipient_type, $request->recipient_ids ?? []);
+                $this->assignNotificationRecipients($notification, $request->recipient_type, $request->recipient_ids ?? [], $course);
                 $this->sendNotificationChannels($notification);
             }
 
@@ -105,9 +104,9 @@ class TeacherNotificationController extends Controller
         $course = CampusCourse::findOrFail($courseId);
         $this->authorizeCourse($course);
 
-        $notifications = TeacherNotification::forCourse($course->id)
-            ->fromTeacher(Auth::id())
-            ->with(['sender', 'course'])
+        $notifications = Notification::where('type', 'teacher')
+            ->where('sender_id', Auth::id())
+            ->with(['sender', 'recipients'])
             ->latest('published_at')
             ->paginate(15);
 
@@ -122,7 +121,7 @@ class TeacherNotificationController extends Controller
         $course = CampusCourse::findOrFail($courseId);
         $this->authorizeCourse($course);
 
-        $notification = TeacherNotification::with(['sender', 'course', 'recipients'])
+        $notification = Notification::with(['sender', 'recipients'])
             ->findOrFail($notificationId);
 
         // Verificar que el teacher sea el autor
@@ -139,7 +138,7 @@ class TeacherNotificationController extends Controller
     public function markAsRead($notificationId)
     {
         try {
-            $notification = TeacherNotification::findOrFail($notificationId);
+            $notification = Notification::findOrFail($notificationId);
             
             // Verificar que el usuario sea destinatario
             $isRecipient = $notification->recipients()
@@ -169,14 +168,14 @@ class TeacherNotificationController extends Controller
     /**
      * Asignar destinatarios a la notificación
      */
-    private function assignNotificationRecipients($notification, $recipientType, $specificIds = [])
+    private function assignNotificationRecipients($notification, $recipientType, $specificIds = [], $course)
     {
         try {
             $recipientIds = [];
 
             if ($recipientType === 'all') {
                 // Obtener todos los estudiantes del curso
-                $students = $notification->course->students()
+                $students = $course->students()
                     ->where(function($query) {
                         $query->where('campus_course_student.academic_status', 'active')
                               ->orWhere('campus_course_student.academic_status', 'enrolled');
