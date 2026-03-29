@@ -715,7 +715,7 @@ class TeacherController extends Controller
             ->latest()
             ->get();
         
-        return view('campus.teacher.courses', compact('courses', 'teacher'));
+        return view('campus.teacher.courses.index', compact('courses', 'teacher'));
     }
     
     /**
