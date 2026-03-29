@@ -771,12 +771,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/{notification}', [\App\Http\Controllers\Campus\TeacherNotificationController::class, 'show'])
                 ->name('show');
             
+            Route::post('/{notification}/publish', [\App\Http\Controllers\Campus\TeacherNotificationController::class, 'publish'])
+                ->name('publish');
+            
             Route::post('/{notification}/read', [\App\Http\Controllers\Campus\TeacherNotificationController::class, 'markAsRead'])
                 ->name('mark.read');
         });
     });
 
-    // Admin Support Routes
+// ... (rest of the code remains the same)
     Route::middleware(['auth', 'permission:support-requests.view'])
     ->prefix('admin/support-requests')
     ->name('admin.support-requests.')

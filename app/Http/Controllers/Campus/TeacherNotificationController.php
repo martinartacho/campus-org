@@ -71,11 +71,7 @@ class TeacherNotificationController extends Controller
                 'is_published' => $request->boolean('send_immediately'),
                 'published_at' => $request->boolean('send_immediately') ? now() : null,
                 'template_type' => 'teacher',
-            ]);
-            
-            // Generar ticket_id después de crear la notificación
-            $notification->update([
-                'ticket_id' => 'TCH-' . str_pad($notification->id, 5, '0', STR_PAD_LEFT),
+                'ticket_id' => 'TCH-' . str_pad(Notification::max('id') + 1, 5, '0', STR_PAD_LEFT),
             ]);
 
             // Asignar destinatarios y enviar canales
@@ -112,11 +108,60 @@ class TeacherNotificationController extends Controller
 
         $notifications = Notification::where('type', 'teacher')
             ->where('sender_id', Auth::id())
-            ->with(['sender', 'recipients.student'])
+            ->with(['sender', 'recipients' => function($query) {
+                $query->where('read', true)->orWhere('read', false);
+            }, 'recipients.student'])
             ->latest('published_at')
             ->paginate(15);
 
         return view('campus.teacher.notifications.index', compact('course', 'notifications'));
+    }
+
+    /**
+     * Publicar/Enviar notificació d'esborrany
+     */
+    public function publish($courseId, $notificationId)
+    {
+        $course = CampusCourse::findOrFail($courseId);
+        $this->authorizeCourse($course);
+
+        $notification = Notification::findOrFail($notificationId);
+
+        // Verificar que el teacher sigui l'autor
+        if ($notification->sender_id !== Auth::id()) {
+            abort(403, 'No tens accés a aquesta notificació');
+        }
+
+        // Verificar que sigui esborrany
+        if ($notification->is_published) {
+            return back()->with('error', 'Aquesta notificació ja ha estat enviada');
+        }
+
+        try {
+            DB::beginTransaction();
+
+            // Marcar com a publicada
+            $notification->update([
+                'is_published' => true,
+                'published_at' => now(),
+            ]);
+
+            // Assignar destinataris i enviar canals
+            $recipientType = $notification->recipient_type;
+            $recipientIds = $notification->recipient_ids ?? [];
+            $this->assignNotificationRecipients($notification, $recipientType, $recipientIds, $course);
+            $this->sendNotificationChannels($notification);
+
+            DB::commit();
+
+            return back()->with('success', 'Notificació enviada correctament');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error publishing teacher notification: ' . $e->getMessage());
+            
+            return back()->with('error', 'Error en enviar la notificació: ' . $e->getMessage());
+        }
     }
 
     /**

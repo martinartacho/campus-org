@@ -51,6 +51,19 @@
             <i class="bi bi-people mr-2"></i>
             {{ __('campus.enrolled_students') }}
         </a>
+        
+        {{-- Botó d'enviar si és esborrany --}}
+        @if(!$notification->is_published)
+            <form method="POST" action="{{ route('campus.teacher.courses.notifications.publish', [$course->id, $notification->id]) }}" class="inline">
+                @csrf
+                <button type="submit" 
+                        class="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700"
+                        onclick="return confirm('Estàs segur que vols enviar aquesta notificació ara?')">
+                    <i class="bi bi-send-fill mr-2"></i>
+                    {{ __('campus.send_notification') }}
+                </button>
+            </form>
+        @endif
     </div>
 @endsection
 
@@ -65,10 +78,16 @@
                         {{ $notification->title }}
                     </h2>
                     <p class="mt-1 text-sm text-gray-500">
-                        {{ __('campus.notification_number') }}: {{ $notification->id }}
+                        {{ __('campus.ticket_id') }}: {{ $notification->ticket_id ?? 'TCH-' . str_pad($notification->id, 5, '0', STR_PAD_LEFT) }}
                     </p>
                 </div>
                 <div class="text-right">
+                    @if(!$notification->is_published)
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800 mr-2">
+                            <i class="bi bi-file-earmark-text mr-1"></i>
+                            Esborrany
+                        </span>
+                    @endif
                     <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
                         {{ __('campus.type') }}: {{ $notification->type === 'teacher' ? 'Teacher' : $notification->type }}
                     </span>
