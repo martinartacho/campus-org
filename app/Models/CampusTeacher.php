@@ -180,20 +180,43 @@ class CampusTeacher extends Model
             return '';
         }
         
-        // Treure espais i assegurar que és un IBAN net
-        $clean = preg_replace('/\s+/', '', $iban);
-        
-        // Si comença amb 's:' és dades serialitzades, extreure el valor real
-        if (strpos($clean, 's:') === 0) {
-            return 'Dades en procés de correcció';
+        try {
+            // Treure espais i assegurar que és un IBAN net
+            $clean = preg_replace('/\s+/', '', $iban);
+            
+            // Si comença amb 's:' és dades serialitzades corruptes
+            if (strpos($clean, 's:') === 0) {
+                Log::warning('Corrupted serialized IBAN detected', [
+                    'teacher_id' => $this->id,
+                    'user_email' => $this->user->email ?? 'unknown'
+                ]);
+                return 'Dades en procés de correcció';
+            }
+            
+            // Si és massa llarg i no té format IBAN, probablement és encriptat corrupte
+            if (strlen($clean) > 50 && !preg_match('/^[A-Z]{2}\d{2}/', $clean)) {
+                Log::warning('Corrupted encrypted IBAN detected', [
+                    'teacher_id' => $this->id,
+                    'user_email' => $this->user->email ?? 'unknown',
+                    'iban_length' => strlen($clean)
+                ]);
+                return 'Dades en procés de correcció';
+            }
+            
+            // Format correcte: ES00 **** **** **** 0000
+            if (strlen($clean) >= 24 && preg_match('/^[A-Z]{2}\d{2}/', $clean)) {
+                return substr($clean, 0, 4) . ' **** **** **** ' . substr($clean, -4);
+            }
+            
+            return $iban;
+            
+        } catch (\Exception $e) {
+            Log::error('Error formatting IBAN', [
+                'teacher_id' => $this->id,
+                'error' => $e->getMessage()
+            ]);
+            return 'Error en les dades';
         }
-        
-        // Format correcte: ES00 **** **** **** 0000
-        if (strlen($clean) >= 24) {
-            return substr($clean, 0, 4) . ' **** **** **** ' . substr($clean, -4);
-        }
-        
-        return $iban;
     }
     
     /**

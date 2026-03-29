@@ -117,8 +117,12 @@
                     $hasIban = false;
                     try {
                         $hasIban = auth()->user()->teacherProfile && !empty(auth()->user()->teacherProfile->iban);
+                    } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
+                        $hasIban = false;
+                        \Log::warning('Corrupted IBAN detected for user: ' . auth()->user()->id . ' - ' . $e->getMessage());
                     } catch (\Exception $e) {
                         $hasIban = false;
+                        \Log::error('Error checking IBAN for user: ' . auth()->user()->id . ' - ' . $e->getMessage());
                     }
                 @endphp
                 @if($hasIban)
