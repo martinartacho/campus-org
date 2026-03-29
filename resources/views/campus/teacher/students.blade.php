@@ -39,6 +39,13 @@
             @lang('campus.create_notification')
         </a>
         
+        {{-- Historial de notificaciones --}}
+        <a href="{{ route('campus.teacher.courses.notifications.index', $course->id) }}" 
+           class="inline-flex items-center px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-md hover:bg-purple-700">
+            <i class="bi bi-clock-history mr-2"></i>
+            @lang('campus.notifications_history')
+        </a>
+        
         @if($course->teachers->count() > 1)
             <button type="button" 
                     onclick="document.getElementById('teachers-modal').classList.remove('hidden')"
