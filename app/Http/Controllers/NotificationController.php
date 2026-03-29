@@ -165,10 +165,22 @@ class NotificationController extends Controller
     {
         //  abort_if(Auth::user()->hasRole('invited'), 403);
 
-        // Marcar como leída al visualizar
-        if ($notification->read_at === null) {
-            // Pasar el usuario autenticado como argumento
-            $notification->markAsRead(Auth::user());
+        // Marcar como leída al visualizar para el usuario autenticado
+        $user = Auth::user();
+        
+        // Verificar si el usuario es destinatario de esta notificación
+        $isRecipient = $notification->recipients()
+            ->where('user_id', $user->id)
+            ->exists();
+            
+        if ($isRecipient) {
+            // Actualizar el estado de lectura en la tabla pivot
+            $notification->recipients()
+                ->where('user_id', $user->id)
+                ->update([
+                    'read' => true,
+                    'read_at' => now(),
+                ]);
         }
 
         return view('notifications.show', compact('notification'));

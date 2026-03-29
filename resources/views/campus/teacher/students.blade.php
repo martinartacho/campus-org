@@ -213,8 +213,8 @@
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="bg-gray-50 p-4 rounded-lg">
+                    <!-- No processar - deshabilitado por ahora -->
+                    <!--  <div class="bg-gray-50 p-4 rounded-lg">
                         <h4 class="text-sm font-medium text-gray-500 mb-2">
                             <i class="bi bi-lightning-charge mr-2"></i>
                             @lang('campus.quick_actions')
@@ -232,7 +232,7 @@
                                 @lang('campus.send_notification')
                             </button>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>
