@@ -21,7 +21,9 @@ class Notification extends Model
         'published_at',
         'email_sent',
         'web_sent',
-        'push_sent'
+        'push_sent',
+        'ticket_id',
+        'template_type'
     ];
 
     protected $casts = [
