@@ -70,6 +70,12 @@ class TeacherNotificationController extends Controller
                 'recipient_ids' => $request->recipient_ids ?? [],
                 'is_published' => $request->boolean('send_immediately'),
                 'published_at' => $request->boolean('send_immediately') ? now() : null,
+                'template_type' => 'teacher',
+            ]);
+            
+            // Generar ticket_id después de crear la notificación
+            $notification->update([
+                'ticket_id' => 'TCH-' . str_pad($notification->id, 5, '0', STR_PAD_LEFT),
             ]);
 
             // Asignar destinatarios y enviar canales
@@ -106,7 +112,7 @@ class TeacherNotificationController extends Controller
 
         $notifications = Notification::where('type', 'teacher')
             ->where('sender_id', Auth::id())
-            ->with(['sender', 'recipients'])
+            ->with(['sender', 'recipients.student'])
             ->latest('published_at')
             ->paginate(15);
 

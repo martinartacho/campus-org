@@ -69,7 +69,7 @@
                     <thead class="bg-gray-50">
                         <tr>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                {{ __('campus.notification_number') }}
+                                {{ __('campus.ticket_id') }}
                             </th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 {{ __('campus.notification_title') }}
@@ -95,7 +95,9 @@
                         @foreach($notifications as $notification)
                             <tr class="hover:bg-gray-50">
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    {{ $notification->id }}
+                                    <code class="bg-blue-100 px-2 py-1 rounded text-xs font-mono">
+                                        {{ $notification->ticket_id ?? 'TCH-' . str_pad($notification->id, 5, '0', STR_PAD_LEFT) }}
+                                    </code>
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="text-sm font-medium text-gray-900">
@@ -111,9 +113,40 @@
                                             {{ __('campus.all_course_students') }}
                                         </span>
                                     @else
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                            {{ $notification->recipients->count() }} {{ __('campus.selected_students_count') }}
-                                        </span>
+                                        @php
+                                            $recipients = $notification->recipients;
+                                            $showCount = $recipients->count();
+                                            $displayLimit = 2;
+                                        @endphp
+                                        @if($showCount <= $displayLimit)
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                {{ $showCount }} {{ __('campus.selected_students_count') }}
+                                            </span>
+                                            {{-- Mostrar códigos si son pocos --}}
+                                            <div class="text-xs text-gray-500 mt-1">
+                                                @foreach($recipients->take($displayLimit) as $recipient)
+                                                    @if($recipient->student)
+                                                        <span class="inline-block bg-gray-100 px-1 py-0.5 rounded text-xs mr-1">
+                                                            {{ $recipient->student->student_code }}
+                                                        </span>
+                                                    @endif
+                                                @endforeach
+                                            </div>
+                                        @else
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                {{ $showCount }} {{ __('campus.selected_students_count') }}
+                                            </span>
+                                            <div class="text-xs text-gray-500 mt-1">
+                                                @foreach($recipients->take($displayLimit) as $recipient)
+                                                    @if($recipient->student)
+                                                        <span class="inline-block bg-gray-100 px-1 py-0.5 rounded text-xs mr-1">
+                                                            {{ $recipient->student->student_code }}
+                                                        </span>
+                                                    @endif
+                                                @endforeach
+                                                <span class="inline-block text-gray-400">...</span>
+                                            </div>
+                                        @endif
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">

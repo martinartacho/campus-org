@@ -130,12 +130,6 @@
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     @lang('campus.code')
                                 </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    @lang('campus.email')
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    @lang('campus.actions')
-                                </th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
@@ -162,21 +156,6 @@
                                         <code class="bg-gray-100 px-2 py-1 rounded text-xs">
                                             {{ $student['student_code'] }}
                                         </code>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        <a href="mailto:{{ $student['email'] }}" 
-                                           class="text-blue-600 hover:text-blue-800 hover:underline">
-                                            {{ $student['email'] }}
-                                        </a>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <div class="flex items-center justify-end space-x-2">
-                                            <a href="mailto:{{ $student['email'] }}" 
-                                               class="text-green-600 hover:text-green-900 p-1 rounded hover:bg-green-50"
-                                               title="@lang('campus.contact')">
-                                                <i class="bi bi-envelope"></i>
-                                            </a>
-                                        </div>
                                     </td>
                                 </tr>
                             @endforeach
