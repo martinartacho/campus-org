@@ -123,7 +123,7 @@
                         <div>
                             <x-input-label for="bank_titular" :value="__('Titular del Compte') . ' *'" />
                             <x-text-input id="bank_titular" name="bank_titular" type="text" class="mt-1 block w-full" 
-                                       :value="auth()->user()->teacherProfile?->bank_titular ?? ''"
+                                       :value="auth()->user()->teacherProfile?->decrypted_bank_titular ?? ''"
                                        :placeholder="__('Nom i cognoms del titular')" />
                             <x-input-error class="mt-2" :messages="$errors->get('bank_titular')" />
                         </div>
@@ -133,7 +133,7 @@
                         <div>
                             <x-input-label for="fiscal_id" :value="__('Identificació Fiscal')" />
                             <x-text-input id="fiscal_id" name="fiscal_id" type="text" class="mt-1 block w-full" 
-                                       :value="auth()->user()->teacherProfile?->fiscal_id ?? ''"
+                                       :value="auth()->user()->teacherProfile?->decrypted_fiscal_id ?? ''"
                                        :placeholder="__('Nomes si és diferent del DNI')" />
                             <p class="mt-1 text-xs text-gray-500">{{ __('Nomes si és diferent del DNI') }}</p>
                             <x-input-error class="mt-2" :messages="$errors->get('fiscal_id')" />

@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Services\BankingEncryptionService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Log;
 
 /**
  * App\Models\CampusTeacher
@@ -118,13 +119,15 @@ class CampusTeacher extends Model
     ];
 
     protected $casts = [
-        'hiring_date' => 'date',
+        'hiring_date' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
         'areas' => 'array',
-        'metadata' => 'array',
+        'invoice' => 'boolean',
         // 🔐 Dades sensibles xifrades (RGPD) - Accessors personalitzats
-        // 'iban' => 'encrypted', // Desactivat per problema de serialització
-        'bank_titular' => 'encrypted',
-        'fiscal_id' => 'encrypted',
+        // REMOVED: 'iban' => 'encrypted', - Use manual encryption
+        // REMOVED: 'bank_titular' => 'encrypted', - Use manual encryption  
+        // REMOVED: 'fiscal_id' => 'encrypted', - Use manual encryption
         'beneficiary_iban' => 'encrypted',
         'beneficiary_titular' => 'encrypted',
         'beneficiary_dni' => 'encrypted',
@@ -133,44 +136,11 @@ class CampusTeacher extends Model
         'waived_confirmation' => 'boolean',
         'own_confirmation' => 'boolean',
         'ceded_confirmation' => 'boolean',
-        'beneficiary_invoice' => 'boolean',
+        'payment_status' => 'string',
     ];
 
     /**
-     * Get IBAN attribute with manual decryption.
-     */
-    public function getIbanAttribute($value)
-    {
-        if (empty($value)) {
-            return '';
-        }
-        
-        try {
-            return Crypt::decrypt($value);
-        } catch (\Exception $e) {
-            return '';
-        }
-    }
-    
-    /**
-     * Set IBAN attribute with manual encryption.
-     */
-    public function setIbanAttribute($value)
-    {
-        if (empty($value)) {
-            $this->attributes['iban'] = null;
-            return;
-        }
-        
-        try {
-            $this->attributes['iban'] = Crypt::encrypt($value);
-        } catch (\Exception $e) {
-            $this->attributes['iban'] = null;
-        }
-    }
-
-    /**
-     * Get formatted IBAN attribute.
+     * Get formatted IBAN attribute (encrypted).
      */
     public function getFormattedIbanAttribute(): string
     {
@@ -181,34 +151,8 @@ class CampusTeacher extends Model
         }
         
         try {
-            // Treure espais i assegurar que és un IBAN net
-            $clean = preg_replace('/\s+/', '', $iban);
-            
-            // Si comença amb 's:' és dades serialitzades corruptes
-            if (strpos($clean, 's:') === 0) {
-                Log::warning('Corrupted serialized IBAN detected', [
-                    'teacher_id' => $this->id,
-                    'user_email' => $this->user->email ?? 'unknown'
-                ]);
-                return 'Dades en procés de correcció';
-            }
-            
-            // Si és massa llarg i no té format IBAN, probablement és encriptat corrupte
-            if (strlen($clean) > 50 && !preg_match('/^[A-Z]{2}\d{2}/', $clean)) {
-                Log::warning('Corrupted encrypted IBAN detected', [
-                    'teacher_id' => $this->id,
-                    'user_email' => $this->user->email ?? 'unknown',
-                    'iban_length' => strlen($clean)
-                ]);
-                return 'Dades en procés de correcció';
-            }
-            
-            // Format correcte: ES00 **** **** **** 0000
-            if (strlen($clean) >= 24 && preg_match('/^[A-Z]{2}\d{2}/', $clean)) {
-                return substr($clean, 0, 4) . ' **** **** **** ' . substr($clean, -4);
-            }
-            
-            return $iban;
+            $encryptionService = app(BankingEncryptionService::class);
+            return $encryptionService->mask($iban);
             
         } catch (\Exception $e) {
             Log::error('Error formatting IBAN', [
@@ -220,11 +164,155 @@ class CampusTeacher extends Model
     }
     
     /**
-     * Get the masked IBAN attribute for display.
+     * Get the masked IBAN attribute for display (encrypted).
      */
     public function getMaskedIbanAttribute(): string
     {
         return $this->getFormattedIbanAttribute();
+    }
+    
+    /**
+     * Get decrypted IBAN for internal use
+     */
+    public function getDecryptedIbanAttribute(): string
+    {
+        if (empty($this->iban)) {
+            return '';
+        }
+        
+        try {
+            $encryptionService = app(BankingEncryptionService::class);
+            return $encryptionService->decrypt($this->iban);
+        } catch (\Exception $e) {
+            Log::error('Error decrypting IBAN', [
+                'teacher_id' => $this->id,
+                'error' => $e->getMessage()
+            ]);
+            return '';
+        }
+    }
+    
+    /**
+     * Get decrypted bank titular for internal use
+     */
+    public function getDecryptedBankTitularAttribute(): string
+    {
+        if (empty($this->bank_titular)) {
+            return '';
+        }
+        
+        try {
+            $encryptionService = app(BankingEncryptionService::class);
+            return $encryptionService->decrypt($this->bank_titular);
+        } catch (\Exception $e) {
+            Log::error('Error decrypting bank titular', [
+                'teacher_id' => $this->id,
+                'error' => $e->getMessage()
+            ]);
+            return '';
+        }
+    }
+    
+    /**
+     * Get decrypted fiscal ID for internal use
+     */
+    public function getDecryptedFiscalIdAttribute(): string
+    {
+        if (empty($this->fiscal_id)) {
+            return '';
+        }
+        
+        try {
+            $encryptionService = app(BankingEncryptionService::class);
+            return $encryptionService->decrypt($this->fiscal_id);
+        } catch (\Exception $e) {
+            Log::error('Error decrypting fiscal ID', [
+                'teacher_id' => $this->id,
+                'error' => $e->getMessage()
+            ]);
+            return '';
+        }
+    }
+    
+    /**
+     * Set IBAN with encryption
+     */
+    public function setIbanAttribute($value)
+    {
+        if (empty($value)) {
+            $this->attributes['iban'] = '';
+            return;
+        }
+        
+        try {
+            $encryptionService = app(BankingEncryptionService::class);
+            
+            // If already encrypted, store as-is
+            if ($encryptionService->isEncrypted($value)) {
+                $this->attributes['iban'] = $value;
+                return;
+            }
+            
+            // If it's special text like "No cobra", encrypt normally
+            if (in_array(strtolower(trim($value)), ['no cobra', 'no', 'n/a', 'na'])) {
+                $this->attributes['iban'] = $encryptionService->encrypt($value);
+                return;
+            }
+            
+            // Otherwise, encrypt as IBAN with validation
+            $this->attributes['iban'] = $encryptionService->encryptIban($value);
+            
+        } catch (\Exception $e) {
+            Log::error('Error encrypting IBAN', [
+                'teacher_id' => $this->id,
+                'error' => $e->getMessage()
+            ]);
+            throw $e;
+        }
+    }
+    
+    /**
+     * Set bank titular with encryption
+     */
+    public function setBankTitularAttribute($value)
+    {
+        if (empty($value)) {
+            $this->attributes['bank_titular'] = '';
+            return;
+        }
+        
+        try {
+            $encryptionService = app(BankingEncryptionService::class);
+            $this->attributes['bank_titular'] = $encryptionService->encrypt($value);
+        } catch (\Exception $e) {
+            Log::error('Error encrypting bank titular', [
+                'teacher_id' => $this->id,
+                'error' => $e->getMessage()
+            ]);
+            throw $e;
+        }
+    }
+    
+    /**
+     * Set fiscal ID with encryption
+     */
+    public function setFiscalIdAttribute($value)
+    {
+        if (empty($value)) {
+            $this->attributes['fiscal_id'] = '';
+            return;
+        }
+        
+        try {
+            $encryptionService = app(BankingEncryptionService::class);
+            $this->attributes['fiscal_id'] = $encryptionService->encrypt($value);
+        } catch (\Exception $e) {
+            Log::error('Error encrypting fiscal ID', [
+                'teacher_id' => $this->id,
+                'error' => $e->getMessage()
+            ]);
+            throw $e;
+        }
     }
 
     /**

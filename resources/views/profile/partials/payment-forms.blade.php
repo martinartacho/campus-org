@@ -172,7 +172,7 @@
                     <div class="text-sm font-medium text-gray-700 mb-2">
                         {{ __('IBAN actual:') }} <span class="font-mono bg-gray-100 px-2 py-1 rounded">{{ auth()->user()->teacherProfile?->formatted_iban }}</span>
                     </div>
-                    <input type="hidden" id="iban" name="iban" value="{{ auth()->user()->teacherProfile?->iban ?? '' }}" />
+                    <input type="hidden" id="iban" name="iban" value="{{ auth()->user()->teacherProfile?->decrypted_iban ?? '' }}" />
                     <input type="text" id="iban_new" name="iban_new" 
                            class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" 
                            placeholder="{{ __('Nou IBAN (opcional)') }}" />
@@ -184,7 +184,7 @@
                     <x-input-label for="bank_titular" :value="__('Titular del Compte') . ' *'" />
                     <x-text-input id="bank_titular" name="bank_titular"  type="text" tabindex="0" 
                                class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" 
-                               :value="auth()->user()->teacherProfile?->bank_titular ?? ''"
+                               :value="auth()->user()->teacherProfile?->decrypted_bank_titular ?? ''"
                                 tabindex="0" />
                     <x-input-error class="mt-2" :messages="$errors->get('bank_titular')" />
                 </div>

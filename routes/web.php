@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\PushLogController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProfileTeacherController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\Admin\EventController;
@@ -338,11 +339,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/profile/banking-data/pdf', [ProfileController::class, 'generateBankingPDF'])
             ->name('profile.banking-data.pdf');
         
-        // Ruta para el perfil del profesor
-        Route::get('/teacher/profile', [ProfileController::class, 'teacherEdit'])
+        // Ruta para el perfil del profesor (NUEVO - ProfileTeacherController)
+        Route::get('/teacher/profile', [ProfileTeacherController::class, 'edit'])
             ->name('teacher.profile');
-        Route::put('/teacher/profile', [ProfileController::class, 'teacherUpdate'])
+        Route::put('/teacher/profile', [ProfileTeacherController::class, 'update'])
             ->name('teacher.profile.update');
+        
+        // Rutas antiguas (mantener por compatibilidad)
+        Route::get('/teacher/profile/old', [ProfileController::class, 'teacherEdit'])
+            ->name('teacher.profile.old');
+        Route::put('/teacher/profile/old', [ProfileController::class, 'teacherUpdate'])
+            ->name('teacher.profile.update.old');
         
         // Rutas para PDFs de pago
         Route::post('/profile/payment/pdf', [ProfileController::class, 'generatePaymentPDF'])

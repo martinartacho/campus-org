@@ -104,15 +104,15 @@
 
         {{-- TARGETA DADES BANCÀRIES --}}
         @if($teacher)
-        <div class="bg-gradient-to-r from-green-500 to-green-600 p-4 rounded shadow text-center hover:from-green-600 hover:to-green-700 transition-colors cursor-pointer"
+        <div class="bg-white border-2 border-green-500 p-4 rounded-lg shadow-lg text-center hover:shadow-xl hover:border-green-600 transition-all duration-300 cursor-pointer"
              onclick="window.location.href='{{ route('teacher.profile') }}#banking-data'">
-            <div class="text-2xl font-bold text-white">
+            <div class="text-3xl font-bold text-green-600 mb-2">
                 <i class="bi bi-bank"></i>
             </div>
-            <div class="text-xs text-white font-medium">
+            <div class="text-sm font-semibold text-gray-800 mb-2">
                 {{ __('Dades Bancàries') }}
             </div>
-            <div class="mt-1">
+            <div class="mt-2">
                 @php
                     $hasIban = false;
                     try {
@@ -126,9 +126,15 @@
                     }
                 @endphp
                 @if($hasIban)
-                    <span class="text-xs text-green-100">{{ __('Completes') }}</span>
+                    <div class="inline-flex items-center px-3 py-1 rounded-full bg-green-100 text-green-800 border border-green-300">
+                        <i class="bi bi-check-circle-fill mr-1"></i>
+                        <span class="text-xs font-medium">{{ __('Completes') }}</span>
+                    </div>
                 @else
-                    <span class="text-xs text-yellow-200">{{ __('Pendents') }}</span>
+                    <div class="inline-flex items-center px-3 py-1 rounded-full bg-yellow-100 text-yellow-800 border border-yellow-300">
+                        <i class="bi bi-exclamation-circle-fill mr-1"></i>
+                        <span class="text-xs font-medium">{{ __('Pendents') }}</span>
+                    </div>
                 @endif
             </div>
         </div>
