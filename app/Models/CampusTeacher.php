@@ -103,19 +103,15 @@ class CampusTeacher extends Model
         'metadata',
         // Camps de pagament
         'payment_type',
-        'beneficiary_dni',
-        'beneficiary_iban',
-        'beneficiary_titular',
-        'beneficiary_fiscal_situation',
-        'beneficiary_invoice',
-        'beneficiary_city',
-        'beneficiary_postal_code',
         'waived_confirmation',
         'own_confirmation',
         'ceded_confirmation',
         'payment_status',
         'payment_confirmed_at',
         'payment_pdf_path',
+        // Camps de consentiment i responsabilitat
+        'data_consent',
+        'fiscal_responsibility',
     ];
 
     protected $casts = [
@@ -137,6 +133,9 @@ class CampusTeacher extends Model
         'own_confirmation' => 'boolean',
         'ceded_confirmation' => 'boolean',
         'payment_status' => 'string',
+        // 🔐 Camps de consentiment i responsabilitat
+        'data_consent' => 'boolean',
+        'fiscal_responsibility' => 'boolean',
     ];
 
     /**
@@ -168,7 +167,31 @@ class CampusTeacher extends Model
      */
     public function getMaskedIbanAttribute(): string
     {
-        return $this->getFormattedIbanAttribute();
+        $iban = $this->decrypted_iban;
+        if (empty($iban)) {
+            return '';
+        }
+        
+        // Remove spaces and convert to uppercase
+        $cleanIban = strtoupper(str_replace(' ', '', $iban));
+        
+        // Check if it's a valid IBAN format
+        if (strlen($cleanIban) < 8) {
+            return $iban;
+        }
+        
+        // Get country code and first 2 digits
+        $countryCode = substr($cleanIban, 0, 4);
+        
+        // Get last 4 digits
+        $lastFour = substr($cleanIban, -4);
+        
+        // Count how many digits to mask
+        $middleLength = strlen($cleanIban) - 8;
+        $masked = str_repeat('*', $middleLength);
+        
+        // Combine with spaces for readability
+        return $countryCode . ' ' . chunk_split($masked, 4, ' ') . ' ' . $lastFour;
     }
     
     /**
