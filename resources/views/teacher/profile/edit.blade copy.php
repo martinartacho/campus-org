@@ -168,9 +168,12 @@
                                 <x-input-error class="mt-2" :messages="$errors->get('payment_type')" />
                             </div>
                         </div>
+                    </div>
+
+                    <div class="px-4 py-5 sm:p-6">
 
                         <!-- CAMPS BANCARIS (només si és 'own') -->
-                        <div id="banking-fields">
+                        <div id="banking-fields" class="">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                                 <div>
                                     <x-input-label for="dni" :value="__('DNI') . ' *'" />
@@ -228,9 +231,8 @@
                                         <input type="checkbox" name="invoice" value="1" 
                                             {{ ($teacher->invoice ?? false) ? 'checked' : '' }}
                                             >
-                                        
                                     </label>
-                                            <span class="ml-2 text-sm text-gray-700">{{ __('Vull emetre factures') }}</span>
+                                    <span class="ml-2 text-sm text-gray-700">{{ __('Vull emetre factures') }}</span>                                    
                                     </div>
                                     <x-input-error class="mt-2" :messages="$errors->get('invoice')" />
                                 </div>
@@ -271,7 +273,7 @@
                 <!-- </div> -->
                 
                 <!-- Autorización de datos del beneficiario -->
-                <!-- <div class="bg-white shadow sm:rounded-lg"> -->
+                <!-- <div class="bg-white shadow overflow-hidden sm:rounded-lg"> -->
                 <div class="mt-6 p-4 border rounded bg-blue-50">
                     <span class="text-sm text-gray-700 mb-2 block">
                         <strong>Necessari:</strong> Autoritzo el tractament de les meves dades personals amb finalitats fiscals 
@@ -361,14 +363,10 @@
                     <h3 class="text-lg font-medium text-green-800">✅ estàs punt per finalitzar</h3>
                     
                     <div class="mt-3 text-xs text-green-600 bg-green-50 p-2 rounded">
-                        <form method="POST" action="{{ route('teacher.profile.pdf') }}" target="_blank">
-                        @csrf
-                        <button type="submit" id="generate-pdf-btn"
+                        <button type="button" id="generate-pdf-btn"
                         class="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 font-bold text-lg shadow border-2 border-blue-600">
                         ✅ Comunicar a l'equip de Tresoreria de l'UPG i crear PDF
                     </button>
-                    </form>
-
                     </div>
                 </div>
                 @else
@@ -378,18 +376,14 @@
                     </svg>
                 </div>
                 <div class="ml-3">
-
                     <h3 class="text-lg font-medium text-blue-800">Has revisat les teves dades... </h3>
                     <div class="mt-3 text-xs text-red-600 bg-red-50 p-2 rounded">
-                    
-                    🎯 <strong>estàs punt per finalitzar </strong> marca les autoritzacions i fes clic a "Guardar dades"
-
+                        🎯 <strong>estàs punt per finalitzar </strong> marca les autoritzacions i fes clic a "Guardar dades"
                     </div>
-                    
                 </div>
                 @endif
             </div>
-        </div>
+                    </div>
     </div>
 </x-app-layout>
 

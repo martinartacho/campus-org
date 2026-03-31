@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\CampusTeacher;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
+use Illuminate\Http\Response;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
@@ -13,7 +16,7 @@ class ProfileTeacherController extends Controller
     /**
      * Show the teacher profile edit form.
      */
-    public function edit()
+    public function edit(): View
     {
         $user = Auth::user();
         $teacher = $user->teacherProfile;
@@ -153,9 +156,9 @@ class ProfileTeacherController extends Controller
     }
 
     /**
-     * Generate PDF with teacher data.
+     * Generate PDF with teacher data and save to server.
      */
-    public function generatePDF(Request $request): Response
+    public function generatePDF(Request $request): RedirectResponse
     {
         $user = Auth::user();
         $teacher = $user->teacherProfile;
@@ -166,25 +169,125 @@ class ProfileTeacherController extends Controller
 
         // Comprovar si té les autoritzacions necessàries
         if (!$teacher->data_consent || !$teacher->fiscal_responsibility) {
-            return response()->json(['error' => 'Cal acceptar les autoritzacions necessàries.'], 400);
+            return redirect()->route('teacher.profile')
+            ->with('error', 'Cal acceptar les autoritzacions necessàries.');
         }
 
-        // Dades pel PDF
-        $pdfData = [
-            'teacher' => $teacher,
-            'user' => $user,
-            'date' => now()->format('d/m/Y'),
-            'payment_type' => $teacher->payment_type,
-            'data_consent' => $teacher->data_consent,
-            'fiscal_responsibility' => $teacher->fiscal_responsibility,
-        ];
+        try {
+            // Crear directori si no existeix
+            $directory = storage_path('app/consents/teachers/' . $teacher->id);
+            if (!file_exists($directory)) {
+                mkdir($directory, 0755, true);
+            }
 
-        // Generar PDF
-        $pdf = \PDF::loadView('teacher.profile.pdf', $pdfData);
-        
-        // Nom del fitxer
-        $filename = 'perfil_professor_' . $teacher->id . '_' . now()->format('Y-m-d') . '.pdf';
+            // Nom del fitxer amb data
+            $filename = 'consent_dades_certes_' . now()->format('Ymd') . '.pdf';
+            $filepath = $directory . '/' . $filename;
 
-        return $pdf->download($filename);
+            // Dades pel PDF
+            $pdfData = [
+                'teacher' => $teacher,
+                'user' => $user,
+                'date' => now()->format('d/m/Y'),
+                'payment_type' => $teacher->payment_type,
+                'data_consent' => $teacher->data_consent,
+                'fiscal_responsibility' => $teacher->fiscal_responsibility,
+                'declaracioFiscal' => $teacher->fiscal_responsibility,
+                'autoritzacioDades' => $teacher->data_consent,
+            ];
+
+            // Generar PDF
+            $pdf = \PDF::loadView('teacher.profile.pdf', $pdfData);
+            
+            // Guardar al servidor
+            $pdf->save($filepath);
+
+            // Sincronitzar taules
+            $this->syncConsentHistory($teacher, $filepath);
+            $this->syncTeacherPayments($teacher);
+
+            // Enviar notificacions
+            $this->sendNotifications($teacher, $filename);
+
+            // Retornar enllaç de descàrrega
+            $downloadUrl = route('teacher.profile.download', ['filename' => $filename]);
+
+            return redirect()->route('teacher.profile.download', [
+                'filename' => $filename
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Error generating PDF', [
+                'teacher_id' => $teacher->id,
+                'error' => $e->getMessage()
+            ]);
+
+            return redirect()->route('teacher.profile')
+            ->with('error', 'No tens perfil de professor associat.');
+           
+        }
     }
+
+
+
+    /**
+     * Sincronitzar consent history
+     */
+    private function syncConsentHistory($teacher, $filepath): void
+    {
+        // Aquí implementar la sincronització amb consent_histories
+        \Log::info('Sync consent history', [
+            'teacher_id' => $teacher->id,
+            'filepath' => $filepath
+        ]);
+    }
+
+    /**
+     * Sincronitzar teacher payments
+     */
+    private function syncTeacherPayments($teacher): void
+    {
+        // Aquí implementar la sincronització amb campus_teacher_payments
+        \Log::info('Sync teacher payments', [
+            'teacher_id' => $teacher->id,
+            'payment_type' => $teacher->payment_type
+        ]);
+    }
+
+    /**
+     * Enviar notificacions
+     */
+    private function sendNotifications($teacher, $filename): void
+    {
+        // Aquí implementar les notificacions al professor i tresoreria
+        \Log::info('Send notifications', [
+            'teacher_id' => $teacher->id,
+            'filename' => $filename
+        ]);
+    }
+
+    /**
+     * Download PDF from server
+     */
+    public function downloadPDF($filename): Response|RedirectResponse
+    {
+        $user = Auth::user();
+        $teacher = $user->teacherProfile;
+
+        if (!$teacher) {
+            return redirect()->route('teacher.profile')
+                ->with('error', 'Error generant el PDF.');
+        }
+
+        $filepath = storage_path('app/consents/teachers/' . $teacher->id . '/' . $filename);
+
+        if (!file_exists($filepath)) {
+            return response()->json(['error' => 'Fitxer no trobat.'], 404);
+        }
+
+        return redirect()->route('teacher.profile')
+            ->with('success', 'PDF generat correctament. Pots descarregar-lo des d\'aquí.');
+
+    }
+
 }

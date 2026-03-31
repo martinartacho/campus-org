@@ -346,6 +346,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->name('teacher.profile.update');
         Route::post('/teacher/profile/pdf', [ProfileTeacherController::class, 'generatePDF'])
             ->name('teacher.profile.pdf');
+        /* Route::get('/teacher/profile/download/{filename}', [ProfileTeacherController::class, 'downloadPDF'])
+            ->name('teacher.profile.download'); */
+        
+        Route::get('/teacher/profile/pdf/{filename}', [ProfileTeacherController::class, 'downloadPDF'])
+            ->name('teacher.profile.download');
         
         // Rutas antiguas (mantener por compatibilidad)
         Route::get('/teacher/profile/old', [ProfileController::class, 'teacherEdit'])

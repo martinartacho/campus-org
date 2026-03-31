@@ -781,4 +781,14 @@ return [
     'pending' => 'Pendent',
     'sent' => 'Enviat',
     'failed' => 'Error',
+    
+    // Teacher Profile - Consentiments
+    'fiscal_responsibility_text' => 'Declaro que les dades facilitades són certes i que sóc coneixedor/a de la fiscalitat corresponent als ingressos previstos.',
+    'data_consent_text' => 'Autoritzo el tractament de les meves dades personals amb finalitats fiscals i administratives, d\'acord amb la normativa vigent de protecció de dades.',
+    'fiscal_responsibility_label' => 'Responsabilitat fiscal',
+    'data_consent_label' => 'Consentiment de dades',
+    'ceded_payment_instructions' => 'Si vols cedir el cobrament a una altre persona o entitat, fes servir el camps d\'observacions per indicar: nom complert del beneficiari, NIF, Codi Postal, Dades bancàries i dades contactar-hi. A més, has de contactar directament amb el departament de tresoreria per formalitzar el procés.',
+    'payment_type_waived' => 'Renunciar al cobrament',
+    'payment_type_own' => 'Cobrament propi',
+    'payment_type_ceded' => 'Cedir el cobrament',
 ];
