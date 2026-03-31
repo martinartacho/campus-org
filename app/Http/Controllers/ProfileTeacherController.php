@@ -23,7 +23,7 @@ class ProfileTeacherController extends Controller
                 ->with('error', __('No tens perfil de professor associat.'));
         }
         
-        return view('teacher.profile.edit-3-groups', compact('teacher'));
+        return view('teacher.profile.edit', compact('teacher'));
     }
     
     /**
@@ -150,5 +150,41 @@ class ProfileTeacherController extends Controller
 
         return redirect()->route('teacher.profile')
             ->with('success', __('Dades del professor actualitzades correctament'));
+    }
+
+    /**
+     * Generate PDF with teacher data.
+     */
+    public function generatePDF(Request $request): Response
+    {
+        $user = Auth::user();
+        $teacher = $user->teacherProfile;
+
+        if (!$teacher) {
+            return response()->json(['error' => 'No tens perfil de professor associat.'], 404);
+        }
+
+        // Comprovar si té les autoritzacions necessàries
+        if (!$teacher->data_consent || !$teacher->fiscal_responsibility) {
+            return response()->json(['error' => 'Cal acceptar les autoritzacions necessàries.'], 400);
+        }
+
+        // Dades pel PDF
+        $pdfData = [
+            'teacher' => $teacher,
+            'user' => $user,
+            'date' => now()->format('d/m/Y'),
+            'payment_type' => $teacher->payment_type,
+            'data_consent' => $teacher->data_consent,
+            'fiscal_responsibility' => $teacher->fiscal_responsibility,
+        ];
+
+        // Generar PDF
+        $pdf = \PDF::loadView('teacher.profile.pdf', $pdfData);
+        
+        // Nom del fitxer
+        $filename = 'perfil_professor_' . $teacher->id . '_' . now()->format('Y-m-d') . '.pdf';
+
+        return $pdf->download($filename);
     }
 }

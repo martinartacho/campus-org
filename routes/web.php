@@ -344,6 +344,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->name('teacher.profile');
         Route::put('/teacher/profile', [ProfileTeacherController::class, 'update'])
             ->name('teacher.profile.update');
+        Route::post('/teacher/profile/pdf', [ProfileTeacherController::class, 'generatePDF'])
+            ->name('teacher.profile.pdf');
         
         // Rutas antiguas (mantener por compatibilidad)
         Route::get('/teacher/profile/old', [ProfileController::class, 'teacherEdit'])

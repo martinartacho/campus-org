@@ -103,9 +103,6 @@ class CampusTeacher extends Model
         'metadata',
         // Camps de pagament
         'payment_type',
-        'waived_confirmation',
-        'own_confirmation',
-        'ceded_confirmation',
         'payment_status',
         'payment_confirmed_at',
         'payment_pdf_path',
@@ -124,16 +121,10 @@ class CampusTeacher extends Model
         // REMOVED: 'iban' => 'encrypted', - Use manual encryption
         // REMOVED: 'bank_titular' => 'encrypted', - Use manual encryption  
         // REMOVED: 'fiscal_id' => 'encrypted', - Use manual encryption
-        'beneficiary_iban' => 'encrypted',
-        'beneficiary_titular' => 'encrypted',
-        'beneficiary_dni' => 'encrypted',
         // 🔐 Dates
         'payment_confirmed_at' => 'datetime',
-        'waived_confirmation' => 'boolean',
-        'own_confirmation' => 'boolean',
-        'ceded_confirmation' => 'boolean',
         'payment_status' => 'string',
-        // 🔐 Camps de consentiment i responsabilitat
+        // 🔐 Camps de consentiment i responsabilitat (com invoice)
         'data_consent' => 'boolean',
         'fiscal_responsibility' => 'boolean',
     ];
