@@ -100,7 +100,8 @@
 <body>
 
     <div class="header">
-        <h1>Perfil del Professor</h1>
+        <h1>DOCUMENT DE CONSENTIMENT RGPD – Professorat</h1>
+        <p>UPG - Universitat Popular de Granollers</p>
         <p>Data: {{ $date }}</p>
     </div>
 
@@ -210,12 +211,20 @@
     <div class="section">
         <h2>4. ESTAT DE LES AUTORITZACIONS</h2>
         <div class="info-row">
-            <span class="label">Consentiment de dades:</span>
-            <span class="value">{{ $data_consent ? '✅ Acceptat' : '❌ No acceptat' }}</span>
+            <span class="label">Consentiment de dades:</span>   
+            @if($data_consent)
+            <span class="value">{{ 'Acceptat' }}</span>
+            @else
+            <span class="value">No acceptat</span>
+            @endif
         </div>
         <div class="info-row">
             <span class="label">Responsabilitat fiscal:</span>
-            <span class="value">{{ $fiscal_responsibility ? '✅ Acceptada' : '❌ No acceptada' }}</span>
+            @if($fiscal_responsibility)
+            <span class="value">{{ 'Acceptada' }}</span>
+            @else
+            <span class="value">No acceptada</span>
+            @endif
         </div>
     </div>
 
@@ -230,10 +239,10 @@
 
     <div class="@if($data_consent && $fiscal_responsibility) 'approved' @else 'not-approved' @endif">
         @if($data_consent && $fiscal_responsibility)
-            <strong>✅ PERFIL COMPLET I AUTORITZAT</strong><br>
+            <strong>PERFIL COMPLET I AUTORITZAT</strong><br>
             Aquest professor ha acceptat totes les autoritzacions necessàries.
         @else
-            <strong>❌ PERFIL INCOMPLET</strong><br>
+            <strong>PERFIL INCOMPLET</strong><br>
             Cal acceptar totes les autoritzacions necessàries.
         @endif
     </div>
@@ -244,13 +253,25 @@
         <p>DNI: {{ $teacher->dni ?? 'No especificat' }}</p>
         <p style="margin-top: 10px; font-size: 11px; color: #666;">
             Document generat electrònicament el {{ now()->format('d/m/Y H:i:s') }}
+            @if($token)
+            <br>Token: {{ $token }}
+            @endif
+            @if($ipAddress)
+            <br>IP: {{ $ipAddress }}
+            @endif
+        </p>
+        <p style="margin-top: 10px; font-size: 11px; color: #666;">
+           Pots accedir a aquest document en qualsevol moment des de: <a href="{{ route('teacher.profile') }}">El meu perfil</a> - {{ now()->format('d/m/Y H:i') }}
         </p>
     </div>
 
     <div class="footer">
         <p><strong>PROTECCIÓ DE DADES - RGPD</strong></p>
         <p>A la UPG tractem la informació que ens faciliteu exclusivament per oferir el servei sol·licitat. Les dades proporcionades es conservaran mentre es mantingui la relació formativa, o durant els anys necessaris per complir amb les obligacions legals.</p>
-        <p>Generat automàticament per Campus UPG - {{ now()->format('d/m/Y H:i') }}</p>
+        <p>Teniu dret a obtenir confirmació i accés quant al tractament de les vostres dades personals per part de l'Associació per a l'Impuls d'Estudis Populars (AIEP). Podeu rectificar les vostres dades o sol·licitar la seva supressió quan aquestes no siguin necessàries.</p>
+        <p><strong><i>Associació per l'impuls d'Estudis Populars (AIEP) - CIF G-66314998 - Carrer Mare de Deu de Montserrat, edifici Roca Umbert, 36 - 08401 Granollers</i></strong></p>
+        
+        <p>Generat automàticament per Campus UPG - {{ now()->format('d/m/Y H:i') }}  </p>
     </div>
 
 </body>

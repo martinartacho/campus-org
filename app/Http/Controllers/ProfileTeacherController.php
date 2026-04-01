@@ -25,8 +25,11 @@ class ProfileTeacherController extends Controller
             return redirect()->route('dashboard')
                 ->with('error', __('No tens perfil de professor associat.'));
         }
+
+        // Obtenir l'últim PDF generat per aquest professor
+        $latestPdf = $this->getLatestPdf($teacher);
         
-        return view('teacher.profile.edit', compact('teacher'));
+        return view('teacher.profile.edit', compact('teacher', 'latestPdf'));
     }
     
     /**
@@ -181,7 +184,7 @@ class ProfileTeacherController extends Controller
             }
 
             // Nom del fitxer amb data
-            $filename = 'consent_dades_certes_' . now()->format('Ymd') . '.pdf';
+            $filename = 'consent_dades_teacher_' . now()->format('Ymd_Hi') . '.pdf';
             $filepath = $directory . '/' . $filename;
 
             // Dades pel PDF
@@ -194,6 +197,8 @@ class ProfileTeacherController extends Controller
                 'fiscal_responsibility' => $teacher->fiscal_responsibility,
                 'declaracioFiscal' => $teacher->fiscal_responsibility,
                 'autoritzacioDades' => $teacher->data_consent,
+                'token' => null, // No s'utilitza token en aquest flux
+                'ipAddress' => $request->ip(),
             ];
 
             // Generar PDF
@@ -288,6 +293,39 @@ class ProfileTeacherController extends Controller
         return redirect()->route('teacher.profile')
             ->with('success', 'PDF generat correctament. Pots descarregar-lo des d\'aquí.');
 
+    }
+
+    /**
+     * Get the latest PDF file for a teacher
+     */
+    private function getLatestPdf(CampusTeacher $teacher): ?array
+    {
+        $directory = storage_path('app/consents/teachers/' . $teacher->id);
+        
+        if (!is_dir($directory)) {
+            return null;
+        }
+
+        $files = glob($directory . '/consent_dades_teacher_*.pdf');
+        
+        if (empty($files)) {
+            return null;
+        }
+
+        // Ordenar per data de modificació (el més recent primer)
+        usort($files, function($a, $b) {
+            return filemtime($b) - filemtime($a);
+        });
+
+        $latestFile = $files[0];
+        $filename = basename($latestFile);
+        
+        return [
+            'filename' => $filename,
+            'download_url' => route('teacher.profile.download', ['filename' => $filename]),
+            'file_path' => 'storage/app/consents/teachers/' . $teacher->id . '/' . $filename,
+            'created_at' => date('d/m/Y H:i', filemtime($latestFile))
+        ];
     }
 
 }
