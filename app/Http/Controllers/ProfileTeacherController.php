@@ -29,7 +29,10 @@ class ProfileTeacherController extends Controller
         // Obtenir l'últim PDF generat per aquest professor
         $latestPdf = $this->getLatestPdf($teacher);
         
-        return view('teacher.profile.edit', compact('teacher', 'latestPdf'));
+        // Obtenir llistat de tots els PDFs (màxim 3)
+        $allPdfs = $this->getAllPdfs($teacher);
+        
+        return view('teacher.profile.edit', compact('teacher', 'latestPdf', 'allPdfs'));
     }
     
     /**
@@ -293,6 +296,62 @@ class ProfileTeacherController extends Controller
         return redirect()->route('teacher.profile')
             ->with('success', 'PDF generat correctament. Pots descarregar-lo des d\'aquí.');
 
+    }
+
+    /**
+     * Get all PDF files for a teacher (max 3)
+     */
+    private function getAllPdfs(CampusTeacher $teacher): array
+    {
+        $directory = storage_path('app/consents/teachers/' . $teacher->id);
+        
+        if (!is_dir($directory)) {
+            return [];
+        }
+
+        $files = glob($directory . '/consent_dades_teacher_*.pdf');
+        
+        if (empty($files)) {
+            return [];
+        }
+
+        // Ordenar per data de modificació (el més recent primer)
+        usort($files, function($a, $b) {
+            return filemtime($b) - filemtime($a);
+        });
+
+        // Limitar a màxim 3 fitxers
+        $files = array_slice($files, 0, 3);
+
+        $pdfs = [];
+        foreach ($files as $file) {
+            $filename = basename($file);
+            $pdfs[] = [
+                'filename' => $filename,
+                'download_url' => route('teacher.profile.download', ['filename' => $filename]),
+                'file_path' => 'storage/app/consents/teachers/' . $teacher->id . '/' . $filename,
+                'created_at' => date('d/m/Y H:i', filemtime($file)),
+                'size' => $this->formatFileSize(filesize($file))
+            ];
+        }
+
+        return $pdfs;
+    }
+
+    /**
+     * Format file size in human readable format
+     */
+    private function formatFileSize($bytes): string
+    {
+        if ($bytes >= 1048576) {
+            return number_format($bytes / 1048576, 2) . ' MB';
+        } elseif ($bytes >= 1024) {
+            return number_format($bytes / 1024, 2) . ' KB';
+        } elseif ($bytes > 1) {
+            return $bytes . ' bytes';
+        } else {
+            return '0 bytes';
+        }
     }
 
     /**

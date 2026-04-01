@@ -382,6 +382,45 @@
                                             🔄 Tornar a generar PDF
                                         </button>
                                     </form>
+                                    <p>
+                                        📄 Llistat de PDF generats (màxim 3)
+                                    </p>
+                                    
+                                    @if($allPdfs && count($allPdfs) > 0)
+                                        <div class="mt-3 space-y-2">
+                                            @foreach($allPdfs as $pdf)
+                                                <div class="flex items-center justify-between p-2 bg-white border border-gray-200 rounded text-xs">
+                                                    <div class="flex items-center space-x-2">
+                                                        <span class="text-gray-500">📄</span>
+                                                        <a href="{{ $pdf['download_url'] }}" 
+                                                           class="text-blue-600 hover:underline font-medium" 
+                                                           target="_blank">
+                                                            {{ $pdf['filename'] }}
+                                                        </a>
+                                                        <span class="text-gray-400 text-xs">({{ $pdf['size'] }})</span>
+                                                    </div>
+                                                    <div class="text-right text-xs text-gray-500">
+                                                        <div>{{ $pdf['created_at'] }}</div>
+                                                        @if($pdf['filename'] === ($latestPdf['filename'] ?? ''))
+                                                            <span class="text-green-600 font-medium">✅ Més recent</span>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                        
+                                        @if(count($allPdfs) >= 3)
+                                            <div class="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded text-xs text-yellow-700">
+                                                <strong>⚠️ Límit assol:</strong> S'han mostrat els 3 PDFs més recents. 
+                                                Els PDFs més antics es mantenen per historial però no es mostren per optimitzar l'espai.
+                                            </div>
+                                        @endif
+                                    @else
+                                        <div class="mt-2 p-2 bg-gray-50 border border-gray-200 rounded text-xs text-gray-600">
+                                            📭 No s'ha trobat cap PDF generat. Fes clic al botó superior per crear el primer document.
+                                        </div>
+                                    @endif
+                                    
                                 </div>
                             </div>
                         @else
