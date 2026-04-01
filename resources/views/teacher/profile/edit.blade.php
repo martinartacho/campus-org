@@ -361,7 +361,7 @@
                     <h3 class="text-lg font-medium text-green-800">✅ estàs punt per finalitzar</h3>
                     
                     <div class="mt-3 text-xs text-green-600 bg-green-50 p-2 rounded">
-                        <form method="POST" action="{{ route('teacher.profile.pdf') }}" target="_blank">
+                        <form method="POST" action="{{ route('teacher.profile.pdf') }}">
                         @csrf
                         <button type="submit" id="generate-pdf-btn"
                         class="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 font-bold text-lg shadow border-2 border-blue-600">

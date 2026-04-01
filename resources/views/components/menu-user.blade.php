@@ -40,6 +40,16 @@
                         </div>
                     </x-dropdown-link>
                     
+                    {{-- Dades del Professor (només per teachers) --}}
+                    @if($user->teacherProfile)
+                    <x-dropdown-link :href="route('teacher.profile')">
+                        <div class="flex items-center">
+                            <i class="bi bi-person-badge me-2"></i>
+                            Dades del Professor
+                        </div>
+                    </x-dropdown-link>
+                    @endif
+                    
                     @if($user->can('user.settings.view'))
                     <x-dropdown-link :href="route('user.settings')">
                         <div class="flex items-center">
@@ -87,6 +97,16 @@
                         {{ __('site.Profile') }}
                     </div>
                 </x-responsive-nav-link>
+                
+                {{-- Dades del Professor (només per teachers) --}}
+                @if($user->teacherProfile)
+                <x-responsive-nav-link :href="route('teacher.profile')">
+                    <div class="flex items-center">
+                        <i class="bi bi-person-badge me-2"></i>
+                        Dades del Professor
+                    </div>
+                </x-responsive-nav-link>
+                @endif
                 
                 @if($user->can('user.settings.view'))
                 <x-responsive-nav-link :href="route('user.settings')">

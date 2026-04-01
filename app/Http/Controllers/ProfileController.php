@@ -22,10 +22,10 @@ class ProfileController extends Controller
         $user = $request->user();
         
         // Si és un teacher, redirigir al seu perfil específic
-        if ($user->teacherProfile) {
+       /*  if ($user->teacherProfile) {
             return redirect()->route('teacher.profile')
                 ->with('info', __('Redirigit al perfil de professor'));
-        }
+        } */
         
         return view('profile.edit', [
             'user' => $user,
@@ -635,6 +635,7 @@ class ProfileController extends Controller
         </head>
         <body>
             <div class='header'>
+                <h1>(path app/Http/Controllers/ProfileController.php )</h1>
                 <h1>" . __('Dades Bancàries de Cobrament') . "</h1>
                 <p>" . __('Generat el') . " " . date('d/m/Y H:i') . "</p>
             </div>

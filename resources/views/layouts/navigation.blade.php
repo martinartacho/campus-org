@@ -81,6 +81,7 @@
                 </ul>
             </div>    
 
+            
             <!-- Menús dinàmics per a permisos -->
             <div class="flex items-center space-x-4">
                
@@ -139,7 +140,6 @@
                                             <i class="bi bi-gear me-2"></i> Configuració del compte
                                         </a>
                                         
-                                        {{-- Dades del Professor (només per teachers) --}}
                                         @if(auth()->user()->teacherProfile)
                                         <a href="{{ route('teacher.profile') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
                                             <i class="bi bi-person-badge me-2"></i> Dades del Professor
