@@ -90,14 +90,16 @@
                             <div class="mt-1 relative">
                                 {{-- Camp IBAN ocult --}}
                                 <x-text-input id="iban" name="iban" type="text" class="mt-1 block w-full pr-20" 
-                                           @try
-                                               :value="auth()->user()->teacherProfile?->masked_iban ?? ''"
-                                           @catch (\Exception $e)
-                                               value=""
-                                           @endtry
+                                       @try
+                                           :value="auth()->user()->teacherProfile?->masked_iban ?? ''"
+                                       @catch (\Exception $e)
+                                           value=""
+                                           @enderror
                                            placeholder="ES00 0000 0000 0000 0000"
                                            pattern="^ES\d{2}\s?\d{4}\s?\d{4}\s?\d{2}\s?\d{10}$"
-                                           title="Format: ES00 0000 0000 0000 0000" />
+                                           title="Format: ES00 0000 0000 0000 0000" 
+                                           oninput="validateIbanRealTime(this)" />
+                                <div class="mt-1" id="iban-validation-feedback"></div>
                                 
                                 {{-- Botó per mostrar/ocultar --}}
                                 <button type="button" 
@@ -121,7 +123,7 @@
                         <div>
                             <x-input-label for="bank_titular" :value="__('Titular del Compte') . ' *'" />
                             <x-text-input id="bank_titular" name="bank_titular" type="text" class="mt-1 block w-full" 
-                                       :value="auth()->user()->teacherProfile?->bank_titular ?? ''"
+                                       :value="auth()->user()->teacherProfile?->decrypted_bank_titular ?? ''"
                                        :placeholder="__('Nom i cognoms del titular')" />
                             <x-input-error class="mt-2" :messages="$errors->get('bank_titular')" />
                         </div>
@@ -131,7 +133,7 @@
                         <div>
                             <x-input-label for="fiscal_id" :value="__('Identificació Fiscal')" />
                             <x-text-input id="fiscal_id" name="fiscal_id" type="text" class="mt-1 block w-full" 
-                                       :value="auth()->user()->teacherProfile?->fiscal_id ?? ''"
+                                       :value="auth()->user()->teacherProfile?->decrypted_fiscal_id ?? ''"
                                        :placeholder="__('Nomes si és diferent del DNI')" />
                             <p class="mt-1 text-xs text-gray-500">{{ __('Nomes si és diferent del DNI') }}</p>
                             <x-input-error class="mt-2" :messages="$errors->get('fiscal_id')" />
@@ -277,5 +279,31 @@
                 toggleIbanVisibility(); // Ocultar per defecte
             }
         });
+        
+        // Validació IBAN en temps real
+        function validateIbanRealTime(input) {
+            const feedback = document.getElementById('iban-validation-feedback');
+            const value = input.value.replace(/\s/g, ''); // Remove spaces for validation
+            
+            if (value.length === 0) {
+                feedback.innerHTML = '';
+                input.classList.remove('border-green-500', 'border-red-500');
+                return;
+            }
+            
+            // Basic IBAN validation
+            const ibanRegex = /^ES\d{2}\d{4}\d{4}\d{2}\d{10}$/;
+            const isValid = ibanRegex.test(value);
+            
+            if (isValid) {
+                feedback.innerHTML = '<span class="text-xs text-green-600">✅ Formato IBAN válido</span>';
+                input.classList.remove('border-red-500');
+                input.classList.add('border-green-500');
+            } else {
+                feedback.innerHTML = '<span class="text-xs text-red-600">❌ Formato IBAN inválido. Use: ES00 0000 0000 0000 0000</span>';
+                input.classList.remove('border-green-500');
+                input.classList.add('border-red-500');
+            }
+        }
     </script>
 </section>

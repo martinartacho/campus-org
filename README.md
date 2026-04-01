@@ -5,6 +5,65 @@ Permet gestionar cursos, usuaris, rols, inscripcions i comunicació mitjançant 
 
 ---
 
+## 🚨 **ADVERTÈNCIA CRÍTICA DE SEGURETAT** 🚨
+
+### **⚠️ NO CAMVIAR MAI L'APP_KEY SENSE BACKUP**
+
+```bash
+# ❌ PERILL MORTAL - NO FER AIXÒ
+APP_KEY=base64:clau_antiga
+APP_KEY=base64:clau_nova  # 💥 PERDA TOTAL DE DADES
+```
+
+**Conseqüències del canvi d'APP_KEY:**
+- 💥 **PÈRDUA PERMANENT** de totes les dades bancàries encriptades
+- 💥 **Error "The payload is invalid"** a tot el sistema
+- 💥 **Teachers no poden accedir** al dashboard
+- 💥 **Dades personals sensibles** es corrompen irreversiblement
+
+### **🔐 SISTEMA D'ENCRYPTACIÓ DE DADES BANCÀRIES**
+
+**Implementació:**
+- ✅ **AES-256-CBC** amb Laravel Crypt
+- ✅ **Dades sensibles** totalment xifrades a BD
+- ✅ **Masking automàtic** per visualització segura
+- ✅ **Validació IBAN** espanyol integrada
+- ✅ **Migració automàtica** de dades antigues
+
+**Camps xifrats:**
+- `iban` - IBAN bancari
+- `bank_titular` - Titular del compte
+- `fiscal_id` - Identificació fiscal
+- `beneficiary_iban` - IBAN beneficiari
+- `beneficiary_titular` - Titular beneficiari
+- `beneficiary_dni` - DNI beneficiari
+
+### **🔄 PROCEDIMENT DE MIGRACIÓ**
+
+```bash
+# ✅ Migració segura de dades antigues
+php artisan banking:migrate-all-to-encryption --force
+
+# ✅ Recuperació de dades corruptes
+php artisan banking:recover --fix
+```
+
+### **📋 COMPROVACIÓ DE SEGURETAT**
+
+Abans de qualsevol desplegament o canvi:
+```bash
+# 1. Verificar estat d'encriptació
+php artisan banking:migrate-all-to-encryption --dry-run
+
+# 2. Comprovar integritat de dades
+php artisan banking:recover --check
+
+# 3. Test de desencriptació
+php artisan tinker --execute="echo auth()->user()->teacherProfile->decrypted_iban;"
+```
+
+---
+
 ## ✨ Característiques principals
 
 - Autenticació i autorització amb **Spatie Roles & Permissions**

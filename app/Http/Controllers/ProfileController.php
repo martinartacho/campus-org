@@ -19,8 +19,16 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
+        $user = $request->user();
+        
+        // Si és un teacher, redirigir al seu perfil específic
+       /*  if ($user->teacherProfile) {
+            return redirect()->route('teacher.profile')
+                ->with('info', __('Redirigit al perfil de professor'));
+        } */
+        
         return view('profile.edit', [
-            'user' => $request->user(),
+            'user' => $user,
             'notificationPreferences' => $this->getNotificationPreferences(),
         ]);
     }
@@ -181,9 +189,9 @@ class ProfileController extends Controller
         
         // Actualitzar dades
         $teacher->user_id = $user->id;
-        $teacher->iban = $validated['iban'];
-        $teacher->bank_titular = $validated['bank_titular'];
-        $teacher->fiscal_id = $validated['fiscal_id'];
+        $teacher->iban = $validated['iban']; // S'encriptarà automàticament
+        $teacher->bank_titular = $validated['bank_titular']; // S'encriptarà automàticament
+        $teacher->fiscal_id = $validated['fiscal_id']; // S'encriptarà automàticament
         $teacher->fiscal_situation = $validated['fiscal_situation'];
         $teacher->invoice = $validated['invoice'] ?? '0';
         
@@ -206,13 +214,11 @@ class ProfileController extends Controller
                 ->with('error', __('No tens perfil de professor associat.'));
         }
         
-        return view('teacher.profile.edit', compact('teacher'));
+        // Provar amb la vista HTML pura
+        return view('teacher.profile.edit-html-pure', compact('teacher'));
     }
     
     /**
-     * Update the teacher profile.
-     */
-/**
      * Update the teacher profile.
      */
     public function teacherUpdate(Request $request): RedirectResponse
@@ -629,6 +635,7 @@ class ProfileController extends Controller
         </head>
         <body>
             <div class='header'>
+                <h1>(path app/Http/Controllers/ProfileController.php )</h1>
                 <h1>" . __('Dades Bancàries de Cobrament') . "</h1>
                 <p>" . __('Generat el') . " " . date('d/m/Y H:i') . "</p>
             </div>

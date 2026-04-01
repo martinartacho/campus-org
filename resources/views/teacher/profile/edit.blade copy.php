@@ -168,9 +168,12 @@
                                 <x-input-error class="mt-2" :messages="$errors->get('payment_type')" />
                             </div>
                         </div>
+                    </div>
+
+                    <div class="px-4 py-5 sm:p-6">
 
                         <!-- CAMPS BANCARIS (només si és 'own') -->
-                        <div id="banking-fields">
+                        <div id="banking-fields" class="">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                                 <div>
                                     <x-input-label for="dni" :value="__('DNI') . ' *'" />
@@ -228,9 +231,8 @@
                                         <input type="checkbox" name="invoice" value="1" 
                                             {{ ($teacher->invoice ?? false) ? 'checked' : '' }}
                                             >
-                                        
                                     </label>
-                                            <span class="ml-2 text-sm text-gray-700">{{ __('Vull emetre factures') }}</span>
+                                    <span class="ml-2 text-sm text-gray-700">{{ __('Vull emetre factures') }}</span>                                    
                                     </div>
                                     <x-input-error class="mt-2" :messages="$errors->get('invoice')" />
                                 </div>
@@ -271,7 +273,7 @@
                 <!-- </div> -->
                 
                 <!-- Autorización de datos del beneficiario -->
-                <!-- <div class="bg-white shadow sm:rounded-lg"> -->
+                <!-- <div class="bg-white shadow overflow-hidden sm:rounded-lg"> -->
                 <div class="mt-6 p-4 border rounded bg-blue-50">
                     <span class="text-sm text-gray-700 mb-2 block">
                         <strong>Necessari:</strong> Autoritzo el tractament de les meves dades personals amb finalitats fiscals 
@@ -352,114 +354,36 @@
         <div class="bg-green-100 border-2 border-green-400 text-green-700 px-6 py-4 rounded-lg mb-6 shadow-md">            
             <div class="flex items-start">
                 @if ($teacher->fiscal_responsibility == 1 || $teacher->fiscal_responsibility == '1')
-                    <div class="flex-shrink-0">
-                        <svg class="h-6 w-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
+                <div class="flex-shrink-0">
+                    <svg class="h-6 w-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-lg font-medium text-green-800">✅ estàs punt per finalitzar</h3>
+                    
+                    <div class="mt-3 text-xs text-green-600 bg-green-50 p-2 rounded">
+                        <button type="button" id="generate-pdf-btn"
+                        class="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 font-bold text-lg shadow border-2 border-blue-600">
+                        ✅ Comunicar a l'equip de Tresoreria de l'UPG i crear PDF
+                    </button>
                     </div>
-                    <div class="ml-3">
-                        @if($latestPdf)
-                            <h3 class="text-lg font-medium text-green-800">✅ PDF ja generat</h3>
-                            
-                            <div class="mt-3 text-xs text-green-600 bg-green-50 p-2 rounded">
-                                <div class="mb-2">
-                                    <strong>📄 El teu consentiment ja està registrat</strong>
-                                </div>
-                                
-                                <p class="text-xs text-green-600">
-                                    📄 Últim PDF generat: <a href="{{ $latestPdf['download_url'] }}" class="text-blue-600 hover:underline font-semibold" target="_blank">{{ $latestPdf['filename'] }}</a>
-                                    <br><small class="text-gray-500">Generat el {{ $latestPdf['created_at'] }}</small>
-                                </p>
-                                
-                                <div class="mt-3 p-2 bg-yellow-50 border border-yellow-200 rounded">
-                                    <p class="text-xs text-yellow-700">
-                                        <strong>⚠️ Nota:</strong> Si has actualitzat les teves dades després de generar el PDF, pots tornar a generar-lo per reflectir els canvis.
-                                    </p>
-                                    <form method="POST" action="{{ route('teacher.profile.pdf') }}" class="mt-2">
-                                        @csrf
-                                        <button type="submit" id="regenerate-pdf-btn"
-                                            class="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700 text-xs font-medium shadow">
-                                            🔄 Tornar a generar PDF
-                                        </button>
-                                    </form>
-                                    <p>
-                                        📄 Llistat de PDF generats (màxim 3)
-                                    </p>
-                                    
-                                    @if($allPdfs && count($allPdfs) > 0)
-                                        <div class="mt-3 space-y-2">
-                                            @foreach($allPdfs as $pdf)
-                                                <div class="flex items-center justify-between p-2 bg-white border border-gray-200 rounded text-xs">
-                                                    <div class="flex items-center space-x-2">
-                                                        <span class="text-gray-500">📄</span>
-                                                        <a href="{{ $pdf['download_url'] }}" 
-                                                           class="text-blue-600 hover:underline font-medium" 
-                                                           target="_blank">
-                                                            {{ $pdf['filename'] }}
-                                                        </a>
-                                                        <span class="text-gray-400 text-xs">({{ $pdf['size'] }})</span>
-                                                    </div>
-                                                    <div class="text-right text-xs text-gray-500">
-                                                        <div>{{ $pdf['created_at'] }}</div>
-                                                        @if($pdf['filename'] === ($latestPdf['filename'] ?? ''))
-                                                            <span class="text-green-600 font-medium">✅ Més recent</span>
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                        
-                                        @if(count($allPdfs) >= 3)
-                                            <div class="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded text-xs text-yellow-700">
-                                                <strong>⚠️ Límit assol:</strong> S'han mostrat els 3 PDFs més recents. 
-                                                Els PDFs més antics es mantenen per historial però no es mostren per optimitzar l'espai.
-                                            </div>
-                                        @endif
-                                    @else
-                                        <div class="mt-2 p-2 bg-gray-50 border border-gray-200 rounded text-xs text-gray-600">
-                                            📭 No s'ha trobat cap PDF generat. Fes clic al botó superior per crear el primer document.
-                                        </div>
-                                    @endif
-                                    
-                                </div>
-                            </div>
-                        @else
-                            <h3 class="text-lg font-medium text-green-800">✅ estàs punt per finalitzar</h3>
-                            
-                            <div class="mt-3 text-xs text-green-600 bg-green-50 p-2 rounded">
-                                <form method="POST" action="{{ route('teacher.profile.pdf') }}">
-                                @csrf
-                                <button type="submit" id="generate-pdf-btn"
-                                    class="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 font-bold text-lg shadow border-2 border-blue-600">
-                                    ✅ Comunicar a l'equip de Tresoreria de l'UPG i crear PDF
-                                </button>
-                            </form>
-
-                            <p class="mt-2 text-xs text-green-600">
-                                📄 Encara no has generat cap PDF. Fes clic al botó superior per crear-lo.
-                            </p>
-                            </div>
-                        @endif
-                    </div>
+                </div>
                 @else
-                    <div class="flex-shrink-0">
-                        <svg class="h-6 w-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                    </div>
-                    <div class="ml-3">
-
-                        <h3 class="text-lg font-medium text-blue-800">Has revisat les teves dades... </h3>
-                        <div class="mt-3 text-xs text-red-600 bg-red-50 p-2 rounded">
-                        
+                <div class="flex-shrink-0">
+                    <svg class="h-6 w-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-lg font-medium text-blue-800">Has revisat les teves dades... </h3>
+                    <div class="mt-3 text-xs text-red-600 bg-red-50 p-2 rounded">
                         🎯 <strong>estàs punt per finalitzar </strong> marca les autoritzacions i fes clic a "Guardar dades"
-
-                        </div>
-                        
                     </div>
+                </div>
                 @endif
             </div>
-        </div>
+                    </div>
     </div>
 </x-app-layout>
 
