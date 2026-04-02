@@ -9,6 +9,7 @@
         {{-- Header con estadísticas --}}
         <div class="bg-white rounded-lg shadow-md p-6 mb-8">
             <div class="flex justify-between items-center mb-6">
+                <div>treasury_dashboard linia 12</div>
                 <h1 class="text-3xl font-bold text-gray-900">
                     <i class="bi bi-shield-check text-green-600 mr-3"></i>
                     {{ __('campus.treasury_dashboard') }}<!--  (- path: resources\views\treasury\dashboard.blade.php) -->

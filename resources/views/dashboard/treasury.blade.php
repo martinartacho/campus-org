@@ -17,7 +17,7 @@
         @can('settings.edit')
         {{-- Targeta de Configuració PDF --}}
         <div class="bg-white p-4 rounded shadow text-center hover:shadow-lg transition-shadow cursor-pointer"
-            onclick="window.location.href='{{ route('settings.edit') }}#pdf-settings'">
+            onclick="window.location.href='{{ route('treasury.settings') }}'">
             <div class="text-3xl font-bold text-blue-600 mb-2">
                 <i class="bi bi-gear"></i>
             </div>
@@ -27,6 +27,13 @@
             <div class="text-xs text-gray-500">
                 {{ __('Data límit: ') }}{{ \App\Models\Setting::get('pdf_update_deadline', '2026-03-15') }}
             </div>
+              <div class="text-xs text-gray-500">
+                {{ __('Periode congelat: ') }}
+                {{ \App\Models\Setting::get('payment_freeze_start', '2026-03-20') }} 
+                - 
+                {{ \App\Models\Setting::get('payment_freeze_end', '2026-04-25') }}
+            </div>
+
         </div>
         @endcan
 

@@ -830,11 +830,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     ->name('treasury.')
     ->group(function () {
         
-        Route::get('/dashboard', [TreasuryController::class, 'dashboard'])
-            ->name('dashboard');
-
-        Route::put('/settings/pdf-deadline', [SettingsController::class, 'updatePdfDeadline'])
+        Route::get('/settings/pdf', [SettingsController::class, 'pdfSettings'])
+            ->name('settings');
+        
+        Route::put('/settings/pdf-deadline', [SettingsController::class, 'updatePdfDeadlineTreasury'])
             ->name('settings.updatePdfDeadline');
+        
+        Route::put('/settings/payment-freeze', [SettingsController::class, 'updatePaymentFreezeTreasury'])
+            ->name('settings.updatePaymentFreeze');
         
         Route::get('/consents', [TreasuryController::class, 'consents'])
             ->name('consents');

@@ -11,6 +11,78 @@
     </x-slot>
 
     <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+        {{-- AVÍS DE BLOQUEIG DE DADES BANCÀRIES --}}
+            @if($isBankingDataFrozen && !$canEditBankingData)
+            <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <i class="bi bi-exclamation-triangle-fill text-blue-400 text-xl"></i>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-sm font-medium text-blue-800">
+                            {{ __('Dades Bancàries Congelades') }}
+                        </h3>
+                        <div class="mt-2 text-sm text-blue-700">
+                            <p>{{ __('Durant el període de pagaments (del ') }}{{ \App\Models\Setting::get('payment_freeze_start', '2026-04-15') }}{{ __(' al ') }}{{ \App\Models\Setting::get('payment_freeze_end', '2026-04-30') }}{{ __('), les dades bancàries no es poden modificar per garantir la correcta processació dels pagaments.') }}</p>
+                            <p class="mt-1">{{ __('Si necessites realitzar canvis urgents, contacta amb administració o tresoreria.') }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-4">
+                <p>
+                    📄 Llistat de PDF generats (màxim 3)
+                </p>
+                
+                @if($allPdfs && count($allPdfs) > 0)
+                    <div class="mt-3 space-y-2">
+                        @foreach($allPdfs as $pdf)
+                            <div class="flex items-center justify-between p-2 bg-white border border-gray-200 rounded text-xs">
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-gray-500">📄</span> 
+                                    {{ $pdf['filename'] }}
+                                    <!-- <a href="{{ $pdf['download_url'] }}" 
+                                        class="text-blue-600 hover:underline font-medium" 
+                                        target="_blank">
+                                        {{ $pdf['filename'] }}
+                                    </a> -->
+                                    <span class="text-gray-400 text-xs">({{ $pdf['size'] }})</span>
+                                </div>
+                                <div class="text-right text-xs text-gray-500">
+                                    <div>{{ $pdf['created_at'] }}</div>
+                                    @if($pdf['filename'] === ($latestPdf['filename'] ?? '')) 
+                                        <span class="text-green-600 font-medium">✅ Més recent</span>
+                                    @endif
+                                    
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                    
+                    @if(count($allPdfs) >= 3)
+                        <div class="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded text-xs text-yellow-700">
+                            <strong>⚠️ Límit assol:</strong> S'han mostrat els 3 PDFs més recents. 
+                            Els PDFs més antics es mantenen per historial però no es mostren per optimitzar l'espai.
+                        </div>
+                    @endif
+                @else
+                    <div class="mt-2 p-2 bg-gray-50 border border-gray-200 rounded text-xs text-gray-600">
+                        📭 No s'ha trobat cap PDF generat. Fes clic al botó superior per crear el primer document.
+                    </div>
+                @endif
+            </div>
+
+            <div class="mt-4">
+                <a href="{{ route('dashboard') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                    {{ __('Tornar') }}
+                </a>
+            </div>
+
+        @else
+            
+            
+        
+
         @if(session('success'))
         <div class="mb-4 bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg">
             <div class="flex">
@@ -168,26 +240,7 @@
                                 <x-input-error class="mt-2" :messages="$errors->get('payment_type')" />
                             </div>
                         </div>
-
-                        {{-- AVÍS DE BLOQUEIG DE DADES BANCÀRIES --}}
-                        @if($isBankingDataFrozen && !$canEditBankingData)
-                        <div class="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
-                            <div class="flex">
-                                <div class="flex-shrink-0">
-                                    <i class="bi bi-exclamation-triangle-fill text-red-400 text-xl"></i>
-                                </div>
-                                <div class="ml-3">
-                                    <h3 class="text-sm font-medium text-red-800">
-                                        {{ __('Dades Bancàries Congelades') }}
-                                    </h3>
-                                    <div class="mt-2 text-sm text-red-700">
-                                        <p>{{ __('Durant el període de pagaments (del ') }}{{ \App\Models\Setting::get('payment_freeze_start', '2026-04-15') }}{{ __(' al ') }}{{ \App\Models\Setting::get('payment_freeze_end', '2026-04-30') }}{{ __('), les dades bancàries no es poden modificar per garantir la correcta processació dels pagaments.') }}</p>
-                                        <p class="mt-1">{{ __('Si necessites realitzar canvis urgents, contacta amb administració o tresoreria.') }}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        @endif
+                       
 
                         <!-- CAMPS BANCARIS (només si és 'own') -->
                         <div id="banking-fields">
@@ -195,9 +248,8 @@
                                 <div>
                                     <x-input-label for="dni" :value="__('DNI') . ' *'" />
                                     <x-text-input id="dni" name="dni" type="text" 
-                                            class="mt-1 block w-full {{ $isBankingDataFrozen && !$canEditBankingData ? 'bg-gray-100 cursor-not-allowed' : '' }}" 
-                                            value="{{ $teacher->dni ?? '' }}" 
-                                            {{ $isBankingDataFrozen && !$canEditBankingData ? 'disabled' : '' }} />
+                                            class="mt-1 block w-full" 
+                                            value="{{ $teacher->dni ?? '' }}" />
                                     <x-input-error class="mt-2" :messages="$errors->get('dni')" />
                                 </div>
                                 
@@ -207,9 +259,8 @@
                                         {{ __('IBAN actual: :iban', ['iban' => $teacher->masked_iban]) }}
                                     </p>
                                     <x-text-input id="iban" name="iban" type="text" 
-                                            class="mt-1 block w-full {{ $isBankingDataFrozen && !$canEditBankingData ? 'bg-gray-100 cursor-not-allowed' : '' }}" 
-                                            value="" 
-                                            {{ $isBankingDataFrozen && !$canEditBankingData ? 'disabled' : '' }} />
+                                            class="mt-1 block w-full" 
+                                            value="" />
                                     <x-input-error class="mt-2" :messages="$errors->get('iban')" />
                                 </div>
                             </div>
@@ -218,17 +269,15 @@
                                 <div>
                                     <x-input-label for="bank_titular" :value="__('Titular del Compte') . ' *'" />
                                     <x-text-input id="bank_titular" name="bank_titular" type="text" 
-                                            class="mt-1 block w-full {{ $isBankingDataFrozen && !$canEditBankingData ? 'bg-gray-100 cursor-not-allowed' : '' }}" 
-                                            value="{{ $teacher->decrypted_bank_titular ?? $teacher->bank_titular ?? '' }}" 
-                                            {{ $isBankingDataFrozen && !$canEditBankingData ? 'disabled' : '' }} />
+                                            class="mt-1 block w-full" 
+                                            value="{{ $teacher->decrypted_bank_titular ?? $teacher->bank_titular ?? '' }}" />
                                     <x-input-error class="mt-2" :messages="$errors->get('bank_titular')" />
                                 </div>
                                 
                                 <div>
                                     <x-input-label for="fiscal_situation" :value="__('Situació Fiscal') . ' *'" />
                                     <select id="fiscal_situation" name="fiscal_situation" 
-                                            class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm {{ $isBankingDataFrozen && !$canEditBankingData ? 'bg-gray-100 cursor-not-allowed' : '' }}" 
-                                            {{ $isBankingDataFrozen && !$canEditBankingData ? 'disabled' : '' }}>
+                                            class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
                                         <option value="autonom" {{ ($teacher->fiscal_situation ?? '') == 'autonom' ? 'selected' : '' }}>
                                             {{ __('Autònom') }}
                                         </option>
@@ -357,8 +406,7 @@
                 
                     <div class="flex flex-wrap gap-3 pt-6 border-t">
                         <button type="submit" 
-                                class="px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 {{ $isBankingDataFrozen && !$canEditBankingData ? 'opacity-50 cursor-not-allowed' : '' }}"
-                                {{ $isBankingDataFrozen && !$canEditBankingData ? 'disabled' : '' }}>
+                                class="px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                             <i class="bi bi-save mr-2"></i>
                             {{ __('Guardar Dades') }}
                         </button>
@@ -485,6 +533,9 @@
                 @endif
             </div>
         </div>
+        
+        @endif
+        
     </div>
 </x-app-layout>
 

@@ -86,4 +86,49 @@ class SettingsController extends Controller
         return redirect()->route('settings.edit')->with('success', __('Data límit de PDF actualitzada correctament.'));
     }    
 
+    public function updatePdfDeadlineTreasury(Request $request)
+    {
+        $request->validate([
+            'pdf_update_deadline' => ['required', 'date', 'after_or_equal:today'],
+        ], [
+            'pdf_update_deadline.required' => 'La data límit és obligatòria',
+            'pdf_update_deadline.date' => 'La data límit ha de ser una data vàlida',
+            'pdf_update_deadline.after_or_equal' => 'La data límit no pot ser anterior a avui',
+        ]);
+
+        Setting::updateOrCreate(
+            ['key' => 'pdf_update_deadline'],
+            ['value' => $request->pdf_update_deadline]
+        );
+
+        Cache::forget('pdf_update_deadline');
+
+        return redirect()->route('treasury.treasury.settings.edit')->with('success', __('Data límit de PDF actualitzada correctament.'));
+    }
+
+    public function updatePaymentFreezeTreasury(Request $request)
+    {
+        $request->validate([
+            'payment_freeze_start' => ['nullable', 'date'],
+            'payment_freeze_end' => ['nullable', 'date', 'after_or_equal:payment_freeze_start'],
+        ], [
+            'payment_freeze_start.date' => 'La data d\'inici ha de ser vàlida',
+            'payment_freeze_end.date' => 'La data de fi ha de ser vàlida',
+            'payment_freeze_end.after_or_equal' => 'La data de fi no pot ser anterior a la data d\'inici',
+        ]);
+
+        Setting::updateOrCreate(['key' => 'payment_freeze_start'], ['value' => $request->payment_freeze_start]);
+        Setting::updateOrCreate(['key' => 'payment_freeze_end'], ['value' => $request->payment_freeze_end]);
+
+        Cache::forget('payment_freeze_start');
+        Cache::forget('payment_freeze_end');
+
+        return redirect()->route('treasury.settings')->with('success', __('Període de bloqueig de pagaments actualitzat correctament.'));
+    }
+
+    public function pdfSettings()
+    {
+        return view('treasury.settings');
+    }
+
 }
