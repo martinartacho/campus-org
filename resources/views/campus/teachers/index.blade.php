@@ -103,7 +103,6 @@
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
 
-                        <!-- Filtro por estado -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">
                                 {{ __('Status') }}
@@ -261,7 +260,7 @@
                                                 {{ $teacher->first_name }} {{ $teacher->last_name }}
                                             </div>
                                             <div class="text-sm text-gray-500">
-                                                {{ $teacher->fiscal_id ?? 'Sense DNI' }}
+                                                {{ $teacher->teacher_code ?? 'Sense Codi' }}
                                             </div>
                                             @if($teacher->city)
                                                 <div class="text-xs text-gray-400">
@@ -296,6 +295,8 @@
                                             </span>
                                         </div>
                                     @endif
+                                     {{-- Indicador d'estat del PDF --}}
+                                     <x-teacher-pdf-status :teacher="$teacher" />
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                     {{ $teacher->phone ?? '-' }}
@@ -307,7 +308,7 @@
                                     @if($teacher->courses->count() > 0)
                                 
                                         <div class="text-xs text-gray-500">
-                                            {{ number_format($teacher->courses->sum('pivot.sessions_assigned'), 0, '.', '') }} {{ __('campus.hours') }} {{ __('campus.total') }}
+                                            {{ number_format($teacher->courses->sum('pivot.sessions_assigned'), 0, '.', '') }} {{ __('campus.hours') }}
                                         </div>
                                     @endif
                                 </td>
