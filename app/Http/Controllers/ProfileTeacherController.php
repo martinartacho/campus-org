@@ -32,7 +32,10 @@ class ProfileTeacherController extends Controller
         // Obtenir llistat de tots els PDFs (màxim 3)
         $allPdfs = $this->getAllPdfs($teacher);
         
-        return view('teacher.profile.edit', compact('teacher', 'latestPdf', 'allPdfs'));
+        // Verificar si el PDF està actualitzat segons la data límit
+        $hasUpdatedPdf = $this->hasUpdatedPdfAfterDeadline($teacher);
+        
+        return view('teacher.profile.edit', compact('teacher', 'latestPdf', 'allPdfs', 'hasUpdatedPdf'));
     }
     
     /**
@@ -352,6 +355,29 @@ class ProfileTeacherController extends Controller
         } else {
             return '0 bytes';
         }
+    }
+
+    /**
+     * Check if teacher has updated PDF after deadline
+     */
+    private function hasUpdatedPdfAfterDeadline(CampusTeacher $teacher): bool
+    {
+        $deadline = Setting::get('pdf_update_deadline', '2026-03-15');
+        $deadlineDate = \Carbon\Carbon::parse($deadline);
+        
+        // Obtenir l'últim PDF del professor
+        $latestPdf = $this->getLatestPdf($teacher);
+        
+        if (!$latestPdf) {
+            return false; // No té PDF
+        }
+        
+        // Obtenir data de modificació del fitxer
+        $pdfPath = storage_path('app/consents/teachers/' . $teacher->id . '/' . $latestPdf['filename']);
+        $pdfModifiedTime = filemtime($pdfPath);
+        $pdfDate = \Carbon\Carbon::createFromTimestamp($pdfModifiedTime);
+        
+        return $pdfDate->greaterThan($deadlineDate);
     }
 
     /**
