@@ -102,6 +102,43 @@
                     </div>
                 </form>
 
+                <!-- Formulario para actualizar la fecha límite de PDF -->
+                @if(auth()->user()->hasRole(['admin', 'treasury']))
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-8">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                        <i class="bi bi-calendar-date text-blue-600 mr-2"></i>
+                        {{ __('Data Límit de PDF') }}
+                    </h3>
+                    <p class="text-sm text-gray-600 mb-4">
+                        Configurar la data límit per a l'actualització de PDFs de consentiment dels professors.
+                    </p>
+                    
+                    <form method="POST" action="{{ route('treasury.settings.updatePdfDeadline') }}">
+                        @csrf
+                        @method('PUT')
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <x-input-label for="pdf_update_deadline" :value="__('Data Límit')" />
+                                <x-text-input 
+                                    id="pdf_update_deadline"
+                                    name="pdf_update_deadline"
+                                    type="date"
+                                    :value="$settings['pdf_update_deadline']"
+                                    class="mt-1 block w-full"
+                                    required
+                                />
+                                <x-input-error :messages="$errors->get('pdf_update_deadline')" class="mt-2" />
+                            </div>
+                            <div class="flex items-end">
+                                <x-primary-button type="submit">
+                                    <i class="bi bi-save mr-2"></i>
+                                    {{ __('Actualitzar Data Límit') }}
+                                </x-primary-button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                @endif                
                 <!-- Sección de Logs Push -->
                 <div class="mt-10">
                     <h2 class="text-xl font-semibold mb-4">

@@ -832,6 +832,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         
         Route::get('/dashboard', [TreasuryController::class, 'dashboard'])
             ->name('dashboard');
+
+        Route::put('/settings/pdf-deadline', [SettingsController::class, 'updatePdfDeadline'])
+            ->name('settings.updatePdfDeadline');
         
         Route::get('/consents', [TreasuryController::class, 'consents'])
             ->name('consents');

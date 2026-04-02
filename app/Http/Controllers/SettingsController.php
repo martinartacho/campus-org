@@ -23,6 +23,7 @@ class SettingsController extends Controller
                 'logo' => \App\Models\Setting::get('logo', 'logos/default.png'),
                 'language' => $language,
                 'pushLogs' => $logFiles,
+                'pdf_update_deadline' => \App\Models\Setting::get('pdf_update_deadline', '2026-04-01'),
             ];
         return view('settings.edit', compact('settings'));
     }
@@ -64,5 +65,25 @@ class SettingsController extends Controller
 
         return redirect()->route('settings.edit')->with('success', __('Idioma actualizado correctamente.'));
     }
+
+    public function updatePdfDeadline(Request $request)
+    {
+        $request->validate([
+            'pdf_update_deadline' => ['required', 'date', 'after_or_equal:today'],
+        ], [
+            'pdf_update_deadline.required' => 'La data límit és obligatòria',
+            'pdf_update_deadline.date' => 'La data límit ha de ser una data vàlida',
+            'pdf_update_deadline.after_or_equal' => 'La data límit no pot ser anterior a avui',
+        ]);
+
+        Setting::updateOrCreate(
+            ['key' => 'pdf_update_deadline'],
+            ['value' => $request->pdf_update_deadline]
+        );
+
+        Cache::forget('pdf_update_deadline');
+
+        return redirect()->route('settings.edit')->with('success', __('Data límit de PDF actualitzada correctament.'));
+    }    
 
 }

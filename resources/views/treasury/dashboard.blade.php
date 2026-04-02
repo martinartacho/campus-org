@@ -64,7 +64,9 @@
                 </div>
             </div>
         </div>
-
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        
+    </div>
         {{-- Filtros y búsqueda --}}
         <div class="bg-white rounded-lg shadow-md p-6 mb-8">
             <div class="flex justify-between items-center mb-6">

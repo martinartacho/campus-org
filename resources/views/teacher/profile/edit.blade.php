@@ -169,14 +169,35 @@
                             </div>
                         </div>
 
+                        {{-- AVÍS DE BLOQUEIG DE DADES BANCÀRIES --}}
+                        @if($isBankingDataFrozen && !$canEditBankingData)
+                        <div class="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <i class="bi bi-exclamation-triangle-fill text-red-400 text-xl"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <h3 class="text-sm font-medium text-red-800">
+                                        {{ __('Dades Bancàries Congelades') }}
+                                    </h3>
+                                    <div class="mt-2 text-sm text-red-700">
+                                        <p>{{ __('Durant el període de pagaments (del ') }}{{ \App\Models\Setting::get('payment_freeze_start', '2026-04-15') }}{{ __(' al ') }}{{ \App\Models\Setting::get('payment_freeze_end', '2026-04-30') }}{{ __('), les dades bancàries no es poden modificar per garantir la correcta processació dels pagaments.') }}</p>
+                                        <p class="mt-1">{{ __('Si necessites realitzar canvis urgents, contacta amb administració o tresoreria.') }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+
                         <!-- CAMPS BANCARIS (només si és 'own') -->
                         <div id="banking-fields">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                                 <div>
                                     <x-input-label for="dni" :value="__('DNI') . ' *'" />
                                     <x-text-input id="dni" name="dni" type="text" 
-                                            class="mt-1 block w-full" 
-                                            value="{{ $teacher->dni ?? '' }}" />
+                                            class="mt-1 block w-full {{ $isBankingDataFrozen && !$canEditBankingData ? 'bg-gray-100 cursor-not-allowed' : '' }}" 
+                                            value="{{ $teacher->dni ?? '' }}" 
+                                            {{ $isBankingDataFrozen && !$canEditBankingData ? 'disabled' : '' }} />
                                     <x-input-error class="mt-2" :messages="$errors->get('dni')" />
                                 </div>
                                 
@@ -186,8 +207,9 @@
                                         {{ __('IBAN actual: :iban', ['iban' => $teacher->masked_iban]) }}
                                     </p>
                                     <x-text-input id="iban" name="iban" type="text" 
-                                            class="mt-1 block w-full" 
-                                            value="" />
+                                            class="mt-1 block w-full {{ $isBankingDataFrozen && !$canEditBankingData ? 'bg-gray-100 cursor-not-allowed' : '' }}" 
+                                            value="" 
+                                            {{ $isBankingDataFrozen && !$canEditBankingData ? 'disabled' : '' }} />
                                     <x-input-error class="mt-2" :messages="$errors->get('iban')" />
                                 </div>
                             </div>
@@ -196,15 +218,17 @@
                                 <div>
                                     <x-input-label for="bank_titular" :value="__('Titular del Compte') . ' *'" />
                                     <x-text-input id="bank_titular" name="bank_titular" type="text" 
-                                            class="mt-1 block w-full" 
-                                            value="{{ $teacher->decrypted_bank_titular ?? $teacher->bank_titular ?? '' }}" />
+                                            class="mt-1 block w-full {{ $isBankingDataFrozen && !$canEditBankingData ? 'bg-gray-100 cursor-not-allowed' : '' }}" 
+                                            value="{{ $teacher->decrypted_bank_titular ?? $teacher->bank_titular ?? '' }}" 
+                                            {{ $isBankingDataFrozen && !$canEditBankingData ? 'disabled' : '' }} />
                                     <x-input-error class="mt-2" :messages="$errors->get('bank_titular')" />
                                 </div>
                                 
                                 <div>
                                     <x-input-label for="fiscal_situation" :value="__('Situació Fiscal') . ' *'" />
                                     <select id="fiscal_situation" name="fiscal_situation" 
-                                            class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                                            class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm {{ $isBankingDataFrozen && !$canEditBankingData ? 'bg-gray-100 cursor-not-allowed' : '' }}" 
+                                            {{ $isBankingDataFrozen && !$canEditBankingData ? 'disabled' : '' }}>
                                         <option value="autonom" {{ ($teacher->fiscal_situation ?? '') == 'autonom' ? 'selected' : '' }}>
                                             {{ __('Autònom') }}
                                         </option>
@@ -333,7 +357,8 @@
                 
                     <div class="flex flex-wrap gap-3 pt-6 border-t">
                         <button type="submit" 
-                                class="px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                class="px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 {{ $isBankingDataFrozen && !$canEditBankingData ? 'opacity-50 cursor-not-allowed' : '' }}"
+                                {{ $isBankingDataFrozen && !$canEditBankingData ? 'disabled' : '' }}>
                             <i class="bi bi-save mr-2"></i>
                             {{ __('Guardar Dades') }}
                         </button>

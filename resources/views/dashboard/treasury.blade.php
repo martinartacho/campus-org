@@ -13,6 +13,23 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         
+    
+        @can('settings.edit')
+        {{-- Targeta de Configuració PDF --}}
+        <div class="bg-white p-4 rounded shadow text-center hover:shadow-lg transition-shadow cursor-pointer"
+            onclick="window.location.href='{{ route('settings.edit') }}#pdf-settings'">
+            <div class="text-3xl font-bold text-blue-600 mb-2">
+                <i class="bi bi-gear"></i>
+            </div>
+            <div class="text-sm font-semibold text-gray-800 mb-2">
+                {{ __('Configuració dataPDF') }}
+            </div>
+            <div class="text-xs text-gray-500">
+                {{ __('Data límit: ') }}{{ \App\Models\Setting::get('pdf_update_deadline', '2026-03-15') }}
+            </div>
+        </div>
+        @endcan
+
         {{-- Gestión de Pagos --}}
         @can('campus.payments.view')
         <a href="#" 
@@ -33,6 +50,7 @@
             </div>
         </a>
         @endcan
+        
         
         {{-- Gestión de Profesores --}}
         @can('campus.teachers.view')

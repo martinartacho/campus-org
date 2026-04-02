@@ -36,7 +36,11 @@ class ProfileTeacherController extends Controller
         // Verificar si el PDF està actualitzat segons la data límit
         $hasUpdatedPdf = $this->hasUpdatedPdfAfterDeadline($teacher);
         
-        return view('teacher.profile.edit', compact('teacher', 'latestPdf', 'allPdfs', 'hasUpdatedPdf'));
+        // Verificar si les dades bancàries estan congelades
+        $isBankingDataFrozen = $this->isBankingDataFrozen();
+        $canEditBankingData = $this->canEditBankingData();
+        
+        return view('teacher.profile.edit', compact('teacher', 'latestPdf', 'allPdfs', 'hasUpdatedPdf', 'isBankingDataFrozen', 'canEditBankingData'));
     }
     
     /**
@@ -379,6 +383,39 @@ class ProfileTeacherController extends Controller
         $pdfDate = \Carbon\Carbon::createFromTimestamp($pdfModifiedTime);
         
         return $pdfDate->greaterThan($deadlineDate);
+    }
+
+    /**
+     * Check if banking data is frozen (payment period)
+     */
+    private function isBankingDataFrozen(): bool
+    {
+        $freezeStart = Setting::get('payment_freeze_start');
+        $freezeEnd = Setting::get('payment_freeze_end');
+        
+        if (!$freezeStart || !$freezeEnd) {
+            return false; // No hi ha període de bloqueig configurat
+        }
+        
+        $now = \Carbon\Carbon::now();
+        $startDate = \Carbon\Carbon::parse($freezeStart);
+        $endDate = \Carbon\Carbon::parse($freezeEnd);
+        
+        return $now->between($startDate, $endDate);
+    }
+
+    /**
+     * Check if user can edit banking data (bypass freeze for admin/treasury)
+     */
+    private function canEditBankingData(): bool
+    {
+        // Admin i Treasury sempre poden editar
+        if (auth()->user()->hasRole(['admin', 'treasury'])) {
+            return true;
+        }
+        
+        // Altres usuaris: verificar si no està congelat
+        return !$this->isBankingDataFrozen();
     }
 
     /**
