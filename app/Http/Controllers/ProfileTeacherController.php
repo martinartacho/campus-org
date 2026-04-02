@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\CampusTeacher;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\Response;
