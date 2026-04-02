@@ -261,7 +261,7 @@
                                                 {{ $teacher->first_name }} {{ $teacher->last_name }}
                                             </div>
                                             <div class="text-sm text-gray-500">
-                                                {{ $teacher->fiscal_id ?? 'Sense DNI' }}
+                                                {{ $teacher->teacher_code ?? 'Sense Codi' }}
                                             </div>
                                             @if($teacher->city)
                                                 <div class="text-xs text-gray-400">
@@ -307,7 +307,7 @@
                                     @if($teacher->courses->count() > 0)
                                 
                                         <div class="text-xs text-gray-500">
-                                            {{ number_format($teacher->courses->sum('pivot.sessions_assigned'), 0, '.', '') }} {{ __('campus.hours') }} {{ __('campus.total') }}
+                                            {{ number_format($teacher->courses->sum('pivot.sessions_assigned'), 0, '.', '') }} {{ __('campus.hours') }}
                                         </div>
                                     @endif
                                 </td>
