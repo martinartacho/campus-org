@@ -157,16 +157,25 @@
             
             <div class="space-y-3">
                 @foreach($release->commits as $commit)
+                    @if(is_array($commit))
                     <div class="flex items-start justify-between p-3 bg-gray-50 rounded-md">
                         <div class="flex-1">
-                            <div class="font-mono text-sm text-gray-700 mb-1">{{ $commit['hash'] }}</div>
-                            <div class="text-gray-900">{{ $commit['message'] }}</div>
+                            <div class="font-mono text-sm text-gray-700 mb-1">{{ $commit['hash'] ?? '' }}</div>
+                            <div class="text-gray-900">{{ $commit['message'] ?? '' }}</div>
                         </div>
                         <div class="text-right text-sm text-gray-500 ml-4">
                             <div>{{ $commit['author'] }}</div>
                             <div>{{ $commit['date'] }}</div>
                         </div>
                     </div>
+                    @else
+                    <div class="flex items-start justify-between p-3 bg-gray-50 rounded-md">
+                        <div class="flex-1">
+                            <div class="font-mono text-sm text-gray-700 mb-1">{{ $commit }}</div>
+                            <div class="text-gray-900">{{ $commit }}</div>
+                        </div>
+                    </div>
+                    @endif
                 @endforeach
             </div>
         </div>

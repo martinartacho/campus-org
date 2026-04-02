@@ -13,11 +13,6 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // Agregar SetLocale como middleware global después de StartSession
-        $middleware->web(append: [
-            \App\Http\Middleware\SetLocale::class,
-        ]);
-        
         $middleware->append(\Illuminate\Http\Middleware\HandleCors::class);
 
         // Alias para middlewares de roles/permiso
