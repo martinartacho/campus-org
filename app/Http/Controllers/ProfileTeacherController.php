@@ -306,7 +306,7 @@ class ProfileTeacherController extends Controller
         // Crear notificación específica para el teacher
         $notification = Notification::create([
             'title' => 'PDF Generat Correctament',
-            'content' => "El teu PDF ha estat generat correctament. Pots descarregar-lo des del teu perfil. Nom del fitxer: {$filename}",
+            'content' => "El teu PDF ha estat generat correctament. Pots descarregar-lo des del teu perfil o fent clic aquí: <a href='" . route('teacher.profile.download', $filename) . "' class='text-blue-600 hover:text-blue-800 underline'>Descarregar PDF</a>. Nom del fitxer: {$filename}",
             'type' => 'pdf_generated',
             'sender_id' => 1, // Sistema
             'recipient_type' => 'specific',
@@ -506,15 +506,31 @@ class ProfileTeacherController extends Controller
                 ->with('error', 'Error generant el PDF.');
         }
 
+        // Validar que el filename sigui segur
+        $filename = basename($filename);
+        if (!preg_match('/^consent_dades_teacher_\d{8}_\d{4}\.pdf$/', $filename)) {
+            return redirect()->route('teacher.profile')
+                ->with('error', 'Nom de fitxer no vàlid.');
+        }
+
         $filepath = storage_path('app/consents/teachers/' . $teacher->id . '/' . $filename);
 
         if (!file_exists($filepath)) {
-            return response()->json(['error' => 'Fitxer no trobat.'], 404);
+            return redirect()->route('teacher.profile')
+                ->with('error', 'Fitxer no trobat.');
         }
 
-        return redirect()->route('teacher.profile')
-            ->with('success', 'PDF generat correctament. Pots descarregar-lo des d\'aquí.');
+        // Verificar que el fitxer pertanyi al teacher correcte
+        $expectedPrefix = 'consent_dades_teacher_';
+        if (!str_starts_with($filename, $expectedPrefix)) {
+            return redirect()->route('teacher.profile')
+                ->with('error', 'Accés no autoritzat.');
+        }
 
+        return response()->download($filepath, $filename, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $filename . '"'
+        ]);
     }
 
     /**
