@@ -81,13 +81,13 @@
                                 </div>
                                 <div class="flex justify-between">
                                     <dt class="text-sm font-medium text-gray-500">Titular del Compte:</dt>
-                                    <dd class="text-sm text-gray-900">{{ $teacher->bank_titular ?? '-' }}</dd>
+                                    <dd class="text-sm text-gray-900">{{ $teacher->decrypted_bank_titular ?? '-' }}</dd>
                                 </div>
                                 <div class="flex justify-between">
                                     <dt class="text-sm font-medium text-gray-500">Situació Fiscal:</dt>
                                     <dd class="text-sm text-gray-900">
-                                        @if($teacher->fiscal_situation)
-                                            {{ $teacher->fiscal_situation }}
+                                        @if($teacher->decrypted_fiscal_situation)
+                                            {{ $teacher->decrypted_fiscal_situation }}
                                         @else
                                             -
                                         @endif
