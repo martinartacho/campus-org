@@ -268,6 +268,76 @@ class CampusTeacher extends Model
             return '';
         }
     }
+
+    /**
+     * Check if teacher has PDF files
+     */
+    public function hasPdfs(): bool
+    {
+        $directory = storage_path('app/consents/teachers/' . $this->id);
+        
+        if (!is_dir($directory)) {
+            return false;
+        }
+
+        $files = glob($directory . '/consent_dades_teacher_*.pdf');
+        
+        return !empty($files);
+    }
+
+    /**
+     * Get all PDF files for a teacher (max 3)
+     */
+    public function getAllPdfs(): array
+    {
+        $directory = storage_path('app/consents/teachers/' . $this->id);
+        
+        if (!is_dir($directory)) {
+            return [];
+        }
+
+        $files = glob($directory . '/consent_dades_teacher_*.pdf');
+        
+        if (empty($files)) {
+            return [];
+        }
+
+        // Ordenar per data de modificació (el més recent primer)
+        usort($files, function($a, $b) {
+            return filemtime($b) - filemtime($a);
+        });
+
+        // Limitar a màxim 3 fitxers
+        $files = array_slice($files, 0, 3);
+
+        $pdfs = [];
+        foreach ($files as $file) {
+            $filename = basename($file);
+            $filesize = filesize($file);
+            
+            // Formatar la mida del fitxer
+            if ($filesize >= 1048576) { // >= 1MB
+                $sizeFormatted = number_format($filesize / 1048576, 2) . ' MB';
+            } elseif ($filesize >= 1024) { // >= 1KB
+                $sizeFormatted = number_format($filesize / 1024, 2) . ' KB';
+            } else {
+                $sizeFormatted = $filesize . ' bytes';
+            }
+            
+            $pdfs[] = [
+                'filename' => $filename,
+                'filepath' => $file,
+                'size' => $filesize,
+                'size_formatted' => $sizeFormatted,
+                'modified_date' => date('d/m/Y H:i', filemtime($file)),
+                'modified_timestamp' => filemtime($file),
+                'created_at' => date('d/m/Y H:i', filemtime($file)), // Per compatibilitat
+                'download_url' => route('campus.teachers.pdfs.show', [$this->id, $filename]),
+            ];
+        }
+
+        return $pdfs;
+    }
     
     /**
      * Set IBAN with encryption

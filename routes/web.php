@@ -131,11 +131,19 @@ Route::middleware(['auth', 'permission:campus.courses.view'])
 
 
 Route::middleware(['auth', 'permission:campus.teachers.view'])
-    ->prefix('campus/treasury')
-    ->name('campus.treasury.')
+    ->prefix('campus')
+    ->name('campus.')
     ->group(function () {
+        
         Route::get('teachers', [TeacherTreasuryController::class, 'index'])
             ->name('teachers.index');
+        
+        Route::get('teachers/pdfs', [ProfileTeacherController::class, 'teachersPdfsPage'])
+            ->name('teachers.pdfs');
+        
+        Route::get('teachers/{teacher}/pdfs/{filename}', [ProfileTeacherController::class, 'showPdfForAdmin'])
+            ->name('teachers.pdfs.show')
+            ->middleware('can:view,teacher');
         
         Route::get('teachers/rgpd', [TeacherTreasuryController::class, 'rgpdIndex'])
             ->name('teachers.rgpd.index');
@@ -151,6 +159,11 @@ Route::middleware(['auth', 'permission:campus.teachers.view'])
 
         Route::post('teachers/{teacher}/consent', [TeacherTreasuryController::class, 'storeConsent'])
             ->name('teachers.consent.store');
+        
+        // Ruta per admins veure PDFs d'un teacher específic
+        Route::get('teachers/{teacher}/pdfs', [ProfileTeacherController::class, 'pdfDownloadPageForAdmin'])
+            ->name('admin.teachers.pdfs')
+            ->middleware('can:view,teacher');
         
         Route::post('teachers/import', [TeacherTreasuryController::class, 'import'])
             ->name('teachers.import');

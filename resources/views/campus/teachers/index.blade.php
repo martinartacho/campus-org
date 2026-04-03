@@ -26,12 +26,23 @@
 <div class="container mx-auto px-4 py-8">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold text-gray-900">{{ __('campus.teachers') }}</h1>
+        
+        {{-- Enllaç a PDFs per admins --}}           
+        <a href="{{ route('campus.teachers.pdfs') }}" 
+        class="text-xs text-blue-600 hover:text-blue-800 underline flex items-center"
+        >
+            <i class="bi bi-file-earmark-pdf mr-1"></i>
+            PDFs de Teachers
+        </a>
+
+        
         @can('campus.teachers.create')
             <a href="{{ route('campus.teachers.create') }}" 
                class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200">
                 <i class="fas fa-plus mr-2"></i>Nou Professor/a
             </a>
         @endcan
+
     </div>
 
     @if(session('success'))

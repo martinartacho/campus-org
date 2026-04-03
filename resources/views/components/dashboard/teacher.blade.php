@@ -115,8 +115,19 @@
             <div class="mt-2">
                 {{-- Indicador d'estat del PDF --}}
                 <x-teacher-pdf-status :teacher="$teacher" />
-            </div>    
+                
+                {{-- Enllaç a PDFs si hi ha PDFs --}}
+                @if($teacher && $teacher->hasPdfs())
+                    <div class="mt-2">
+                        <a href="{{ route('teacher.profile.pdfs') }}" 
+                           class="text-xs text-blue-600 hover:text-blue-800 underline flex items-center">
+                            <i class="bi bi-file-earmark-pdf mr-1"></i>
+                            Veure PDFs
+                        </a>
+                    </div>
+                @endif
             </div>
+        </div>
         </div>
         @endif
     </div>

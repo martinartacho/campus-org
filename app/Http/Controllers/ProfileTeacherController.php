@@ -491,9 +491,76 @@ class ProfileTeacherController extends Controller
     }
 
     /**
+     * Show all teachers with their PDFs (for admin)
+     */
+    public function teachersPdfsPage(): View
+    {
+        $teachers = CampusTeacher::with(['user', 'courses'])->get();
+        
+        // Preparar dades per a les estadístiques
+        $teachersWithPdfs = $teachers->filter(function($teacher) {
+            return $teacher->hasPdfs();
+        });
+        
+        $teachersWithoutPdfs = $teachers->filter(function($teacher) {
+            return !$teacher->hasPdfs();
+        });
+        
+        $teachersWithoutIban = $teachers->filter(function($teacher) {
+            return empty($teacher->iban);
+        });
+
+        return view('campus.teachers.pdfs', compact(
+            'teachers', 
+            'teachersWithPdfs', 
+            'teachersWithoutPdfs', 
+            'teachersWithoutIban'
+        ));
+    }
+
+    /**
+     * Show PDF details for admin (without download)
+     */
+    public function showPdfForAdmin(CampusTeacher $teacher, string $filename): View
+    {
+        // Verificar permisos
+        if (!auth()->user()->can('view', $teacher)) {
+            return redirect()->route('campus.teachers.index')
+                ->with('error', 'No tens permisos per veure aquest PDF.');
+        }
+
+        // Obtenir informació del PDF
+        $pdfs = $teacher->getAllPdfs();
+        $pdf = collect($pdfs)->firstWhere('filename', $filename);
+
+        if (!$pdf) {
+            return redirect()->route('campus.teachers.pdfs')
+                ->with('error', 'PDF no trobat.');
+        }
+
+        return view('campus.teachers.pdf-show', compact('teacher', 'pdf'));
+    }
+
+    /**
+     * Show PDF download page for admin (specific teacher)
+     */
+    public function pdfDownloadPageForAdmin(CampusTeacher $teacher): View|RedirectResponse
+    {
+        // Verificar permisos
+        if (!auth()->user()->can('view', $teacher)) {
+            return redirect()->route('campus.teachers.index')
+                ->with('error', 'No tens permisos per veure els PDFs d\'aquest teacher.');
+        }
+
+        $allPdfs = $this->getAllPdfs($teacher);
+
+        return view('admin.teachers.pdf-download', compact('teacher', 'allPdfs'));
+    }
+
+    /**
      * Show PDF download page
      */
-    public function pdfDownloadPage(): View
+    public function pdfDownloadPage(): View|RedirectResponse
     {
         $user = Auth::user();
         $teacher = $user->teacherProfile;
