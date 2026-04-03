@@ -113,56 +113,9 @@
                 {{ __('Dades Bancàries') }}
             </div>
             <div class="mt-2">
-                @php
-                    $hasIban = false;
-                    $isPdfUpdated = false;
-                    try {
-                        $hasIban = auth()->user()->teacherProfile && !empty(auth()->user()->teacherProfile->iban);
-                        // Verificar si el PDF està actualitzat segons la data límit
-                        if ($hasIban) {
-                            $deadline = \App\Models\Setting::get('pdf_update_deadline', '2026-03-15');
-                            $deadlineDate = \Carbon\Carbon::parse($deadline);
-                            
-                            // Obtenir l'últim PDF del professor
-                            $directory = storage_path('app/consents/teachers/' . auth()->user()->teacherProfile->id);
-                            if (is_dir($directory)) {
-                                $files = glob($directory . '/consent_dades_teacher_*.pdf');
-                                if (!empty($files)) {
-                                    usort($files, function($a, $b) {
-                                        return filemtime($b) - filemtime($a);
-                                    });
-                                    $latestFile = $files[0];
-                                    $pdfModifiedTime = filemtime($latestFile);
-                                    $pdfDate = \Carbon\Carbon::createFromTimestamp($pdfModifiedTime);
-                                    $isPdfUpdated = $pdfDate->greaterThan($deadlineDate);
-                                }
-                            }
-                        }
-                    } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
-                        $hasIban = false;
-                        \Log::warning('Corrupted IBAN detected for user: ' . auth()->user()->id . ' - ' . $e->getMessage());
-                    } catch (\Exception $e) {
-                        $hasIban = false;
-                        \Log::error('Error checking IBAN for user: ' . auth()->user()->id . ' - ' . $e->getMessage());
-                    }
-                @endphp
-                
-                @if($hasIban && $isPdfUpdated)
-                    <div class="inline-flex items-center px-3 py-1 rounded-full bg-green-100 text-green-800 border border-green-300">
-                        <i class="bi bi-check-circle-fill mr-1"></i>
-                        <span class="text-xs font-medium">{{ __('Correcta') }}</span>
-                    </div>
-                @elseif($hasIban && !$isPdfUpdated)
-                    <div class="inline-flex items-center px-3 py-1 rounded-full bg-yellow-100 text-yellow-800 border border-yellow-300">
-                        <i class="bi bi-exclamation-triangle-fill mr-1"></i>
-                        <span class="text-xs font-medium">{{ __('Actualitzar PDF') }}</span>
-                    </div>
-                @else
-                    <div class="inline-flex items-center px-3 py-1 rounded-full bg-red-100 text-red-800 border border-red-300">
-                        <i class="bi bi-x-circle-fill mr-1"></i>
-                        <span class="text-xs font-medium">{{ __('Pendents') }}</span>
-                    </div>
-                @endif
+                {{-- Indicador d'estat del PDF --}}
+                <x-teacher-pdf-status :teacher="$teacher" />
+            </div>    
             </div>
         </div>
         @endif

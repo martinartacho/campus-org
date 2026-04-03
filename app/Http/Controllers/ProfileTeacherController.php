@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\CampusTeacher;
 use App\Models\Setting;
+use App\Models\Notification;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\Response;
@@ -275,11 +277,220 @@ class ProfileTeacherController extends Controller
      */
     private function sendNotifications($teacher, $filename): void
     {
-        // Aquí implementar les notificacions al professor i tresoreria
-        \Log::info('Send notifications', [
-            'teacher_id' => $teacher->id,
-            'filename' => $filename
+        try {
+            // 1. Notificació al teacher
+            $this->sendTeacherNotification($teacher, $filename);
+            
+            // 2. Notificació a treasury
+            $this->sendTreasuryNotification($teacher, $filename);
+            
+            Log::info('Notifications sent successfully', [
+                'teacher_id' => $teacher->id,
+                'filename' => $filename
+            ]);
+            
+        } catch (\Exception $e) {
+            Log::error('Error sending notifications', [
+                'teacher_id' => $teacher->id,
+                'filename' => $filename,
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Enviar notificació al teacher
+     */
+    private function sendTeacherNotification($teacher, $filename): void
+    {
+        // Crear notificación específica para el teacher
+        $notification = Notification::create([
+            'title' => 'PDF Generat Correctament',
+            'content' => "El teu PDF ha estat generat correctament. Pots descarregar-lo des del teu perfil. Nom del fitxer: {$filename}",
+            'type' => 'pdf_generated',
+            'sender_id' => 1, // Sistema
+            'recipient_type' => 'specific',
+            'recipient_ids' => [$teacher->user_id],
+            'email_sent' => false,
+            'web_sent' => false,
+            'push_sent' => false,
+            'is_published' => true,
+            'published_at' => now(),
         ]);
+        
+        // Asignar destinatarios y enviar
+        $notification->recipients()->sync([$teacher->user_id]);
+        $this->sendNotificationChannels($notification, ['email', 'web']);
+    }
+
+    /**
+     * Enviar notificació a treasury
+     */
+    private function sendTreasuryNotification($teacher, $filename): void
+    {
+        // Obtener usuarios con rol treasury
+        $treasuryUsers = User::role('treasury')->pluck('id')->toArray();
+        
+        if (empty($treasuryUsers)) {
+            Log::warning('No treasury users found for notification');
+            return;
+        }
+        
+        $notification = Notification::create([
+            'title' => 'Nou PDF Generat - ' . $teacher->name,
+            'content' => "El professor {$teacher->name} ha generat un nou PDF. Fitxer: {$filename}. Disponible per revisió al sistema.",
+            'type' => 'pdf_generated',
+            'sender_id' => 1, // Sistema
+            'recipient_type' => 'role',
+            'recipient_role' => 'treasury',
+            'email_sent' => false,
+            'web_sent' => false,
+            'push_sent' => false,
+            'is_published' => true,
+            'published_at' => now(),
+        ]);
+        
+        $notification->recipients()->sync($treasuryUsers);
+        $this->sendNotificationChannels($notification, ['email', 'web']);
+    }
+
+    /**
+     * Enviar notificació a través de múltiples canales
+     */
+    private function sendNotificationChannels(Notification $notification, array $channels): void
+    {
+        foreach ($channels as $channel) {
+            try {
+                switch ($channel) {
+                    case 'email':
+                        $this->sendEmailChannel($notification);
+                        break;
+                    case 'web':
+                        $this->sendWebChannel($notification);
+                        break;
+                    case 'push':
+                        $this->sendPushChannel($notification);
+                        break;
+                }
+            } catch (\Exception $e) {
+                Log::error("Error sending notification via {$channel}", [
+                    'notification_id' => $notification->id,
+                    'channel' => $channel,
+                    'error' => $e->getMessage()
+                ]);
+            }
+        }
+        
+        // Actualizar el estado general de la notificación
+        $notification->update([
+            'email_sent' => in_array('email', $channels),
+            'web_sent' => in_array('web', $channels),
+            'push_sent' => in_array('push', $channels),
+        ]);
+    }
+
+    /**
+     * Enviar notificació per email
+     */
+    private function sendEmailChannel(Notification $notification): void
+    {
+        $recipients = $notification->recipients;
+        
+        foreach ($recipients as $user) {
+            try {
+                // Verificar que el email sea válido
+                if (!filter_var($user->email, FILTER_VALIDATE_EMAIL)) {
+                    continue;
+                }
+
+                // Usar la clase Mailable existente
+                $mail = new \App\Mail\NotificationMail($notification, $user);
+                
+                \Mail::to($user->email)->send($mail);
+                
+                // Marcar como enviado en la tabla pivot
+                $notification->recipients()->updateExistingPivot($user->id, [
+                    'email_sent' => true,
+                    'email_sent_at' => now(),
+                ]);
+                
+                Log::info("Email sent successfully", [
+                    'user_id' => $user->id,
+                    'email' => $user->email,
+                    'notification_id' => $notification->id
+                ]);
+                
+            } catch (\Exception $e) {
+                Log::error("Error sending email", [
+                    'user_id' => $user->id,
+                    'email' => $user->email,
+                    'notification_id' => $notification->id,
+                    'error' => $e->getMessage()
+                ]);
+            }
+        }
+    }
+
+    /**
+     * Enviar notificació web
+     */
+    private function sendWebChannel(Notification $notification): void
+    {
+        // Las notificaciones web ya están guardadas en la base de datos
+        // Solo marcamos como enviadas en la tabla pivot
+        $notification->recipients()->updateExistingPivot($notification->recipients->pluck('id'), [
+            'web_sent' => true,
+            'web_sent_at' => now(),
+        ]);
+        
+        Log::info("Web notification sent", [
+            'notification_id' => $notification->id,
+            'recipients_count' => $notification->recipients()->count()
+        ]);
+    }
+
+    /**
+     * Enviar notificació push
+     */
+    private function sendPushChannel(Notification $notification): void
+    {
+        $recipients = $notification->recipients()->whereNotNull('fcm_token')->get();
+        
+        foreach ($recipients as $user) {
+            try {
+                if ($user->fcm_token) {
+                    $fcmService = app(\App\Services\FCMService::class);
+                    
+                    $fcmService->sendNotification(
+                        $user->fcm_token,
+                        $notification->title,
+                        $notification->content,
+                        [
+                            'type' => $notification->type,
+                            'notification_id' => $notification->id,
+                            'url' => route('notifications.show', $notification->id)
+                        ]
+                    );
+                    
+                    // Marcar como enviado en la tabla pivot
+                    $notification->recipients()->updateExistingPivot($user->id, [
+                        'push_sent' => true,
+                        'push_sent_at' => now(),
+                    ]);
+                    
+                    Log::info("Push notification sent", [
+                        'user_id' => $user->id,
+                        'notification_id' => $notification->id
+                    ]);
+                }
+            } catch (\Exception $e) {
+                Log::error("Error sending push notification", [
+                    'user_id' => $user->id,
+                    'notification_id' => $notification->id,
+                    'error' => $e->getMessage()
+                ]);
+            }
+        }
     }
 
     /**

@@ -249,6 +249,27 @@ class CampusTeacher extends Model
     }
     
     /**
+     * Get decrypted fiscal situation for internal use
+     */
+    public function getDecryptedFiscalSituationAttribute(): string
+    {
+        if (empty($this->fiscal_situation)) {
+            return '';
+        }
+        
+        try {
+            $encryptionService = app(BankingEncryptionService::class);
+            return $encryptionService->decrypt($this->fiscal_situation);
+        } catch (\Exception $e) {
+            Log::error('Error decrypting fiscal situation', [
+                'teacher_id' => $this->id,
+                'error' => $e->getMessage()
+            ]);
+            return '';
+        }
+    }
+    
+    /**
      * Set IBAN with encryption
      */
     public function setIbanAttribute($value)
