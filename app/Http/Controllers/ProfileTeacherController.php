@@ -306,7 +306,7 @@ class ProfileTeacherController extends Controller
         // Crear notificación específica para el teacher
         $notification = Notification::create([
             'title' => 'PDF Generat Correctament',
-            'content' => "El teu PDF ha estat generat correctament. Pots descarregar-lo des del teu perfil o fent clic aquí: <a href='" . route('teacher.profile.download', $filename) . "' class='text-blue-600 hover:text-blue-800 underline'>Descarregar PDF</a>. Nom del fitxer: {$filename}",
+            'content' => "El teu PDF ha estat generat correctament. Pots <a href='" . route('teacher.profile.pdfs') . "' class='text-blue-600 hover:text-blue-800 underline'>veure tots els teus PDFs aquí</a> o descarregar aquest fitxer: <a href='" . route('teacher.profile.download', $filename) . "' class='text-blue-600 hover:text-blue-800 underline'>" . $filename . "</a>.",
             'type' => 'pdf_generated',
             'sender_id' => 1, // Sistema
             'recipient_type' => 'specific',
@@ -494,6 +494,24 @@ class ProfileTeacherController extends Controller
     }
 
     /**
+     * Show PDF download page
+     */
+    public function pdfDownloadPage(): View
+    {
+        $user = Auth::user();
+        $teacher = $user->teacherProfile;
+
+        if (!$teacher) {
+            return redirect()->route('teacher.profile')
+                ->with('error', 'Error carregant el perfil.');
+        }
+
+        $allPdfs = $this->getAllPdfs($teacher);
+
+        return view('teacher.profile.pdf-download', compact('teacher', 'allPdfs'));
+    }
+
+    /**
      * Download PDF from server
      */
     public function downloadPDF($filename): Response|RedirectResponse
@@ -561,12 +579,24 @@ class ProfileTeacherController extends Controller
         $pdfs = [];
         foreach ($files as $file) {
             $filename = basename($file);
+            $filesize = filesize($file);
+            
+            // Formatar la mida del fitxer
+            if ($filesize >= 1048576) { // >= 1MB
+                $sizeFormatted = number_format($filesize / 1048576, 2) . ' MB';
+            } elseif ($filesize >= 1024) { // >= 1KB
+                $sizeFormatted = number_format($filesize / 1024, 2) . ' KB';
+            } else {
+                $sizeFormatted = $filesize . ' bytes';
+            }
+            
             $pdfs[] = [
                 'filename' => $filename,
-                'download_url' => route('teacher.profile.download', ['filename' => $filename]),
-                'file_path' => 'storage/app/consents/teachers/' . $teacher->id . '/' . $filename,
-                'created_at' => date('d/m/Y H:i', filemtime($file)),
-                'size' => $this->formatFileSize(filesize($file))
+                'filepath' => $file,
+                'size' => $filesize,
+                'size_formatted' => $sizeFormatted,
+                'modified_date' => date('d/m/Y H:i', filemtime($file)),
+                'modified_timestamp' => filemtime($file),
             ];
         }
 
