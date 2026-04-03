@@ -320,7 +320,7 @@ class ProfileTeacherController extends Controller
         
         // Asignar destinatarios y enviar
         $notification->recipients()->sync([$teacher->user_id]);
-        $this->sendNotificationChannels($notification, ['email', 'web']);
+        $this->sendNotificationChannels($notification, ['email', 'web', 'push']);
     }
 
     /**
@@ -337,8 +337,8 @@ class ProfileTeacherController extends Controller
         }
         
         $notification = Notification::create([
-            'title' => 'Nou PDF Generat - ' . $teacher->name,
-            'content' => "El professor {$teacher->name} ha generat un nou PDF. Fitxer: {$filename}. Disponible per revisió al sistema.",
+            'title' => 'Nou PDF Generat - ' . $teacher->first_name . ' ' . $teacher->last_name,
+            'content' => "El professor o la professora {$teacher->first_name} {$teacher->last_name} ha generat un nou PDF. Fitxer: {$filename}. Disponible per revisió al sistema.",
             'type' => 'pdf_generated',
             'sender_id' => 1, // Sistema
             'recipient_type' => 'role',
@@ -351,7 +351,7 @@ class ProfileTeacherController extends Controller
         ]);
         
         $notification->recipients()->sync($treasuryUsers);
-        $this->sendNotificationChannels($notification, ['email', 'web']);
+        $this->sendNotificationChannels($notification, ['email', 'web', 'push']);
     }
 
     /**
