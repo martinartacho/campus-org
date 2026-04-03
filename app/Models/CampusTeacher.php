@@ -332,7 +332,8 @@ class CampusTeacher extends Model
                 'modified_date' => date('d/m/Y H:i', filemtime($file)),
                 'modified_timestamp' => filemtime($file),
                 'created_at' => date('d/m/Y H:i', filemtime($file)), // Per compatibilitat
-                'download_url' => route('campus.teachers.pdfs.show', [$this->id, $filename]),
+                'download_url' => route('campus.teachers.pdf.download', [$this->id, $filename]),
+                'view_url' => route('campus.teachers.pdfs.show', [$this->id, $filename]),
             ];
         }
 

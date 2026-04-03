@@ -8,10 +8,12 @@ use App\Models\Event;
 use App\Models\EventType;
 use App\Models\Notification;
 use App\Models\User;
+use App\Models\CampusTeacher;
 use EventQuestionTemplate;
 use App\Policies\EventPolicy;
 use App\Policies\EventTypePolicy;
 use App\Policies\EventQuestionTemplatePolicy;
+use App\Policies\CampusTeacherPolicy;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -24,6 +26,7 @@ class AuthServiceProvider extends ServiceProvider
         Event::class => EventPolicy::class,
         EventType::class => EventTypePolicy::class,
         EventQuestionTemplate::class => EventQuestionTemplatePolicy::class,
+        CampusTeacher::class => CampusTeacherPolicy::class,
 
         // ... otras políticas
     ];

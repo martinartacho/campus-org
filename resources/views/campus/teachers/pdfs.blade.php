@@ -190,7 +190,11 @@
                                             </div>
                                         </div>
                                         <div class="flex items-center space-x-2">
-                                            <a href="{{ route('teacher.profile.download', $pdf['filename']) }}" 
+                                            <a href="{{ $pdf['view_url'] }}" 
+                                               class="text-blue-600 hover:text-blue-800 text-sm underline">
+                                                {{ __('Ver') }}
+                                            </a>
+                                            <a href="{{ $pdf['download_url'] }}" 
                                                class="text-blue-600 hover:text-blue-800 text-sm underline">
                                                 {{ __('Descarregar') }}
                                             </a>
@@ -237,8 +241,29 @@ function confirmDeletePdfs(teacherId) {
 
 function deletePdf(teacherId, filename) {
     if(confirm('{{ __("Estàs segur que vols eliminar aquest PDF?") }}')) {
-        // Aquí implementarem l'eliminació individual
-        console.log('Eliminar PDF:', teacherId, filename);
+        // Crear formulari per DELETE request
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/campus/teachers/${teacherId}/pdf/${filename}`;
+        
+        // Afegir token CSRF
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = '_token';
+        csrfInput.value = csrfToken;
+        form.appendChild(csrfInput);
+        
+        // Afegir method override per DELETE
+        const methodInput = document.createElement('input');
+        methodInput.type = 'hidden';
+        methodInput.name = '_method';
+        methodInput.value = 'DELETE';
+        form.appendChild(methodInput);
+        
+        // Enviar formulari
+        document.body.appendChild(form);
+        form.submit();
     }
 }
 

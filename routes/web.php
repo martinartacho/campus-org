@@ -127,6 +127,25 @@ Route::middleware(['auth', 'permission:campus.courses.view'])
         ->name('registrations.index');
 });
 
+// Rutes de PDFs fora del grup de permisos (només amb auth)
+Route::middleware(['auth'])
+    ->prefix('campus/teachers')
+    ->name('campus.teachers.')
+    ->group(function () {
+        
+        Route::get('pdfs', [ProfileTeacherController::class, 'teachersPdfsPage'])
+            ->name('pdfs');
+        
+        Route::get('{teacher}/pdfs/{filename}', [ProfileTeacherController::class, 'showPdfForAdmin'])
+            ->name('pdfs.show');
+        
+        Route::get('{teacher}/pdf/{filename}', [ProfileTeacherController::class, 'downloadPdfForAdmin'])
+            ->name('pdf.download');
+        
+        Route::delete('{teacher}/pdf/{filename}', [ProfileTeacherController::class, 'deletePdfForAdmin'])
+            ->name('pdf.delete');
+    });
+
 
 
 
@@ -137,13 +156,6 @@ Route::middleware(['auth', 'permission:campus.teachers.view'])
         
         Route::get('teachers', [TeacherTreasuryController::class, 'index'])
             ->name('teachers.index');
-        
-        Route::get('teachers/pdfs', [ProfileTeacherController::class, 'teachersPdfsPage'])
-            ->name('teachers.pdfs');
-        
-        Route::get('teachers/{teacher}/pdfs/{filename}', [ProfileTeacherController::class, 'showPdfForAdmin'])
-            ->name('teachers.pdfs.show')
-            ->middleware('can:view,teacher');
         
         Route::get('teachers/rgpd', [TeacherTreasuryController::class, 'rgpdIndex'])
             ->name('teachers.rgpd.index');

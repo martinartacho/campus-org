@@ -10,9 +10,10 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\Response;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ProfileTeacherController extends Controller
 {
@@ -519,12 +520,99 @@ class ProfileTeacherController extends Controller
     }
 
     /**
+     * Delete PDF for admin
+     */
+    public function deletePdfForAdmin(CampusTeacher $teacher, string $filename): RedirectResponse
+    {
+        // Verificar que l'usuari estigui autenticat
+        if (!auth()->check()) {
+            return redirect()->route('campus.teachers.pdfs')
+                ->with('error', 'No tens permisos per eliminar aquest PDF.');
+        }
+
+        // Construir ruta completa del fitxer
+        $filepath = storage_path('app/consents/teachers/' . $teacher->id . '/' . $filename);
+
+        // Verificar que el fitxer existeixi
+        if (!file_exists($filepath)) {
+            return redirect()->route('campus.teachers.pdfs')
+                ->with('error', 'Fitxer no trobat.');
+        }
+
+        // Verificar que sigui un PDF
+        if (!str_ends_with($filename, '.pdf')) {
+            return redirect()->route('campus.teachers.pdfs')
+                ->with('error', 'Tipus de fitxer no permès.');
+        }
+
+        try {
+            // Eliminar el fitxer
+            if (unlink($filepath)) {
+                // Registrar l'acció
+                \Log::info('PDF eliminat per admin', [
+                    'teacher_id' => $teacher->id,
+                    'filename' => $filename,
+                    'user_id' => auth()->id()
+                ]);
+
+                return redirect()->route('campus.teachers.pdfs')
+                    ->with('success', 'PDF eliminat correctament.');
+            } else {
+                return redirect()->route('campus.teachers.pdfs')
+                    ->with('error', 'No s\'ha pogut eliminar el PDF.');
+            }
+        } catch (\Exception $e) {
+            \Log::error('Error eliminant PDF', [
+                'teacher_id' => $teacher->id,
+                'filename' => $filename,
+                'error' => $e->getMessage()
+            ]);
+
+            return redirect()->route('campus.teachers.pdfs')
+                ->with('error', 'Error eliminant el PDF.');
+        }
+    }
+
+    /**
+     * Download PDF for admin
+     */
+    public function downloadPdfForAdmin(CampusTeacher $teacher, string $filename): BinaryFileResponse|RedirectResponse
+    {
+        // Verificar que l'usuari estigui autenticat
+        if (!auth()->check()) {
+            return redirect()->route('campus.teachers.pdfs')
+                ->with('error', 'No tens permisos per descarregar aquest PDF.');
+        }
+
+        // Construir ruta completa del fitxer
+        $filepath = storage_path('app/consents/teachers/' . $teacher->id . '/' . $filename);
+
+        // Verificar que el fitxer existeixi
+        if (!file_exists($filepath)) {
+            return redirect()->route('campus.teachers.pdfs')
+                ->with('error', 'Fitxer no trobat.');
+        }
+
+        // Verificar que sigui un PDF
+        if (!str_ends_with($filename, '.pdf')) {
+            return redirect()->route('campus.teachers.pdfs')
+                ->with('error', 'Tipus de fitxer no permès.');
+        }
+
+        // Retornar el fitxer per descàrrega
+        return response()->download($filepath, $filename, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"'
+        ]);
+    }
+
+    /**
      * Show PDF details for admin (without download)
      */
     public function showPdfForAdmin(CampusTeacher $teacher, string $filename): View
     {
-        // Verificar permisos
-        if (!auth()->user()->can('view', $teacher)) {
+        // Verificar que l'usuari estigui autenticat
+        if (!auth()->check()) {
             return redirect()->route('campus.teachers.index')
                 ->with('error', 'No tens permisos per veure aquest PDF.');
         }
