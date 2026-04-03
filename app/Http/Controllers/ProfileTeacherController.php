@@ -227,12 +227,9 @@ class ProfileTeacherController extends Controller
             // Enviar notificacions
             $this->sendNotifications($teacher, $filename);
 
-            // Retornar enllaç de descàrrega
-            $downloadUrl = route('teacher.profile.download', ['filename' => $filename]);
-
-            return redirect()->route('teacher.profile.download', [
-                'filename' => $filename
-            ]);
+            // Redirigir a la vista de PDFs on es poden descarregar tots
+            return redirect()->route('teacher.profile.pdfs')
+                ->with('success', 'PDF generat correctament! Pots descarregar-lo des d\'aquí.');
 
         } catch (\Exception $e) {
             \Log::error('Error generating PDF', [
@@ -514,7 +511,7 @@ class ProfileTeacherController extends Controller
     /**
      * Download PDF from server
      */
-    public function downloadPDF($filename): Response|RedirectResponse
+    public function downloadPDF($filename): \Symfony\Component\HttpFoundation\BinaryFileResponse|RedirectResponse
     {
         $user = Auth::user();
         $teacher = $user->teacherProfile;
@@ -597,6 +594,8 @@ class ProfileTeacherController extends Controller
                 'size_formatted' => $sizeFormatted,
                 'modified_date' => date('d/m/Y H:i', filemtime($file)),
                 'modified_timestamp' => filemtime($file),
+                'created_at' => date('d/m/Y H:i', filemtime($file)), // Per compatibilitat amb vista existent
+                'download_url' => route('teacher.profile.download', $filename),
             ];
         }
 

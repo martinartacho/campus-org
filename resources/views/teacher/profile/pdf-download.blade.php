@@ -1,5 +1,5 @@
 {{-- resources/views/teacher/profile/pdf-download.blade.php --}}
-@extends('layouts.app')
+@extends('campus.shared.layout')
 
 @section('title', __('Descàrrega de PDFs'))
 
