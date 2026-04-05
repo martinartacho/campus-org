@@ -102,7 +102,7 @@
         
         {{-- Datos Financieros de Profesores --}}
         @can('campus.teachers.financial_data.view')
-        <a href="{{ route('campus.treasury.teachers.index') }}" 
+        <a href="{{ route('treasury.teachers.index') }}" 
            class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 border border-gray-200">
             <div class="flex items-center mb-4">
                 <div class="p-3 bg-blue-100 rounded-lg mr-4">
@@ -192,7 +192,7 @@
         </table>
 
         <div class="mt-4">
-            <a href="{{ route('campus.treasury.teachers.index') }}"
+            <a href="{{ route('treasury.teachers.index') }}"
                class="text-blue-600 hover:underline inline-flex items-center">
                 <i class="bi bi-arrow-right-circle me-1"></i>
                 Gestió professorat (Tresoreria)
