@@ -139,18 +139,31 @@
                                     <div class="mt-1 flex items-center space-x-4 text-sm text-gray-500">
                                         <span><i class="bi bi-envelope mr-1"></i>{{ $teacher->user->email }}</span>
                                         <span><i class="bi bi-book mr-1"></i>{{ $teacher->courses->count() }} {{ __('cursos') }}</span>
-                                        <span><i class="bi bi-bank mr-1"></i>{{ !empty($teacher->iban) ? '✅ IBAN' : '❌ IBAN' }}</span>
+                                        <span><i class="bi bi-bank mr-1"></i>{{ !empty($teacher->iban) ? '✅ IBAN' : '❌ IBAN' }} </span>                                          @if(!empty($teacher->payment_type))
+                                                @if($teacher->payment_type == 'waived')
+                                                    {{ __('campus.payment_waived') }}
+                                                @elseif($teacher->payment_type == 'own')
+                                                    {{ __('campus.payment_own') }}
+                                                @elseif($teacher->payment_type == 'ceded')
+                                                    {{ __('campus.payment_ceded') }}
+                                                @endif
+                                            @else
+                                            {{ __('Pendent') }}
+                                            @endif
+                                        
                                     </div>
+                                
                                 </div>
                             </div>
                         </div>
-                        
+                                               
+
                         <div class="flex items-center space-x-3">
-                            {{-- Indicador d'estat del PDF --}}
-                            <x-teacher-pdf-status :teacher="$teacher" />
-                            
+                             
                             {{-- Accions --}}
+
                             <div class="flex items-center space-x-2">
+                                
                                 @if($teacher->hasPdfs())
                                     {{-- Veure PDFs --}}
                                     <button onclick="showTeacherPdfs({{ $teacher->id }})" 
@@ -165,10 +178,7 @@
                                         <i class="bi bi-trash mr-1"></i>
                                         {{ __('Eliminar') }}
                                     </button>
-                                @else
-                                    <span class="text-sm text-gray-500 italic">
-                                        {{ __('Cap PDF') }}
-                                    </span>
+                                
                                 @endif
                             </div>
                         </div>
@@ -194,6 +204,7 @@
                                                class="text-blue-600 hover:text-blue-800 text-sm underline">
                                                 {{ __('Ver') }}
                                             </a>
+
                                             <a href="{{ $pdf['download_url'] }}" 
                                                class="text-blue-600 hover:text-blue-800 text-sm underline">
                                                 {{ __('Descarregar') }}
@@ -208,7 +219,9 @@
                             </div>
                         @endif
                     </div>
+                    
                 </div>
+                
             @endforeach
         </div>
 

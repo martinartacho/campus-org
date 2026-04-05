@@ -791,4 +791,8 @@ return [
     'payment_type_waived' => 'Renunciar al cobrament',
     'payment_type_own' => 'Cobrament propi',
     'payment_type_ceded' => 'Cedir el cobrament',
+    'payment_waived' => 'Renuncia',
+    'payment_own' => 'Cobra',
+    'payment_ceded' => 'Cedeix',
+
 ];
