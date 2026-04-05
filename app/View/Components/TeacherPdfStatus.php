@@ -41,6 +41,7 @@ class TeacherPdfStatus extends Component
         $this->teacher = $teacher;
         $this->hasIban = false;
         $this->isPdfUpdated = false;
+        $this->isPaymentType = $teacher->payment_type ?? 'null';
 
         $this->checkPdfStatus();
     }
@@ -51,26 +52,29 @@ class TeacherPdfStatus extends Component
     private function checkPdfStatus(): void
     {
         try {
-            $this->hasIban = $this->teacher && !empty($this->teacher->iban);
+            // Lògica millorada: considerar el tipus de pagament
+            $needsIban = !in_array($this->teacher->payment_type ?? 'ceded', ['waived', 'own']);
+
+            $this->hasIban = !empty($this->teacher->iban) || !$needsIban;
             
             // Verificar si el PDF està actualitzat segons la data límit
-            if ($this->hasIban) {
-                $deadline = \App\Models\Setting::get('pdf_update_deadline', '2026-03-15');
-                $deadlineDate = \Carbon\Carbon::parse($deadline);
-                
-                // Obtenir l'últim PDF del professor
-                $directory = storage_path('app/consents/teachers/' . $this->teacher->id);
-                if (is_dir($directory)) {
-                    $files = glob($directory . '/consent_dades_teacher_*.pdf');
-                    if (!empty($files)) {
-                        usort($files, function($a, $b) {
-                            return filemtime($b) - filemtime($a);
-                        });
-                        $latestFile = $files[0];
-                        $pdfModifiedTime = filemtime($latestFile);
-                        $pdfDate = \Carbon\Carbon::createFromTimestamp($pdfModifiedTime);
-                        $this->isPdfUpdated = $pdfDate->greaterThan($deadlineDate);
-                    }
+            $this->isPdfUpdated = false;
+            
+            // Obtenir l'últim PDF del professor
+            $directory = storage_path('app/consents/teachers/' . $this->teacher->id);
+            if (is_dir($directory)) {
+                $files = glob($directory . '/consent_dades_teacher_*.pdf');
+                if (!empty($files)) {
+                    $deadline = \App\Models\Setting::get('pdf_update_deadline', '2026-03-15');
+                    $deadlineDate = \Carbon\Carbon::parse($deadline);
+                    
+                    usort($files, function($a, $b) {
+                        return filemtime($b) - filemtime($a);
+                    });
+                    $latestFile = $files[0];
+                    $pdfModifiedTime = filemtime($latestFile);
+                    $pdfDate = \Carbon\Carbon::createFromTimestamp($pdfModifiedTime);
+                    $this->isPdfUpdated = $pdfDate->greaterThan($deadlineDate);
                 }
             }
         } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {

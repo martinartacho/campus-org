@@ -356,6 +356,7 @@ return [
     'course_code' => 'Codi del curs',
     'course_schedule' => 'Horari',
     'course_hours_total' => 'Sessions totals',
+    'course_sessions_assigned' => 'Sessions assignades',
     'course_hours_assigned' => 'Sessions assignades',
     'course_hours_remaining' => 'Sessions restants',
     'course_students_count' => 'Alumnes',
