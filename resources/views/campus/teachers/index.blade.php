@@ -28,12 +28,10 @@
         <h1 class="text-3xl font-bold text-gray-900">{{ __('campus.teachers') }}</h1>
         
         {{-- Enllaç a PDFs per admins --}}           
-        <a href="{{ route('campus.teachers.pdfs') }}" 
-        class="text-xs text-blue-600 hover:text-blue-800 underline flex items-center"
-        >
+        <x-campus-button href="{{ route('campus.teachers.pdfs') }}" variant="secondary" size="sm">
             <i class="bi bi-file-earmark-pdf mr-1"></i>
             PDFs de Teachers
-        </a>
+        </x-campus-button>
 
         
         @can('campus.teachers.create')

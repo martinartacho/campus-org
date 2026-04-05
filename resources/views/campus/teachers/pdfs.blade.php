@@ -7,27 +7,32 @@
 <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-8">
     <div class="bg-white shadow-lg rounded-lg p-6">
         {{-- Capçalera --}}
-        <div class="flex items-center justify-between mb-6">
+        <div class="flex justify-between items-center">
             <div>
-                <h1 class="text-2xl font-bold text-gray-900">
-                    <i class="bi bi-file-earmark-pdf mr-2"></i>
-                    {{ __('PDFs de Teachers') }}
-                </h1>
-                <p class="mt-1 text-sm text-gray-600">
-                    {{ __('Llista de tots els PDFs generats pels teachers. Pots veure, descarregar o eliminar fitxers.') }}
+                <h2 class="text-lg font-semibold text-gray-900">
+                    <i class="bi bi-file-earmark-pdf-fill me-2 text-blue-600"></i>
+                    {{ __('campus.teacher_pdfs') }}
+                </h2>
+                <p class="text-sm text-gray-600 mt-1">
+                    {{ __('campus.teacher_pdfs_description') }}
                 </p>
             </div>
+            
             <div class="flex items-center space-x-3">
-                <a href="{{ route('campus.teachers.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors">
-                    <i class="bi bi-arrow-left mr-2"></i>
-                    {{ __('Tornar a Teachers') }}
-                </a>
-            </div>
-        </div>
-
-        {{-- Filtres --}}
-        <div class="mb-6 p-4 bg-gray-50 rounded-lg">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Botó de notificacions (temporalment desactivat) -->
+                <button disabled 
+                        class="inline-flex items-center px-4 py-2 bg-gray-400 text-white text-sm font-medium rounded-md cursor-not-allowed opacity-50"
+                        title="Funcionalitat de notificacions en desenvolupament">
+                    <i class="bi bi-bell-fill me-2"></i>
+                    {{ __('campus.send_notification') }}
+                </button>
+                
+                <!-- Botó de recàrrega -->
+                <button onclick="location.reload()" 
+                        class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <i class="bi bi-arrow-clockwise me-2"></i>
+                    {{ __('campus.refresh') }}
+                </button>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         {{ __('Filtrar per estat') }}
