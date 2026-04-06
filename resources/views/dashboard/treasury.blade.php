@@ -12,7 +12,6 @@
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <h1>dashboard/treasury.blade.php</h1>
     
         @can('settings.edit')
         {{-- Targeta de Configuració PDF --}}
@@ -101,7 +100,7 @@
         @endcan
         
         {{-- Datos Financieros de Profesores --}}
-        @can('campus.teachers.financial_data.view')
+<!--         @can('campus.teachers.financial_data.view')
         <a href="{{ route('treasury.teachers.index') }}" 
            class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 border border-gray-200">
             <div class="flex items-center mb-4">
@@ -168,7 +167,7 @@
     </div>
 
     {{-- Últimos Consentimientos RGPD --}}
-    @if(isset($data['last_consents']) && count($data['last_consents']) > 0)
+<!--     @if(isset($data['last_consents']) && count($data['last_consents']) > 0)
     <div class="mt-8 bg-white shadow rounded p-4">
         <h2 class="text-lg font-semibold mb-4">Últims consentiments RGPD</h2>
 
@@ -199,7 +198,7 @@
             </a>
         </div>
     </div>
-    @endif
+    @endif -->
 </div>
 
 @endsection
