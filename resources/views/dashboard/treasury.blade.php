@@ -12,7 +12,7 @@
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        
+        <h1>dashboard/treasury.blade.php</h1>
     
         @can('settings.edit')
         {{-- Targeta de Configuració PDF --}}

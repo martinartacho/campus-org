@@ -15,12 +15,18 @@
                     {{ __('campus.treasury_dashboard') }}<!--  (- path: resources\views\treasury\dashboard.blade.php) -->
                 </h1>
                 <div class="text-sm text-gray-500">
-                    {{ __('campus.treasury_management') }} <!-- (- path: resources\views\treasury\dashboard.blade.php) -->
+                    {{ __('campus.treasury_management') }} (- path: resources\views\treasury\dashboard.blade.php) 
                 </div>
             </div>
 
             {{-- Estadísticas principales --}}
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-white p-6 rounded-lg shadow text-center lg:col-span-2">
+                    <div class="text-2xl font-bold text-blue-600">
+                        {{ $stats['total_teachers'] ?? 0 }} / {{ $stats['teachers_with_consent'] ?? 0 }}
+                    </div>
+                    <div class="text-sm text-gray-500">Totals professorat / RGPD acceptat PEPE</div>
+                </div>
                 {{-- Professorat totals / RGPD acceptat --}}
                 <div class="bg-white p-6 rounded-lg shadow text-center lg:col-span-2">
                     <div class="text-2xl font-bold text-blue-600">
