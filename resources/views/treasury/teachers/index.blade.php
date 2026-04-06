@@ -8,7 +8,7 @@
         <div class="flex items-center">
             <i class="bi bi-chevron-right text-gray-400 mx-1"></i>
             <a href="{{ route('campus.treasury.teachers.index') }}" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2">
-                {{ __('campus.teachers') }} / {{ isset($season->name) ? $season->name : 'Sense temporada' }} ({{ $teachersWithCourses->count() }} prof.)
+                {{ __('campus.teachers') }} / {{ isset($season->name) ? $season->name : 'Sense temporada' }} ({{ $teachers->count() }} prof.)
             </a>
         </div>
     </li>
@@ -21,7 +21,7 @@
 @section('content')
 
 <!-- Botones de exportación -->
-@if($teachersWithCourses->count() > 0)
+@if($teachers->count() > 0)
 <div class="mb-4 flex space-x-2">
     <a href="{{ route('campus.treasury.teachers.export', 'xlsx') }}?season={{ $selectedSeasonSlug }}"
         class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
