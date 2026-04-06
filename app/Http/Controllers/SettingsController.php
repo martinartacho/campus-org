@@ -103,7 +103,7 @@ class SettingsController extends Controller
 
         Cache::forget('pdf_update_deadline');
 
-        return redirect()->route('treasury.treasury.settings.edit')->with('success', __('Data límit de PDF actualitzada correctament.'));
+        return redirect()->route('treasury.settings.edit')->with('success', __('Data límit de PDF actualitzada correctament.'));
     }
 
     public function updatePaymentFreezeTreasury(Request $request)
