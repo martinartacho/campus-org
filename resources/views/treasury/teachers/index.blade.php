@@ -7,9 +7,13 @@
     <li>
         <div class="flex items-center">
             <i class="bi bi-chevron-right text-gray-400 mx-1"></i>
-            <a href="{{ route('campus.teachers.index') }}?season={{ $selectedSeasonSlug }}" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2">
+            {{-- Temporarily removed due to undefined variable issue --}}
+            {{--<a href="{{ route('campus.teachers.index') }}?season={{ $selectedSeasonSlug }}" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2">
                 {{ __('campus.teachers') }} / {{ isset($season->name) ? $season->name : 'Sense temporada' }} ({{ $teachers->count() }} prof.)
-            </a>
+            </a>--}}
+            <span class="ms-1 text-sm font-medium text-gray-700 md:ms-2">
+                {{ __('campus.teachers') }} / {{ isset($season->name) ? $season->name : 'Sense temporada' }} ({{ $teachers->count() }} prof.)
+            </span>
         </div>
     </li>
 @endsection
