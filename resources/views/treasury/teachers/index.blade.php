@@ -40,7 +40,7 @@
 <!-- Selector de temporada -->
 @if(isset($seasons) && $seasons->count() > 0)
 <div class="mb-6 p-4 bg-white rounded-lg shadow">
-    <form method="GET" action="{{ route('campus.treasury.teachers.index') }}" class="flex items-center space-x-4">
+    <form method="GET" action="{{ route('campus.teachers.index') }}" class="flex items-center space-x-4">
         <label for="season" class="font-medium">Filtrar per temporada:</label>
         <select name="season" id="season" 
                 class="border rounded px-3 py-2 w-64"
