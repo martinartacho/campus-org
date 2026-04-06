@@ -27,13 +27,27 @@
 <!-- Botones de exportación -->
 @if($teachers->count() > 0)
 <div class="mb-4 flex space-x-2">
-    <a href="{{ route('campus.teachers.export', 'xlsx') }}?season={{ $selectedSeasonSlug }}"
+    {{-- Temporarily removed due to undefined variable issue --}}
+    {{--<a href="{{ route('campus.teachers.export', 'xlsx') }}?season={{ $selectedSeasonSlug }}"
+        class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+        <i class="bi bi-file-earmark-excel mr-2"></i>
+        Excel
+    </a>--}}
+    
+    {{--<a href="{{ route('campus.teachers.export', 'csv') }}?season={{ $selectedSeasonSlug }}"
+        class="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700">
+        <i class="bi bi-filetype-csv"></i>
+        CSV
+    </a>--}}
+    
+    {{-- Temporary static links --}}
+    <a href="{{ route('campus.teachers.export', 'xlsx') }}"
         class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
         <i class="bi bi-file-earmark-excel mr-2"></i>
         Excel
     </a>
     
-    <a href="{{ route('campus.teachers.export', 'csv') }}?season={{ $selectedSeasonSlug }}"
+    <a href="{{ route('campus.teachers.export', 'csv') }}"
         class="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700">
         <i class="bi bi-filetype-csv"></i>
         CSV
