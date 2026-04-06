@@ -123,12 +123,12 @@ class SettingsController extends Controller
         Cache::forget('payment_freeze_start');
         Cache::forget('payment_freeze_end');
 
-        return redirect()->route('treasury.settings.index')->with('success', __('Període de bloqueig de pagaments actualitzat correctament.'));
+        return redirect()->route('treasury.settings')->with('success', __('Període de bloqueig de pagaments actualitzat correctament.'));
     }
 
     public function pdfSettings()
     {
-        return view('treasury.settings.index');
+        return view('treasury.settings');
     }
 
 }
