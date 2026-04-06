@@ -41,7 +41,7 @@
         
         {{-- Gestión de PDFs --}}
         @can('campus.teachers.view')
-        <a href="{{ route('campus.teachers.index') }}" 
+        <a href="{{ route('campus.teachers.pdfs') }}" 
            class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 border border-gray-200">
             <div class="flex items-center mb-4">
                 <div class="p-3 bg-red-100 rounded-lg mr-4">
