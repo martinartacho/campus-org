@@ -19,7 +19,11 @@ use Illuminate\Support\Str;
 
 class TeacherTreasuryController extends Controller
 {
-
+    public function __construct()
+    {
+        $this->middleware('auth');
+        $this->middleware('role:admin|treasury');
+    }
 
     public function index(Request $request)
     {
@@ -351,8 +355,7 @@ class TeacherTreasuryController extends Controller
     public function generateConsentPdf(User $teacher)
     {
         $this->authorize('consents.request');
-       //  dd('nota viernes Pepe en linea 169 de generateConsentPdf');
-       
+        
         $season = CampusSeason::where('is_current', true)->first();
         $currentSeason = CampusSeason::current()->first();
 

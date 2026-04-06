@@ -20,20 +20,6 @@ class TreasuryController extends Controller
     }
 
     /**
-     * Display a treasury dashboard.
-     */
-    public function dashboard()
-    {
-        $this->authorize('campus.teachers.view');
-        
-        // Usar TreasuryDashboardData para obtener los datos
-        $user = auth()->user();
-        $data = app(\App\Services\Dashboard\TreasuryDashboardData::class)->build($user);
-        
-        return view('dashboard.treasury', compact('data'));
-    }
-
-    /**
      * Display all consents with filtering and pagination.
      */
     public function consents(Request $request)
