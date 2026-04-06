@@ -128,7 +128,7 @@ class SettingsController extends Controller
 
     public function pdfSettings()
     {
-        return view('treasury.settings');
+        return view('treasury.settings.index');
     }
 
 }
