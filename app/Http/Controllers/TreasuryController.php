@@ -95,19 +95,7 @@ class TreasuryController extends Controller
     }
 
     /**
-     * Display teachers listing for treasury.
-     */
-    public function teachers()
-    {
-        $teachers = CampusTeacher::with(['user', 'courses'])
-            ->orderBy('last_name')
-            ->paginate(20);
-            
-        return view('treasury.teachers.index', compact('teachers'));
-    }
-
-    /**
-     * Display financial reports.
+     * Display reports dashboard.
      */
     public function reports()
     {
