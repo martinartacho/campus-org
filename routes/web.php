@@ -237,16 +237,24 @@ Route::get('teacher-access/success/{token}', [TeacherAccessController::class, 's
 
 // Campus Document Management Routes (con prefix /campus/)
 Route::prefix('campus')->name('campus.')->group(function () {
-    // Category routes (temporal sin auth para testing)
-    Route::prefix('documents/categories')->name('documents.categories.')->group(function () {
-        Route::get('/', [\App\Http\Controllers\DocumentCategoryController::class, 'index'])->name('index');
-        Route::get('/create', [\App\Http\Controllers\DocumentCategoryController::class, 'create'])->name('create');
-        Route::post('/', [\App\Http\Controllers\DocumentCategoryController::class, 'store'])->name('store');
-        Route::get('/{category}', [\App\Http\Controllers\DocumentCategoryController::class, 'show'])->name('show');
-        Route::get('/{category}/edit', [\App\Http\Controllers\DocumentCategoryController::class, 'edit'])->name('edit');
-        Route::put('/{category}', [\App\Http\Controllers\DocumentCategoryController::class, 'update'])->name('update');
-        Route::delete('/{category}', [\App\Http\Controllers\DocumentCategoryController::class, 'destroy'])->name('destroy');
-        Route::put('/{category}/toggle', [\App\Http\Controllers\DocumentCategoryController::class, 'toggle'])->name('toggle');
+    // Category routes con auth y permisos
+    Route::middleware(['auth'])->prefix('documents/categories')->name('documents.categories.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\DocumentCategoryController::class, 'index'])
+            ->name('index')->middleware('can:documents.categories.index');
+        Route::get('/create', [\App\Http\Controllers\DocumentCategoryController::class, 'create'])
+            ->name('create')->middleware('can:documents.categories.create');
+        Route::post('/', [\App\Http\Controllers\DocumentCategoryController::class, 'store'])
+            ->name('store')->middleware('can:documents.categories.create');
+        Route::get('/{category}', [\App\Http\Controllers\DocumentCategoryController::class, 'show'])
+            ->name('show')->middleware('can:documents.categories.view');
+        Route::get('/{category}/edit', [\App\Http\Controllers\DocumentCategoryController::class, 'edit'])
+            ->name('edit')->middleware('can:documents.categories.edit');
+        Route::put('/{category}', [\App\Http\Controllers\DocumentCategoryController::class, 'update'])
+            ->name('update')->middleware('can:documents.categories.edit');
+        Route::delete('/{category}', [\App\Http\Controllers\DocumentCategoryController::class, 'destroy'])
+            ->name('destroy')->middleware('can:documents.categories.delete');
+        Route::put('/{category}/toggle', [\App\Http\Controllers\DocumentCategoryController::class, 'toggle'])
+            ->name('toggle')->middleware('can:documents.categories.edit');
     });
     
     // Document routes (con auth)

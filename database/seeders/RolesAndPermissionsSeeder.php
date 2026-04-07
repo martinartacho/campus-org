@@ -81,6 +81,13 @@ class RolesAndPermissionsSeeder extends Seeder
             'campus.categories.edit',
             'campus.categories.delete',
             
+            // Document Categories
+            'documents.categories.index',
+            'documents.categories.view',
+            'documents.categories.create',
+            'documents.categories.edit',
+            'documents.categories.delete',
+            
             // Temporades
             'campus.seasons.index',
             'campus.seasons.view',
@@ -300,6 +307,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'campus.registrations.edit', 'campus.registrations.manage',
             'campus.courses.index', 'campus.courses.view',
             'campus.teachers.index', 'campus.teachers.view',
+            'documents.categories.index', 'documents.categories.view', 'documents.categories.create',
+            'documents.categories.edit',
             'notifications.index', 'notifications.create', 'notifications.edit', 'notifications.view',
         ];
         $secretaria->syncPermissions($secretariaPermissions);

@@ -2,10 +2,22 @@
 
 @isset($stats['total_documents'])
 <div class="bg-white p-6 rounded-lg shadow-md">
-    <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-        <i class="bi bi-file-earmark-text text-purple-600 me-2"></i>
-        Documents de Secretaria
-    </h3>
+    <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-gray-800 flex items-center">
+            <i class="bi bi-file-earmark-text text-purple-600 me-2"></i>
+            Documents de Secretaria
+        </h3>
+        @if(auth()->user()->hasAnyRole(['admin', 'super-admin', 'secretaria']))
+            <div class="flex space-x-2">
+                <a href="{{ route('campus.documents.create') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                    <i class="bi bi-plus-circle mr-2"></i>
+                    Nou Document
+                </a>
+            </div>
+        @endif
+
+        
+    </div>
     
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         
@@ -93,29 +105,47 @@
         @endif
         
         {{-- CATEGORIES --}}
-        @if(isset($stats['documents_by_category']) && count($stats['documents_by_category']) > 0)
-            <div class="bg-gradient-to-br from-orange-50 to-orange-100 p-4 rounded-lg border border-orange-200">
+        <a href="{{ route('campus.documents.categories.index') }}" class="block transition-transform hover:scale-[1.02]">
+            <div class="bg-gradient-to-br from-orange-50 to-orange-100 p-4 rounded-lg border border-orange-200 hover:border-orange-300">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm font-medium text-orange-800">Categories</p>
-                        <p class="text-2xl font-bold text-orange-900">{{ count($stats['documents_by_category']) }}</p>
+                        <p class="text-2xl font-bold text-orange-900">{{ count($stats['documents_by_category'] ?? []) }}</p>
                     </div>
                     <div class="bg-orange-100 p-3 rounded-full">
                         <i class="bi bi-folder text-orange-600 text-xl"></i>
                     </div>
                 </div>
                 
-                <div class="mt-2 text-xs">
-                    <span class="text-orange-700">Documents organitzats</span>
-                </div>
+                @if(isset($stats['documents_by_category']) && count($stats['documents_by_category']) > 0)
+                    @php
+                        $mostCommonCategory = collect($stats['documents_by_category'])->sortByDesc(function($count) {
+                            return $count;
+                        })->keys()->first();
+                        $totalDocsInCategories = collect($stats['documents_by_category'])->sum();
+                    @endphp
+                    <div class="mt-2 text-xs">
+                        <span class="text-orange-700">Més comuna: {{ $mostCommonCategory ?? 'N/A' }}</span>
+                    </div>
+                    <div class="mt-1 text-xs">
+                        <span class="text-orange-600">{{ $totalDocsInCategories }} documents categoritzats</span>
+                    </div>
+                @else
+                    <div class="mt-2 text-xs">
+                        <span class="text-orange-700">Sense categories definides</span>
+                    </div>
+                    <div class="mt-1 text-xs">
+                        <span class="text-orange-600">Crea categories per organitzar</span>
+                    </div>
+                @endif
                 
                 <div class="mt-3 pt-2 border-t border-orange-200">
-                    <span class="text-xs text-orange-600">
-                        Per categoria
+                    <span class="text-xs text-orange-600 hover:text-orange-800 flex items-center">
+                        Gestionar categories <i class="bi bi-arrow-right-short ms-1"></i>
                     </span>
                 </div>
             </div>
-        @endif
+        </a>
         
     </div>
     

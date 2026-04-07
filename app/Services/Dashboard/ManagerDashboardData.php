@@ -87,31 +87,21 @@ class ManagerDashboardData
 
         // ESTADÍSTICAS ESPECÍFICAS PARA SECRETARIA (fuera del bloque general)
         if ($activeRole === 'secretaria') {
-            // Documentos - estadísticas del módulo de documentación (simplificado)
-            $documentCategories = \App\Models\DocumentCategory::whereHas('parent', function($query) {
-                $query->where('name', 'Documentació');
-            })->pluck('id');
+            // Documentos - estadísticas del módulo de documentación
+            $stats['total_documents'] = \App\Models\Document::active()->count();
             
-            $stats['total_documents'] = \App\Models\Document::whereIn('category_id', $documentCategories)
-                ->active()
-                ->count();
-            
-            $stats['documents_by_category'] = \App\Models\Document::whereIn('category_id', $documentCategories)
-                ->active()
+            $stats['documents_by_category'] = \App\Models\Document::active()
                 ->with('category')
                 ->get()
                 ->groupBy('category.name')
                 ->map->count();
             
-            $stats['recent_documents'] = \App\Models\Document::whereIn('category_id', $documentCategories)
-                ->active()
+            $stats['recent_documents'] = \App\Models\Document::active()
                 ->orderBy('created_at', 'desc')
                 ->take(5)
                 ->get();
             
-            $stats['total_downloads'] = \App\Models\DocumentDownload::whereHas('document', function($query) use ($documentCategories) {
-                $query->whereIn('category_id', $documentCategories);
-            })->where('downloaded_at', '>=', now()->subDays(30))->count();
+            $stats['total_downloads'] = \App\Models\DocumentDownload::where('downloaded_at', '>=', now()->subDays(30))->count();
             
             // Matriculaciones pendentes (específico para secretaria)
             $stats['pending_registrations'] = \App\Models\CampusCourseStudent::where('academic_status', 'pending')->count();
