@@ -39,8 +39,8 @@ class ManagerDashboardData
             $stats['registrations'] = $adminData['total_registrations'];
         }
 
-        // ESTADÍSTIQUES DEL SISTEMA para todos los roles manager
-        if (in_array($activeRole, ['director', 'manager', 'coordinacio', 'gestio', 'comunicacio', 'secretaria', 'editor', 'admin', 'super-admin'])) {
+        // ESTADÍSTIQUES DEL SISTEMA para roles manager (excepto secretaria)
+        if (in_array($activeRole, ['director', 'manager', 'coordinacio', 'gestio', 'comunicacio', 'editor', 'admin', 'super-admin'])) {
             // Usuarios - usar datos completos de admin con fallback
             $stats['total_users'] = $adminData['stats']['total_users'] ?? 0;
             $stats['active_users'] = $adminData['stats']['active_users'] ?? \App\Models\User::where('email_verified_at', '!=', null)->count();
@@ -83,50 +83,51 @@ class ManagerDashboardData
             $stats['pending_feedback'] = $adminData['stats']['pending_feedback'] ?? 0;
             $stats['resolved_feedback'] = $adminData['stats']['responded_feedback'] ?? 0;
             
-            // ESTADÍSTICAS ESPECÍFICAS PARA SECRETARIA
-            if ($activeRole === 'secretaria') {
-                // Documentos - estadísticas del módulo de documentación (simplificado)
-                $documentCategories = \App\Models\DocumentCategory::whereHas('parent', function($query) {
-                    $query->where('name', 'Documentació');
-                })->pluck('id');
-                
-                $stats['total_documents'] = \App\Models\Document::whereIn('category_id', $documentCategories)
-                    ->active()
-                    ->count();
-                
-                $stats['documents_by_category'] = \App\Models\Document::whereIn('category_id', $documentCategories)
-                    ->active()
-                    ->with('category')
-                    ->get()
-                    ->groupBy('category.name')
-                    ->map->count();
-                
-                $stats['recent_documents'] = \App\Models\Document::whereIn('category_id', $documentCategories)
-                    ->active()
-                    ->orderBy('created_at', 'desc')
-                    ->take(5)
-                    ->get();
-                
-                $stats['total_downloads'] = \App\Models\DocumentDownload::whereHas('document', function($query) use ($documentCategories) {
-                    $query->whereIn('category_id', $documentCategories);
-                })->where('downloaded_at', '>=', now()->subDays(30))->count();
-                
-                // Matriculaciones pendentes (específico para secretaria)
-                $stats['pending_registrations'] = \App\Models\CampusCourseStudent::where('academic_status', 'pending')->count();
-                
-                $stats['recent_registrations'] = \App\Models\CampusCourseStudent::with(['student', 'course'])
-                    ->where('academic_status', 'pending')
-                    ->orderBy('created_at', 'desc')
-                    ->take(5)
-                    ->get();
-                
-                // Certificados (simulado - se puede adaptar al modelo real)
-                $stats['total_certificates'] = 0; // Placeholder
-                $stats['certificates_by_type'] = []; // Placeholder
-                $stats['recent_certificates'] = []; // Placeholder
-                $stats['certificates_this_month'] = 0; // Placeholder
-                $stats['certificates_this_year'] = 0; // Placeholder
             }
+
+        // ESTADÍSTICAS ESPECÍFICAS PARA SECRETARIA (fuera del bloque general)
+        if ($activeRole === 'secretaria') {
+            // Documentos - estadísticas del módulo de documentación (simplificado)
+            $documentCategories = \App\Models\DocumentCategory::whereHas('parent', function($query) {
+                $query->where('name', 'Documentació');
+            })->pluck('id');
+            
+            $stats['total_documents'] = \App\Models\Document::whereIn('category_id', $documentCategories)
+                ->active()
+                ->count();
+            
+            $stats['documents_by_category'] = \App\Models\Document::whereIn('category_id', $documentCategories)
+                ->active()
+                ->with('category')
+                ->get()
+                ->groupBy('category.name')
+                ->map->count();
+            
+            $stats['recent_documents'] = \App\Models\Document::whereIn('category_id', $documentCategories)
+                ->active()
+                ->orderBy('created_at', 'desc')
+                ->take(5)
+                ->get();
+            
+            $stats['total_downloads'] = \App\Models\DocumentDownload::whereHas('document', function($query) use ($documentCategories) {
+                $query->whereIn('category_id', $documentCategories);
+            })->where('downloaded_at', '>=', now()->subDays(30))->count();
+            
+            // Matriculaciones pendentes (específico para secretaria)
+            $stats['pending_registrations'] = \App\Models\CampusCourseStudent::where('academic_status', 'pending')->count();
+            
+            $stats['recent_registrations'] = \App\Models\CampusCourseStudent::with(['student', 'course'])
+                ->where('academic_status', 'pending')
+                ->orderBy('created_at', 'desc')
+                ->take(5)
+                ->get();
+            
+            // Certificados (simulado - se puede adaptar al modelo real)
+            $stats['total_certificates'] = 0; // Placeholder
+            $stats['certificates_by_type'] = []; // Placeholder
+            $stats['recent_certificates'] = []; // Placeholder
+            $stats['certificates_this_month'] = 0; // Placeholder
+            $stats['certificates_this_year'] = 0; // Placeholder
         }
 
         // WIDGETS según configuración de la base de datos
