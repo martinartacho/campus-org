@@ -94,6 +94,12 @@ class ManagerDashboardData
             $stats['student_count'] = \App\Models\CampusStudent::count();
             $stats['active_teachers'] = \App\Models\CampusTeacher::whereHas('courses')->count();
             
+            // Estadísticas de matriculaciones para el widget system_stats_registrations
+            $stats['total_registrations'] = \App\Models\CampusCourseStudent::count();
+            $stats['active_registrations'] = \App\Models\CampusCourseStudent::where('academic_status', 'enrolled')->count();
+            $stats['completed_registrations'] = \App\Models\CampusCourseStudent::where('academic_status', 'completed')->count();
+            $stats['pending_registrations'] = \App\Models\CampusCourseStudent::where('academic_status', 'pending')->count();
+            
             // Documentos - estadísticas del módulo de documentación
             $stats['total_documents'] = \App\Models\Document::active()->count();
             
@@ -111,8 +117,6 @@ class ManagerDashboardData
             $stats['total_downloads'] = \App\Models\DocumentDownload::where('downloaded_at', '>=', now()->subDays(30))->count();
             
             // Matriculaciones pendentes (específico para secretaria)
-            $stats['pending_registrations'] = \App\Models\CampusCourseStudent::where('academic_status', 'pending')->count();
-            
             $stats['recent_registrations'] = \App\Models\CampusCourseStudent::with(['student', 'course'])
                 ->where('academic_status', 'pending')
                 ->orderBy('created_at', 'desc')
