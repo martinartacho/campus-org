@@ -87,6 +87,13 @@ class ManagerDashboardData
 
         // ESTADÍSTICAS ESPECÍFICAS PARA SECRETARIA (fuera del bloque general)
         if ($activeRole === 'secretaria') {
+            // Estadísticas básicas de usuarios para el widget system_stats_users
+            $stats['total_users'] = \App\Models\User::count();
+            $stats['admin_count'] = \App\Models\User::role('admin')->count();
+            $stats['teacher_count'] = \App\Models\CampusTeacher::count();
+            $stats['student_count'] = \App\Models\CampusStudent::count();
+            $stats['active_teachers'] = \App\Models\CampusTeacher::whereHas('courses')->count();
+            
             // Documentos - estadísticas del módulo de documentación
             $stats['total_documents'] = \App\Models\Document::active()->count();
             
