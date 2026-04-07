@@ -47,12 +47,12 @@ class TreasuryDashboardData
             $teachersWithPdfs->pluck('teacher_id')->toArray()
         )->count();
 
-        $teachersWithoutIban = CampusTeacher::whereDoesntHave('treasuryData')
+      /*   $teachersWithoutIban = CampusTeacher::whereDoesntHave('treasuryData')
             ->orWhereHas('treasuryData', function($query) {
                 $query->where('key', 'bank_account')
                      ->where('value', '');
             })
-            ->count();
+            ->count(); */
 
         return [
             "season" => $seasonCode,
@@ -69,7 +69,7 @@ class TreasuryDashboardData
             // Estadísticas de PDFs
             "teachers_with_pdfs" => $teachersWithPdfs->count(),
             "teachers_without_pdfs" => $teachersWithoutPdfs,
-            "teachers_without_iban" => $teachersWithoutIban,
+            // "teachers_without_iban" => $teachersWithoutIban,
             
             // Últims consentiments
             "last_consents" => ConsentHistory::with("teacher")
