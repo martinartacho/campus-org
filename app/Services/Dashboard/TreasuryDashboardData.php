@@ -36,6 +36,24 @@ class TreasuryDashboardData
             })
             ->count();
 
+        // Estadísticas de PDFs
+        $teachersWithPdfs = ConsentHistory::where("season", $seasonCode)
+            ->whereNotNull("document_path")
+            ->distinct("teacher_id")
+            ->with('teacher')
+            ->get();
+
+        $teachersWithoutPdfs = CampusTeacher::whereNotIn('id', 
+            $teachersWithPdfs->pluck('teacher_id')->toArray()
+        )->count();
+
+        $teachersWithoutIban = CampusTeacher::whereDoesntHave('treasuryData')
+            ->orWhereHas('treasuryData', function($query) {
+                $query->where('key', 'bank_account')
+                     ->where('value', '');
+            })
+            ->count();
+
         return [
             "season" => $seasonCode,
             
@@ -47,6 +65,11 @@ class TreasuryDashboardData
             "course_assignments_total" => $totalCourseAssignments,
             "course_assignments_updated" => $teachersWithConsent, // Han acceptat consentiment i PDF creat
             "pending_bank_data" => $pendingBankData,
+            
+            // Estadísticas de PDFs
+            "teachers_with_pdfs" => $teachersWithPdfs->count(),
+            "teachers_without_pdfs" => $teachersWithoutPdfs,
+            "teachers_without_iban" => $teachersWithoutIban,
             
             // Últims consentiments
             "last_consents" => ConsentHistory::with("teacher")

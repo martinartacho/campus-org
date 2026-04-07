@@ -42,7 +42,7 @@ class DashboardController extends Controller
                 return view('dashboard', $data);
             } elseif ($activeRole === 'treasury') {
                 $data = app(\App\Services\Dashboard\TreasuryDashboardData::class)->build($user);
-                return view('dashboard.treasury', compact('data'));
+                return view('dashboard', $data);
             } elseif ($activeRole === 'teacher') {
                 $data = app(\App\Services\Dashboard\TeacherDashboardData::class)->build($user);
                 return view('dashboard', $data);
@@ -74,7 +74,7 @@ class DashboardController extends Controller
         } elseif ($user->hasAnyRole(['treasury'])) {
             $data = app(\App\Services\Dashboard\TreasuryDashboardData::class)
                 ->build($user);
-            return view('dashboard.treasury', compact('data'));
+            return view('dashboard', $data);
         } elseif ($user->hasRole('teacher')) {
             $data = app(\App\Services\Dashboard\TeacherDashboardData::class)
                 ->build($user);

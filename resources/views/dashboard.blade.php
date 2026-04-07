@@ -60,7 +60,7 @@
 
             {{-- 2.1 Dashboard Treasury --}}
             @elseif(($activeRole && $activeRole === 'treasury' && $user->hasRole($activeRole)) || (!$activeRole && $user->hasRole('treasury')))
-                <x-dashboard.treasury :stats="$stats ?? []" />
+                <x-dashboard.treasury :stats="$data['stats'] ?? []" />
 
             {{-- 3. Teacher --}}
             @elseif(($activeRole && $activeRole === 'teacher' && $user->hasRole($activeRole)) || (!$activeRole && $user->hasRole('teacher')))
