@@ -156,7 +156,7 @@ class Document extends Model
      */
     public function scopeAccessibleBy($query, $user)
     {
-        if ($user->hasAnyRole(['admin', 'super-admin'])) {
+        if ($user->hasAnyRole(['admin', 'super-admin', 'secretaria'])) {
             return $query;
         }
 
