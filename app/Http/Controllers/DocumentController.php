@@ -86,11 +86,10 @@ class DocumentController extends Controller
     {
         $user = Auth::user();
         
-        // Get accessible categories for uploading
+        // Get all active categories for uploading (not just root)
         $categories = DocumentCategory::with(['children' => function($query) {
             $query->active()->orderBy('sort_order');
         }])
-        ->root()
         ->active()
         ->where(function($query) use ($user) {
             $query->whereNull('access_roles')
@@ -199,10 +198,10 @@ class DocumentController extends Controller
             abort(403, 'No tienes permiso para editar este documento');
         }
 
+        // Get all active categories for editing (not just root)
         $categories = DocumentCategory::with(['children' => function($query) {
             $query->active()->orderBy('sort_order');
         }])
-        ->root()
         ->active()
         ->orderBy('sort_order')
         ->get();

@@ -106,10 +106,25 @@
                                     name="category_id" 
                                     required
                                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                @foreach($categories as $category)
+                                @php
+                                    function buildCategoryTree($categories, $parentId = null, $level = 0) {
+                                        $tree = [];
+                                        foreach ($categories as $category) {
+                                            if ($category->parent_id == $parentId) {
+                                                $category->level = $level;
+                                                $tree[] = $category;
+                                                $tree = array_merge($tree, buildCategoryTree($categories, $category->id, $level + 1));
+                                            }
+                                        }
+                                        return $tree;
+                                    }
+                                    
+                                    $sortedCategories = buildCategoryTree($categories);
+                                @endphp
+                                @foreach($sortedCategories as $category)
                                     <option value="{{ $category->id }}" 
                                             @if($document->category_id == $category->id) selected @endif>
-                                        {{ $category->name }}
+                                        {{ str_repeat('   ', $category->level) }}{{ $category->level > 0 ? '· ' : '' }}{{ $category->name }}
                                     </option>
                                 @endforeach
                             </select>
