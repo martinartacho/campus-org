@@ -2,6 +2,19 @@
 
 @section('title', 'Pujar Nou Document')
 
+@section('breadcrumbs')
+<li class="inline-flex items-center">
+    <span class="text-gray-400">/</span>
+    <a href="{{ route('campus.documents.index') }}" class="ml-1 text-sm font-medium text-gray-700 hover:text-blue-600">
+        {{ __('Documents') }}
+    </a>
+</li>
+<li class="inline-flex items-center">
+    <span class="text-gray-400">/</span>
+    <span class="ml-1 text-sm font-medium text-gray-500">{{ __('Pujar Nou Document') }}</span>
+</li>
+@endsection
+
 @section('content')
 <div class="container mx-auto px-4 py-8 max-w-4xl">
     <!-- Header -->

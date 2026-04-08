@@ -2,6 +2,13 @@
 
 @section('title', 'Documentació del Campus')
 
+@section('breadcrumbs')
+<li class="inline-flex items-center">
+    <span class="text-gray-400">/</span>
+    <span class="ml-1 text-sm font-medium text-gray-500">{{ __('Documentació del Campus') }}</span>
+</li>
+@endsection
+
 @section('content')
 <div class="container mx-auto px-4 py-8">
     <!-- Header -->
