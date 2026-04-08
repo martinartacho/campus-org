@@ -173,6 +173,32 @@
                                 Si es marca com a públic, tots els usuaris podran veure aquest document.
                             </p>
                         </div>
+
+                        <!-- Access per Rol -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Access per Rol
+                            </label>
+                            <div class="space-y-2">
+                                @foreach(['admin', 'super-admin', 'secretaria', 'gestio', 'junta', 'director', 'manager'] as $role)
+                                    <div class="flex items-center">
+                                        <input type="checkbox" 
+                                               name="access_roles[]" 
+                                               value="{{ $role }}"
+                                               @if(old('access_roles', $document->access_roles ?? []))
+                                                   @if(in_array($role, old('access_roles', $document->access_roles ?? []))) checked @endif
+                                               @endif
+                                               class="rounded border-gray-300 text-blue-600 shadow-sm focus:ring-blue-500">
+                                        <label class="ml-2 text-sm text-gray-700">
+                                            {{ ucfirst($role) }}
+                                        </label>
+                                    </div>
+                                @endforeach
+                            </div>
+                            <p class="mt-2 text-sm text-gray-500">
+                                Si no marques cap rol, el document serà visible per a tots els usuaris autenticats.
+                            </p>
+                        </div>
                     </div>
                 </div>
 
