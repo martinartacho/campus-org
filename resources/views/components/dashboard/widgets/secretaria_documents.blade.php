@@ -149,25 +149,5 @@
         
     </div>
     
-    {{-- DETALLES ADICIONALES --}}
-    @if(isset($stats['recent_documents']) && count($stats['recent_documents']) > 0)
-        <div class="mt-6 pt-4 border-t border-gray-200">
-            <h4 class="text-sm font-medium text-gray-700 mb-3">Documents recents</h4>
-            <div class="space-y-2">
-                @foreach($stats['recent_documents'] as $document)
-                    <div class="flex items-center justify-between py-2 px-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm font-medium text-gray-900 truncate">{{ $document->title }}</p>
-                            <p class="text-xs text-gray-500">{{ $document->created_at->format('d/m/Y H:i') }}</p>
-                        </div>
-                        <a href="{{ route('campus.documents.download', $document) }}" 
-                           class="ml-3 text-purple-600 hover:text-purple-800 text-sm p-1">
-                            <i class="bi bi-download"></i>
-                        </a>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    @endif
 </div>
 @endif
