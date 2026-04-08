@@ -50,11 +50,11 @@ return new class extends Migration
             $table->string('beneficiary_postal_code')->nullable()
                   ->comment('Codi postal del beneficiari (només per ceded)');
             
-            // Confirmacions
-            $table->boolean('waived_confirmation')->default(false)
-                  ->comment('Confirmació de no cobrament');
-            $table->boolean('own_confirmation')->default(false)
-                  ->comment('Confirmació de cobrament propi');
+            // Consent and confirmation fields
+            $table->string('data_consent')->default('0')
+                  ->comment('Consentiment de dades (per invoice functionality)');
+            $table->string('fiscal_responsibility')->default('0')
+                  ->comment('Responsabilitat fiscal (per invoice functionality)');
             $table->boolean('ceded_confirmation')->default(false)
                   ->comment('Confirmació de cobrament cedit');
             

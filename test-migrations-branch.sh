@@ -16,10 +16,10 @@ echo "2. Verificando número de migraciones ejecutadas..."
 MIGRATIONS_COUNT=$(php artisan tinker --execute="echo count(DB::select('SELECT * FROM migrations'));" | grep -o '[0-9]\+')
 echo "Migraciones ejecutadas: $MIGRATIONS_COUNT"
 
-if [ "$MIGRATIONS_COUNT" -eq 57 ]; then
+if [ "$MIGRATIONS_COUNT" -eq 53 ]; then
     echo "   [OK] Número correcto de migraciones"
 else
-    echo "   [ERROR] Se esperaban 57 migraciones, se ejecutaron $MIGRATIONS_COUNT"
+    echo "   [ERROR] Se esperaban 53 migraciones, se ejecutaron $MIGRATIONS_COUNT"
     exit 1
 fi
 echo ""
@@ -58,6 +58,24 @@ if [ "$HAS_SESSIONS_ASSIGNED" = "YES" ]; then
     echo "   [OK] Campus course teacher tiene campo 'sessions_assigned'"
 else
     echo "   [ERROR] Campus course teacher no tiene campo 'sessions_assigned'"
+    exit 1
+fi
+
+# Test Notification User tracking fields (Fase 1c)
+HAS_PUSH_SENT=$(php artisan tinker --execute="echo Schema::hasColumn('notification_user', 'push_sent') ? 'YES' : 'NO';" | tr -d '\r\n')
+if [ "$HAS_PUSH_SENT" = "YES" ]; then
+    echo "   [OK] Notification user tiene campos de tracking"
+else
+    echo "   [ERROR] Notification user no tiene campos de tracking"
+    exit 1
+fi
+
+# Test Campus Teachers consent fields (Fase 1c)
+HAS_DATA_CONSENT=$(php artisan tinker --execute="echo Schema::hasColumn('campus_teachers', 'data_consent') ? 'YES' : 'NO';" | tr -d '\r\n')
+if [ "$HAS_DATA_CONSENT" = "YES" ]; then
+    echo "   [OK] Campus teachers tiene campos de consentimiento"
+else
+    echo "   [ERROR] Campus teachers no tiene campos de consentimiento"
     exit 1
 fi
 echo ""
@@ -113,8 +131,8 @@ echo "=== TODAS LAS PRUEBAS PASARON ==="
 echo "Branch listo para review y merge"
 echo ""
 echo "Resumen de optimizaciones:"
-echo "- 11 migraciones unificadas"
-echo "- 68 -> 57 migraciones (16% reducción)"
+echo "- 16 migraciones unificadas"
+echo "- 68 -> 53 migraciones (22% reducción)"
 echo "- Todos los campos esenciales desde creación inicial"
 echo "- Sin errores en migrate:fresh"
 echo "- Seeders funcionando correctamente"
