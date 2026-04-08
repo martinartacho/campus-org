@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('course_id')->constrained('campus_courses')->cascadeOnDelete();
             $table->foreignId('teacher_id')->constrained('campus_teachers')->cascadeOnDelete();
             $table->string('role')->default('teacher'); // profesor, coordinator, tutor, etc.
-            $table->decimal('hours_assigned', 5, 2)->default(0);
+            $table->decimal('sessions_assigned', 5, 2)->default(0);
             $table->timestamp('assigned_at')->nullable(); 
             $table->date('finished_at')->nullable();
             $table->json('metadata')->nullable();

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('password');
             $table->enum('status', ['active', 'inactive', 'suspended', 'pending'])->default('active');
             $table->rememberToken();
+            $table->string('locale', 5)->default(config('app.locale'));
             $table->timestamps();
         });
 
