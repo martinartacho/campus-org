@@ -13,6 +13,8 @@ return new class extends Migration
             $table->foreignId('student_id')->constrained('campus_students')->cascadeOnDelete();
             $table->foreignId('course_id')->constrained('campus_courses')->cascadeOnDelete();
             $table->string('registration_code')->unique();
+            $table->foreignId('season_id')->nullable()
+                  ->constrained('campus_seasons')->onDelete('cascade');
             $table->date('registration_date');
             $table->enum('status', ['pending', 'confirmed', 'cancelled', 'completed', 'failed'])->default('pending');
             $table->decimal('amount', 10, 2)->default(0);
@@ -29,6 +31,9 @@ return new class extends Migration
             $table->index(['student_id', 'course_id']);
             $table->index(['status']);
             $table->index(['payment_status']);
+            $table->index(['season_id', 'status']);
+            $table->index(['season_id', 'payment_status']);
+            $table->index(['student_id', 'season_id']);
             $table->unique(['student_id', 'course_id']); // Un estudiante solo puede matricularse una vez por curso
         });
     }
