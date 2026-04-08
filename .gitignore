@@ -23,3 +23,4 @@ yarn-error.log
 /.vscode
 /.zed
 ISSUE_IBAN_ENCRYPTION_CORRUPT_UPDATED.md
+/var/www/secure-docs/
