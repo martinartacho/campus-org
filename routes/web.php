@@ -25,7 +25,7 @@ use App\Http\Controllers\Campus\TeacherController;
 use App\Http\Controllers\Campus\CourseRegistrationController;
 use App\Http\Controllers\Campus\CampusImportController;
 use App\Http\Controllers\Campus\ResourceController;
-use App\Http\Controllers\TeacherAccess\TeacherAccessController;
+// use App\Http\Controllers\TeacherAccess\TeacherAccessController; // No existeix
 // use App\Http\Controllers\Manager\DashboardController; // Per ara inhabilitat
 use App\Http\Controllers\Manager\RegistrationController;
 use App\Http\Controllers\Treasury\TeacherTreasuryController;
@@ -232,8 +232,8 @@ Route::get(
     )->name('consents.download.payment');
 
 //  ruta per veure el resultat del formulari de success
-Route::get('teacher-access/success/{token}', [TeacherAccessController::class, 'success'])
-    ->name('teacher.access.success');
+// Route::get('teacher-access/success/{token}', [TeacherAccessController::class, 'success'])
+//     ->name('teacher.access.success');
 
 // Campus Document Management Routes (con prefix /campus/)
 Route::prefix('campus')->name('campus.')->group(function () {
@@ -285,35 +285,35 @@ Route::middleware(['auth', 'permission:campus.consents.request'])
     ->name('campus.treasury.')
     ->group(function () {
 
-        Route::post(
-            'teachers/{teacher}/send-access',
-            [\App\Http\Controllers\TeacherAccess\SendTeacherAccessController::class, 'send']
-        )->name('teachers.send-access');
+        // Route::post(
+//             'teachers/{teacher}/send-access',
+//             [\App\Http\Controllers\TeacherAccess\SendTeacherAccessController::class, 'send']
+//         )->name('teachers.send-access');
     });
 // OBRIR ENLLAÇ (sense login)
 
 // Consentiments RGPD
-Route::get(
-    '/teacher/access/{token}/{purpose}/{courseCode?}',
-    [TeacherAccessController::class, 'show']
-)->name('teacher.access.form');
+// Route::get(
+//     '/teacher/access/{token}/{purpose}/{courseCode?}',
+//     [TeacherAccessController::class, 'show']
+// )->name('teacher.access.form');
 
-Route::get(
-    '/teacher/access/{token}/payments',
-    [TeacherAccessController::class, 'show']
-)->name('teacher.access.payments')
-->defaults('purpose', 'payments');
+// Route::get(
+//     '/teacher/access/{token}/payments',
+//     [TeacherAccessController::class, 'show']
+// )->name('teacher.access.payments')
+// ->defaults('purpose', 'payments');
 
-Route::post(
-    '/teacher/access/{token}/personal-data',
-    [TeacherAccessController::class, 'updatePersonalData']
-)->name('teacher.access.personal-data.update');
+// Route::post(
+//     '/teacher/access/{token}/personal-data',
+//     [TeacherAccessController::class, 'updatePersonalData']
+// )->name('teacher.access.personal-data.update');
 
 
-Route::post(
-    '/teacher-access/{token}',
-    [TeacherAccessController::class, 'store']
-)->name('teacher.access.store');
+// Route::post(
+//     '/teacher-access/{token}',
+//     [TeacherAccessController::class, 'store']
+// )->name('teacher.access.store');
 
 
         
@@ -687,6 +687,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->name('campus.registrations.import.validate');
         Route::post('registrations-import/process', [\App\Http\Controllers\Campus\RegistrationImportController::class, 'processImport'])
             ->name('campus.registrations.import.process');
+        
+        // Queue Worker Control Routes
+        Route::post('registrations/queue/start', [\App\Http\Controllers\Campus\RegistrationImportController::class, 'startQueueWorker'])
+            ->name('registrations.queue.start');
+        Route::post('registrations/queue/stop', [\App\Http\Controllers\Campus\RegistrationImportController::class, 'stopQueueWorker'])
+            ->name('registrations.queue.stop');
+        Route::post('registrations/queue/process', [\App\Http\Controllers\Campus\RegistrationImportController::class, 'processQueueNow'])
+            ->name('registrations.queue.process');
+        Route::get('registrations/queue/status', [\App\Http\Controllers\Campus\RegistrationImportController::class, 'getQueueStatus'])
+            ->name('registrations.queue.status');
+            
         Route::get('registrations-export', [\App\Http\Controllers\Campus\ImportController::class, 'export'])
             ->name('campus.registrations.export');
         Route::get('registrations-list', [\App\Http\Controllers\Campus\ImportController::class, 'index'])

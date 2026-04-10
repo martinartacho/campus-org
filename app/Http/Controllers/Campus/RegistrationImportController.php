@@ -11,7 +11,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Str;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 
 class RegistrationImportController extends Controller
 {
@@ -314,5 +316,99 @@ class RegistrationImportController extends Controller
         }
         
         return $invalidCourses;
+    }
+
+    /**
+     * Iniciar worker de cua
+     */
+    public function startQueueWorker()
+    {
+        try {
+            // Iniciar worker en background
+            $command = 'php artisan queue:work --queue=imports,default --sleep=3 --timeout=60 --memory=256 > /dev/null 2>&1 &';
+            exec($command);
+            
+            Log::info('Queue worker iniciado por usuario: ' . Auth::id());
+            
+            return back()->with('success', __('campus.queue_worker_started'));
+            
+        } catch (\Exception $e) {
+            Log::error('Error iniciando queue worker: ' . $e->getMessage());
+            return back()->with('error', __('campus.queue_worker_start_error'));
+        }
+    }
+
+    /**
+     * Aturar worker de cua
+     */
+    public function stopQueueWorker()
+    {
+        try {
+            // Aturar tots els workers de queue
+            $command = 'pkill -f "artisan queue:work"';
+            exec($command);
+            
+            Log::info('Queue worker detenido por usuario: ' . Auth::id());
+            
+            return back()->with('success', __('campus.queue_worker_stopped'));
+            
+        } catch (\Exception $e) {
+            Log::error('Error deteniendo queue worker: ' . $e->getMessage());
+            return back()->with('error', __('campus.queue_worker_stop_error'));
+        }
+    }
+
+    /**
+     * Processar jobs de cua immediatament
+     */
+    public function processQueueNow()
+    {
+        try {
+            // Processar jobs durant 5 minuts màxim
+            Artisan::call('queue:work', [
+                '--queue' => 'imports',
+                '--timeout' => 60,
+                '--max-time' => 300
+            ]);
+            
+            $output = Artisan::output();
+            
+            Log::info('Queue procesado manualmente por usuario: ' . Auth::id(), ['output' => $output]);
+            
+            return back()->with('success', __('campus.queue_processed_manually'));
+            
+        } catch (\Exception $e) {
+            Log::error('Error procesando queue manualmente: ' . $e->getMessage());
+            return back()->with('error', __('campus.queue_process_error'));
+        }
+    }
+
+    /**
+     * Obtenir estat de la cua (AJAX)
+     */
+    public function getQueueStatus()
+    {
+        try {
+            $queueSize = DB::table('jobs')->count();
+            
+            // Comprovar si hi ha workers actius (simple check)
+            $workerRunning = false;
+            $output = [];
+            exec('ps aux | grep "artisan queue:work" | grep -v grep', $output);
+            $workerRunning = !empty($output);
+            
+            return response()->json([
+                'queue_size' => $queueSize,
+                'worker_running' => $workerRunning,
+                'last_check' => now()->toISOString()
+            ]);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'queue_size' => 0,
+                'worker_running' => false,
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }
