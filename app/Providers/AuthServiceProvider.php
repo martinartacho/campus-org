@@ -9,11 +9,15 @@ use App\Models\EventType;
 use App\Models\Notification;
 use App\Models\User;
 use App\Models\CampusTeacher;
+use App\Models\TaskBoard;
+use App\Models\Task;
 use EventQuestionTemplate;
 use App\Policies\EventPolicy;
 use App\Policies\EventTypePolicy;
 use App\Policies\EventQuestionTemplatePolicy;
 use App\Policies\CampusTeacherPolicy;
+use App\Policies\TaskBoardPolicy;
+use App\Policies\TaskPolicy;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -27,6 +31,8 @@ class AuthServiceProvider extends ServiceProvider
         EventType::class => EventTypePolicy::class,
         EventQuestionTemplate::class => EventQuestionTemplatePolicy::class,
         CampusTeacher::class => CampusTeacherPolicy::class,
+        TaskBoard::class => TaskBoardPolicy::class,
+        Task::class => TaskPolicy::class,
 
         // ... otras políticas
     ];

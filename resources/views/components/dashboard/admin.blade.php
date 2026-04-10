@@ -375,6 +375,33 @@
                 </x-dashboard.card>
             </a>
             
+            {{-- TASQUES --}}
+            <a href="/tasques" class="block transition-transform hover:scale-[1.02]">
+                <div class="bg-gradient-to-br from-indigo-50 to-indigo-100 p-4 rounded-lg border border-indigo-200 hover:border-indigo-300">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-indigo-800">Tasques</p>
+                            <p class="text-2xl font-bold text-indigo-900">
+                                {{ App\Models\TaskBoard::whereNull('deleted_at')->count() }}
+                            </p>
+                        </div>
+                        <div class="p-2 bg-indigo-200 rounded-lg">
+                            <i class="bi bi-kanban text-indigo-600 text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="mt-2 grid grid-cols-3 gap-1 text-xs">
+                        <span class="text-indigo-700">Taulers: {{ App\Models\TaskBoard::whereNull('deleted_at')->count() }}</span>
+                        <span class="text-indigo-700">Llistes: {{ App\Models\TaskList::count() }}</span>
+                        <span class="text-indigo-700">Tasques: {{ App\Models\Task::whereNull('deleted_at')->count() }}</span>
+                    </div>
+                    <div class="mt-3 pt-2 border-t border-indigo-200">
+                        <span class="text-xs text-indigo-600 hover:text-indigo-800 flex items-center">
+                            Gestionar tasques <i class="bi bi-arrow-right-short ms-1"></i>
+                        </span>
+                    </div>
+                </div>
+            </a>
+            
         </div>
     </div>
     @endif

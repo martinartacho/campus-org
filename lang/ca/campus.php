@@ -48,6 +48,100 @@ return [
     'support_type_service' => 'Nou servei',
     'support_type_incident' => 'Incidència',
     'support_type_improvement' => 'Millora',
+
+    // Task Management System
+    'tasks' => 'Tasques',
+    'task_management' => 'Gestió de Tasques',
+    'boards' => 'Taulers',
+    'board' => 'Tauler',
+    'task' => 'Tasca',
+    'list' => 'Llista',
+    'priority' => 'Prioritat',
+    'status' => 'Estat',
+    'assigned_to' => 'Assignat a',
+    'due_date' => 'Data de venciment',
+    'created_by' => 'Creat per',
+    'updated_by' => 'Actualitzat per',
+    
+    // Task Priorities
+    'priority_low' => 'Baixa',
+    'priority_medium' => 'Mitjana',
+    'priority_high' => 'Alta',
+    'priority_urgent' => 'Urgent',
+    
+    // Task Statuses
+    'status_pending' => 'Pendent',
+    'status_in_progress' => 'En curs',
+    'status_blocked' => 'Bloquejat',
+    'status_completed' => 'Completat',
+    
+    // Board Types
+    'board_types' => [
+        'course' => 'Curs',
+        'team' => 'Equip',
+        'global' => 'Global',
+        'department' => 'Departament',
+    ],
+    
+    // Board Visibility
+    'visibility_private' => 'Privat',
+    'visibility_team' => 'Equip',
+    'visibility_public' => 'Públic',
+    
+    // Task Actions
+    'create_task' => 'Crear Tasca',
+    'edit_task' => 'Editar Tasca',
+    'delete_task' => 'Eliminar Tasca',
+    'assign_task' => 'Assignar Tasca',
+    'complete_task' => 'Completar Tasca',
+    'reopen_task' => 'Reobrir Tasca',
+    'add_comment' => 'Afegir Comentari',
+    'add_attachment' => 'Afegir Fitxer',
+    
+    // Board Actions
+    'create_board' => 'Crear Tauler',
+    'edit_board' => 'Editar Tauler',
+    'delete_board' => 'Eliminar Tauler',
+    'board_statistics' => 'Estadístiques del Tauler',
+    
+    // Task Lists
+    'create_list' => 'Crear Llista',
+    'edit_list' => 'Editar Llista',
+    'delete_list' => 'Eliminar Llista',
+    'reorder_lists' => 'Reordenar Llistes',
+    
+    // Default Lists
+    'list_pending' => 'Pendents',
+    'list_in_progress' => 'En curs',
+    'list_blocked' => 'Bloquejat',
+    'list_completed' => 'Fet',
+    'list_review' => 'Revisió',
+    'list_planning' => 'Planificació',
+    'list_development' => 'Desenvolupament',
+    'list_delivered' => 'Entregat',
+    
+    // Task Messages
+    'task_created' => 'Tasca creada correctament',
+    'task_updated' => 'Tasca actualitzada correctament',
+    'task_deleted' => 'Tasca eliminada correctament',
+    'task_assigned' => 'Tasca assignada correctament',
+    'task_completed' => 'Tasca completada correctament',
+    
+    // Board Messages
+    'board_created' => 'Tauler creat correctament',
+    'board_updated' => 'Tauler actualitzat correctament',
+    'board_deleted' => 'Tauler eliminat correctament',
+    
+    // Validation Messages
+    'task_title_required' => 'El títol de la tasca és obligatori',
+    'board_name_required' => 'El nom del tauler és obligatori',
+    'list_name_required' => 'El nom de la llista és obligatori',
+    
+    // Navigation
+    'my_tasks' => 'Meves Tasques',
+    'task_calendar' => 'Calendari de Tasques',
+    'back_to_boards' => 'Tornar a Taulers',
+    'back_to_board' => 'Tornar al Tauler',
     'support_type_consultation' => 'Consulta',
     
     // Support Request Status

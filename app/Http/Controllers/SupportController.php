@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\SupportRequest;
 use App\Models\Notification;
 use App\Models\User;
+use App\Models\TaskBoard;
+use App\Models\TaskList;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
 class SupportController extends Controller
@@ -344,5 +347,269 @@ AIEP Campus";
             default:
                 return collect();
         }
+    }
+
+    // === MÈTODES DE TASQUES (TEMPORAL) ===
+    
+    /**
+     * Display the boards listing page.
+     */
+    public function taskBoardsIndex()
+    {
+        $boards = \App\Models\TaskBoard::with(['lists', 'creator', 'tasks'])
+            ->whereNull('deleted_at')
+            ->orderBy('updated_at', 'desc')
+            ->get();
+            
+        // Afegir estadístiques a cada tauler
+        $boards->each(function ($board) {
+            $board->stats = [
+                'total_tasks' => $board->tasks()->count(),
+                'completed_tasks' => $board->tasks()->where('status', 'completed')->count(),
+                'in_progress_tasks' => $board->tasks()->where('status', 'in_progress')->count(),
+                'overdue_tasks' => $board->tasks()
+                    ->where('due_date', '<', now())
+                    ->where('status', '!=', 'completed')
+                    ->count(),
+            ];
+        });
+            
+        return view('tasks.index', compact('boards'));
+    }
+
+    /**
+     * Display the specified board.
+     */
+    public function taskBoardShow($boardId)
+    {
+        $board = TaskBoard::with(['lists', 'tasks.assignedUser', 'creator'])->findOrFail($boardId);
+        $this->authorize('view', $board);
+        
+        // Carregar usuaris agrupats per rol
+        $usersByRole = \App\Models\User::select('id', 'name', 'email')
+            ->with('roles')
+            ->orderBy('name')
+            ->get()
+            ->groupBy(function($user) {
+                if ($user->roles->isEmpty()) {
+                    return 'Sense rol';
+                }
+                return $user->roles->first()->name;
+            });
+        
+        return view('tasks.board', compact('board', 'usersByRole'));
+    }
+
+    /**
+     * Show the form for creating a new board.
+     */
+    public function taskBoardCreate()
+    {
+        // Carregar usuaris agrupats per rol
+        $usersByRole = \App\Models\User::select('id', 'name', 'email')
+            ->with('roles')
+            ->orderBy('name')
+            ->get()
+            ->groupBy(function($user) {
+                if ($user->roles->isEmpty()) {
+                    return 'Sense rol';
+                }
+                return $user->roles->first()->name;
+            });
+        
+        return view('tasks.create-board', compact('usersByRole'));
+    }
+
+    /**
+     * Store a newly created board.
+     */
+    public function taskBoardStore(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'type' => 'required|in:team,course,department,global',
+            'entity_id' => 'nullable|integer',
+            'visibility' => 'required|in:private,team,public',
+        ]);
+
+        $board = TaskBoard::create([
+            'name' => $validated['name'],
+            'description' => $validated['description'],
+            'type' => $validated['type'],
+            'entity_id' => $validated['entity_id'] ?? null,
+            'created_by' => Auth::id(),
+            'visibility' => $validated['visibility'],
+        ]);
+
+        // Create default lists
+        $board->createDefaultLists();
+
+        return redirect()->route('tasks.boards.show', $board)
+            ->with('success', 'Tauler creat correctament');
+    }
+
+    /**
+     * Show the form for editing the specified board.
+     */
+    public function taskBoardEdit($boardId)
+    {
+        $board = TaskBoard::findOrFail($boardId);
+        $this->authorize('update', $board);
+        return view('tasks.edit-board', compact('board'));
+    }
+
+    /**
+     * Update the specified board.
+     */
+    public function taskBoardUpdate(Request $request, $boardId)
+    {
+        $board = TaskBoard::findOrFail($boardId);
+        $this->authorize('update', $board);
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'visibility' => 'required|in:private,team,public',
+        ]);
+
+        $board->update($validated);
+
+        return redirect()->route('tasks.boards.show', $board)
+            ->with('success', 'Tauler actualitzat correctament');
+    }
+
+    /**
+     * Remove the specified board.
+     */
+    public function taskBoardDestroy($boardId)
+    {
+        $board = TaskBoard::findOrFail($boardId);
+        $this->authorize('delete', $board);
+        
+        $board->delete();
+
+        return redirect()->route('tasks.boards.index')
+            ->with('success', 'Tauler eliminat correctament');
+    }
+
+    // === MÈTODES API DE TASQUES ===
+    
+    /**
+     * Create a new task (API).
+     */
+    public function apiCreateTask(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'title' => 'required|string|max:255',
+                'description' => 'nullable|string',
+                'list_id' => 'required|exists:task_lists,id',
+                'priority' => 'required|in:low,medium,high,urgent',
+                'start_date' => 'nullable|date',
+                'due_date' => 'nullable|date|after_or_equal:start_date',
+                'assigned_to' => 'nullable|exists:users,id',
+            ]);
+
+            $task = \App\Models\Task::create([
+                'title' => $validated['title'],
+                'description' => $validated['description'] ?? '',
+                'list_id' => $validated['list_id'],
+                'priority' => $validated['priority'],
+                'start_date' => $validated['start_date'] ?? null,
+                'due_date' => $validated['due_date'] ?? null,
+                'assigned_to' => $validated['assigned_to'] ?? null,
+                'status' => 'pending',
+                'order_in_list' => \App\Models\Task::where('list_id', $validated['list_id'])->max('order_in_list') + 1,
+                'created_by' => Auth::id(),
+            ]);
+
+            // Carregar relacions per la resposta
+            $task->load(['assignedUser', 'creator', 'list']);
+
+            return response()->json($task, 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error creant la tasca',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Move a task to another list (API).
+     */
+    public function apiMoveTask(Request $request, $taskId)
+    {
+        try {
+            $task = \App\Models\Task::findOrFail($taskId);
+            
+            // Autorització bàsica - TODO: millorar amb policies
+            if ($task->created_by !== Auth::id() && $task->assigned_to !== Auth::id()) {
+                return response()->json(['error' => 'No autoritzat'], 403);
+            }
+
+            // Validar les dades d'entrada
+            $validated = $request->validate([
+                'list_id' => 'required|exists:task_lists,id',
+                'order' => 'nullable|integer|min:0'
+            ]);
+
+            // Actualitzar la tasca
+            $task->list_id = $validated['list_id'];
+            $task->order_in_list = $validated['order'] ?? 0;
+            $task->save();
+
+            // Carregar relacions per la resposta
+            $task->load(['assignedUser', 'creator', 'list']);
+
+            return response()->json([
+                'success' => true,
+                'task' => $task
+            ]);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['error' => 'Tasca no trobada'], 404);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'error' => 'Error de validació',
+                'messages' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error movent la tasca'], 500);
+        }
+    }
+
+    // === MÈTODES API D'USUARIS ===
+    
+    /**
+     * Get users grouped by role.
+     */
+    public function apiUsersByRole()
+    {
+        $users = \App\Models\User::select('id', 'name', 'email')
+            ->with('roles')
+            ->orderBy('name')
+            ->get()
+            ->groupBy(function($user) {
+                if ($user->roles->isEmpty()) {
+                    return 'Sense rol';
+                }
+                return $user->roles->first()->name;
+            });
+            
+        return response()->json($users);
+    }
+    
+    /**
+     * Get users by specific role.
+     */
+    public function apiUsersByRoleName($role)
+    {
+        $users = \App\Models\User::select('id', 'name', 'email')
+            ->role($role)
+            ->orderBy('name')
+            ->get();
+            
+        return response()->json($users);
     }
 }

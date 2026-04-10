@@ -25,7 +25,7 @@ use App\Http\Controllers\Campus\TeacherController;
 use App\Http\Controllers\Campus\CourseRegistrationController;
 use App\Http\Controllers\Campus\CampusImportController;
 use App\Http\Controllers\Campus\ResourceController;
-use App\Http\Controllers\TeacherAccess\TeacherAccessController;
+// use App\Http\Controllers\TeacherAccess\TeacherAccessController; // Temporalment comentat
 // use App\Http\Controllers\Manager\DashboardController; // Per ara inhabilitat
 use App\Http\Controllers\Manager\RegistrationController;
 use App\Http\Controllers\Treasury\TeacherTreasuryController;
@@ -232,8 +232,8 @@ Route::get(
     )->name('consents.download.payment');
 
 //  ruta per veure el resultat del formulari de success
-Route::get('teacher-access/success/{token}', [TeacherAccessController::class, 'success'])
-    ->name('teacher.access.success');
+// Route::get('teacher-access/success/{token}', [TeacherAccessController::class, 'success'])
+//     ->name('teacher.access.success'); // Temporalment comentat
 
 // Campus Document Management Routes (con prefix /campus/)
 Route::prefix('campus')->name('campus.')->group(function () {
@@ -285,35 +285,34 @@ Route::middleware(['auth', 'permission:campus.consents.request'])
     ->name('campus.treasury.')
     ->group(function () {
 
-        Route::post(
-            'teachers/{teacher}/send-access',
-            [\App\Http\Controllers\TeacherAccess\SendTeacherAccessController::class, 'send']
-        )->name('teachers.send-access');
+        // Route::post(
+//             'teachers/{teacher}/send-access',
+//             [\App\Http\Controllers\TeacherAccess\SendTeacherAccessController::class, 'send']
+//         )->name('teachers.send-access'); // Temporalment comentat
     });
 // OBRIR ENLLAÇ (sense login)
-
 // Consentiments RGPD
-Route::get(
-    '/teacher/access/{token}/{purpose}/{courseCode?}',
-    [TeacherAccessController::class, 'show']
-)->name('teacher.access.form');
+// Route::get(
+//     '/teacher/access/{token}/{purpose}/{courseCode?}',
+//     [TeacherAccessController::class, 'show']
+// )->name('teacher.access.form');
 
-Route::get(
-    '/teacher/access/{token}/payments',
-    [TeacherAccessController::class, 'show']
-)->name('teacher.access.payments')
-->defaults('purpose', 'payments');
+// Route::get(
+//     '/teacher/access/{token}/payments',
+//     [TeacherAccessController::class, 'show']
+// )->name('teacher.access.payments')
+// ->defaults('purpose', 'payments');
 
-Route::post(
-    '/teacher/access/{token}/personal-data',
-    [TeacherAccessController::class, 'updatePersonalData']
-)->name('teacher.access.personal-data.update');
+// Route::post(
+//     '/teacher/access/{token}/personal-data',
+//     [TeacherAccessController::class, 'updatePersonalData']
+// )->name('teacher.access.personal-data.update');
 
 
-Route::post(
-    '/teacher-access/{token}',
-    [TeacherAccessController::class, 'store']
-)->name('teacher.access.store');
+// Route::post(
+//     '/teacher-access/{token}',
+//     [TeacherAccessController::class, 'store']
+// )->name('teacher.access.store');
 
 
         
@@ -923,6 +922,35 @@ Route::get('support', [SupportController::class, 'create'])
 
 Route::post('support', [SupportController::class, 'store'])
     ->name('support.store');
+
+// Ruta de prova
+// Route::get('/test-controller', [TestController::class, 'index']);
+Route::get('/test-simple', function() {
+    return 'Simple route works!';
+});
+
+// Rutas del sistema de tareas (usant SupportController temporalment)
+Route::middleware(['auth'])->prefix('tasques')->name('tasks.')->group(function () {
+    Route::get('/', [SupportController::class, 'taskBoardsIndex'])->name('boards.index');
+    Route::get('/tauler/{board}', [SupportController::class, 'taskBoardShow'])->name('boards.show');
+    Route::get('/crear', [SupportController::class, 'taskBoardCreate'])->name('boards.create');
+    Route::post('/crear', [SupportController::class, 'taskBoardStore'])->name('boards.store');
+    Route::get('/tauler/{board}/editar', [SupportController::class, 'taskBoardEdit'])->name('boards.edit');
+    Route::put('/tauler/{board}', [SupportController::class, 'taskBoardUpdate'])->name('boards.update');
+    Route::delete('/tauler/{board}', [SupportController::class, 'taskBoardDestroy'])->name('boards.destroy');
+    
+    // Dashboard personal de tareas (pendent implementar)
+    // Route::get('/meves-tasques', [TaskController::class, 'myTasks'])->name('my-tasks');
+    // Route::get('/calendari-tasques', [TaskController::class, 'calendar'])->name('calendar');
+});
+
+// Rutas API para tareas (sin middleware de API temporalmente)
+Route::middleware(['auth'])->post('/api/tasks', [SupportController::class, 'apiCreateTask']);
+Route::middleware(['auth'])->put('/api/tasks/{taskId}/move', [SupportController::class, 'apiMoveTask']);
+
+// Rutas API para usuarios
+Route::middleware(['auth'])->get('/api/users/by-role', [SupportController::class, 'apiUsersByRole']);
+Route::middleware(['auth'])->get('/api/users/role/{role}', [SupportController::class, 'apiUsersByRoleName']);
 
 
 });

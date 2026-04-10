@@ -14,7 +14,7 @@ class DashboardController extends Controller
         \Log::info('DashboardController - User access', [
             'user' => $user->email,
             'roles' => $user->roles->pluck('name')->toArray(),
-            'hasAnyRole_manager' => $user->hasAnyRole(['director', 'manager', 'coordinacio', 'gestio', 'comunicacio', 'secretaria', 'editor']),
+            'hasAnyRole_manager' => $user->hasAnyRole(['director', 'manager', 'coordinacio', 'gestio', 'comunicacio', 'secretaria', 'treasury', 'editor']),
             'hasAnyRole_admin' => $user->hasAnyRole(['admin', 'super-admin']),
         ]);
 
@@ -36,7 +36,7 @@ class DashboardController extends Controller
                 ]);
                 
                 return view('dashboard', $data);
-            } elseif (in_array($activeRole, ['director', 'manager', 'coordinacio', 'gestio', 'comunicacio', 'secretaria', 'editor'])) {
+            } elseif (in_array($activeRole, ['director', 'manager', 'coordinacio', 'gestio', 'comunicacio', 'secretaria', 'treasury', 'editor'])) {
                 // Manager Group: Widgets específicos por sub-rol
                 $data = app(\App\Services\Dashboard\ManagerDashboardData::class)->build($user, $activeRole);
                 return view('dashboard', $data);

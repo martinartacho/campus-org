@@ -183,10 +183,25 @@
                         </div>
                     </div>
                 </a>
-                @endcan
+                @endcanany
+                
+                {{-- Gestión de Tareas --}}
+                <a href="/tasques" 
+                   class="bg-gray-50 hover:bg-gray-100 p-4 rounded-lg border border-gray-200 transition duration-150">
+                    <div class="flex items-center">
+                        <div class="p-2 bg-indigo-100 rounded-lg me-3">
+                            <i class="bi bi-kanban text-indigo-600 text-lg"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-800">Tasques</h3>
+                            <p class="text-sm text-gray-600">Gestió de projectes i tasques del campus</p>
+                        </div>
+                    </div>
+                </a>
                 
             </div>
         </div>
+    </div>
     @endif
 
     {{-- Gestión del Campus --}}

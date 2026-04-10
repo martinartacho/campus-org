@@ -12,6 +12,10 @@ use App\Models\FcmToken;
 use App\Http\Controllers\Api\FeedbackController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\HelpController;
+use App\Http\Controllers\TaskBoardController;
+use App\Http\Controllers\TaskController;
+use App\Http\Controllers\TaskListController;
+use App\Http\Controllers\TaskChecklistController;
 
 use App\Models\Notification;
 use App\Services\FCMService;
@@ -75,3 +79,40 @@ Route::prefix('help')->group(function () {
     Route::get('/area/{area}', [HelpController::class, 'byArea']);
     Route::get('/{slug}', [HelpController::class, 'show']);
 });
+
+// Rutas del sistema de tareas
+Route::middleware('auth:api')->prefix('tasks')->group(function () {
+    // Task Boards
+    Route::get('/boards', [TaskBoardController::class, 'apiIndex']);
+    Route::post('/boards', [TaskBoardController::class, 'store']);
+    Route::get('/boards/{board}', [TaskBoardController::class, 'apiShow']);
+    Route::put('/boards/{board}', [TaskBoardController::class, 'update']);
+    Route::delete('/boards/{board}', [TaskBoardController::class, 'destroy']);
+    Route::get('/boards/{board}/statistics', [TaskBoardController::class, 'statistics']);
+    
+    // Task Lists
+    Route::post('/lists', [TaskListController::class, 'store']);
+    Route::put('/lists/{list}', [TaskListController::class, 'update']);
+    Route::delete('/lists/{list}', [TaskListController::class, 'destroy']);
+    Route::put('/boards/{board}/lists/reorder', [TaskListController::class, 'reorder']);
+    
+    // Tasks
+    Route::post('/', [TaskController::class, 'store']);
+    Route::put('/{task}', [TaskController::class, 'update']);
+    Route::delete('/{task}', [TaskController::class, 'destroy']);
+    Route::put('/{task}/move', [TaskController::class, 'move']);
+    Route::post('/{task}/comments', [TaskController::class, 'addComment']);
+    Route::post('/{task}/attachments', [TaskController::class, 'uploadAttachment']);
+    Route::get('/{task}/activities', [TaskController::class, 'activities']);
+    
+    // Task Checklists
+    Route::get('/{task}/checklists', [TaskChecklistController::class, 'index']);
+    Route::post('/{task}/checklists', [TaskChecklistController::class, 'store']);
+    Route::put('/checklists/{checklist}', [TaskChecklistController::class, 'update']);
+    Route::delete('/checklists/{checklist}', [TaskChecklistController::class, 'destroy']);
+    Route::put('/checklists/{checklist}/toggle', [TaskChecklistController::class, 'toggle']);
+    Route::put('/{task}/checklists/reorder', [TaskChecklistController::class, 'reorder']);
+});
+
+// Rutas de descarga de archivos
+Route::middleware('auth:api')->get('/tasks/attachments/{attachment}/download', [TaskController::class, 'downloadAttachment']);

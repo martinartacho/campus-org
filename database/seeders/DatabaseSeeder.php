@@ -34,6 +34,8 @@ class DatabaseSeeder extends Seeder
             // Articles d'ajuda sobre el sistema
             HelpArticlesSeeder::class,                      // 12 - Articles d'ajuda
             
+            // Sistema de gestió de tasques
+            TaskSystemSeeder::class,                         // 13 - Sistema de tasques
             
             // Seeders comentats (no farem servir)
             // IniciStudentsImprovedSeeder::class,         // (amb matrícules - no usar)
