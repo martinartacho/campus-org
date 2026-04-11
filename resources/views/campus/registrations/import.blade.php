@@ -96,6 +96,66 @@
         @endif
         </div>
 
+        <!-- Queue Worker Control -->
+        <div class="bg-gray-50 rounded-lg shadow p-6 mt-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                <i class="fas fa-cogs mr-2"></i>{{ __('campus.queue_worker_control') }}
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div class="bg-white rounded p-3">
+                    <p class="text-sm font-medium text-gray-900">{{ __('campus.queue_status') }}: 
+                        <span id="queue-status" class="font-bold">
+                            @php
+                                $queueSize = \Illuminate\Support\Facades\DB::table('jobs')->count();
+                                if ($queueSize > 0) {
+                                    echo '<span class="text-orange-600">' . $queueSize . ' ' . __('campus.queue_pending') . '</span>';
+                                } else {
+                                    echo '<span class="text-green-600">' . __('campus.queue_empty') . '</span>';
+                                }
+                            @endphp
+                        </span>
+                    </p>
+                </div>
+                <div class="bg-white rounded p-3">
+                    <p class="text-sm font-medium text-gray-900">{{ __('campus.worker_status') }}: 
+                        <span id="worker-status" class="font-bold text-gray-600">{{ __('campus.worker_unknown') }}</span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap gap-3">
+                <form method="POST" action="{{ route('campus.registrations.queue.start') }}" class="inline">
+                    @csrf
+                    <x-campus-button type="submit" variant="primary" size="sm">
+                        <i class="fas fa-play mr-2"></i>{{ __('campus.queue_start_worker') }}
+                    </x-campus-button>
+                </form>
+                
+                <form method="POST" action="{{ route('campus.registrations.queue.stop') }}" class="inline">
+                    @csrf
+                    <x-campus-button type="submit" variant="danger" size="sm">
+                        <i class="fas fa-stop mr-2"></i>{{ __('campus.queue_stop_worker') }}
+                    </x-campus-button>
+                </form>
+
+                <form method="POST" action="{{ route('campus.registrations.queue.process') }}" class="inline">
+                    @csrf
+                    <x-campus-button type="submit" variant="success" size="sm">
+                        <i class="fas fa-bolt mr-2"></i>{{ __('campus.queue_process_now') }}
+                    </x-campus-button>
+                </form>
+
+                <button onclick="refreshQueueStatus()" class="bg-gray-500 hover:bg-gray-600 text-white px-3 py-2 rounded text-sm">
+                    <i class="fas fa-sync-alt mr-2"></i>{{ __('campus.queue_refresh') }}
+                </button>
+            </div>
+
+            <div class="mt-4 text-xs text-gray-500">
+                <p>{{ __('campus.queue_help') }}</p>
+            </div>
+        </div>
+
         <!-- Success/Error Messages -->
         @if(session('success'))
             <div class="mt-6 bg-green-50 border border-green-200 rounded-lg p-4">
@@ -182,3 +242,36 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+function refreshQueueStatus() {
+    fetch('/campus/registrations/queue/status')
+        .then(response => response.json())
+        .then(data => {
+            const queueStatus = document.getElementById('queue-status');
+            const workerStatus = document.getElementById('worker-status');
+            
+            // Actualitzar estat de la cua
+            if (data.queue_size > 0) {
+                queueStatus.innerHTML = '<span class="text-orange-600">' + data.queue_size + ' {{ __("campus.queue_pending") }}</span>';
+            } else {
+                queueStatus.innerHTML = '<span class="text-green-600">{{ __("campus.queue_empty") }}</span>';
+            }
+            
+            // Actualitzar estat del worker
+            if (data.worker_running) {
+                workerStatus.innerHTML = '<span class="text-green-600">{{ __("campus.worker_running") }}</span>';
+            } else {
+                workerStatus.innerHTML = '<span class="text-red-600">{{ __("campus.worker_stopped") }}</span>';
+            }
+        })
+        .catch(error => {
+            console.error('Error refreshing queue status:', error);
+        });
+}
+
+// Refrescar cada 30 segons
+setInterval(refreshQueueStatus, 30000);
+</script>
+@endpush

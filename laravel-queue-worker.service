@@ -1,0 +1,15 @@
+[Unit]
+Description=Laravel Queue Worker
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+Restart=always
+RestartSec=10
+WorkingDirectory=/var/www/campus.upg.cat
+ExecStart=/usr/bin/php artisan queue:work --queue=imports,default --sleep=3 --timeout=60 --memory=256
+Environment=APP_ENV=production
+
+[Install]
+WantedBy=multi-user.target

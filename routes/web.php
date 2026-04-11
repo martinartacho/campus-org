@@ -686,6 +686,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->name('campus.registrations.import.validate');
         Route::post('registrations-import/process', [\App\Http\Controllers\Campus\RegistrationImportController::class, 'processImport'])
             ->name('campus.registrations.import.process');
+        
+        // Queue Worker Control Routes
+        Route::post('registrations/queue/start', [\App\Http\Controllers\Campus\RegistrationImportController::class, 'startQueueWorker'])
+            ->name('registrations.queue.start');
+        Route::post('registrations/queue/stop', [\App\Http\Controllers\Campus\RegistrationImportController::class, 'stopQueueWorker'])
+            ->name('registrations.queue.stop');
+        Route::post('registrations/queue/process', [\App\Http\Controllers\Campus\RegistrationImportController::class, 'processQueueNow'])
+            ->name('registrations.queue.process');
+        Route::get('registrations/queue/status', [\App\Http\Controllers\Campus\RegistrationImportController::class, 'getQueueStatus'])
+            ->name('registrations.queue.status');
+            
         Route::get('registrations-export', [\App\Http\Controllers\Campus\ImportController::class, 'export'])
             ->name('campus.registrations.export');
         Route::get('registrations-list', [\App\Http\Controllers\Campus\ImportController::class, 'index'])

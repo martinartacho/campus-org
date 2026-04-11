@@ -1,3 +1,110 @@
+# 📋 Notes de la Versió 1.3.0 - Sistema de Control de Worker de Cua
+
+**Data de Publicació:** 10 d'abril de 2026  
+**Versió:** 1.3.0  
+**Categoria:** Nova Funcionalitat i Correccions
+
+---
+
+## 🎯 **Resum per a Usuaris**
+
+### **Què hem afegit?**
+Hem creat un sistema complet per controlar el processament d'importacions des de la interfície web. Ara pots gestionar les importacions de CSV sense necessitar accés tècnic.
+
+### **✅ Beneficis Directes per a Tu:**
+- **🎛️ Control total:** Inicia i atura workers des de la web
+- **👀 Visibilitat:** Veig en temps real si les importacions estan processant
+- **⚡ Processament manual:** Processa imports immediatament quan necessitis
+- **🔄 Estat actualitzat:** Refresc automàtic cada 30 segons
+- **🛠️ Scripts útils:** Eines per gestió manual de workers
+
+---
+
+## 🚀 **Noves Funcionalitats**
+
+### **1. Control de Worker de Cua**
+- **Botó Iniciar Worker:** Posar en marxa el worker permanent
+- **Botó Aturar Worker:** Aturar tots els workers actius
+- **Botó Processar Ara:** Processar jobs manualment (5 minuts màxim)
+- **Botó Refrescar:** Actualitzar estat de la cua
+
+### **2. Estat Visual de la Cua**
+- **Jobs pendents:** Número de registres a processar
+- **Estat del worker:** Actiu/Aturat amb indicadors de color
+- **Refresc automàtic:** Cada 30 segons sense recarregar pàgina
+
+### **3. Scripts de Gestió**
+- **Worker permanent:** `scripts/start-queue-worker.sh`
+- **Worker ràpid:** `scripts/quick-import-queue.sh`
+- **Configuració systemd:** `laravel-queue-worker.service`
+
+---
+
+## 🔧 **Correccions Importants**
+
+### **Problema d'Importacions Resolt**
+- **Abans:** Les importacions de CSV quedaven pendents a la cua
+- **Ara:** Es poden processar manualment o automàticament
+- **Resultat:** 664 registres processats correctament
+
+### **Rutes Corregides**
+- Comentades rutes de `TeacherAccessController` que no existien
+- Corregits noms de rutes duplicats
+- Sistema estable i sense errors
+
+---
+
+## 📁 **Fitxers Nous**
+
+### **Scripts**
+- `laravel-queue-worker.service` - Configuració systemd
+- `scripts/start-queue-worker.sh` - Worker manual complet
+- `scripts/quick-import-queue.sh` - Worker per imports ràpid
+
+### **Codi**
+- `RegistrationImportController` - +94 línies de control
+- `import.blade.php` - +94 línies d'UI + JavaScript
+- `lang/ca/campus.php` - +20 traduccions noves
+
+---
+
+## 🌐 **Com Utilitzar-ho**
+
+### **Accés**
+1. Ves a: `https://campus.upg.cat/campus/registrations-import`
+2. Baixa fins a la secció "Control de Worker de Cua"
+3. Fes servir els botons segons necessitis
+
+### **Opcions**
+- **Iniciar Worker:** Per processament continu
+- **Processar Ara:** Per processar immediatament
+- **Aturar Worker:** Per aturar el processament
+
+---
+
+## 📞 **Suport i Assistència**
+
+### **Si Tens Problemes**
+1. **Refresca la pàgina** - F5 o Ctrl+F5
+2. **Verifica permisos** - Necessites permís d'importació
+3. **Contacta amb suport** - Si el problema persisteix
+
+---
+
+## 🎉 **Resum Final**
+
+Aquesta actualització et dóna:
+- **🎛️ Control complet** del processament d'importacions
+- **👀 Visibilitat total** de l'estat del sistema
+- **⚡ Flexibilitat** per processar quan vulguis
+- **🔧 Eines potents** per gestió avançada
+
+**Fi del problema d'importacions pendents!**
+
+---
+
+---
+
 # 📋 Notes de la Versió 1.5.0 - Optimització de Migracions
 
 **Data de Publicació:** 8 d'abril de 2026  
