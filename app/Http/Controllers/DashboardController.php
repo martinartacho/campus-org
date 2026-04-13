@@ -36,10 +36,11 @@ class DashboardController extends Controller
                 ]);
                 
                 return view('dashboard', $data);
-            } elseif (in_array($activeRole, ['director', 'manager', 'coordinacio', 'gestio', 'comunicacio', 'secretaria', 'treasury', 'editor'])) {
+            } elseif (in_array($activeRole, ['director', 'manager', 'coordinacio', 'gestio', 'comunicacio', 'secretaria', 'editor'])) {
                 // Manager Group: Widgets específicos por sub-rol
                 $data = app(\App\Services\Dashboard\ManagerDashboardData::class)->build($user, $activeRole);
-                return view('dashboard', $data);
+                $data['activeRole'] = $activeRole;
+                return view('manager.dashboard', $data);
             } elseif ($activeRole === 'treasury') {
                 $data = app(\App\Services\Dashboard\TreasuryDashboardData::class)->build($user);
                 return view('dashboard', $data);
@@ -63,6 +64,7 @@ class DashboardController extends Controller
             // Manager Group fallback: Widgets específicos por sub-rol
             $activeRole = $user->roles->whereIn('name', ['director', 'manager', 'coordinacio', 'gestio', 'comunicacio', 'secretaria', 'editor'])->first()->name;
             $data = app(\App\Services\Dashboard\ManagerDashboardData::class)->build($user, $activeRole);
+            $data['activeRole'] = $activeRole;
             \Log::info('DashboardController - Manager data (fallback)', [
                 'user' => $user->email,
                 'active_role' => $activeRole,
@@ -70,7 +72,7 @@ class DashboardController extends Controller
                 'stats_count' => count($data['stats'] ?? []),
                 'widgets_count' => count($data['widgets'] ?? []),
             ]);
-            return view('dashboard', $data);
+            return view('manager.dashboard', $data);
         } elseif ($user->hasAnyRole(['treasury'])) {
             $data = app(\App\Services\Dashboard\TreasuryDashboardData::class)
                 ->build($user);

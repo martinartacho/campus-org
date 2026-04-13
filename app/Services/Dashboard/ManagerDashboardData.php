@@ -42,22 +42,24 @@ class ManagerDashboardData
         // ESTADÍSTIQUES DEL SISTEMA para roles manager (excepto secretaria)
         if (in_array($activeRole, ['director', 'manager', 'coordinacio', 'gestio', 'comunicacio', 'editor', 'admin', 'super-admin'])) {
             // Usuarios - usar datos completos de admin con fallback
-            $stats['total_users'] = $adminData['stats']['total_users'] ?? 0;
+            $stats['total_users'] = $adminData['stats']['total_users'] ?? \App\Models\User::count();
             $stats['active_users'] = $adminData['stats']['active_users'] ?? \App\Models\User::where('email_verified_at', '!=', null)->count();
             $stats['new_users'] = $adminData['stats']['new_users'] ?? \App\Models\User::where('created_at', '>=', now()->subDays(30))->count();
             
             // Cursos - usar datos completos de admin con fallback
-            $stats['total_courses'] = $adminData['stats']['total_courses'] ?? 0;
+            $stats['total_courses'] = $adminData['stats']['total_courses'] ?? \App\Models\CampusCourse::count();
             $stats['active_courses'] = $adminData['stats']['active_courses'] ?? \App\Models\CampusCourse::where('is_active', true)->count();
             $stats['full_courses'] = $adminData['stats']['full_courses'] ?? 0;
             
             // Profesores - usar datos completos de admin con fallback
             $stats['total_teachers'] = $adminData['stats']['teacher_count'] ?? 0;
+            $stats['teacher_count'] = $adminData['stats']['teacher_count'] ?? \App\Models\CampusTeacher::count();
             $stats['active_teachers'] = $adminData['stats']['active_teachers'] ?? \App\Models\CampusTeacher::whereHas('courses')->count();
             $stats['pending_teachers'] = $adminData['stats']['pending_teachers'] ?? \App\Models\CampusTeacher::whereDoesntHave('courses')->count();
             
             // Estudiantes - usar datos existentes de admin y añadir subtotales por status
             $stats['total_students'] = $adminData['stats']['student_count'] ?? 0;
+            $stats['total_registrations'] = $adminData['stats']['total_registrations'] ?? \App\Models\CampusCourseStudent::count();
             $stats['active_registrations'] = $adminData['stats']['active_registrations'] ?? 0;
             $stats['completed_registrations'] = $adminData['stats']['completed_registrations'] ?? 0;
             

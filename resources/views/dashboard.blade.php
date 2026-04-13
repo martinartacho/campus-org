@@ -45,19 +45,8 @@
             @if(($activeRole && in_array($activeRole, ['admin', 'super-admin']) && $user->hasRole($activeRole)) || (!$activeRole && $user->hasAnyRole(['admin', 'super-admin'])))
                 <x-dashboard.admin :stats="$stats ?? []" />
 
-            {{-- 2. Dashboard Manager --}}
-            @elseif(($activeRole && in_array($activeRole, ['director', 'manager', 'coordinacio', 'gestio', 'comunicacio', 'secretaria', 'editor']) && $user->hasRole($activeRole)) || (!$activeRole && $user->hasAnyRole(['director', 'manager', 'coordinacio', 'gestio', 'comunicacio', 'secretaria', 'editor'])))
-                <!-- <x-dashboard.manager :stats="$stats ?? []" /> -->
-                <x-dashboard.admin-cards :stats="$stats ?? []" :active-role="$activeRole" />
-                @foreach($widgets ?? [] as $widget)
-                    @include($widget)
-                @endforeach
+                            
                 
-                {{-- Estadístiques del Sistema para coordinacio --}}
-                @if($activeRole === 'coordinacio')
-                    <x-dashboard.system-stats :stats="$stats ?? []" />
-                @endif
-
             {{-- 2.1 Dashboard Treasury --}}
             @elseif(($activeRole && $activeRole === 'treasury' && $user->hasRole($activeRole)) || (!$activeRole && $user->hasRole('treasury')))
                 <x-dashboard.treasury :stats="$data['stats'] ?? []" />
