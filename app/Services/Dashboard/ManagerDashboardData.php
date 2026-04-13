@@ -146,15 +146,12 @@ class ManagerDashboardData
                 'system_stats_categories' => 'components.dashboard.widgets.system_stats_categories',
                 'system_stats_seasons' => 'components.dashboard.widgets.system_stats_seasons',
                 'system_stats_events' => 'components.dashboard.widgets.system_stats_events',
+                'secretaria_documents' => 'components.dashboard.widgets.secretaria_documents',
+                'secretaria_registrations' => 'components.dashboard.widgets.secretaria_registrations',
+                'secretaria_certificates' => 'components.dashboard.widgets.secretaria_certificates',
             ];
             
-            // 📊 Widgets específicos para secretaria
-            if ($activeRole === 'secretaria') {
-                $widgetMap = array_merge($widgetMap, [
-                    'secretaria_documents' => 'components.dashboard.widgets.secretaria_documents',
-                    'secretaria_registrations' => 'components.dashboard.widgets.secretaria_registrations',
-                ]);
-            }
+            // Todos los widgets ya están incluidos en el mapa principal
             
             // 🎯 PRIORIZAR WIDGETS DE ESTADÍSTICAS
             $prioritizedWidgets = [];
