@@ -137,6 +137,7 @@ class ManagerDashboardData
             
             // Mapeo de nombres de widgets a rutas de componentes
             $widgetMap = [
+                'manager_visio_general' => 'components.dashboard.widgets.manager_visio_general',
                 'system_stats_users' => 'components.dashboard.widgets.system_stats_users',
                 'system_stats_courses' => 'components.dashboard.widgets.system_stats_courses',
                 'system_stats_registrations' => 'components.dashboard.widgets.system_stats_registrations',

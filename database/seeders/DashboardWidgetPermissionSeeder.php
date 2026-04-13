@@ -9,8 +9,9 @@ class DashboardWidgetPermissionSeeder extends Seeder
 {
     public function run(): void
     {
-        // Widgets disponibles (nuevos system_stats + secretaria)
+        // Widgets disponibles (nuevos system_stats + secretaria + manager)
         $availableWidgets = [
+            'manager_visio_general' => 'Visión General Manager',
             'system_stats_users' => 'Estadísticas de Usuarios',
             'system_stats_courses' => 'Estadísticas de Cursos',
             'system_stats_registrations' => 'Estadísticas de Matriculaciones',
@@ -27,13 +28,13 @@ class DashboardWidgetPermissionSeeder extends Seeder
 
         // Configuración inicial por rol (todos los widgets habilitados por defecto)
         $roleWidgets = [
-            'director' => ['system_stats_users', 'system_stats_courses', 'system_stats_registrations', 'system_stats_categories', 'system_stats_seasons', 'system_stats_events'],
-            'manager' => ['system_stats_users', 'system_stats_courses', 'system_stats_registrations', 'system_stats_categories', 'system_stats_seasons', 'system_stats_events'],
-            'coordinacio' => ['system_stats_users', 'system_stats_courses', 'system_stats_registrations', 'system_stats_categories', 'system_stats_seasons', 'system_stats_events'],
-            'gestio' => ['system_stats_users', 'system_stats_courses', 'system_stats_registrations'],
-            'comunicacio' => ['system_stats_users', 'system_stats_events'],
+            'director' => ['manager_visio_general', 'system_stats_users', 'system_stats_courses', 'system_stats_registrations', 'system_stats_categories', 'system_stats_seasons', 'system_stats_events'],
+            'manager' => ['manager_visio_general', 'system_stats_users', 'system_stats_courses', 'system_stats_registrations', 'system_stats_categories', 'system_stats_seasons', 'system_stats_events'],
+            'coordinacio' => ['manager_visio_general', 'system_stats_users', 'system_stats_courses', 'system_stats_registrations', 'system_stats_categories', 'system_stats_seasons', 'system_stats_events'],
+            'gestio' => ['manager_visio_general', 'system_stats_users', 'system_stats_courses', 'system_stats_registrations'],
+            'comunicacio' => ['manager_visio_general', 'system_stats_users', 'system_stats_events'],
             'secretaria' => ['secretaria_documents', 'secretaria_registrations', 'system_stats_users', 'system_stats_registrations'],
-            'editor' => ['system_stats_courses', 'system_stats_categories'],
+            'editor' => ['manager_visio_general', 'system_stats_courses', 'system_stats_categories'],
         ];
 
         // Crear permisos para cada rol
