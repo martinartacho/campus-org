@@ -33,13 +33,37 @@
                 }
             @endphp
             
-            {{-- Grid responsive para widgets individuales --}}
+            {{-- Separar manager_visio_general (primera fila) y otros widgets (segunda fila) --}}
             @if(count($widgetsManager) > 0)
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
-                    @foreach($widgetsManager as $widget)
-                        @include($widget)
-                    @endforeach
-                </div>
+                {{-- Primera fila: manager_visio_general (amplada completa) --}}
+                @php
+                    $visioGeneralWidget = null;
+                    $otherWidgets = [];
+                    
+                    foreach($widgetsManager as $widget) {
+                        $widgetName = basename(str_replace('.', '/', $widget));
+                        if ($widgetName === 'manager_visio_general') {
+                            $visioGeneralWidget = $widget;
+                        } else {
+                            $otherWidgets[] = $widget;
+                        }
+                    }
+                @endphp
+                
+                @if($visioGeneralWidget)
+                    <div class="mt-6">
+                        @include($visioGeneralWidget)
+                    </div>
+                @endif
+                
+                {{-- Segunda fila: otros widgets en grid --}}
+                @if(count($otherWidgets) > 0)
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+                        @foreach($otherWidgets as $widget)
+                            @include($widget)
+                        @endforeach
+                    </div>
+                @endif
             @endif
 
         </div>
