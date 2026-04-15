@@ -24,4 +24,6 @@ yarn-error.log
 /.zed
 ISSUE_IBAN_ENCRYPTION_CORRUPT_UPDATED.md
 /var/www/secure-docs/
+# Temporal files - should not be committed
+temporal/
 debug.log
