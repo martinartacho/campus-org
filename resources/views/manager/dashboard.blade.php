@@ -17,6 +17,13 @@
             {{-- Dashboard Manager --}}
             <x-dashboard.manager :stats="$stats ?? []" />
             
+            {{-- Quick Actions para Manager Roles --}}
+            @if(isset($quickActions) && !empty($quickActions))
+                <div class="mt-6">
+                    <x-dashboard.shortcuts :quickActions="$quickActions" />
+                </div>
+            @endif
+            
             {{-- Widgets específicos para Manager Roles basados en permisos reales --}}
             @php
                 $widgetsManager = [];

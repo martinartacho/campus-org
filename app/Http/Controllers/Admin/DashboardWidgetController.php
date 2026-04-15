@@ -60,38 +60,57 @@ class DashboardWidgetController extends Controller
         $quickActions = [
             'add_user' => [
                 'name' => 'Afegir Usuari',
-                'description' => 'Permet crear nous usuaris en el sistema',
-                'icon' => 'bi-person-plus'
+                'description' => 'Crear nou usuari al sistema',
+                'icon' => 'bi-person-plus',
+                'route' => 'admin.users.index'
             ],
             'add_course' => [
                 'name' => 'Afegir Curs',
-                'description' => 'Permet crear nous cursos',
-                'icon' => 'bi-plus-circle'
+                'description' => 'Crear nou curs al campus',
+                'icon' => 'bi-plus-circle',
+                'route' => 'campus.courses.create'
             ],
             'add_season' => [
                 'name' => 'Afegir Temporada',
-                'description' => 'Permet crear noves temporades acadèmiques',
-                'icon' => 'bi-calendar-plus'
+                'description' => 'Crear nova temporada acadèmica',
+                'icon' => 'bi-calendar-plus',
+                'route' => 'campus.seasons.create'
+            ],
+            'manage_widgets' => [
+                'name' => 'Widgets',
+                'description' => 'Gestionar Dashboard Widgets dels perfils manager',
+                'icon' => 'bi-grid-3x3-gap',
+                'route' => 'admin.dashboard_widgets.index'
+            ],
+            'support_management' => [
+                'name' => 'Suport',
+                'description' => 'Gestió de Suport',
+                'icon' => 'bi-headset',
+                'route' => 'support.index'
             ],
             'manage_resources' => [
-                'name' => 'Gestionar Recursos',
-                'description' => 'Permet gestionar recursos del campus',
-                'icon' => 'bi-folder'
+                'name' => 'Re-Cursos',
+                'description' => 'Gestionar recursos del campus',
+                'icon' => 'bi-folder',
+                'route' => 'campus.resources.index'
             ],
             'help_management' => [
                 'name' => 'Gestió d\'Ajuda',
-                'description' => 'Permet gestionar el sistema d\'ajuda',
-                'icon' => 'bi-question-circle'
+                'description' => 'Crear, editar, eliminar documents d\'Ajuda',
+                'icon' => 'bi-question-circle',
+                'route' => 'admin.help.index'
             ],
-            'help_center' => [
-                'name' => 'Centre d\'Ajuda',
-                'description' => 'Permet accedir al centre d\'ajuda',
-                'icon' => 'bi-life-preserver'
+            'calendar_management' => [
+                'name' => 'Gestió de Calendari',
+                'description' => 'Gestionar propera temporada fent servir el model calendari de recursos',
+                'icon' => 'bi-calendar-week',
+                'route' => 'campus.resources.calendar'
             ],
-            'support_management' => [
-                'name' => __('campus.support_management'),
-                'description' => __('campus.support_management') . ' - ' . __('campus.support_dashboard_subtitle'),
-                'icon' => 'bi-headset'
+            'releases_management' => [
+                'name' => 'Releases',
+                'description' => 'Gestionar Releases',
+                'icon' => 'bi-box-seam',
+                'route' => 'admin.releases.index'
             ]
         ];
         

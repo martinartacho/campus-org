@@ -8,9 +8,9 @@
     @if(config('app.debug'))
         <pre class="bg-gray-100 p-3 text-xs rounded border">{{ var_export([
             'path' => 'resources/views/components/dashboard/actions.blade.php',
-            'error' => $error,
-            'debug' => $debug,
-            'stats' => $stats,
+            'error' => $error ?? null,
+            'debug' => $debug ?? null,
+            'stats' => $stats ?? [],
         ], true) }}
         </pre>
     @endif

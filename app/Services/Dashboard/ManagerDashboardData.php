@@ -184,9 +184,81 @@ class ManagerDashboardData
             'widgets' => $widgets,
         ]);
 
+        // QUICK ACTIONS según rol
+        $quickActions = [];
+        if ($activeRole) {
+            $allowedQuickActions = \App\Models\DashboardQuickActionPermission::getQuickActionsForRole($activeRole);
+            
+            // Mapeo de quick actions del DashboardWidgetController
+            $quickActionMap = [
+                'add_user' => [
+                    'name' => 'Afegir Usuari',
+                    'description' => 'Crear nou usuari al sistema',
+                    'icon' => 'bi-person-plus',
+                    'route' => 'admin.users.index'
+                ],
+                'add_course' => [
+                    'name' => 'Afegir Curs',
+                    'description' => 'Crear nou curs al campus',
+                    'icon' => 'bi-plus-circle',
+                    'route' => 'campus.courses.create'
+                ],
+                'add_season' => [
+                    'name' => 'Afegir Temporada',
+                    'description' => 'Crear nova temporada acadèmica',
+                    'icon' => 'bi-calendar-plus',
+                    'route' => 'campus.seasons.create'
+                ],
+                'manage_widgets' => [
+                    'name' => 'Widgets',
+                    'description' => 'Gestionar Dashboard Widgets dels perfils manager',
+                    'icon' => 'bi-grid-3x3-gap',
+                    'route' => 'admin.dashboard_widgets.index'
+                ],
+                'support_management' => [
+                    'name' => 'Suport',
+                    'description' => 'Gestió de Suport',
+                    'icon' => 'bi-headset',
+                    'route' => 'support.index'
+                ],
+                'manage_resources' => [
+                    'name' => 'Re-Cursos',
+                    'description' => 'Gestionar recursos del campus',
+                    'icon' => 'bi-folder',
+                    'route' => 'campus.resources.index'
+                ],
+                'help_management' => [
+                    'name' => 'Gestió d\'Ajuda',
+                    'description' => 'Crear, editar, eliminar documents d\'Ajuda',
+                    'icon' => 'bi-question-circle',
+                    'route' => 'admin.help.index'
+                ],
+                'calendar_management' => [
+                    'name' => 'Gestió de Calendari',
+                    'description' => 'Gestionar propera temporada fent servir el model calendari de recursos',
+                    'icon' => 'bi-calendar-week',
+                    'route' => 'campus.resources.calendar'
+                ],
+                'releases_management' => [
+                    'name' => 'Releases',
+                    'description' => 'Gestionar Releases',
+                    'icon' => 'bi-box-seam',
+                    'route' => 'admin.releases.index'
+                ]
+            ];
+            
+            // Filtrar quick actions permitidos para el rol
+            foreach ($allowedQuickActions as $actionKey) {
+                if (isset($quickActionMap[$actionKey])) {
+                    $quickActions[$actionKey] = $quickActionMap[$actionKey];
+                }
+            }
+        }
+
         return [
             'stats' => $stats,
             'widgets' => $widgets,
+            'quickActions' => $quickActions,
         ];
     }
 }
