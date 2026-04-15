@@ -256,6 +256,12 @@ class ManagerDashboardData
                     'description' => 'Gestionar Releases',
                     'icon' => 'bi-box-seam',
                     'route' => 'admin.releases.index'
+                ],
+                'task_management' => [
+                    'name' => 'Tasques',
+                    'description' => 'Gestió de projectes i tasques del campus',
+                    'icon' => 'bi-kanban',
+                    'route' => 'tasks.boards.index'
                 ]
             ];
             

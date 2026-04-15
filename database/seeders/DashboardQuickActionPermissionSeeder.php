@@ -76,6 +76,12 @@ class DashboardQuickActionPermissionSeeder extends Seeder
                 'description' => 'Gestionar Releases',
                 'icon' => 'bi-box-seam',
                 'route' => 'admin.releases.index'
+            ],
+            'task_management' => [
+                'name' => 'Tasques',
+                'description' => 'Gestió de projectes i tasques del campus',
+                'icon' => 'bi-kanban',
+                'route' => 'tasks.boards.index'
             ]
         ];
 
@@ -99,27 +105,28 @@ class DashboardQuickActionPermissionSeeder extends Seeder
             'manager' => [
                 'add_course', 'add_season', 'manage_resources', 
                 'calendar_management', 'releases_management', 
-                'support_management', 'help_management', 'manage_widgets'
-            ], // Manager: 8 accions
+                'support_management', 'help_management', 'manage_widgets',
+                'task_management'
+            ], // Manager: 9 accions
             'coordinacio' => [
                 'add_course', 'add_season', 'help_management', 
-                'calendar_management', 'support_management', 'help_center'
-            ], // Coordinación: 6 accions
+                'calendar_management', 'support_management', 'help_center',
+                'task_management'
+            ], // Coordinación: 7 accions
             'gestio' => [
-                'add_user', 'manage_resources', 'support_management',
-                'help_management', 'calendar_management', 'help_center'
-            ], // Gestión: 6 accions
+                'add_course', 'add_season', 'manage_resources',
+                'task_management'
+            ], // Gestió: 4 accions
             'comunicacio' => [
-                'help_management', 'support_management', 
-                'manage_resources', 'add_user', 'help_center'
-            ], // Comunicación: 5 accions
+                'add_course', 'help_management', 'support_management',
+                'task_management'
+            ], // Comunicació: 4 accions
             'secretaria' => [
-                'add_user', 'add_course', 'help_management',
-                'support_management', 'manage_resources', 'help_center'
-            ], // Secretaría: 6 accions
+                'add_course', 'help_management', 'task_management'
+            ], // Secretaria: 3 accions
             'editor' => [
-                'help_management', 'support_management', 'help_center'
-            ], // Editor: 3 accions
+                'add_course', 'task_management'
+            ], // Editor: 2 accions
         ];
 
         // Aplicar configuración específica
