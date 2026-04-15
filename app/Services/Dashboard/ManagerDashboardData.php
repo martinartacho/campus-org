@@ -149,6 +149,7 @@ class ManagerDashboardData
                                 'secretaria_documents' => 'components.dashboard.widgets.secretaria_documents',
                 'secretaria_registrations' => 'components.dashboard.widgets.secretaria_registrations',
                 'secretaria_certificates' => 'components.dashboard.widgets.secretaria_certificates',
+            'task_board' => 'components.dashboard.widgets.task_board',
             ];
             
             // Todos los widgets ya están incluidos en el mapa principal

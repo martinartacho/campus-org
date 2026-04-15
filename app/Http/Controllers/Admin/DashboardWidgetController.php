@@ -64,6 +64,11 @@ class DashboardWidgetController extends Controller
                 'name' => 'Certificats de Secretaria',
                 'description' => 'Gestió de certificats i títols',
                 'icon' => 'bi-award'
+            ],
+            'task_board' => [
+                'name' => 'Tauler de Tasques',
+                'description' => 'Gestió de tasques i projectes',
+                'icon' => 'bi-kanban'
             ]
         ];
         

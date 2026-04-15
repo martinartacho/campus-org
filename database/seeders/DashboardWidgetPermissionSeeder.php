@@ -21,6 +21,7 @@ class DashboardWidgetPermissionSeeder extends Seeder
                         'secretaria_documents' => 'Documentos de Secretaría',
             'secretaria_registrations' => 'Matriculaciones de Secretaría',
             'secretaria_certificates' => 'Certificados de Secretaría',
+            'task_board' => 'Tauler de Tasques',
         ];
 
         // Roles Manager Group
