@@ -271,8 +271,8 @@
                             <div x-show="selectedUser" class="mt-2 p-2 bg-blue-50 rounded-lg border border-blue-200">
                                 <div class="flex items-center justify-between">
                                     <div>
-                                        <div class="font-medium" x-text="selectedUser.name"></div>
-                                        <div class="text-sm text-gray-600" x-text="selectedUser.email"></div>
+                                        <div class="font-medium" x-text="selectedUser?.name || ''"></div>
+                                        <div class="text-sm text-gray-600" x-text="selectedUser?.email || ''"></div>
                                     </div>
                                     <button type="button" @click="clearSelection()" 
                                             class="text-red-500 hover:text-red-700">
@@ -306,7 +306,7 @@ function kanbanBoard(boardId) {
         boardId: boardId,
         board: {!! $board->toJson() !!},
         lists: {!! $board->lists->toJson() !!},
-        tasks: {!! $board->lists->flatMap->tasks->toJson() !!},
+        tasks: {!! $board->lists->flatMap(function($list) { return $list->tasks ?? []; })->toJson() !!},
         loading: false,
         showCreateTaskModal: false,
         showAddListModal: false,
@@ -414,6 +414,14 @@ function kanbanBoard(boardId) {
                 if (response.ok) {
                     const task = await response.json();
                     this.tasks.push(task);
+                    // Actualitzar la llista localment
+                    const list = this.lists.find(l => l.id === task.list_id);
+                    if (list && !list.tasks) {
+                        list.tasks = [];
+                    }
+                    if (list) {
+                        list.tasks.push(task);
+                    }
                     this.showCreateTaskModal = false;
                     this.resetNewTask();
                 }
