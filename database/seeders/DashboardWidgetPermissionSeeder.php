@@ -21,6 +21,7 @@ class DashboardWidgetPermissionSeeder extends Seeder
                         'secretaria_documents' => 'Documentos de Secretaría',
             'secretaria_registrations' => 'Matriculaciones de Secretaría',
             'secretaria_certificates' => 'Certificados de Secretaría',
+            'task_board' => 'Tauler de Tasques',
         ];
 
         // Roles Manager Group
@@ -31,14 +32,16 @@ class DashboardWidgetPermissionSeeder extends Seeder
             'director' => ['manager_visio_general', 'system_stats_users', 'system_stats_courses', 'system_stats_registrations', 'system_stats_categories', 'system_stats_seasons', 'system_stats_events'],
             'manager' => ['manager_visio_general', 'system_stats_users', 'system_stats_courses', 'system_stats_registrations', 'system_stats_categories', 'system_stats_seasons', 'system_stats_events'],
             'coordinacio' => ['manager_visio_general', 'system_stats_users', 'system_stats_courses', 'system_stats_registrations', 'system_stats_categories', 'system_stats_seasons', 'system_stats_events'],
-            'gestio' => ['manager_visio_general', 'system_stats_users', 'system_stats_courses', 'system_stats_registrations'],
-            'comunicacio' => ['manager_visio_general', 'system_stats_users', 'system_stats_events'],
+            'gestio' => ['manager_visio_general', 'system_stats_users', 'system_stats_courses', 'system_stats_registrations', 'task_board'],
+            'coordinacio' => ['manager_visio_general', 'system_stats_users', 'system_stats_courses', 'system_stats_registrations', 'task_board'],
+            'comunicacio' => ['manager_visio_general', 'system_stats_users', 'system_stats_events', 'task_board'],
             'secretaria' => [
                 'secretaria_documents',      // Widget principal
                 'secretaria_registrations', // Widget secundari
                 'secretaria_certificates',  // Widget opcional
                 'system_stats_users',        // Complementari
                 'system_stats_registrations',
+                'task_board',            // Gestió de tasques
             ],
             'editor' => ['manager_visio_general', 'system_stats_courses', 'system_stats_categories'],
         ];
