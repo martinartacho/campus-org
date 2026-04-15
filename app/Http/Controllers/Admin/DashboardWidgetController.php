@@ -50,10 +50,20 @@ class DashboardWidgetController extends Controller
                 'description' => 'Mostra estadístiques d\'esdeveniments del campus',
                 'icon' => 'bi-calendar-event-fill'
             ],
-            'support_stats' => [
-                'name' => __('campus.support_statistics'),
-                'description' => __('campus.support_statistics') . ' - ' . __('campus.support_dashboard_subtitle'),
-                'icon' => 'bi-headset'
+                        'secretaria_documents' => [
+                'name' => 'Documents de Secretaria',
+                'description' => 'Gestió de documents amb estadístiques completes',
+                'icon' => 'bi-file-earmark-text'
+            ],
+            'secretaria_registrations' => [
+                'name' => 'Matriculacions de Secretaria',
+                'description' => 'Matriculacions pendents/actives/completades',
+                'icon' => 'bi-person-check'
+            ],
+            'secretaria_certificates' => [
+                'name' => 'Certificats de Secretaria',
+                'description' => 'Gestió de certificats i títols',
+                'icon' => 'bi-award'
             ]
         ];
         

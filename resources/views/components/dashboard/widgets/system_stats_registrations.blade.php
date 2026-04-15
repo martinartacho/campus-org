@@ -3,7 +3,7 @@
 <div class="bg-white p-6 rounded-lg shadow-md">
     <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
         <i class="bi bi-person-check-fill text-purple-600 me-2"></i>
-        Matriculacions
+        Inscripcions (Cursos)
     </h3>
     
     <div class="grid grid-cols-2 gap-4">
@@ -11,7 +11,7 @@
             <div class="text-2xl font-bold text-purple-700">
                 {{ $stats['total_registrations'] ?? 0 }}
             </div>
-            <div class="text-sm text-gray-600">Total Matriculacions</div>
+            <div class="text-sm text-gray-600">Total Inscripcions</div>
         </div>
         
         <div class="text-center">
@@ -38,7 +38,7 @@
     
     <div class="mt-4">
         <a href="{{ route('manager.registrations.index') }}" class="text-purple-600 hover:text-purple-800 text-sm font-medium">
-            Gestionar Matriculacions ->
+            Gestionar Inscripcions ->
         </a>
     </div>
 </div>

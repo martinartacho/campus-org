@@ -146,22 +146,33 @@ class ManagerDashboardData
                 'system_stats_categories' => 'components.dashboard.widgets.system_stats_categories',
                 'system_stats_seasons' => 'components.dashboard.widgets.system_stats_seasons',
                 'system_stats_events' => 'components.dashboard.widgets.system_stats_events',
-                'secretaria_documents' => 'components.dashboard.widgets.secretaria_documents',
+                                'secretaria_documents' => 'components.dashboard.widgets.secretaria_documents',
                 'secretaria_registrations' => 'components.dashboard.widgets.secretaria_registrations',
                 'secretaria_certificates' => 'components.dashboard.widgets.secretaria_certificates',
             ];
             
             // Todos los widgets ya están incluidos en el mapa principal
             
-            // 🎯 PRIORIZAR WIDGETS DE ESTADÍSTICAS
+            // PRIORIZAR WIDGETS DE ESTADÍSTICAS
+            // PRIORIZAR WIDGETS DE ESTADÍSTICAS
             $prioritizedWidgets = [];
             
-            // Añadir widgets de estadísticas del sistema
+            // Agrupar widgets de matriculacions/inscripcions junts
+            $registrationWidgets = [];
+            $otherWidgets = [];
+            
             foreach ($widgetNames as $widgetName) {
                 if (isset($widgetMap[$widgetName])) {
-                    $prioritizedWidgets[] = $widgetMap[$widgetName];
+                    if (in_array($widgetName, ['secretaria_registrations', 'system_stats_registrations'])) {
+                        $registrationWidgets[] = $widgetMap[$widgetName];
+                    } else {
+                        $otherWidgets[] = $widgetMap[$widgetName];
+                    }
                 }
             }
+            
+            // Posar widgets de matriculacions junts al principi
+            $prioritizedWidgets = array_merge($registrationWidgets, $otherWidgets);
             
             $widgets = $prioritizedWidgets;
         } else {

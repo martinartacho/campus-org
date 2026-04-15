@@ -18,7 +18,7 @@ class DashboardWidgetPermissionSeeder extends Seeder
             'system_stats_categories' => 'Estadísticas de Categorías',
             'system_stats_seasons' => 'Estadísticas de Temporadas',
             'system_stats_events' => 'Estadísticas de Eventos',
-            'secretaria_documents' => 'Documentos de Secretaría',
+                        'secretaria_documents' => 'Documentos de Secretaría',
             'secretaria_registrations' => 'Matriculaciones de Secretaría',
             'secretaria_certificates' => 'Certificados de Secretaría',
         ];
@@ -33,7 +33,13 @@ class DashboardWidgetPermissionSeeder extends Seeder
             'coordinacio' => ['manager_visio_general', 'system_stats_users', 'system_stats_courses', 'system_stats_registrations', 'system_stats_categories', 'system_stats_seasons', 'system_stats_events'],
             'gestio' => ['manager_visio_general', 'system_stats_users', 'system_stats_courses', 'system_stats_registrations'],
             'comunicacio' => ['manager_visio_general', 'system_stats_users', 'system_stats_events'],
-            'secretaria' => ['secretaria_documents', 'secretaria_registrations', 'system_stats_users', 'system_stats_registrations'],
+            'secretaria' => [
+                'secretaria_documents',      // Widget principal
+                'secretaria_registrations', // Widget secundari
+                'secretaria_certificates',  // Widget opcional
+                'system_stats_users',        // Complementari
+                'system_stats_registrations',
+            ],
             'editor' => ['manager_visio_general', 'system_stats_courses', 'system_stats_categories'],
         ];
 

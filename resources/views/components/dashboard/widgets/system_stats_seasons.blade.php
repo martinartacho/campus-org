@@ -15,7 +15,7 @@
         
         <div class="text-center">
             <div class="text-2xl font-bold text-green-700">
-                {{ $stats['current_season'] ? 'Activa' : 'No configurada' }}
+                {{ ($stats['current_season'] ?? null) ? 'Activa' : 'No configurada' }}
             </div>
             <div class="text-sm text-gray-600">Temporada Actual</div>
         </div>
