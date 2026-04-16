@@ -279,6 +279,20 @@ Route::prefix('campus')->name('campus.')->group(function () {
     });
 });
 
+// Teacher Document Routes
+Route::prefix('teacher')->name('teacher.')->middleware(['auth', 'role:teacher'])->group(function () {
+    Route::prefix('documents')->name('documents.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\DocumentController::class, 'teacherIndex'])->name('index');
+        Route::get('/create', [\App\Http\Controllers\DocumentController::class, 'teacherCreate'])->name('create');
+        Route::post('/', [\App\Http\Controllers\DocumentController::class, 'teacherStore'])->name('store');
+        Route::get('/{document}', [\App\Http\Controllers\DocumentController::class, 'teacherShow'])->name('show');
+        Route::get('/{document}/edit', [\App\Http\Controllers\DocumentController::class, 'edit'])->name('edit');
+        Route::put('/{document}', [\App\Http\Controllers\DocumentController::class, 'update'])->name('update');
+        Route::delete('/{document}', [\App\Http\Controllers\DocumentController::class, 'destroy'])->name('destroy');
+        Route::get('/{document}/download', [\App\Http\Controllers\DocumentController::class, 'download'])->name('download');
+    });
+});
+
 // ENVIAR MAIL (Treasury)    
 Route::middleware(['auth', 'permission:campus.consents.request'])
     ->prefix('campus/treasury')

@@ -30,6 +30,11 @@ class Document extends Model
         'is_active',
         'download_count',
         'last_accessed_at',
+        'teacher_id',
+        'course_id',
+        'document_type',
+        'student_visibility',
+        'academic_year',
     ];
 
     protected $casts = [
@@ -38,6 +43,9 @@ class Document extends Model
         'document_date' => 'date',
         'download_count' => 'integer',
         'last_accessed_at' => 'datetime',
+        'document_type' => 'string',
+        'student_visibility' => 'string',
+        'academic_year' => 'integer',
     ];
 
     /**
@@ -54,6 +62,22 @@ class Document extends Model
     public function uploader(): BelongsTo
     {
         return $this->belongsTo(User::class, 'uploaded_by');
+    }
+
+    /**
+     * Get the teacher that owns the document.
+     */
+    public function teacher(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'teacher_id');
+    }
+
+    /**
+     * Get the course that owns the document.
+     */
+    public function course(): BelongsTo
+    {
+        return $this->belongsTo(CampusCourse::class, 'course_id');
     }
 
     /**
@@ -111,6 +135,58 @@ class Document extends Model
         $extension = strtolower(pathinfo($this->file_name, PATHINFO_EXTENSION));
         
         return $iconMap[$extension] ?? 'bi-file-earmark';
+    }
+
+    /**
+     * Scope to get documents for a specific teacher.
+     */
+    public function scopeForTeacher($query, $teacherId)
+    {
+        return $query->where('teacher_id', $teacherId);
+    }
+
+    /**
+     * Scope to get documents by course.
+     */
+    public function scopeByCourse($query, $courseId)
+    {
+        return $query->where('course_id', $courseId);
+    }
+
+    /**
+     * Scope to get documents by document type.
+     */
+    public function scopeByDocumentType($query, $type)
+    {
+        return $query->where('document_type', $type);
+    }
+
+    /**
+     * Scope to get documents visible to students.
+     */
+    public function scopeVisibleToStudents($query, $studentId = null)
+    {
+        if ($studentId) {
+            return $query->where(function ($q) use ($studentId) {
+                $q->where('student_visibility', 'all')
+                  ->orWhere('student_visibility', 'course')
+                  ->whereHas('course', function ($courseQuery) use ($studentId) {
+                      $courseQuery->whereHas('students', function ($studentQuery) use ($studentId) {
+                          $studentQuery->where('user_id', $studentId);
+                      });
+                  });
+            });
+        }
+        
+        return $query->where('student_visibility', 'all');
+    }
+
+    /**
+     * Scope to get documents by academic year.
+     */
+    public function scopeByAcademicYear($query, $year)
+    {
+        return $query->where('academic_year', $year);
     }
 
     /**
@@ -190,5 +266,46 @@ class Document extends Model
     public function scopeByYear($query, $year)
     {
         return $query->whereYear('document_date', $year);
+    }
+
+    /**
+     * Check if document can be viewed by a student.
+     */
+    public function canBeViewedByStudent($student): bool
+    {
+        if ($this->student_visibility === 'all') return true;
+        
+        if ($this->student_visibility === 'course' && $this->course) {
+            return $this->course->students()->where('user_id', $student->id)->exists();
+        }
+        
+        return false;
+    }
+
+    /**
+     * Get document type label.
+     */
+    public function getDocumentTypeLabelAttribute(): string
+    {
+        return match($this->document_type) {
+            'material' => 'Material',
+            'tarea' => 'Tarea',
+            'evaluacion' => 'Evaluación',
+            'recurso' => 'Recurso',
+            default => 'General',
+        };
+    }
+
+    /**
+     * Get student visibility label.
+     */
+    public function getStudentVisibilityLabelAttribute(): string
+    {
+        return match($this->student_visibility) {
+            'all' => 'Todos',
+            'course' => 'Curso',
+            'private' => 'Privado',
+            default => 'Desconocido',
+        };
     }
 }

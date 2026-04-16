@@ -303,6 +303,208 @@ class DocumentController extends Controller
     }
 
     /**
+     * Display documents for teacher (specialized view).
+     */
+    public function teacherIndex(Request $request)
+    {
+        $user = Auth::user();
+        
+        // Obtener cursos del profesor
+        $teacherCourses = \App\Models\CampusCourse::whereHas('teachers', function($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })->pluck('id', 'title');
+
+        // Query para documentos del profesor
+        $query = Document::with(['course', 'category'])
+            ->where('teacher_id', $user->id)
+            ->active();
+
+        // Aplicar filtros específicos
+        if ($request->filled('course')) {
+            $query->where('course_id', $request->course);
+        }
+
+        if ($request->filled('document_type')) {
+            $query->where('document_type', $request->document_type);
+        }
+
+        if ($request->filled('academic_year')) {
+            $query->where('academic_year', $request->academic_year);
+        }
+
+        if ($request->filled('search')) {
+            $query->search($request->search);
+        }
+
+        $documents = $query->orderBy('created_at', 'desc')
+            ->paginate(15)
+            ->withQueryString();
+
+        // Estadísticas
+        $stats = [
+            'total_documents' => Document::where('teacher_id', $user->id)->active()->count(),
+            'course_documents' => Document::where('teacher_id', $user->id)->whereNotNull('course_id')->active()->count(),
+            'material_documents' => Document::where('teacher_id', $user->id)->where('document_type', 'material')->active()->count(),
+            'task_documents' => Document::where('teacher_id', $user->id)->where('document_type', 'tarea')->active()->count(),
+        ];
+
+        // Años académicos disponibles
+        $academicYears = Document::where('teacher_id', $user->id)
+            ->whereNotNull('academic_year')
+            ->selectRaw('academic_year')
+            ->distinct()
+            ->orderBy('academic_year', 'desc')
+            ->pluck('academic_year');
+
+        return view('teacher.documents.index', compact(
+            'documents',
+            'teacherCourses',
+            'stats',
+            'academicYears'
+        ));
+    }
+
+    /**
+     * Show form for creating teacher document.
+     */
+    public function teacherCreate()
+    {
+        $user = Auth::user();
+        
+        // Obtener categorías para profesores
+        $categories = DocumentCategory::where('slug', 'like', '%docente%')
+            ->orWhere('slug', 'like', '%tarea%')
+            ->orWhere('slug', 'like', '%evaluacion%')
+            ->orWhere('slug', 'like', '%recurso%')
+            ->active()
+            ->orderBy('sort_order')
+            ->get();
+
+        // Obtener cursos del profesor
+        $courses = \App\Models\CampusCourse::whereHas('teachers', function($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })->get();
+
+        // Tipos de documento
+        $documentTypes = [
+            'material' => 'Material Educativo',
+            'tarea' => 'Tarea/Actividad',
+            'evaluacion' => 'Evaluación',
+            'recurso' => 'Recurso Complementario',
+        ];
+
+        // Visibilidad para estudiantes
+        $visibilityOptions = [
+            'private' => 'Privado (solo yo)',
+            'course' => 'Estudiantes del curso',
+            'all' => 'Todos los estudiantes',
+        ];
+
+        return view('teacher.documents.create', compact(
+            'categories',
+            'courses',
+            'documentTypes',
+            'visibilityOptions'
+        ));
+    }
+
+    /**
+     * Store teacher document.
+     */
+    public function teacherStore(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:200',
+            'description' => 'nullable|string',
+            'category_id' => 'required|exists:document_categories,id',
+            'course_id' => 'nullable|exists:campus_courses,id',
+            'document_type' => 'required|in:material,tarea,evaluacion,recurso',
+            'student_visibility' => 'required|in:private,course,all',
+            'academic_year' => 'nullable|integer|min:2000|max:2100',
+            'document_date' => 'nullable|date',
+            'tags' => 'nullable|string',
+            'file' => 'required|file|max:10240', // 10MB max
+        ]);
+
+        $user = Auth::user();
+        
+        // Verificar que el curso pertenece al profesor
+        if ($validated['course_id']) {
+            $course = \App\Models\CampusCourse::find($validated['course_id']);
+            if (!$course->teachers()->where('user_id', $user->id)->exists()) {
+                return back()->with('error', 'No tienes permiso para subir documentos a este curso.');
+            }
+        }
+
+        // Determinar año académico si no se especifica
+        if (!isset($validated['academic_year'])) {
+            $validated['academic_year'] = date('Y') >= 8 ? date('Y') + 1 : date('Y');
+        }
+
+        // Handle file upload
+        $file = $request->file('file');
+        $fileName = $file->getClientOriginalName();
+        $filePath = $file->store(date('Y/m'), 'documents');
+
+        // Create slug
+        $slug = \Str::slug($validated['title']);
+        $originalSlug = $slug;
+        $counter = 1;
+
+        while (Document::where('slug', $slug)->exists()) {
+            $slug = $originalSlug . '-' . $counter;
+            $counter++;
+        }
+
+        // Create document
+        $document = Document::create([
+            'title' => $validated['title'],
+            'slug' => $slug,
+            'description' => $validated['description'],
+            'category_id' => $validated['category_id'],
+            'file_path' => $filePath,
+            'file_name' => $fileName,
+            'file_type' => $file->getClientMimeType(),
+            'file_size' => $file->getSize(),
+            'uploaded_by' => $user->id,
+            'teacher_id' => $user->id,
+            'course_id' => $validated['course_id'],
+            'document_type' => $validated['document_type'],
+            'student_visibility' => $validated['student_visibility'],
+            'academic_year' => $validated['academic_year'],
+            'document_date' => $validated['document_date'] ? Carbon::parse($validated['document_date']) : null,
+            'tags' => $validated['tags'],
+            'is_public' => false, // Los documentos de profesor no son públicos por defecto
+        ]);
+
+        return redirect()
+            ->route('teacher.documents.show', $document)
+            ->with('success', 'Documento subido correctamente');
+    }
+
+    /**
+     * Show teacher document.
+     */
+    public function teacherShow(Document $document)
+    {
+        $user = Auth::user();
+
+        // Verificar que el documento pertenece al profesor
+        if ($document->teacher_id !== $user->id) {
+            abort(403, 'No tienes permiso para acceder a este documento');
+        }
+
+        // Obtener descargas recientes
+        $recentDownloads = $document->downloads()
+            ->with('user')
+            ->orderBy('downloaded_at', 'desc')
+            ->take(10)
+            ->get();
+
+        return view('teacher.documents.show', compact('document', 'recentDownloads'));
+    }
+
+    /**
      * API endpoint for category documents.
      */
     public function getCategoryDocuments(Request $request, DocumentCategory $category)
