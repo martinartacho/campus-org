@@ -21,12 +21,29 @@
                     });
             });
         })
-        ->active();
+        ->active()
+        ->get();
+    
+    // Calcular estadísticas con queries separadas para mayor precisión
+    $totalQuery = \App\Models\Document::where(function($q) use ($user) {
+        $q->whereHas('teacher', function($subQuery) {
+            $subQuery->whereNotNull('id');
+        })->where(function($visibilityQuery) use ($user) {
+            $visibilityQuery->where('student_visibility', 'all')
+                ->orWhere(function($courseQuery) use ($user) {
+                    $courseQuery->where('student_visibility', 'course')
+                        ->whereHas('course.students', function($studentQuery) use ($user) {
+                            $studentQuery->where('user_id', $user->id)
+                                ->where('academic_status', 'active');
+                        });
+                });
+        });
+    })->active();
     
     $stats = [
-        'total_documents' => $availableDocuments->count(),
-        'course_documents' => $availableDocuments->whereNotNull('course_id')->count(),
-        'public_documents' => $availableDocuments->where('student_visibility', 'all')->count(),
+        'total_documents' => $totalQuery->count(),
+        'course_documents' => $totalQuery->whereNotNull('course_id')->count(),
+        'public_documents' => $totalQuery->where('student_visibility', 'all')->count(),
         'recent_downloads' => \App\Models\DocumentDownload::where('user_id', $user->id)
             ->where('downloaded_at', '>=', now()->subDays(7))
             ->count(),
