@@ -3,7 +3,7 @@
     $user = auth()->user();
     
     // Obtener documentos disponibles para el estudiante
-    $availableDocuments = \App\Models\Document::with(['course', 'teacher'])
+    $availableDocumentsQuery = \App\Models\Document::with(['course', 'teacher'])
         ->where(function($q) use ($user) {
             // Documentos de profesor visibles para este estudiante
             $q->whereHas('teacher', function($subQuery) {
@@ -22,7 +22,7 @@
             });
         })
         ->active()
-        ->get();
+        ->orderBy('created_at', 'desc');
     
     // Calcular estadísticas con queries separadas para mayor precisión
     $totalQuery = \App\Models\Document::where(function($q) use ($user) {
@@ -50,8 +50,7 @@
     ];
     
     // Documentos recientes para mostrar
-    $recentDocuments = $availableDocuments
-        ->orderBy('created_at', 'desc')
+    $recentDocuments = $availableDocumentsQuery
         ->take(3)
         ->get();
 @endphp
