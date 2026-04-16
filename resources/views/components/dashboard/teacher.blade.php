@@ -20,6 +20,13 @@
     {{-- CARDS SUPERIORES --}}
     @include('components.dashboard-teacher-cards')
 
+    {{-- WIDGET DE DOCUMENTOS --}}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <x-dashboard.widgets.teacher_documents />
+        
+        {{-- Aquí se pueden añadir más widgets en el futuro --}}
+    </div>
+
     {{-- DEBUG --}}
 <!--    @if(config('app.debug'))
         <pre class="bg-gray-100 p-3 text-xs rounded border">{{ var_export([
