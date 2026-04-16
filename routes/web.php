@@ -674,7 +674,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->name('teachers.template');
                 
         Route::resource('registrations', \App\Http\Controllers\Campus\RegistrationController::class)
-            ->middleware('can:campus.registrations.view');
+            ->middleware(['can:campus.registrations.view']);
         
         Route::post('registrations/{registration}/validate', [\App\Http\Controllers\Campus\RegistrationController::class, 'validateRegistration'])
             ->name('registrations.validate');

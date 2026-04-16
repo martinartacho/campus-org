@@ -2,15 +2,31 @@
 
 @section('title', __('campus.registrations_management'))
 
+@push('styles')
+<style>
+.sticky-header {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 100 !important;
+    background: #f9fafb !important;
+}
+</style>
+@endpush
+
 @section('content')
 <div class="container mx-auto px-4 py-8">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold text-gray-900">{{ __('campus.registration_records') }}</h1>
         <div class="flex gap-4">
-            <a href="{{ url('/campus/registrations-import') }}" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+            @if(auth()->user()->can('campus.registrations.create'))
+                <a href="{{ route('campus.registrations.create') }}" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                    <i class="bi bi-plus-circle mr-2"></i>{{ __('campus.create_registration') }}
+                </a>
+            @endif
+            <a href="{{ url('/campus/registrations-import') }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
                 <i class="bi bi-upload mr-2"></i>{{ __('campus.import_registrations') }}
             </a>
-            <button onclick="exportRegistrations()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+            <button onclick="exportRegistrations()" class="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">
                 <i class="bi bi-download mr-2"></i>{{ __('campus.export_registrations') }}
             </button>
         </div>
@@ -69,11 +85,11 @@
 
     <!-- Registrations Table -->
     <div class="bg-white rounded-lg shadow overflow-hidden">
-        <div class="overflow-x-auto">
+        <div style="position: relative; max-height: 500px; overflow: auto;">
             <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
+                <thead class="bg-gray-50 sticky-header">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('campus.id') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden">{{ __('campus.id') }}</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('campus.student') }}</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('campus.course') }}</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('campus.date') }}</th>
@@ -86,20 +102,20 @@
                 <tbody class="bg-white divide-y divide-gray-200">
                     @forelse($registrations as $registration)
                         <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 hidden">
                                 {{ $registration->id }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm font-medium text-gray-900">{{ $registration->student->first_name }}</div>
-                                <div class="text-sm text-gray-500">{{ $registration->student->dni }}</div>
-                                <div class="text-sm text-gray-500">{{ $registration->student->email }}</div>
+                                <div class="text-sm font-medium text-gray-900">{{ $registration->student->first_name ?? 'N/A' }} {{ $registration->student->last_name ?? '' }}</div>
+                                <div class="text-sm text-gray-500">{{ $registration->student->email ?? 'N/A' }}</div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm font-medium text-gray-900">{{ $registration->course->title }}</div>
-                                <div class="text-sm text-gray-500">{{ $registration->course->code }}</div>
+                            <td class="px-6 py-4 max-w-xs">
+                                <div class="text-sm font-medium text-gray-900 truncate" title="{{ $registration->course->title ?? 'N/A' }}">{{ Str::limit($registration->course->title ?? 'N/A', 30) }}</div>
+                                <div class="text-sm text-gray-500 truncate" title="{{ $registration->course->code ?? 'N/A' }}">{{ $registration->course->code ?? 'N/A' }}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                {{ $registration->registration_date }}
+                                <div>{{ \Carbon\Carbon::parse($registration->registration_date)->format('d/m/Y') }}</div>
+                                <div class="text-xs text-gray-500">{{ \Carbon\Carbon::parse($registration->registration_date)->format('H:i') }}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
@@ -116,15 +132,30 @@
                                     @elseif($registration->payment_status == 'pending') bg-yellow-100 text-yellow-800
                                     @elseif($registration->payment_status == 'partial') bg-blue-100 text-blue-800
                                     @else bg-gray-100 text-gray-800 @endif">
-                                    {{ $registration->formatted_payment_status }}
+                                    {{ $registration->payment_status == 'pending' ? 'Pendent' : $registration->formatted_payment_status }}
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                 €{{ number_format($registration->amount, 2) }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium min-w-[120px]">
                                 <div class="flex space-x-2">
-                                    @if($registration->status == 'pending' || $registration->status == 'cancelled')
+                                    <!-- View -->
+                                    <a href="{{ route('campus.registrations.show', $registration->id) }}" 
+                                       class="text-blue-600 hover:text-blue-900" title="{{ __('campus.view') }}">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    
+                                    <!-- Edit -->
+                                    @if(auth()->user()->can('campus.registrations.edit'))
+                                        <a href="{{ route('campus.registrations.edit', $registration->id) }}" 
+                                           class="text-yellow-600 hover:text-yellow-900" title="{{ __('campus.edit') }}">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                    @endif
+                                    
+                                    <!-- Validate -->
+                                    @if(($registration->status == 'pending' || $registration->status == 'cancelled') && auth()->user()->can('campus.registrations.validate'))
                                         <form action="{{ route('campus.registrations.validate', $registration->id) }}" method="POST" class="inline">
                                             @csrf
                                             <button type="submit" class="text-green-600 hover:text-green-900" title="{{ __('campus.validate_registration') }}">
@@ -133,13 +164,16 @@
                                         </form>
                                     @endif
                                     
-                                    <form action="{{ url("/campus/registrations/{$registration->id}") }}" method="POST" onsubmit="return confirm('{{ __('campus.delete_registration_confirm') }}')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-red-600 hover:text-red-900" title="{{ __('campus.delete_registration') }}">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </form>
+                                    <!-- Delete -->
+                                    @if(auth()->user()->can('campus.registrations.delete'))
+                                        <form action="{{ route('campus.registrations.destroy', $registration->id) }}" method="POST" onsubmit="return confirm('{{ __('campus.delete_registration_confirm') }}')" class="inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="text-red-600 hover:text-red-900" title="{{ __('campus.delete_registration') }}">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    @endif
                                 </div>
                             </td>
                         </tr>

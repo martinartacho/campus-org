@@ -16,6 +16,7 @@ class CampusRegistration extends Model
         'student_id',
         'course_id',
         'season_id',
+        'user_id',
         'registration_code',
         'registration_date',
         'status',
@@ -61,6 +62,14 @@ class CampusRegistration extends Model
     public function season(): BelongsTo
     {
         return $this->belongsTo(CampusSeason::class, 'season_id');
+    }
+
+    /**
+     * Get the user who created/updated the registration.
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     /**
