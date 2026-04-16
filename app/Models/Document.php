@@ -225,6 +225,7 @@ class Document extends Model
         return $this->category->hasAccess($user);
     }
 
+    
     /**
      * Increment download count and record download.
      */
