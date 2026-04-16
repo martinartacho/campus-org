@@ -293,6 +293,15 @@ Route::prefix('teacher')->name('teacher.')->middleware(['auth', 'role:teacher'])
     });
 });
 
+// Student Document Routes
+Route::prefix('student')->name('student.')->middleware(['auth', 'role:student'])->group(function () {
+    Route::prefix('documents')->name('documents.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\DocumentController::class, 'studentIndex'])->name('index');
+        Route::get('/{document}', [\App\Http\Controllers\DocumentController::class, 'studentShow'])->name('show');
+        Route::get('/{document}/download', [\App\Http\Controllers\DocumentController::class, 'studentDownload'])->name('download');
+    });
+});
+
 // ENVIAR MAIL (Treasury)    
 Route::middleware(['auth', 'permission:campus.consents.request'])
     ->prefix('campus/treasury')

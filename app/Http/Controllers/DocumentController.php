@@ -639,6 +639,133 @@ class DocumentController extends Controller
     }
 
     /**
+     * Display documents for student (specialized view).
+     */
+    public function studentIndex(Request $request)
+    {
+        $user = Auth::user();
+
+        // Obtener cursos del estudiante
+        $studentCourses = $user->studentCourses()
+            ->where('academic_status', 'active')
+            ->with('course')
+            ->get();
+
+        // Query para documentos disponibles para el estudiante
+        $query = Document::with(['course', 'category', 'teacher'])
+            ->where(function($q) use ($user) {
+                // Documentos de profesor visibles para este estudiante
+                $q->whereHas('teacher', function($subQuery) {
+                    $subQuery->whereNotNull('id');
+                })->where(function($visibilityQuery) use ($user) {
+                    // Documentos públicos para estudiantes
+                    $visibilityQuery->where('student_visibility', 'all')
+                        // Documentos del curso del estudiante
+                        ->orWhere(function($courseQuery) use ($user) {
+                            $courseQuery->where('student_visibility', 'course')
+                                ->whereHas('course.students', function($studentQuery) use ($user) {
+                                    $studentQuery->where('user_id', $user->id)
+                                        ->where('academic_status', 'active');
+                                });
+                        });
+                });
+            })
+            ->active();
+
+        // Aplicar filtros
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'LIKE', "%{$search}%")
+                  ->orWhere('description', 'LIKE', "%{$search}%")
+                  ->orWhere('tags', 'LIKE', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('course')) {
+            $query->where('course_id', $request->course);
+        }
+
+        if ($request->filled('document_type')) {
+            $query->where('document_type', $request->document_type);
+        }
+
+        // Ordenar por fecha de creación descendente
+        $documents = $query->orderBy('created_at', 'desc')->paginate(12);
+
+        // Calcular estadísticas
+        $stats = [
+            'total_documents' => $query->count(),
+            'course_documents' => $query->whereNotNull('course_id')->count(),
+            'public_documents' => $query->where('student_visibility', 'all')->count(),
+            'recent_downloads' => \App\Models\DocumentDownload::where('user_id', $user->id)
+                ->where('downloaded_at', '>=', now()->subDays(7))
+                ->count(),
+        ];
+
+        // Tipos de documento para filtros
+        $documentTypes = [
+            'material' => 'Material Educativo',
+            'tarea' => 'Tarea/Actividad',
+            'evaluacion' => 'Evaluación',
+            'recurso' => 'Recurso Complementario',
+        ];
+
+        return view('student.documents.index', compact(
+            'documents',
+            'studentCourses',
+            'courses',
+            'stats',
+            'documentTypes'
+        ));
+    }
+
+    /**
+     * Show student document.
+     */
+    public function studentShow(Document $document)
+    {
+        $user = Auth::user();
+
+        // Verificar que el estudiante tiene acceso
+        if (!$document->hasAccess($user)) {
+            abort(403, 'No tienes permiso para acceder a este documento');
+        }
+
+        // Obtener descargas recientes
+        $recentDownloads = $document->downloads()
+            ->with('user')
+            ->orderBy('downloaded_at', 'desc')
+            ->take(10)
+            ->get();
+
+        return view('student.documents.show', compact('document', 'recentDownloads'));
+    }
+
+    /**
+     * Download document for student.
+     */
+    public function studentDownload(Document $document)
+    {
+        $user = Auth::user();
+
+        // Verificar acceso
+        if (!$document->hasAccess($user)) {
+            abort(403, 'No tienes permiso para descargar este documento');
+        }
+
+        // Registrar descarga
+        $document->recordDownload(
+            $user,
+            request()->ip(),
+            request()->userAgent()
+        );
+
+        // Descargar archivo
+        return Storage::disk('documents')->download($document->file_path, $document->file_name);
+    }
+
+    /**
      * API endpoint for category documents.
      */
     public function getCategoryDocuments(Request $request, DocumentCategory $category)

@@ -99,6 +99,13 @@
         </div>
     </div>
 
+    {{-- Widget de Documents --}}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <x-dashboard.widgets.student_documents />
+        
+        {{-- Aquí se pueden añadir más widgets en el futuro --}}
+    </div>
+
     {{-- Llista de Cursos Matriculats --}}
     <div class="bg-white rounded-lg shadow border border-gray-200">
         <div class="px-6 py-4 border-b border-gray-200">
