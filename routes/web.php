@@ -286,8 +286,8 @@ Route::prefix('teacher')->name('teacher.')->middleware(['auth', 'role:teacher'])
         Route::get('/create', [\App\Http\Controllers\DocumentController::class, 'teacherCreate'])->name('create');
         Route::post('/', [\App\Http\Controllers\DocumentController::class, 'teacherStore'])->name('store');
         Route::get('/{document}', [\App\Http\Controllers\DocumentController::class, 'teacherShow'])->name('show');
-        Route::get('/{document}/edit', [\App\Http\Controllers\DocumentController::class, 'edit'])->name('edit');
-        Route::put('/{document}', [\App\Http\Controllers\DocumentController::class, 'update'])->name('update');
+        Route::get('/{document}/edit', [\App\Http\Controllers\DocumentController::class, 'teacherEdit'])->name('edit');
+        Route::put('/{document}', [\App\Http\Controllers\DocumentController::class, 'teacherUpdate'])->name('update');
         Route::delete('/{document}', [\App\Http\Controllers\DocumentController::class, 'destroy'])->name('destroy');
         Route::get('/{document}/download', [\App\Http\Controllers\DocumentController::class, 'download'])->name('download');
     });

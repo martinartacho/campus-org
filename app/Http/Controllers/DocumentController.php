@@ -505,6 +505,140 @@ class DocumentController extends Controller
     }
 
     /**
+     * Update teacher document.
+     */
+    public function teacherUpdate(Request $request, Document $document)
+    {
+        $user = Auth::user();
+
+        // Verificar que el documento pertenece al profesor
+        if ($document->teacher_id !== $user->id) {
+            abort(403, 'No tienes permiso para editar este documento');
+        }
+
+        $validated = $request->validate([
+            'title' => 'required|string|max:200',
+            'description' => 'nullable|string',
+            'category_id' => 'required|exists:document_categories,id',
+            'course_id' => 'nullable|exists:campus_courses,id',
+            'document_type' => 'required|in:material,tarea,evaluacion,recurso',
+            'student_visibility' => 'required|in:private,course,all',
+            'academic_year' => 'nullable|integer|min:2000|max:2100',
+            'document_date' => 'nullable|date',
+            'tags' => 'nullable|string',
+            'file' => 'nullable|file|max:10240', // 10MB max
+        ]);
+
+        // Verificar que el curso pertenece al profesor
+        if ($validated['course_id']) {
+            $course = \App\Models\CampusCourse::find($validated['course_id']);
+            if (!$course->teachers()->where('user_id', $user->id)->exists()) {
+                return back()->with('error', 'No tienes permiso para asignar este documento a este curso.');
+            }
+        }
+
+        // Handle file replacement if provided
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $fileName = $file->getClientOriginalName();
+            $filePath = $file->store(date('Y/m'), 'documents');
+
+            // Update file information
+            $validated['file_path'] = $filePath;
+            $validated['file_name'] = $fileName;
+            $validated['file_type'] = $file->getClientMimeType();
+            $validated['file_size'] = $file->getSize();
+        }
+
+        // Update slug if title changed
+        if ($validated['title'] !== $document->title) {
+            $slug = \Str::slug($validated['title']);
+            $originalSlug = $slug;
+            $counter = 1;
+
+            while (Document::where('slug', $slug)->where('id', '!=', $document->id)->exists()) {
+                $slug = $originalSlug . '-' . $counter;
+                $counter++;
+            }
+
+            $validated['slug'] = $slug;
+        }
+
+        // Update document
+        $document->update([
+            'title' => $validated['title'],
+            'slug' => $validated['slug'] ?? $document->slug,
+            'description' => $validated['description'],
+            'category_id' => $validated['category_id'],
+            'course_id' => $validated['course_id'],
+            'document_type' => $validated['document_type'],
+            'student_visibility' => $validated['student_visibility'],
+            'academic_year' => $validated['academic_year'],
+            'document_date' => $validated['document_date'] ? Carbon::parse($validated['document_date']) : null,
+            'tags' => $validated['tags'],
+            // Update file info only if new file provided
+            'file_path' => $validated['file_path'] ?? $document->file_path,
+            'file_name' => $validated['file_name'] ?? $document->file_name,
+            'file_type' => $validated['file_type'] ?? $document->file_type,
+            'file_size' => $validated['file_size'] ?? $document->file_size,
+        ]);
+
+        return redirect()
+            ->route('teacher.documents.show', $document)
+            ->with('success', 'Documento actualizado correctamente');
+    }
+
+    /**
+     * Show form for editing teacher document.
+     */
+    public function teacherEdit(Document $document)
+    {
+        $user = Auth::user();
+
+        // Verificar que el documento pertenece al profesor
+        if ($document->teacher_id !== $user->id) {
+            abort(403, 'No tienes permiso para editar este documento');
+        }
+        
+        // Obtener categorías para profesores
+        $categories = DocumentCategory::where('slug', 'like', '%docente%')
+            ->orWhere('slug', 'like', '%tarea%')
+            ->orWhere('slug', 'like', '%evaluacion%')
+            ->orWhere('slug', 'like', '%recurso%')
+            ->active()
+            ->orderBy('sort_order')
+            ->get();
+
+        // Obtener cursos del profesor
+        $courses = \App\Models\CampusCourse::whereHas('teachers', function($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })->get();
+
+        // Tipos de documento
+        $documentTypes = [
+            'material' => 'Material Educativo',
+            'tarea' => 'Tarea/Actividad',
+            'evaluacion' => 'Evaluación',
+            'recurso' => 'Recurso Complementario',
+        ];
+
+        // Visibilidad para estudiantes
+        $visibilityOptions = [
+            'private' => 'Privado (solo yo)',
+            'course' => 'Estudiantes del curso',
+            'all' => 'Todos los estudiantes',
+        ];
+
+        return view('teacher.documents.edit', compact(
+            'document',
+            'categories',
+            'courses',
+            'documentTypes',
+            'visibilityOptions'
+        ));
+    }
+
+    /**
      * API endpoint for category documents.
      */
     public function getCategoryDocuments(Request $request, DocumentCategory $category)

@@ -194,6 +194,28 @@ class Document extends Model
      */
     public function hasAccess($user): bool
     {
+        // Si es un documento de profesor, usar lógica específica
+        if ($this->teacher_id) {
+            // El profesor dueño siempre tiene acceso
+            if ($this->teacher_id === $user->id) {
+                return true;
+            }
+
+            // Si es estudiante, verificar visibilidad
+            if ($user->hasRole('student')) {
+                return $this->canBeViewedByStudent($user);
+            }
+
+            // Si es admin/super-admin, dar acceso
+            if ($user->hasAnyRole(['admin', 'super-admin'])) {
+                return true;
+            }
+
+            // Otros roles no tienen acceso a documentos de profesor
+            return false;
+        }
+
+        // Documentos del sistema original (no de profesor)
         // If document is public, everyone has access
         if ($this->is_public) {
             return true;
