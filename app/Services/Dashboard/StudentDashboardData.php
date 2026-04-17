@@ -27,10 +27,8 @@ class StudentDashboardData
                 ];
             }
 
-            // Obtener cursos del estudiante (USAR CampusCourseStudent - DATOS REALES)
-            $studentCourses = CampusCourseStudent::where('student_id', $student->id)
-                ->with(['course', 'season'])
-                ->get();
+            // Obtener cursos del estudiante usando relación directa
+            $studentCourses = $user->studentCourses();
 
             // Obtener matrículas (intentar pero puede estar vacío)
             $registrations = CampusRegistration::where('student_id', $student->id)
