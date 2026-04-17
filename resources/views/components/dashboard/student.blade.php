@@ -112,45 +112,43 @@
             <h2 class="text-lg font-semibold text-gray-900">{{ __('campus.my_courses') }}</h2>
         </div>
         <div class="p-6">
-            @if(isset($studentCourses) && $studentCourses->count() > 0)
+            @if(isset($studentCourses) && $studentCourses->get()->count() > 0)
+                @php
+                    $coursesCollection = $studentCourses->get();
+                @endphp
+                
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    @foreach($studentCourses as $registration)
+                    @foreach($coursesCollection as $course)
                         <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
                             <div class="flex items-start justify-between mb-3">
-                                <h3 class="font-semibold text-gray-900">{{ $registration->title }}</h3>
-                                <span class="px-2 py-1 text-xs font-medium rounded-full 
-                                    @if($registration->status == 'confirmed') bg-green-100 text-green-800
-                                    @elseif($registration->status == 'pending') bg-yellow-100 text-yellow-800
-                                    @elseif($registration->status == 'cancelled') bg-red-100 text-red-800
-                                    @else bg-gray-100 text-gray-800 @endif">
-                                    {{ ucfirst($registration->status) }}
+                                <h3 class="font-semibold text-gray-900">{{ $course->title }}</h3>
+                                <span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
+                                    {{ ucfirst($course->academic_status) }}
                                 </span>
                             </div>
                             
                             <div class="space-y-2 text-sm text-gray-600">
                                 <div class="flex items-center">
                                     <i class="bi bi-tag mr-2"></i>
-                                    <span>{{ $registration->code }}</span>
+                                    <span>{{ $course->code }}</span>
                                 </div>
                                 <div class="flex items-center">
                                     <i class="bi bi-calendar-range mr-2"></i>
-                                    <span>{{ $registration->sessions }} sessions</span>
+                                    <span>{{ $course->sessions }} sessions</span>
                                 </div>
                                 <div class="flex items-center">
                                     <i class="bi bi-bar-chart mr-2"></i>
-                                    <span>{{ ucfirst($registration->level) }}</span>
+                                    <span>{{ ucfirst($course->level) }}</span>
                                 </div>
                                 <div class="flex items-center">
                                     <i class="bi bi-laptop mr-2"></i>
-                                    <span>{{ $registration->format }}</span>
+                                    <span>{{ $course->format }}</span>
                                 </div>
                                 <div class="flex items-center">
                                     <i class="bi bi-people mr-2"></i>
-                                    <span>{{ $registration->max_students }} places</span>
+                                    <span>{{ $course->max_students }} places</span>
                                 </div>
                             </div>
-                            
-
                         </div>
                     @endforeach
                 </div>

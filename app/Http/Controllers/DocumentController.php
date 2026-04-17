@@ -646,9 +646,7 @@ class DocumentController extends Controller
         $user = Auth::user();
 
         // Obtener cursos del estudiante
-        $studentCourses = $user->studentCourses()
-            ->with('course')
-            ->get();
+        $studentCourses = $user->studentCourses()->get();
 
         // Obtener IDs de cursos del estudiante
         $studentCourseIds = $user->studentCourses()->pluck('id')->toArray();
@@ -713,7 +711,6 @@ class DocumentController extends Controller
         return view('student.documents.index', compact(
             'documents',
             'studentCourses',
-            'courses',
             'stats',
             'documentTypes'
         ));

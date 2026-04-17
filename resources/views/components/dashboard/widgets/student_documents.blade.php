@@ -105,14 +105,10 @@
         </div>
     @endif
     
-    {{-- TEMPORALMENT COMENTAT mentre es resolten els errors de relació
     <div class="mt-4">
-        {{-- <x-campus-button href="{{ route('student.documents.index') }}" variant="primary" size="sm">
+        <x-campus-button href="{{ route('student.documents.index') }}" variant="primary" size="sm">
             <i class="bi bi-folder2-open me-2"></i>
             Veure Tots els Documents
-        </x-campus-button> --}}
-        <div class="text-sm text-gray-500 italic">
-            🚧 Documents temporalment desactivats per manteniment
-        </div>
-    </div> --}}
+        </x-campus-button>
+    </div>
 </div>

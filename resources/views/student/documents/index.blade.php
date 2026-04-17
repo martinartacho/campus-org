@@ -49,7 +49,7 @@
                                 name="course" 
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                             <option value="">Tots els meus cursos</option>
-                            @foreach($courses as $course)
+                            @foreach($studentCourses as $course)
                                 <option value="{{ $course->id }}" {{ request('course') == $course->id ? 'selected' : '' }}>
                                     {{ $course->title }}
                                 </option>
