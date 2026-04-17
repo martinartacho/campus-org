@@ -290,7 +290,7 @@
     </div>
 
     {{-- Debug/Error Info --}}
-    @if($debug || $error)
+    @if(config('app.debug') && ($debug || $error))
         <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
             @if($error)
                 <div class="text-red-800">
