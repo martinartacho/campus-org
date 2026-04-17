@@ -16,7 +16,7 @@
                         $courseQuery->where('student_visibility', 'course')
                             ->whereHas('course.students', function($studentQuery) use ($user) {
                                 $studentQuery->where('user_id', $user->id)
-                                    ->where('academic_status', 'active');
+                                    ->where('status', 'active');
                             });
                     });
             });
@@ -34,7 +34,7 @@
                     $courseQuery->where('student_visibility', 'course')
                         ->whereHas('course.students', function($studentQuery) use ($user) {
                             $studentQuery->where('user_id', $user->id)
-                                ->where('academic_status', 'active');
+                                ->where('status', 'active');
                         });
                 });
         });
