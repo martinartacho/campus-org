@@ -165,7 +165,7 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
 
     public function studentCourses()
     {
-        return $this->student()->firstOrFail()->courses();
+        return $this->student()->firstOrFail()->coursesUsingTable();
     }
 
     public function treasuryData(): HasMany

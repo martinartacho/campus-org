@@ -69,6 +69,15 @@ class CampusStudent extends Model
     }
 
     /**
+     * Get the courses using campus_course_student table.
+     */
+    public function coursesUsingTable()
+    {
+        return $this->belongsToMany(CampusCourse::class, 'campus_course_student', 'student_id', 'course_id')
+            ->withPivot(['academic_status', 'enrollment_date', 'start_date', 'end_date', 'final_grade']);
+    }
+
+    /**
      * Get active registrations.
      */
     public function activeRegistrations()
