@@ -68,6 +68,9 @@ class StudentDashboardData
             ];
 
         } catch (\Exception $e) {
+            \Log::error('StudentDashboardData Error: ' . $e->getMessage());
+            \Log::error('StudentDashboardData Trace: ' . $e->getTraceAsString());
+            
             return [
                 'student' => $user->student ?? null,
                 'studentStats' => $this->getEmptyStats(),
@@ -75,7 +78,13 @@ class StudentDashboardData
                 'recentActivity' => collect(),
                 'upcomingClasses' => collect(),
                 'grades' => collect(),
-                'debug' => null,
+                'debug' => [
+                    'user_id' => $user->id,
+                    'student_exists' => $user->student ? true : false,
+                    'error_message' => $e->getMessage(),
+                    'error_file' => $e->getFile(),
+                    'error_line' => $e->getLine(),
+                ],
                 'error' => 'Error loading dashboard: ' . $e->getMessage(),
             ];
         }
