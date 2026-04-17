@@ -14,7 +14,7 @@
                     // Documentos del curso del estudiante
                     ->orWhere(function($courseQuery) use ($user) {
                         $courseQuery->where('student_visibility', 'course')
-                            ->whereHas('course.studentsUsingTable', function($studentQuery) use ($user) {
+                            ->whereHas('course.students', function($studentQuery) use ($user) {
                                 $studentQuery->where('campus_course_student.student_id', $user->id)
                                     ->where('campus_course_student.academic_status', 'active');
                             });
@@ -32,7 +32,7 @@
             $visibilityQuery->where('student_visibility', 'all')
                 ->orWhere(function($courseQuery) use ($user) {
                     $courseQuery->where('student_visibility', 'course')
-                        ->whereHas('course.studentsUsingTable', function($studentQuery) use ($user) {
+                        ->whereHas('course.students', function($studentQuery) use ($user) {
                             $studentQuery->where('campus_course_student.student_id', $user->id)
                                 ->where('campus_course_student.academic_status', 'active');
                         });
