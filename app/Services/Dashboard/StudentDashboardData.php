@@ -30,7 +30,7 @@ class StudentDashboardData
             // Obtener cursos del estudiante usando relación directa
             $studentCourses = $user->studentCourses();
 
-            // Obtener matrículas (intentar pero puede estar vacío)
+            // Obtener matrículas (solo para estadísticas, no para mostrar)
             $registrations = CampusRegistration::where('student_id', $student->id)
                 ->with(['course', 'season'])
                 ->get();

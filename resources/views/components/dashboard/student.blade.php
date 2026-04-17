@@ -117,7 +117,7 @@
                     @foreach($studentCourses as $registration)
                         <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
                             <div class="flex items-start justify-between mb-3">
-                                <h3 class="font-semibold text-gray-900">{{ $registration->course->title }}</h3>
+                                <h3 class="font-semibold text-gray-900">{{ $registration->title }}</h3>
                                 <span class="px-2 py-1 text-xs font-medium rounded-full 
                                     @if($registration->status == 'confirmed') bg-green-100 text-green-800
                                     @elseif($registration->status == 'pending') bg-yellow-100 text-yellow-800
@@ -130,23 +130,23 @@
                             <div class="space-y-2 text-sm text-gray-600">
                                 <div class="flex items-center">
                                     <i class="bi bi-tag mr-2"></i>
-                                    <span>{{ $registration->course->code }}</span>
+                                    <span>{{ $registration->code }}</span>
                                 </div>
                                 <div class="flex items-center">
                                     <i class="bi bi-calendar-range mr-2"></i>
-                                    <span>{{ $registration->course->sessions }} sessions</span>
+                                    <span>{{ $registration->sessions }} sessions</span>
                                 </div>
                                 <div class="flex items-center">
                                     <i class="bi bi-bar-chart mr-2"></i>
-                                    <span>{{ ucfirst($registration->course->level) }}</span>
+                                    <span>{{ ucfirst($registration->level) }}</span>
                                 </div>
                                 <div class="flex items-center">
                                     <i class="bi bi-laptop mr-2"></i>
-                                    <span>{{ $registration->course->format }}</span>
+                                    <span>{{ $registration->format }}</span>
                                 </div>
                                 <div class="flex items-center">
                                     <i class="bi bi-people mr-2"></i>
-                                    <span>{{ $registration->course->max_students }} places</span>
+                                    <span>{{ $registration->max_students }} places</span>
                                 </div>
                             </div>
                             
