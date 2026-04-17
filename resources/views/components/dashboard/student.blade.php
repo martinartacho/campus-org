@@ -113,6 +113,31 @@
         </div>
         <div class="p-6">
             @if(isset($studentCourses) && $studentCourses->get()->count() > 0)
+                {{-- DEBUG: Solo mostrar en desarrollo --}}
+                @if(config('app.debug'))
+                    @php
+                        $coursesCollection = $studentCourses->get();
+                    @endphp
+                    
+                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+                        <h4 class="font-semibold text-yellow-800 mb-2">DEBUG: studentCourses</h4>
+                        <p class="text-sm text-yellow-700 mt-2">
+                            <strong>Type:</strong> {{ get_class($studentCourses) }}<br>
+                            <strong>Count:</strong> {{ $studentCourses->get()->count() }}<br>
+                            <strong>First item type:</strong> {{ get_class($studentCourses->get()->first() ?? 'null') }}<br>
+                            <strong>SQL Query:</strong> {{ $studentCourses->toSql() }}
+                        </p>
+                        @php
+                            $coursesCollection = $studentCourses->get();
+                            if($coursesCollection->count() > 0) {
+                                echo '<pre class="text-xs bg-white p-2 rounded border overflow-auto max-h-40">' . json_encode($coursesCollection->first()->toArray(), JSON_PRETTY_PRINT) . '</pre>';
+                            } else {
+                                echo '<p class="text-sm text-red-600">No courses found</p>';
+                            }
+                        @endphp
+                    </div>
+                @endif
+                
                 @php
                     $coursesCollection = $studentCourses->get();
                 @endphp
