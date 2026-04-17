@@ -84,6 +84,7 @@ class CampusStudent extends Model
     {
         return $this->belongsToMany(CampusCourse::class, 'campus_course_student', 'student_id', 'course_id')
             ->where('campus_course_student.academic_status', 'active')
+            ->select('campus_courses.*', 'campus_course_student.academic_status', 'campus_course_student.enrollment_date', 'campus_course_student.start_date', 'campus_course_student.end_date', 'campus_course_student.final_grade')
             ->withPivot(['academic_status', 'enrollment_date', 'start_date', 'end_date', 'final_grade']);
     }
 
