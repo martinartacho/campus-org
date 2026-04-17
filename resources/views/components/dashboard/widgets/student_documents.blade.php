@@ -2,22 +2,22 @@
 @php
     $user = auth()->user();
     
+    // Obtener IDs de cursos del estudiante
+    $studentCourseIds = $user->studentCourses()->pluck('id')->toArray();
+    
     // Obtener documentos disponibles para el estudiante
     $availableDocumentsQuery = \App\Models\Document::with(['course', 'teacher'])
-        ->where(function($q) use ($user) {
+        ->where(function($q) use ($user, $studentCourseIds) {
             // Documentos de profesor visibles para este estudiante
             $q->whereHas('teacher', function($subQuery) {
                 $subQuery->whereNotNull('id');
-            })->where(function($visibilityQuery) use ($user) {
+            })->where(function($visibilityQuery) use ($user, $studentCourseIds) {
                 // Documentos públicos para estudiantes
                 $visibilityQuery->where('student_visibility', 'all')
                     // Documentos del curso del estudiante
-                    ->orWhere(function($courseQuery) use ($user) {
+                    ->orWhere(function($courseQuery) use ($studentCourseIds) {
                         $courseQuery->where('student_visibility', 'course')
-                            ->whereHas('course.students', function($studentQuery) use ($user) {
-                                $studentQuery->where('campus_course_student.student_id', $user->id)
-                                    ->where('campus_course_student.academic_status', 'active');
-                            });
+                            ->whereIn('course_id', $studentCourseIds);
                     });
             });
         })
@@ -25,17 +25,14 @@
         ->orderBy('created_at', 'desc');
     
     // Calcular estadísticas con queries separadas para mayor precisión
-    $totalQuery = \App\Models\Document::where(function($q) use ($user) {
+    $totalQuery = \App\Models\Document::where(function($q) use ($user, $studentCourseIds) {
         $q->whereHas('teacher', function($subQuery) {
             $subQuery->whereNotNull('id');
-        })->where(function($visibilityQuery) use ($user) {
+        })->where(function($visibilityQuery) use ($user, $studentCourseIds) {
             $visibilityQuery->where('student_visibility', 'all')
-                ->orWhere(function($courseQuery) use ($user) {
+                ->orWhere(function($courseQuery) use ($studentCourseIds) {
                     $courseQuery->where('student_visibility', 'course')
-                        ->whereHas('course.students', function($studentQuery) use ($user) {
-                            $studentQuery->where('campus_course_student.student_id', $user->id)
-                                ->where('campus_course_student.academic_status', 'active');
-                        });
+                        ->whereIn('course_id', $studentCourseIds);
                 });
         });
     })->active();
@@ -108,10 +105,14 @@
         </div>
     @endif
     
+    {{-- TEMPORALMENT COMENTAT mentre es resolten els errors de relació
     <div class="mt-4">
-        <x-campus-button href="{{ route('student.documents.index') }}" variant="primary" size="sm">
+        {{-- <x-campus-button href="{{ route('student.documents.index') }}" variant="primary" size="sm">
             <i class="bi bi-folder2-open me-2"></i>
             Veure Tots els Documents
-        </x-campus-button>
-    </div>
+        </x-campus-button> --}}
+        <div class="text-sm text-gray-500 italic">
+            🚧 Documents temporalment desactivats per manteniment
+        </div>
+    </div> --}}
 </div>

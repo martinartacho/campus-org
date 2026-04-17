@@ -78,6 +78,16 @@ class CampusStudent extends Model
     }
 
     /**
+     * Get the courses directly from campus_course_student (more reliable).
+     */
+    public function studentCoursesDirect()
+    {
+        return $this->belongsToMany(CampusCourse::class, 'campus_course_student', 'student_id', 'course_id')
+            ->where('campus_course_student.academic_status', 'active')
+            ->withPivot(['academic_status', 'enrollment_date', 'start_date', 'end_date', 'final_grade']);
+    }
+
+    /**
      * Get active registrations.
      */
     public function activeRegistrations()

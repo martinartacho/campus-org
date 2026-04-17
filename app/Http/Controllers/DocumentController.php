@@ -647,26 +647,25 @@ class DocumentController extends Controller
 
         // Obtener cursos del estudiante
         $studentCourses = $user->studentCourses()
-            ->where('campus_course_student.academic_status', 'active')
             ->with('course')
             ->get();
 
+        // Obtener IDs de cursos del estudiante
+        $studentCourseIds = $user->studentCourses()->pluck('id')->toArray();
+        
         // Query para documentos disponibles para el estudiante
         $query = Document::with(['course', 'category', 'teacher'])
-            ->where(function($q) use ($user) {
+            ->where(function($q) use ($user, $studentCourseIds) {
                 // Documentos de profesor visibles para este estudiante
                 $q->whereHas('teacher', function($subQuery) {
                     $subQuery->whereNotNull('id');
-                })->where(function($visibilityQuery) use ($user) {
+                })->where(function($visibilityQuery) use ($user, $studentCourseIds) {
                     // Documentos públicos para estudiantes
                     $visibilityQuery->where('student_visibility', 'all')
                         // Documentos del curso del estudiante
-                        ->orWhere(function($courseQuery) use ($user) {
+                        ->orWhere(function($courseQuery) use ($studentCourseIds) {
                             $courseQuery->where('student_visibility', 'course')
-                                ->whereHas('course.students', function($studentQuery) use ($user) {
-                                    $studentQuery->where('campus_course_student.student_id', $user->id)
-                                        ->where('campus_course_student.academic_status', 'active');
-                                });
+                                ->whereIn('course_id', $studentCourseIds);
                         });
                 });
             })
