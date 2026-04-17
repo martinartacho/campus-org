@@ -663,9 +663,11 @@ class DocumentController extends Controller
                         // Documentos del curso del estudiante
                         ->orWhere(function($courseQuery) use ($user) {
                             $courseQuery->where('student_visibility', 'course')
-                                ->whereHas('course.students', function($studentQuery) use ($user) {
-                                    $studentQuery->where('campus_course_student.student_id', $user->id)
-                                        ->where('campus_course_student.academic_status', 'active');
+                                ->whereHas('course', function($courseModelQuery) use ($user) {
+                                    $courseModelQuery->whereHas('students', function($studentQuery) use ($user) {
+                                        $studentQuery->where('campus_course_student.student_id', $user->id)
+                                            ->where('campus_course_student.academic_status', 'active');
+                                    });
                                 });
                         });
                 });
