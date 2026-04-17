@@ -119,7 +119,7 @@
                         studentDropdown.classList.remove('hidden');
                         studentDropdown.innerHTML = '';
                         
-                        window.studentsData.slice(0, 50).forEach(student => { // Limit to 50 for performance
+                        window.studentsData.forEach(student => { // Show all students
                             const div = createStudentElement(student);
                             studentDropdown.appendChild(div);
                         });
@@ -143,7 +143,7 @@
                         if (filtered.length === 0) {
                             studentDropdown.innerHTML = '<div class="px-3 py-2 text-gray-500">No s\'han trobat resultats</div>';
                         } else {
-                            filtered.slice(0, 50).forEach(student => { // Limit to 50 for performance
+                            filtered.forEach(student => { // Show all filtered results
                                 const div = createStudentElement(student);
                                 studentDropdown.appendChild(div);
                             });
