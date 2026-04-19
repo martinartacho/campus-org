@@ -103,6 +103,35 @@ Route::prefix('campus/courses/woodcomerce')->name('campus.courses.woodcomerce.')
             ], 500);
         }
     })->name('export');
+    
+    Route::post('/export-selected', function() {
+        try {
+            $etlService = app('App\Services\WoodComerceETLService');
+            $controller = new \App\Http\Controllers\WoodComerceController($etlService);
+            
+            $request = \Illuminate\Http\Request::create('/campus/courses/woodcomerce/export-selected', 'POST', request()->all());
+            return $controller->exportSelected($request);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ], 500);
+        }
+    })->name('export-selected');
+    
+    Route::get('/download/{filename}', function($filename) {
+        try {
+            $controller = new \App\Http\Controllers\WoodComerceController(app('App\Services\WoodComerceETLService'));
+            return $controller->download($filename);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ], 500);
+        }
+    })->name('download');
 });
 
 // WoodComerce - Rutas fuera del middleware global (antes del auth)
