@@ -60,7 +60,7 @@ class WoodComerceETLService
     /**
      * Crear producto variable
      */
-    private function createVariableProduct($course, $children): array
+    protected function createVariableProduct($course, $children): array
     {
         $regularPrice = $children->max('price');
         
@@ -82,7 +82,7 @@ class WoodComerceETLService
     /**
      * Crear variación
      */
-    private function createVariation($parent, $variation): array
+    protected function createVariation($parent, $variation): array
     {
         return [
             'type' => 'variation',
@@ -101,7 +101,7 @@ class WoodComerceETLService
     /**
      * Crear producto simple
      */
-    private function createSimpleProduct($course): array
+    protected function createSimpleProduct($course): array
     {
         return [
             'type' => 'simple',
