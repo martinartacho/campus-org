@@ -8,16 +8,16 @@
                 <div class="card-header">
                     <h3 class="card-title">
                         <i class="fas fa-download"></i>
-                        {{ __('site.Exportación WooCommerce') }} v2
+                        {{ __('campus.Exportación WooCommerce') }} v2
                     </h3>
                 </div>
                 <div class="card-body">
                     
                     <!-- Información del Sistema -->
                     <div class="alert alert-info">
-                        <h5><i class="fas fa-info-circle"></i> {{ __('site.Información del Sistema') }}</h5>
+                        <h5><i class="fas fa-info-circle"></i> {{ __('campus.Información del Sistema') }}</h5>
                         <p class="mb-0">
-                            {{ __('site.Sistema de exportación ETL para WooCommerce. Procesa cursos con lógica de productos variables y variaciones.') }}
+                            {{ __('campus.Sistema de exportación ETL para WooCommerce. Procesa cursos con lógica de productos variables y variaciones.') }}
                         </p>
                     </div>
                     
@@ -25,13 +25,13 @@
                     <div class="row mb-4">
                         <div class="col-md-4">
                             <button id="exportBtn" class="btn btn-success btn-block btn-lg">
-                                <i class="fas fa-file-csv"></i> {{ __('site.Exportación CSV Completo') }}
+                                <i class="fas fa-file-csv"></i> {{ __('campus.Exportación CSV Completo') }}
                             </button>
                         </div>
                         <div class="col-md-8">
                             <div class="alert alert-success">
                                 <i class="fas fa-info-circle"></i>
-                                <strong>{{ __('site.Funcionalidad simplificada:') }}</strong> {{ __('site.Solo exportación directa de CSV amb tots els cursos.') }}
+                                <strong>{{ __('campus.Simplified functionality:') }}</strong> {{ __('campus.Simplified functionality: Only direct CSV export with all courses.') }}
                             </div>
                         </div>
                     </div>
@@ -41,21 +41,21 @@
                         <div class="col-12">
                             <div class="card">
                                 <div class="card-header">
-                                    <h5><i class="fas fa-cogs"></i> {{ __('site.Funcionalidad Avanzada') }}</h5>
+                                    <h5><i class="fas fa-cogs"></i> {{ __('campus.Funcionalidad Avanzada') }}</h5>
                                 </div>
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <label for="courseSelect" class="form-label">{{ __('site.Seleccionar Cursos:') }}</label>
+                                            <label for="courseSelect" class="form-label">{{ __('campus.Seleccionar Cursos:') }}</label>
                                             <select id="courseSelect" class="form-control" multiple size="8">
                                                 <option value="">Cargando cursos...</option>
                                             </select>
                                             <small class="form-text text-muted">
-                                                {{ __('site.Mantén presionado Ctrl per seleccionar múltiples cursos') }}
+                                                {{ __('campus.Mantén presionado Ctrl para seleccionar múltiples cursos') }}
                                             </small>
                                         </div>
                                         <div class="col-md-6">
-                                            <h6>{{ __('site.Casos de Test Recomendados:') }}</h6>
+                                            <h6>{{ __('campus.Casos de Test Recomendados:') }}</h6>
                                             <div class="list-group">
                                                 <a href="#" class="list-group-item list-group-item-action test-case" data-courses="32,59">
                                                     <strong>Aula Oberta Digital</strong><br>
@@ -71,7 +71,7 @@
                                     <div class="row mt-3">
                                         <div class="col-12">
                                             <button id="exportSelectedBtn" class="btn btn-warning btn-block">
-                                                <i class="fas fa-download"></i> {{ __('site.Exportar Cursos Seleccionados') }}
+                                                <i class="fas fa-download"></i> {{ __('campus.Exportar Cursos Seleccionados') }}
                                             </button>
                                         </div>
                                     </div>
@@ -83,7 +83,7 @@
                     <!-- Resultados -->
                     <div id="resultsSection" class="card" style="display: none;">
                         <div class="card-header">
-                            <h5><i class="fas fa-chart-bar"></i> {{ __('site.Resultados') }}</h5>
+                            <h5><i class="fas fa-chart-bar"></i> {{ __('campus.Resultados') }}</h5>
                         </div>
                         <div class="card-body">
                             <div id="resultsContent"></div>
@@ -114,7 +114,7 @@ $(document).ready(function() {
         var selectedCourses = $('#courseSelect').val();
         
         if (!selectedCourses || selectedCourses.length === 0) {
-            showError('{{ __("site.Por favor selecciona al menos un curso") }}');
+            showError('{{ __("campus.Por favor selecciona al menos un curso") }}');
             return;
         }
         
@@ -142,13 +142,13 @@ $(document).ready(function() {
                 $('#courseSelect').html(options);
             })
             .fail(function() {
-                showError('{{ __("site.Error al cargar lista de cursos") }}');
+                showError('{{ __("campus.Error al cargar lista de cursos") }}');
             });
     }
     
     // Exportar cursos seleccionados
     function exportSelected(courseIds) {
-        showLoading('{{ __("site.Exportando cursos seleccionados...") }}');
+        showLoading('{{ __("campus.Exportando cursos seleccionados...") }}');
         
         $.ajaxSetup({
             headers: {
@@ -167,11 +167,11 @@ $(document).ready(function() {
                         window.location.href = response.file_url;
                     }
                 } else {
-                    showError('{{ __("site.Error: ") }}' + response.error);
+                    showError('{{ __("campus.Error: ") }}' + response.error);
                 }
             })
             .fail(function() {
-                showError('{{ __("site.Error de conexión al exportar cursos seleccionados") }}');
+                showError('{{ __("campus.Error de conexión al exportar cursos seleccionados") }}');
             });
     }
     
