@@ -30,6 +30,7 @@ use App\Http\Controllers\Campus\ResourceController;
 use App\Http\Controllers\Manager\RegistrationController;
 use App\Http\Controllers\Treasury\TeacherTreasuryController;
 use App\Http\Controllers\TreasuryController;
+use App\Http\Controllers\WoodComerceController;
 
 
 use App\Http\Controllers\Admin\FeedbackController as AdminFeedbackController;
@@ -692,13 +693,23 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('teachers/generate-code', [\App\Http\Controllers\Campus\TeacherController::class, 'generateCode'])
             ->name('campus.teachers.generate-code')
             ->middleware('can:campus.teachers.edit');
-        
         Route::get('teachers/template', [\App\Http\Controllers\Campus\TeacherController::class, 'template'])
             ->name('teachers.template');
                 
         Route::resource('registrations', \App\Http\Controllers\Campus\RegistrationController::class)
-            ->middleware(['can:campus.registrations.view']);
-        
+            ->middleware('can:campus.registrations.view');
+
+        Route::middleware(['role:super-admin|admin|manager'])->prefix('courses')->name('campus.courses.')->group(function () {
+            Route::get('/woodcomerce', [WoodComerceController::class, 'index'])
+                ->name('woodcomerce');
+            Route::get('/woodcomerce/export', [WoodComerceController::class, 'export'])
+                ->name('woodcomerce.export');
+            Route::get('/woodcomerce/preview', [WoodComerceController::class, 'preview'])
+                ->name('woodcomerce.preview');
+            Route::post('/woodcomerce/test', [WoodComerceController::class, 'test'])
+                ->name('woodcomerce.test');
+        });
+
         Route::post('registrations/{registration}/validate', [\App\Http\Controllers\Campus\RegistrationController::class, 'validateRegistration'])
             ->name('registrations.validate');
 
