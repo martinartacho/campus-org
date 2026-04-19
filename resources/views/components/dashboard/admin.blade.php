@@ -534,6 +534,21 @@
                 </div>
             </a>
             
+            {{-- WoodComerce --}}
+            <a href="/campus/courses/woodcomerce" class="block">
+                <div class="bg-yellow-50 border border-yellow-200 hover:bg-yellow-100 p-4 rounded-lg transition-colors">
+                    <div class="flex items-center">
+                        <div class="p-2 bg-yellow-100 rounded-lg me-3">
+                            <i class="fas fa-download text-yellow-600"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-yellow-800">WoodComerce</h3>
+                            <p class="text-sm text-yellow-600">Exportación WooCommerce</p>
+                        </div>
+                    </div>
+                </div>
+            </a>
+            
         </div>
     </div>
 </div>

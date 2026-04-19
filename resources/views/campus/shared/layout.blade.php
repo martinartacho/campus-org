@@ -83,4 +83,6 @@
         console.log('Bootstrap carregat:', typeof bootstrap !== 'undefined');
         console.log('Summernote carregat:', typeof $.summernote !== 'undefined');
     </script>
+    
+    @stack('scripts')
 </x-app-layout>
