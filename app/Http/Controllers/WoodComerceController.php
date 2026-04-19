@@ -77,12 +77,23 @@ class WoodComerceController extends Controller
             // Procesar cursos específicos usando el método processSpecific del ETL
             $csvData = $this->etlService->processSpecific($courseIds);
             
-            // Generar CSV
+            // Generar CSV y guardarlo en archivo
             $filename = 'wc-selected-export-' . date('Y-m-d-H-i-s') . '.csv';
             $csv = $this->generateCSV($csvData);
             
+            // Crear directorio si no existe
+            $exportPath = storage_path('app/exports');
+            if (!is_dir($exportPath)) {
+                mkdir($exportPath, 0755, true);
+            }
+            
+            // Guardar archivo
+            $filepath = $exportPath . '/' . $filename;
+            file_put_contents($filepath, $csv);
+            
             Log::info('WoodComerce: Exportación seleccionada completada', [
                 'filename' => $filename,
+                'filepath' => $filepath,
                 'count' => count($csvData)
             ]);
             
