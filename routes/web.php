@@ -70,9 +70,41 @@ Route::post('/language/resolve-conflict', [LocaleController::class, 'resolveConf
 // Rutas públicas
 Route::get('/', fn () => view('welcome'));
 
+// WoodComerce - Rutas fuera del middleware global (antes del auth)
+Route::get('/simple-woodcomerce', function() {
+    try {
+        $etlService = app('App\Services\WoodComerceETLService');
+        $controller = new \App\Http\Controllers\WoodComerceController($etlService);
+        
+        $request = \Illuminate\Http\Request::create('/simple-woodcomerce', 'GET');
+        return $controller->index($request);
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine()
+        ], 500);
+    }
+})->name('simple.woodcomerce');
+
+Route::get('/simple-woodcomerce-export', function() {
+    try {
+        $etlService = app('App\Services\WoodComerceETLService');
+        $controller = new \App\Http\Controllers\WoodComerceController($etlService);
+        
+        $request = \Illuminate\Http\Request::create('/simple-woodcomerce-export', 'GET');
+        return $controller->export($request);
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine()
+        ], 500);
+    }
+})->name('simple.woodcomerce.export');
+
 // Auth
 require __DIR__.'/auth.php';
-
 
 Route::middleware(['auth'])->group(function () {
 
@@ -987,16 +1019,12 @@ Route::middleware(['auth'])->put('/api/tasks/{taskId}/move', [SupportController:
 Route::middleware(['auth'])->get('/api/users/by-role', [SupportController::class, 'apiUsersByRole']);
 Route::middleware(['auth'])->get('/api/users/role/{role}', [SupportController::class, 'apiUsersByRoleName']);
 
-// WoodComerce - Rutas simplificadas (solo index y export)
+// WoodComerce - Rutas con auth (dentro del grupo global)
 Route::middleware(['auth'])->prefix('campus/courses/woodcomerce')->name('campus.courses.woodcomerce.')->group(function () {
     Route::get('/', [WoodComerceController::class, 'index'])
         ->name('index');
     Route::get('/export', [WoodComerceController::class, 'export'])
         ->name('export');
 });
-
-// WoodComerce - Ruta de testing sin autenticación
-Route::get('/test-woodcomerce-export', [WoodComerceController::class, 'export'])
-    ->name('test.woodcomerce.export');
 
 });
