@@ -699,17 +699,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('registrations', \App\Http\Controllers\Campus\RegistrationController::class)
             ->middleware('can:campus.registrations.view');
 
-        Route::middleware(['role:super-admin|admin|manager'])->prefix('courses/woodcomerce')->name('campus.courses.woodcomerce.')->group(function () {
-            Route::get('/', [WoodComerceController::class, 'index'])
-                ->name('index');
-            Route::get('/export', [WoodComerceController::class, 'export'])
-                ->name('export');
-            Route::get('/preview', [WoodComerceController::class, 'preview'])
-                ->name('preview');
-            Route::post('/test', [WoodComerceController::class, 'test'])
-                ->name('test');
-        });
-
+        
         Route::post('registrations/{registration}/validate', [\App\Http\Controllers\Campus\RegistrationController::class, 'validateRegistration'])
             ->name('registrations.validate');
 
@@ -997,5 +987,20 @@ Route::middleware(['auth'])->put('/api/tasks/{taskId}/move', [SupportController:
 Route::middleware(['auth'])->get('/api/users/by-role', [SupportController::class, 'apiUsersByRole']);
 Route::middleware(['auth'])->get('/api/users/role/{role}', [SupportController::class, 'apiUsersByRoleName']);
 
+// WoodComerce - Rutas con middleware auth
+Route::middleware(['auth'])->prefix('campus/courses/woodcomerce')->name('campus.courses.woodcomerce.')->group(function () {
+    Route::get('/', [WoodComerceController::class, 'index'])
+        ->name('index');
+    Route::get('/export', [WoodComerceController::class, 'export'])
+        ->name('export');
+    Route::get('/preview', [WoodComerceController::class, 'preview'])
+        ->name('preview');
+    Route::post('/test', [WoodComerceController::class, 'test'])
+        ->name('test');
+});
+
+// WoodComerce - Ruta de testing sin autenticación
+Route::get('/test-woodcomerce', [WoodComerceController::class, 'index'])
+    ->name('test.woodcomerce');
 
 });
