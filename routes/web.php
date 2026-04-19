@@ -1019,7 +1019,7 @@ Route::middleware(['auth'])->put('/api/tasks/{taskId}/move', [SupportController:
 Route::middleware(['auth'])->get('/api/users/by-role', [SupportController::class, 'apiUsersByRole']);
 Route::middleware(['auth'])->get('/api/users/role/{role}', [SupportController::class, 'apiUsersByRoleName']);
 
-// WoodComerce - Rutas con auth (dentro del grupo global)
+// WoodComerce - Rutas con auth únicamente (dentro del grupo global)
 Route::middleware(['auth'])->prefix('campus/courses/woodcomerce')->name('campus.courses.woodcomerce.')->group(function () {
     Route::get('/', [WoodComerceController::class, 'index'])
         ->name('index');

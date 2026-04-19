@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('campus.shared.layout')
 
 @section('content')
 <div class="container-fluid">

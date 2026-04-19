@@ -20,6 +20,8 @@ class WoodComerceController extends Controller
      */
     public function index()
     {
+          Log::info('WoodComerce: index');
+        // dd('Hola mundo');
         return view('campus.courses.woodcomerce');
     }
     
