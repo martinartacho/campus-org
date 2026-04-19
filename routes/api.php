@@ -118,7 +118,3 @@ Route::middleware('auth:api')->prefix('tasks')->group(function () {
 // Rutas de descarga de archivos
 Route::middleware('auth:api')->get('/tasks/attachments/{attachment}/download', [TaskController::class, 'downloadAttachment']);
 
-// Rutas cursos para WoodComerce
-// Route::middleware('auth:api')->group(function () {
-    Route::get('/courses/list', [CoursesController::class, 'list']);
-// });
