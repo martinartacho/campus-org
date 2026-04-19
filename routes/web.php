@@ -987,20 +987,16 @@ Route::middleware(['auth'])->put('/api/tasks/{taskId}/move', [SupportController:
 Route::middleware(['auth'])->get('/api/users/by-role', [SupportController::class, 'apiUsersByRole']);
 Route::middleware(['auth'])->get('/api/users/role/{role}', [SupportController::class, 'apiUsersByRoleName']);
 
-// WoodComerce - Rutas con middleware auth
+// WoodComerce - Rutas simplificadas (solo index y export)
 Route::middleware(['auth'])->prefix('campus/courses/woodcomerce')->name('campus.courses.woodcomerce.')->group(function () {
     Route::get('/', [WoodComerceController::class, 'index'])
         ->name('index');
     Route::get('/export', [WoodComerceController::class, 'export'])
         ->name('export');
-    Route::get('/preview', [WoodComerceController::class, 'preview'])
-        ->name('preview');
-    Route::post('/test', [WoodComerceController::class, 'test'])
-        ->name('test');
 });
 
 // WoodComerce - Ruta de testing sin autenticación
-Route::get('/test-woodcomerce', [WoodComerceController::class, 'index'])
-    ->name('test.woodcomerce');
+Route::get('/test-woodcomerce-export', [WoodComerceController::class, 'export'])
+    ->name('test.woodcomerce.export');
 
 });

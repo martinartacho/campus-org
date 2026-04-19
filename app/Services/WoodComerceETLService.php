@@ -296,38 +296,4 @@ class WoodComerceETLService
         }
         return (string) $value;
     }
-    
-    /**
-     * Procesar cursos específicos para testing
-     */
-    public function processSpecific(array $courseIds): array
-    {
-        $courses = CampusCourse::whereIn('id', $courseIds)
-            ->with(['category', 'season'])
-            ->orderBy('code')
-            ->get();
-        
-        $csvData = [];
-        
-        foreach ($courses as $course) {
-            if ($course->parent_id) {
-                // Es variación, buscar parent
-                $parent = CampusCourse::find($course->parent_id);
-                if ($parent) {
-                    $csvData[] = $this->createVariation($parent, $course);
-                }
-            } else {
-                // Es parent, verificar si tiene hijos
-                $children = CampusCourse::where('parent_id', $course->id)->get();
-                
-                if ($children->count() > 0) {
-                    $csvData[] = $this->createVariableProduct($course, $children);
-                } else {
-                    $csvData[] = $this->createSimpleProduct($course);
-                }
-            }
-        }
-        
-        return $csvData;
-    }
 }
