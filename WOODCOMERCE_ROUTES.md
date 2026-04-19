@@ -1,4 +1,4 @@
-# WoodComerce - Sistema de Exportación WooCommerce
+# WoodComerce v2 - Sistema de Exportación WooCommerce
 
 ## Rutas Principales
 
@@ -6,38 +6,39 @@
 ```
 GET /campus/courses/woodcomerce
 ```
-- **Acceso:** Roles: super-admin, admin, manager
+- **Acceso:** Sin autenticación (rutas públicas)
 - **Descripción:** Página principal de exportación WooCommerce
 - **Vista:** `campus.courses.woodcomerce`
 - **Controller:** `WoodComerceController@index`
+- **Layout:** `campus.shared.layout`
 
 ### 2. Exportación Completa
 ```
 GET /campus/courses/woodcomerce/export
 ```
-- **Acceso:** Roles: super-admin, admin, manager
-- **Descripción:** Genera y descarga CSV completo
+- **Acceso:** Sin autenticación
+- **Descripción:** Genera y descarga CSV completo con todos los cursos
 - **Controller:** `WoodComerceController@export`
 - **Formato:** Descarga directa de archivo CSV
 
-### 3. Vista Previa
+### 3. Exportación Seleccionada
 ```
-GET /campus/courses/woodcomerce/preview
+POST /campus/courses/woodcomerce/export-selected
 ```
-- **Acceso:** Roles: super-admin, admin, manager
-- **Descripción:** Muestra vista previa de primeros 10 productos
-- **Controller:** `WoodComerceController@preview`
-- **Formato:** JSON con datos de preview
-
-### 4. Testing Específico
-```
-POST /campus/courses/woodcomerce/test
-```
-- **Acceso:** Roles: super-admin, admin, manager
-- **Descripción:** Testing con cursos seleccionados
-- **Controller:** `WoodComerceController@test`
+- **Acceso:** Sin autenticación
+- **Descripción:** Genera y descarga CSV con cursos seleccionados
+- **Controller:** `WoodComerceController@exportSelected`
 - **Parámetros:** `course_ids[]` (array de IDs)
-- **Formato:** JSON con resultados del test
+- **Formato:** JSON con file_url para descarga
+
+### 4. Descarga de Archivos
+```
+GET /campus/courses/woodcomerce/download/{filename}
+```
+- **Acceso:** Sin autenticación
+- **Descripción:** Descarga archivo CSV generado
+- **Controller:** `WoodComerceController@download`
+- **Formato:** Descarga directa de archivo
 
 ## Rutas API
 
@@ -45,8 +46,8 @@ POST /campus/courses/woodcomerce/test
 ```
 GET /api/courses/list
 ```
-- **Acceso:** Autenticación API requerida
-- **Descripción:** Lista de cursos para select de testing
+- **Acceso:** Sin autenticación
+- **Descripción:** Lista de cursos para select multi-select
 - **Controller:** `Api\CoursesController@list`
 - **Formato:** JSON con lista de cursos (id, code, title, format, price, parent_id)
 
@@ -59,29 +60,38 @@ http://campus-org.test/campus/courses/woodcomerce
 
 ### Producción
 ```
-https://dev.campus.org/campus/courses/woodcomerce
+https://campus.org/campus/courses/woodcomerce
 ```
 
-## Flujo de Testing Recomendado
+## Flujo de Uso
 
 ### 1. Acceso a la Interfaz
-1. Iniciar sesión con rol manager/admin/super-admin
-2. Navegar a: `/campus/courses/woodcomerce`
+1. Navegar a: `/campus/courses/woodcomerce`
+2. Interfaz accesible sin autenticación
 
-### 2. Vista Previa
-1. Hacer clic en "Vista Previa"
-2. Verificar estructura de productos variables y variaciones
-3. Comprobar mapeo de categorías y atributos
-
-### 3. Testing Específico
-1. Seleccionar cursos específicos del select
-2. Hacer clic en "Probar Seleccionados"
-3. Verificar resultados del test
-
-### 4. Exportación Completa
+### 2. Exportación Completa
 1. Hacer clic en "Exportar CSV Completo"
-2. Descargar archivo CSV
-3. Validar estructura en WooCommerce
+2. Descargar archivo CSV automáticamente
+3. Contiene todos los cursos activos y públicos
+
+### 3. Exportación Seleccionada
+1. Seleccionar cursos específicos en el multi-select
+2. Usar casos de test predefinidos (AOBERTA, CHIKUNG)
+3. Hacer clic en "Exportar Cursos Seleccionados"
+4. Descargar CSV generado dinámicamente
+
+## Funcionalidades Disponibles
+
+### Funcionalidad Simplificada
+- **Botón:** "Exportar CSV Completo"
+- **Alcance:** Todos los cursos (78 cursos)
+- **Uso:** Exportación masiva rápida
+
+### Funcionalidad Avanzada
+- **Select:** Multi-select con búsqueda
+- **Casos de Test:** AOBERTA Digital, Chi Kung
+- **Validación:** Selección mínima requerida
+- **Feedback:** Mensajes de estado en tiempo real
 
 ## Casos de Test Reales
 
@@ -131,19 +141,13 @@ https://dev.campus.org/campus/courses/woodcomerce
 - **Precios:** Correctos para cada variación
 - **Parent SKU:** Código del curso parent (ej: AOBERTA-001)
 
-## Errores Comunes
+## Integración con Dashboard
 
-### 403 Forbidden
-- **Causa:** Usuario sin rol adecuado
-- **Solución:** Asignar rol manager/admin/super-admin
-
-### 401 Unauthorized (API)
-- **Causa:** Token API inválido
-- **Solución:** Verificar autenticación API
-
-### 500 Server Error
-- **Causa:** Error en proceso ETL
-- **Solución:** Revisar logs en `storage/logs/laravel.log`
+### Acción Rápida Admin
+- **Ubicación:** Dashboard admin
+- **Estilo:** Tarjeta amarilla con icono de descarga
+- **Acceso:** Directo a `/campus/courses/woodcomerce`
+- **Roles:** Admin y super-admin
 
 ## Logs y Debugging
 
@@ -178,10 +182,26 @@ tail -f storage/logs/laravel.log | grep "WoodComerce"
 ## Seguridad
 
 ### Middleware Aplicado
-- **Web:** `role:super-admin|admin|manager`
-- **API:** `auth:api`
+- **Web:** Sin middleware (rutas públicas)
+- **API:** Sin autenticación
 
-### Permisos Requeridos
-- **Exportación:** Roles de gestión
-- **API:** Autenticación válida
+### Permisos
+- **Exportación:** Acceso público sin restricciones
+- **API:** Acceso público para select de cursos
 - **Testing:** Mismos permisos que exportación
+
+## Archivos Generados
+
+### Ubicación
+```
+storage/app/exports/
+```
+
+### Nomenclatura
+- **Completo:** `wc-export-YYYY-MM-DD-HH-II-SS.csv`
+- **Seleccionado:** `wc-selected-export-YYYY-MM-DD-HH-II-SS.csv`
+
+### Limpieza
+- Archivos temporales eliminados automáticamente
+- Logs limpios después de desarrollo
+
