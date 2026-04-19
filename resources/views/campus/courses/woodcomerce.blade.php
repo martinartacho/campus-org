@@ -150,9 +150,14 @@ $(document).ready(function() {
     function exportSelected(courseIds) {
         showLoading('Exportando cursos seleccionados...');
         
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        
         $.post('/campus/courses/woodcomerce/export-selected', {
-                course_ids: courseIds,
-                _token: $('meta[name="csrf-token"]').attr('content')
+                course_ids: courseIds
             })
             .done(function(response) {
                 if (response.success) {

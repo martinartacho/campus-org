@@ -104,22 +104,7 @@ Route::prefix('campus/courses/woodcomerce')->name('campus.courses.woodcomerce.')
         }
     })->name('export');
     
-    Route::post('/export-selected', function() {
-        try {
-            $etlService = app('App\Services\WoodComerceETLService');
-            $controller = new \App\Http\Controllers\WoodComerceController($etlService);
-            
-            $request = \Illuminate\Http\Request::create('/campus/courses/woodcomerce/export-selected', 'POST', request()->all());
-            return $controller->exportSelected($request);
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine()
-            ], 500);
-        }
-    })->name('export-selected');
-    
+        
     Route::get('/download/{filename}', function($filename) {
         try {
             $controller = new \App\Http\Controllers\WoodComerceController(app('App\Services\WoodComerceETLService'));
@@ -133,6 +118,23 @@ Route::prefix('campus/courses/woodcomerce')->name('campus.courses.woodcomerce.')
         }
     })->name('download');
 });
+
+// WoodComerce - Rutas POST fuera del middleware global
+Route::post('/campus/courses/woodcomerce/export-selected', function() {
+    try {
+        $etlService = app('App\Services\WoodComerceETLService');
+        $controller = new \App\Http\Controllers\WoodComerceController($etlService);
+        
+        $request = \Illuminate\Http\Request::create('/campus/courses/woodcomerce/export-selected', 'POST', request()->all());
+        return $controller->exportSelected($request);
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine()
+        ], 500);
+    }
+})->name('woodcomerce.export-selected');
 
 // WoodComerce - Rutas fuera del middleware global (antes del auth)
 Route::get('/woodcomerce-test', function() {

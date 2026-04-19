@@ -157,9 +157,24 @@ class WoodComerceController extends Controller
      */
     private function escapeCSV($value): string
     {
-        if (is_string($value) && (strpos($value, ',') !== false || strpos($value, '"') !== false || strpos($value, "\n") !== false)) {
+        // Convertir a string si no lo es
+        if (is_array($value)) {
+            $value = json_encode($value);
+        } elseif (is_object($value)) {
+            $value = json_encode($value);
+        } elseif (is_bool($value)) {
+            $value = $value ? '1' : '0';
+        } elseif (is_null($value)) {
+            $value = '';
+        } else {
+            $value = (string) $value;
+        }
+        
+        // Escapar comas y comillas
+        if (strpos($value, ',') !== false || strpos($value, '"') !== false || strpos($value, "\n") !== false) {
             return '"' . str_replace('"', '""', $value) . '"';
         }
-        return (string) $value;
+        
+        return $value;
     }
 }
