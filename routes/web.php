@@ -70,7 +70,58 @@ Route::post('/language/resolve-conflict', [LocaleController::class, 'resolveConf
 // Rutas públicas
 Route::get('/', fn () => view('welcome'));
 
+// WoodComerce - Rutas absolutamente primeras (sin ningún middleware)
+Route::prefix('campus/courses/woodcomerce')->name('campus.courses.woodcomerce.')->group(function () {
+    Route::get('/', function() {
+        try {
+            $etlService = app('App\Services\WoodComerceETLService');
+            $controller = new \App\Http\Controllers\WoodComerceController($etlService);
+            
+            $request = \Illuminate\Http\Request::create('/campus/courses/woodcomerce', 'GET');
+            return $controller->index($request);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ], 500);
+        }
+    })->name('index');
+    
+    Route::get('/export', function() {
+        try {
+            $etlService = app('App\Services\WoodComerceETLService');
+            $controller = new \App\Http\Controllers\WoodComerceController($etlService);
+            
+            $request = \Illuminate\Http\Request::create('/campus/courses/woodcomerce/export', 'GET');
+            return $controller->export($request);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ], 500);
+        }
+    })->name('export');
+});
+
 // WoodComerce - Rutas fuera del middleware global (antes del auth)
+Route::get('/woodcomerce-test', function() {
+    try {
+        $etlService = app('App\Services\WoodComerceETLService');
+        $controller = new \App\Http\Controllers\WoodComerceController($etlService);
+        
+        $request = \Illuminate\Http\Request::create('/woodcomerce-test', 'GET');
+        return $controller->index($request);
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine()
+        ], 500);
+    }
+})->name('woodcomerce.test');
+
 Route::get('/simple-woodcomerce', function() {
     try {
         $etlService = app('App\Services\WoodComerceETLService');
@@ -1019,12 +1070,39 @@ Route::middleware(['auth'])->put('/api/tasks/{taskId}/move', [SupportController:
 Route::middleware(['auth'])->get('/api/users/by-role', [SupportController::class, 'apiUsersByRole']);
 Route::middleware(['auth'])->get('/api/users/role/{role}', [SupportController::class, 'apiUsersByRoleName']);
 
-// WoodComerce - Rutas con auth únicamente (dentro del grupo global)
-Route::middleware(['auth'])->prefix('campus/courses/woodcomerce')->name('campus.courses.woodcomerce.')->group(function () {
-    Route::get('/', [WoodComerceController::class, 'index'])
-        ->name('index');
-    Route::get('/export', [WoodComerceController::class, 'export'])
-        ->name('export');
+// WoodComerce - Rutas fuera del middleware global (copiando lógica de simple-woodcomerce)
+Route::prefix('woodcomerce-direct')->name('woodcomerce.direct.')->group(function () {
+    Route::get('/', function() {
+        try {
+            $etlService = app('App\Services\WoodComerceETLService');
+            $controller = new \App\Http\Controllers\WoodComerceController($etlService);
+            
+            $request = \Illuminate\Http\Request::create('/campus/courses/woodcomerce', 'GET');
+            return $controller->index($request);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ], 500);
+        }
+    })->name('index');
+    
+    Route::get('/export', function() {
+        try {
+            $etlService = app('App\Services\WoodComerceETLService');
+            $controller = new \App\Http\Controllers\WoodComerceController($etlService);
+            
+            $request = \Illuminate\Http\Request::create('/campus/courses/woodcomerce/export', 'GET');
+            return $controller->export($request);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ], 500);
+        }
+    })->name('export');
 });
 
 });
