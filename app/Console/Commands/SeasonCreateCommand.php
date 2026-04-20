@@ -47,11 +47,39 @@ class SeasonCreateCommand extends Command
             $this->line('Exemple: php artisan season:create "Curs 2026-27" --config=two_semesters');
             return;
         }
+
+        // Validar que el nom contingui un any acadèmic vàlid
+        if (!$this->isValidAcademicYearName($name)) {
+            $this->error('El nom ha de contenir un any acadèmic vàlid (format: YYYY-YY)');
+            $this->line('Exempels vàlids:');
+            $this->line('  - "Curs 2026-27"');
+            $this->line('  - "2026-27"');
+            $this->line('  - "Academic Year 2026-27"');
+            $this->line('  - "Curs 2025-26"');
+            return;
+        }
         $config = $this->option('config');
         
+        // Extreure any acadèmic del nom per generar dates automàtiques
+        $academicYear = $this->extractAcademicYear($name);
+        
         // Validar dates
-        $startDate = $this->option('start') ? Carbon::createFromFormat('Y-m-d', $this->option('start')) : Carbon::create(date('Y'), 9, 1);
-        $endDate = $this->option('end') ? Carbon::createFromFormat('Y-m-d', $this->option('end')) : Carbon::create(date('Y') + 1, 6, 30);
+        if ($this->option('start')) {
+            $startDate = Carbon::createFromFormat('Y-m-d', $this->option('start'));
+        } elseif ($academicYear) {
+            // Generar dates basades en l'any acadèmic del nom
+            $startDate = Carbon::create($academicYear['start_year'], 9, 1);
+        } else {
+            $startDate = Carbon::create(date('Y'), 9, 1);
+        }
+        
+        if ($this->option('end')) {
+            $endDate = Carbon::createFromFormat('Y-m-d', $this->option('end'));
+        } elseif ($academicYear) {
+            $endDate = Carbon::create($academicYear['end_year'], 6, 30);
+        } else {
+            $endDate = Carbon::create(date('Y') + 1, 6, 30);
+        }
 
         // Validar que end > start
         if ($endDate->lte($startDate)) {
@@ -129,5 +157,44 @@ class SeasonCreateCommand extends Command
             ['four_bimensual', '4 Bimensuals', '4 períodos de 2 mesos'],
             ['monthly', '10 Mensuals', '10 períodos de 1 mes'],
         ]);
+    }
+
+    /**
+     * Validate academic year name format and extract years
+     */
+    private function isValidAcademicYearName(string $name): bool
+    {
+        // Pattern per trobar YYYY-YY (ex: 2026-27, 2025-26)
+        if (!preg_match('/(\d{4})-(\d{2})/', $name, $matches)) {
+            return false;
+        }
+
+        $startYear = (int)$matches[1];
+        $endYear = (int)$matches[2];
+        
+        // Validar que sigui un any acadèmic lògic (ex: 2026-27, no 2026-26)
+        $expectedEndYear = $startYear + 1;
+        $expectedEndYearShort = $expectedEndYear % 100;
+        
+        return $endYear === $expectedEndYearShort;
+    }
+
+    /**
+     * Extract academic year from name
+     */
+    private function extractAcademicYear(string $name): ?array
+    {
+        if (!preg_match('/(\d{4})-(\d{2})/', $name, $matches)) {
+            return null;
+        }
+
+        $startYear = (int)$matches[1];
+        $endYear = 2000 + (int)$matches[2]; // Convert 27 to 2027
+        
+        return [
+            'start_year' => $startYear,
+            'end_year' => $endYear,
+            'academic_year' => $matches[1] . '-' . $matches[2]
+        ];
     }
 }
