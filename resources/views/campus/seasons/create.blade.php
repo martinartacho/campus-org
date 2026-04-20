@@ -165,11 +165,44 @@
             {{-- Botons --}}
             <div class="flex justify-between items-center">
                 <div>
-                    <a href="{{ route('campus.seasons.create-with-periods') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                        <i class="bi bi-magic me-2"></i>
-                        {{ __('campus.create_with_periods') }}
-                    </a>
-                    <p class="text-xs text-gray-500 mt-1">{{ __('campus.create_with_periods_help') }}</p>
+                    <label class="flex items-center">
+                        <input type="checkbox" name="create_periods" id="create_periods" value="1" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                        <span class="ml-2 text-sm font-medium text-gray-700">{{ __('campus.create_periods_automatically') }}</span>
+                    </label>
+                    <p class="text-xs text-gray-500 mt-1">{{ __('campus.create_periods_help') }}</p>
+                    
+                    <div id="periods_config" class="mt-4 p-4 bg-gray-50 rounded-lg border hidden">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            {{ __('campus.select_period_configuration') }}
+                        </label>
+                        <select name="configuration" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">{{ __('campus.select_configuration') }}</option>
+                            @foreach(App\Services\SeasonPeriodGenerator::getPredefinedConfigurations() as $key => $config)
+                                <option value="{{ $key }}">
+                                    @switch($key)
+                                        @case('two_semesters')
+                                            2 Semestres
+                                            @break
+                                        @case('three_trimesters')
+                                            3 Trimestres
+                                            @break
+                                        @case('two_quarters')
+                                            2 Quadrimestres
+                                            @break
+                                        @case('trimester_plus_quarter')
+                                            1 Trimestre + 1 Quadrimestre
+                                            @break
+                                        @case('four_bimensual')
+                                            4 Bimensuals
+                                            @break
+                                        @case('monthly')
+                                            10 Mensuals
+                                            @break
+                                    @endswitch
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
                 
                 <div class="flex space-x-4">
@@ -191,6 +224,18 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Mostrar/ocultar configuración de períodos
+        const createPeriodsCheckbox = document.getElementById('create_periods');
+        const periodsConfig = document.getElementById('periods_config');
+        
+        createPeriodsCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                periodsConfig.classList.remove('hidden');
+            } else {
+                periodsConfig.classList.add('hidden');
+            }
+        });
+        
         // Validación de fechas
         const startDate = document.getElementById('season_start');
         const endDate = document.getElementById('season_end');

@@ -28,7 +28,7 @@ class SeasonController extends Controller
      */
     public function create()
     {
-        return view('campus.seasons.create');
+        return view('campus.seasons.create')->with('errors', session()->get('errors', new \Illuminate\Support\MessageBag));
     }
 
     /**
@@ -99,7 +99,24 @@ class SeasonController extends Controller
             }
         }
 
-        CampusSeason::create($validated);
+        $season = CampusSeason::create($validated);
+
+        // Si es marca crear períodes automàticament
+        if ($request->has('create_periods') && $request->create_periods && $request->filled('configuration')) {
+            try {
+                $configurations = \App\Services\SeasonPeriodGenerator::getPredefinedConfigurations();
+                if (isset($configurations[$request->configuration])) {
+                    $generator = new \App\Services\SeasonPeriodGenerator();
+                    $periods = $generator->generateForAcademicYear($season, $configurations[$request->configuration]);
+                    
+                    return redirect()->route('campus.seasons.index')
+                        ->with('success', "Temporada creada amb {$periods->count()} períodes correctament.");
+                }
+            } catch (\Exception $e) {
+                return redirect()->route('campus.seasons.index')
+                    ->with('success', 'Temporada creada correctament. Error en generar períodes: ' . $e->getMessage());
+            }
+        }
 
         return redirect()->route('campus.seasons.index')
             ->with('success', 'Temporada creada correctament.');
@@ -111,7 +128,7 @@ class SeasonController extends Controller
     public function createWithPeriods()
     {
         $configurations = \App\Services\SeasonPeriodGenerator::getPredefinedConfigurations();
-        return view('campus.seasons.create-with-periods', compact('configurations'));
+        return view('campus.seasons.create-with-periods', compact('configurations'))->with('errors', session()->get('errors', new \Illuminate\Support\MessageBag));
     }
 
     /**
@@ -254,6 +271,68 @@ class SeasonController extends Controller
     }
 
     /**
+     * Show form for creating a new academic year with CLI integration.
+     */
+    public function createAcademic()
+    {
+        return view('campus.seasons.create-academic')->with('errors', session()->get('errors', new \Illuminate\Support\MessageBag));
+    }
+
+    /**
+     * Store a new academic year using CLI command.
+     */
+    public function storeAcademic(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'season_start' => 'required|date',
+            'season_end' => 'required|date|after_or_equal:season_start',
+            'configuration' => 'required|string',
+            'is_active' => 'boolean',
+            'is_current' => 'boolean',
+        ]);
+
+        try {
+            // Construir command CLI
+            $command = 'php artisan season:create';
+            $command .= ' "' . addslashes($validated['name']) . '"';
+            $command .= ' --start=' . $validated['season_start'];
+            $command .= ' --end=' . $validated['season_end'];
+            $command .= ' --config=' . $validated['configuration'];
+            
+            if ($request->has('is_active')) {
+                $command .= ' --active';
+            }
+            
+            if ($request->has('is_current')) {
+                $command .= ' --current';
+            }
+
+            // Executar command CLI
+            $basePath = base_path();
+            $output = [];
+            $returnCode = 0;
+            
+            exec("cd {$basePath} && {$command} 2>&1", $output, $returnCode);
+            
+            if ($returnCode === 0) {
+                return redirect()->route('campus.seasons.index')
+                    ->with('success', __('campus.academic_year_created_successfully'));
+            } else {
+                $errorMessage = implode("\n", $output);
+                return back()->withErrors([
+                    'error' => __('campus.cli_execution_error') . ': ' . $errorMessage
+                ])->withInput();
+            }
+
+        } catch (\Exception $e) {
+            return back()->withErrors([
+                'error' => 'Error en crear la temporada: ' . $e->getMessage()
+            ])->withInput();
+        }
+    }
+
+    /**
      * Show the form for editing the specified resource.
      */
     public function edit(CampusSeason $season)
@@ -286,8 +365,12 @@ class SeasonController extends Controller
                 ->update(['is_current' => false]);
         }
 
-        // Si se marca como activa, validar solapamiento (excluyendo esta temporada)
-        if ($request->has('is_active') && $request->is_active) {
+        // Si se marca como activa O si ya era activa y cambian las fechas, validar solapamiento
+        $isActiveChanged = $season->is_active != $request->has('is_active') && $request->is_active;
+        $datesChanged = $season->season_start->format('Y-m-d') != $request->season_start || 
+                       $season->season_end->format('Y-m-d') != $request->season_end;
+        
+        if (($isActiveChanged || ($season->is_active && $datesChanged)) && $request->is_active) {
             $overlapping = CampusSeason::where('is_active', true)
                 ->where('id', '!=', $season->id)
                 ->where(function($query) use ($request) {

@@ -52,7 +52,9 @@
                     <div class="flex items-start justify-between">
                         <div>
                             <h3 class="text-lg font-medium text-gray-900 mb-2">{{ $season->name }}</h3>
+                            
                             @if($season->description)
+                                <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('campus.season_description') }}</label>
                                 <p class="text-gray-600 mb-4">{{ $season->description }}</p>
                             @endif
                             
