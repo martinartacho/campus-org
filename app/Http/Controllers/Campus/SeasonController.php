@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Campus;
 
 use App\Http\Controllers\Controller;
 use App\Models\CampusSeason;
+use App\Services\SeasonPeriodGenerator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -38,11 +39,38 @@ class SeasonController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'parent_id' => 'nullable|exists:campus_seasons,id',
+            'type' => 'required|in:annual,semester,trimester,quarter,bimensual,monthly,custom',
             'season_start' => 'required|date',
             'season_end' => 'required|date|after_or_equal:season_start',
+            'registration_start' => 'nullable|date',
+            'registration_end' => 'nullable|date|after_or_equal:registration_start',
             'is_active' => 'boolean',
             'is_current' => 'boolean',
         ]);
+
+        // Validación de jerarquía: solo annual puede tener hijos
+        if ($request->filled('parent_id')) {
+            $parent = CampusSeason::find($request->parent_id);
+            if ($parent && !$parent->isAcademicYear()) {
+                return back()->withErrors([
+                    'parent_id' => 'Només els anys acadèmics poden tenir temporades filles.'
+                ])->withInput();
+            }
+        }
+
+        // Prevenir duplicados iguales para el mismo parent
+        if ($request->filled('parent_id') && $request->filled('type')) {
+            $duplicate = CampusSeason::where('parent_id', $request->parent_id)
+                ->where('type', $request->type)
+                ->exists();
+            
+            if ($duplicate) {
+                return back()->withErrors([
+                    'type' => 'Ja existeix un període d\'aquest tipus per aquest any acadèmic.'
+                ])->withInput();
+            }
+        }
 
         // Si se marca como actual, desmarcar las demás
         if ($request->has('is_current') && $request->is_current) {
@@ -219,6 +247,39 @@ class SeasonController extends Controller
             
             return redirect()->back()
                 ->with('error', 'Error al cambiar la temporada.');
+        }
+    }
+    
+    /**
+     * Generar automáticamente períodos para un año académico
+     */
+    public function generatePeriods(Request $request, CampusSeason $academicYear)
+    {
+        if (!$academicYear->isAcademicYear()) {
+            return back()->withErrors([
+                'error' => 'Només es poden generar períodes per a anys acadèmics.'
+            ]);
+        }
+
+        $config = $request->input('periods', []);
+        
+        if (empty($config)) {
+            return back()->withErrors([
+                'periods' => 'Has de seleccionar al menys una configuració de períodes.'
+            ]);
+        }
+
+        try {
+            $generator = new SeasonPeriodGenerator();
+            $periods = $generator->generateForAcademicYear($academicYear, $config);
+
+            return redirect()->route('campus.seasons.show', $academicYear->id)
+                ->with('success', "S'han creat {$periods->count()} períodes correctament.");
+                
+        } catch (\Exception $e) {
+            return back()->withErrors([
+                'error' => 'Error en generar els períodes: ' . $e->getMessage()
+            ]);
         }
     }
     

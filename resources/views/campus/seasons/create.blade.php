@@ -42,6 +42,36 @@
                         <x-input-error :messages="$errors->get('name')" class="mt-2" />
                     </div>
                     
+                    {{-- Tipo --}}
+                    <div>
+                        <x-input-label for="type" :value="__('campus.season_type') . ' *'" />
+                        <select id="type" name="type" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+                            <option value="">{{ __('campus.select_type') }}</option>
+                            <option value="annual" {{ old('type') == 'annual' ? 'selected' : '' }}>{{ __('campus.annual') }}</option>
+                            <option value="semester" {{ old('type') == 'semester' ? 'selected' : '' }}>{{ __('campus.semester') }}</option>
+                            <option value="trimester" {{ old('type') == 'trimester' ? 'selected' : '' }}>{{ __('campus.trimester') }}</option>
+                            <option value="quarter" {{ old('type') == 'quarter' ? 'selected' : '' }}>{{ __('campus.quarter') }}</option>
+                            <option value="bimensual" {{ old('type') == 'bimensual' ? 'selected' : '' }}>{{ __('campus.bimensual') }}</option>
+                            <option value="monthly" {{ old('type') == 'monthly' ? 'selected' : '' }}>{{ __('campus.monthly') }}</option>
+                            <option value="custom" {{ old('type') == 'custom' ? 'selected' : '' }}>{{ __('campus.custom_period') }}</option>
+                        </select>
+                        <x-input-error :messages="$errors->get('type')" class="mt-2" />
+                    </div>
+                    
+                    {{-- Parent --}}
+                    <div>
+                        <x-input-label for="parent_id" :value="__('campus.season_parent')" />
+                        <select id="parent_id" name="parent_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            <option value="">{{ __('campus.no_parent') }}</option>
+                            @foreach(\App\Models\CampusSeason::academicYears()->get() as $academicYear)
+                                <option value="{{ $academicYear->id }}" {{ old('parent_id') == $academicYear->id ? 'selected' : '' }}>
+                                    {{ $academicYear->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <x-input-error :messages="$errors->get('parent_id')" class="mt-2" />
+                    </div>
+                    
                     {{-- Descripción --}}
                     <div class="md:col-span-2">
                         <x-input-label for="description" :value="__('campus.season_description')" />
@@ -60,7 +90,7 @@
                 </h3>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {{-- Fecha inicio --}}
+                    {{-- Fecha inicio temporada --}}
                     <div>
                         <x-input-label for="season_start" :value="__('campus.season_start_date') . ' *'" />
                         <x-text-input id="season_start" name="season_start" type="date" 
@@ -68,12 +98,30 @@
                         <x-input-error :messages="$errors->get('season_start')" class="mt-2" />
                     </div>
                     
-                    {{-- Fecha fin --}}
+                    {{-- Fecha fin temporada --}}
                     <div>
                        <x-input-label for="season_end" :value="__('campus.season_end_date') . ' *'" />
                         <x-text-input id="season_end" name="season_end" type="date" 
                                     class="mt-1 block w-full" value="{{ old('season_end') }}" required />
                         <x-input-error :messages="$errors->get('season_end')" class="mt-2" />
+                    </div>
+                    
+                    {{-- Fecha inicio registro --}}
+                    <div>
+                        <x-input-label for="registration_start" :value="__('campus.registration_start_date')" />
+                        <x-text-input id="registration_start" name="registration_start" type="date" 
+                                    class="mt-1 block w-full" value="{{ old('registration_start') }}" />
+                        <x-input-error :messages="$errors->get('registration_start')" class="mt-2" />
+                        <p class="text-xs text-gray-500 mt-1">{{ __('campus.registration_start_help') }}</p>
+                    </div>
+                    
+                    {{-- Fecha fin registro --}}
+                    <div>
+                        <x-input-label for="registration_end" :value="__('campus.registration_end_date')" />
+                        <x-text-input id="registration_end" name="registration_end" type="date" 
+                                    class="mt-1 block w-full" value="{{ old('registration_end') }}" />
+                        <x-input-error :messages="$errors->get('registration_end')" class="mt-2" />
+                        <p class="text-xs text-gray-500 mt-1">{{ __('campus.registration_end_help') }}</p>
                     </div>
                 </div>
             </div>

@@ -362,7 +362,7 @@ class CampusSeason extends Model
     public function children(): HasMany
     {
         return $this->hasMany(CampusSeason::class, 'parent_id')
-                   ->orderBy('semester_number');
+                   ->orderBy('season_start');
     }
 
     /**
@@ -382,19 +382,59 @@ class CampusSeason extends Model
     }
 
     /**
-     * Get first semester.
+     * Get trimesters only.
      */
-    public function firstSemester()
+    public function scopeTrimesters(Builder $query): Builder
     {
-        return $this->children()->where('semester_number', 1)->first();
+        return $query->where('type', 'trimester')->whereNotNull('parent_id');
     }
 
     /**
-     * Get second semester.
+     * Get quarters only.
      */
-    public function secondSemester()
+    public function scopeQuarters(Builder $query): Builder
     {
-        return $this->children()->where('semester_number', 2)->first();
+        return $query->where('type', 'quarter')->whereNotNull('parent_id');
+    }
+
+    /**
+     * Get bimensual periods only.
+     */
+    public function scopeBimensuals(Builder $query): Builder
+    {
+        return $query->where('type', 'bimensual')->whereNotNull('parent_id');
+    }
+
+    /**
+     * Get monthly periods only.
+     */
+    public function scopeMonthlys(Builder $query): Builder
+    {
+        return $query->where('type', 'monthly')->whereNotNull('parent_id');
+    }
+
+    /**
+     * Get custom periods only.
+     */
+    public function scopeCustoms(Builder $query): Builder
+    {
+        return $query->where('type', 'custom')->whereNotNull('parent_id');
+    }
+
+    /**
+     * Get first period by start date.
+     */
+    public function firstPeriod()
+    {
+        return $this->children()->orderBy('season_start')->first();
+    }
+
+    /**
+     * Get second period by start date.
+     */
+    public function secondPeriod()
+    {
+        return $this->children()->orderBy('season_start')->skip(1)->first();
     }
 
     /**
@@ -411,6 +451,46 @@ class CampusSeason extends Model
     public function isSemester(): bool
     {
         return $this->type === 'semester' && !is_null($this->parent_id);
+    }
+
+    /**
+     * Check if this is a trimester.
+     */
+    public function isTrimester(): bool
+    {
+        return $this->type === 'trimester' && !is_null($this->parent_id);
+    }
+
+    /**
+     * Check if this is a quarter.
+     */
+    public function isQuarter(): bool
+    {
+        return $this->type === 'quarter' && !is_null($this->parent_id);
+    }
+
+    /**
+     * Check if this is bimensual.
+     */
+    public function isBimensual(): bool
+    {
+        return $this->type === 'bimensual' && !is_null($this->parent_id);
+    }
+
+    /**
+     * Check if this is monthly.
+     */
+    public function isMonthly(): bool
+    {
+        return $this->type === 'monthly' && !is_null($this->parent_id);
+    }
+
+    /**
+     * Check if this is a custom period.
+     */
+    public function isCustom(): bool
+    {
+        return $this->type === 'custom' && !is_null($this->parent_id);
     }
 
     /**
