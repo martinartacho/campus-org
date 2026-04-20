@@ -99,15 +99,91 @@ class SeasonController extends Controller
             }
         }
 
-        // Si és una creació de sub-períodes automàtica
-        if ($request->has('create_sub_periods') && $request->create_sub_periods) {
-            return $this->handleSubPeriodsCreation($request);
-        }
-
         CampusSeason::create($validated);
 
         return redirect()->route('campus.seasons.index')
             ->with('success', 'Temporada creada correctament.');
+    }
+
+    /**
+     * Show the form for creating a new season with automatic periods.
+     */
+    public function createWithPeriods()
+    {
+        $configurations = \App\Services\SeasonPeriodGenerator::getPredefinedConfigurations();
+        return view('campus.seasons.create-with-periods', compact('configurations'));
+    }
+
+    /**
+     * Store a newly created season with automatic periods in storage.
+     */
+    public function storeWithPeriods(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'season_start' => 'required|date',
+            'season_end' => 'required|date|after_or_equal:season_start',
+            'configuration' => 'required|string',
+            'is_active' => 'boolean',
+            'is_current' => 'boolean',
+        ]);
+
+        try {
+            // Validar nom d'any acadèmic
+            if (!$this->isValidAcademicYearName($validated['name'])) {
+                return back()->withErrors([
+                    'name' => 'El nom ha de contenir un any acadèmic vàlid (format: YYYY-YY)'
+                ])->withInput();
+            }
+
+            // Si es marca com a actual, desmarcar les altres
+            if ($request->has('is_current') && $request->is_current) {
+                CampusSeason::where('is_current', true)->update(['is_current' => false]);
+            }
+
+            // Crear temporada acadèmica
+            $academicYear = CampusSeason::create([
+                'name' => $validated['name'],
+                'slug' => \Str::slug($validated['name']),
+                'season_start' => $validated['season_start'],
+                'season_end' => $validated['season_end'],
+                'type' => 'annual',
+                'status' => 'active',
+                'is_active' => $request->has('is_active'),
+                'is_current' => $request->has('is_current'),
+            ]);
+
+            // Generar períodos automàticament
+            $configurations = \App\Services\SeasonPeriodGenerator::getPredefinedConfigurations();
+            $generator = new \App\Services\SeasonPeriodGenerator();
+            $periods = $generator->generateForAcademicYear($academicYear, $configurations[$validated['configuration']]);
+
+            return redirect()->route('campus.seasons.show', $academicYear->id)
+                ->with('success', "Any acadèmic creat amb {$periods->count()} períodes correctament.");
+
+        } catch (\Exception $e) {
+            return back()->withErrors([
+                'error' => 'Error en crear la temporada: ' . $e->getMessage()
+            ])->withInput();
+        }
+    }
+
+    /**
+     * Validate academic year name format
+     */
+    private function isValidAcademicYearName(string $name): bool
+    {
+        if (!preg_match('/(\d{4})-(\d{2})/', $name, $matches)) {
+            return false;
+        }
+
+        $startYear = (int)$matches[1];
+        $endYear = (int)$matches[2];
+        
+        $expectedEndYear = $startYear + 1;
+        $expectedEndYearShort = $expectedEndYear % 100;
+        
+        return $endYear === $expectedEndYearShort;
     }
 
     /**

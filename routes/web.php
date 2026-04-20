@@ -747,6 +747,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->name('seasons.toggleActive')
             ->middleware('can:campus.seasons.edit');
 
+        Route::get('seasons/create-with-periods', [\App\Http\Controllers\Campus\SeasonController::class, 'createWithPeriods'])
+            ->name('seasons.create-with-periods')
+            ->middleware('can:campus.seasons.create');
+
+        Route::post('seasons/create-with-periods', [\App\Http\Controllers\Campus\SeasonController::class, 'storeWithPeriods'])
+            ->name('seasons.store-with-periods')
+            ->middleware('can:campus.seasons.create');
+
         Route::post('seasons/{academicYear}/generate-periods', [\App\Http\Controllers\Campus\SeasonController::class, 'generatePeriods'])
             ->name('seasons.generatePeriods')
             ->middleware('can:campus.seasons.edit');
