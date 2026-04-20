@@ -148,8 +148,12 @@ class SeasonController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'parent_id' => 'nullable|exists:campus_seasons,id',
+            'type' => 'required|in:annual,semester,trimester,quarter,bimensual,monthly,custom',
             'season_start' => 'required|date',
             'season_end' => 'required|date|after_or_equal:season_start',
+            'registration_start' => 'nullable|date',
+            'registration_end' => 'nullable|date|after_or_equal:registration_start',
             'is_active' => 'boolean',
             'is_current' => 'boolean',
         ]);
