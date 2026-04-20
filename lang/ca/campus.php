@@ -913,6 +913,8 @@ return [
     'registration_end_help' => 'Permet matriculació anticipada o extendida',
     'generate_periods' => 'Generar Períodes',
     'select_period_configuration' => 'Selecciona Configuració de Períodes',
+    'create_sub_periods' => 'Crear Sub-períodes',
+    'save_changes' => 'Desar Canvis',
     'profile' => 'Perfil',
     'registrations' => 'Matrícules',
     'update_your_data' => 'Actualitza les teves dades',

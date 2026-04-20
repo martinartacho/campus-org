@@ -99,10 +99,55 @@ class SeasonController extends Controller
             }
         }
 
+        // Si és una creació de sub-períodes automàtica
+        if ($request->has('create_sub_periods') && $request->create_sub_periods) {
+            return $this->handleSubPeriodsCreation($request);
+        }
+
         CampusSeason::create($validated);
 
         return redirect()->route('campus.seasons.index')
             ->with('success', 'Temporada creada correctament.');
+    }
+
+    /**
+     * Handle creation of sub-periods for a new academic year
+     */
+    protected function handleSubPeriodsCreation(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'season_start' => 'required|date',
+            'season_end' => 'required|date|after_or_equal:season_start',
+            'configuration' => 'required|string',
+        ]);
+
+        // Crear año académico primero
+        $academicYear = CampusSeason::create([
+            'name' => $validated['name'],
+            'slug' => \Str::slug($validated['name']),
+            'season_start' => $validated['season_start'],
+            'season_end' => $validated['season_end'],
+            'type' => 'annual',
+            'status' => 'draft',
+            'is_active' => false,
+            'is_current' => false,
+        ]);
+
+        // Generar sub-períodos automáticamente
+        try {
+            $generator = new SeasonPeriodGenerator();
+            $configurations = SeasonPeriodGenerator::getPredefinedConfigurations();
+            $periods = $generator->generateForAcademicYear($academicYear, $configurations[$validated['configuration']]);
+
+            return redirect()->route('campus.seasons.show', $academicYear->id)
+                ->with('success', "Any acadèmic creat amb {$periods->count()} sub-períodes correctament.");
+                
+        } catch (\Exception $e) {
+            return back()->withErrors([
+                'error' => 'Error en generar els sub-períodes: ' . $e->getMessage()
+            ]);
+        }
     }
 
     /**
