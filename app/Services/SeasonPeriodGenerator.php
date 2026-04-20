@@ -56,7 +56,6 @@ class SeasonPeriodGenerator
             'status' => $config['status'] ?? 'planning',
             'is_active' => $config['is_active'] ?? true,
             'is_current' => false,
-            'created_by' => auth()->id(),
         ]);
     }
 
