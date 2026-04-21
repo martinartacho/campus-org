@@ -70,6 +70,45 @@ class ResourceController extends Controller
         return view('campus.resources.calendar', compact('timeSlots', 'spaces', 'semester', 'selectedSeason', 'coursesCount'));
     }
     
+    public function searchCourses(Request $request)
+    {
+        $search = $request->get('search', '');
+        
+        if (strlen($search) < 2) {
+            return response()->json([
+                'success' => false,
+                'message' => 'El terme de cerca ha de tenir al menys 2 caràcters'
+            ]);
+        }
+        
+        // Buscar cursos base (sin parent) de cualquier temporada
+        $courses = CampusCourse::whereNull('parent_id')
+            ->where(function($query) use ($search) {
+                $query->where('code', 'like', '%' . $search . '%')
+                      ->orWhere('title', 'like', '%' . $search . '%');
+            })
+            ->with(['season'])
+            ->orderBy('title')
+            ->limit(10) // Limitar resultados para mejor rendimiento
+            ->get(['id', 'code', 'title', 'season_id']);
+        
+        $coursesData = $courses->map(function($course) {
+            return [
+                'id' => $course->id,
+                'code' => $course->code,
+                'title' => $course->title,
+                'season_name' => $course->season ? $course->season->name : 'Sense temporada',
+                'season_id' => $course->season_id
+            ];
+        });
+        
+        return response()->json([
+            'success' => true,
+            'courses' => $coursesData,
+            'count' => $coursesData->count()
+        ]);
+    }
+    
     public function assign(Request $request)
     {
         $validated = $request->validate([

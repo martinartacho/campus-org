@@ -58,6 +58,36 @@ class CampusCourseSchedule extends Model
             $conflicts[] = 'Capacidad insuficiente';
         }
         
+        // Check space and time slot availability (solo misma temporada/año académico)
+        $existingSchedule = CampusCourseSchedule::where('space_id', $this->space_id)
+            ->where('time_slot_id', $this->time_slot_id)
+            ->where('status', 'assigned') // Solo considerar asignaciones confirmadas
+            ->when($this->id, function($query) {
+                return $query->where('id', '!=', $this->id); // Excluir registro actual en actualizaciones
+            })
+            ->with(['course' => function($query) {
+                $query->with('season');
+            }])
+            ->first();
+            
+        if ($existingSchedule) {
+            // Verificar si es de la misma temporada o mismo año académico
+            $currentSeason = $this->course->season;
+            $existingSeason = $existingSchedule->course->season;
+            
+            $isSameSeason = $currentSeason && $existingSeason && $currentSeason->id === $existingSeason->id;
+            $isSameAcademicYear = $currentSeason && $existingSeason && 
+                substr($currentSeason->season_start, 0, 4) === substr($existingSeason->season_start, 0, 4);
+            
+            // Solo hay conflicto si es misma temporada o mismo año académico
+            if ($isSameSeason || $isSameAcademicYear) {
+                $conflictCourse = $existingSchedule->course;
+                $seasonInfo = $isSameSeason ? $existingSeason->name : substr($existingSeason->season_start, 0, 4);
+                $conflictInfo = "{$conflictCourse->title} ({$conflictCourse->code}) - {$seasonInfo}";
+                $conflicts[] = $conflictInfo;
+            }
+        }
+        
         // Check teacher availability
         $teacher = $this->course->mainTeacher();
         if ($teacher) {

@@ -241,6 +241,18 @@ Route::middleware(['auth', 'permission:campus.courses.view'])
         ->name('courses.index');
     Route::get('/registrations', [RegistrationController::class, 'index'])
         ->name('registrations.index');
+    
+    // Rutas de clonación de cursos
+    Route::get('/courses/clone', [CourseCloneController::class, 'create'])
+        ->name('courses.clone');
+    Route::post('/courses/clone', [CourseCloneController::class, 'clone'])
+        ->name('courses.clone.store');
+    Route::get('/courses/clone/courses', [CourseCloneController::class, 'getCourses'])
+        ->name('courses.clone.courses');
+    
+    // Ruta de prueba
+    Route::get('/courses/test', [TestController::class, 'index'])
+        ->name('courses.test');
 });
 
 // Rutes de PDFs fora del grup de permisos (només amb auth)
@@ -869,6 +881,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Re-Cursos - Resource Management
         Route::get('resources', [ResourceController::class, 'index'])->name('resources.index');
         Route::get('resources/calendar', [ResourceController::class, 'calendar'])->name('resources.calendar');
+        Route::get('resources/search/courses', [ResourceController::class, 'searchCourses'])->name('resources.search.courses');
         Route::post('resources/assign', [ResourceController::class, 'assign'])->name('resources.assign');
         
         // Spaces CRUD

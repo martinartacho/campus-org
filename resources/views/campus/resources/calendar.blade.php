@@ -285,6 +285,54 @@ function filterBySeason() {
     console.log('Navigating to:', url.toString()); // Debug
     window.location.href = url.toString();
 }
+
+function searchCourses() {
+    const searchTerm = document.getElementById('courseSearch').value.trim();
+    const resultsDiv = document.getElementById('courseSearchResults');
+    const resultsList = document.getElementById('searchResultsList');
+    
+    if (searchTerm.length < 2) {
+        resultsDiv.classList.add('hidden');
+        return;
+    }
+    
+    fetch(`{{ route('campus.resources.search.courses') }}?search=${encodeURIComponent(searchTerm)}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.courses.length > 0) {
+                resultsList.innerHTML = '';
+                
+                data.courses.forEach(course => {
+                    const courseElement = document.createElement('div');
+                    courseElement.className = 'bg-green-100 text-green-800 px-2 py-1 rounded text-xs cursor-pointer hover:bg-green-200';
+                    courseElement.title = `${course.title} (${course.code}) - ${course.season_name}`;
+                    courseElement.innerHTML = `<strong>${course.code}</strong><br><span class="text-xs">${course.title.substring(0, 20)}${course.title.length > 20 ? '...' : ''}</span>`;
+                    courseElement.onclick = () => selectCourse(course.id, course.title, course.code);
+                    resultsList.appendChild(courseElement);
+                });
+                
+                resultsDiv.classList.remove('hidden');
+            } else {
+                resultsList.innerHTML = '<div class="text-gray-500 text-sm">No s\'han trobat cursos base</div>';
+                resultsDiv.classList.remove('hidden');
+            }
+        })
+        .catch(error => {
+            console.error('Error searching courses:', error);
+            resultsList.innerHTML = '<div class="text-red-500 text-sm">Error cercant cursos</div>';
+            resultsDiv.classList.remove('hidden');
+        });
+}
+
+function clearCourseSearch() {
+    document.getElementById('courseSearch').value = '';
+    document.getElementById('courseSearchResults').classList.add('hidden');
+}
+
+function selectCourse(courseId, courseTitle, courseCode) {
+    // Redirigir a página de creación de instancia con parent_id
+    window.location.href = `{{ route('campus.courses.create') }}?parent_id=${courseId}`;
+}
 </script>
 
 <div class="container mx-auto px-4 py-8">
@@ -325,17 +373,36 @@ function filterBySeason() {
     <!-- Quick Add Forms -->
     <div class="bg-white rounded-lg shadow p-4 mb-6">
         <div class="space-y-4">
-            <!-- Selector de Temporada -->
-            <div class="flex items-center gap-2">
-                <h4 class="font-semibold">Temporada:</h4>
-                <select id="seasonFilter" class="border rounded px-2 py-1 text-sm">
-                    <option value="">Totes les temporades</option>
-                    @foreach(App\Models\CampusSeason::withCount('courses')->orderByDesc('season_start')->get() as $season)
-                        <option value="{{ $season->id }}" {{ $selectedSeason && $selectedSeason->id == $season->id ? 'selected' : '' }}>
-                            {{ $season->name }} ({{ $season->courses_count }} cursos)
-                        </option>
-                    @endforeach
-                </select>
+            <!-- Selector de Temporada y Buscador -->
+            <div class="flex items-center gap-4">
+                <div class="flex items-center gap-2">
+                    <h4 class="font-semibold">Temporada:</h4>
+                    <select id="seasonFilter" class="border rounded px-2 py-1 text-sm">
+                        <option value="">Totes les temporades</option>
+                        @foreach(App\Models\CampusSeason::withCount('courses')->orderByDesc('season_start')->get() as $season)
+                            <option value="{{ $season->id }}" {{ $selectedSeason && $selectedSeason->id == $season->id ? 'selected' : '' }}>
+                                {{ $season->name }} ({{ $season->courses_count }} cursos)
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                
+                <!-- Buscador de Cursos Base -->
+                <div class="flex items-center gap-2">
+                    <h4 class="font-semibold">Cercar Curs Base:</h4>
+                    <input type="text" id="courseSearch" placeholder="Codi o títol..." 
+                           class="border rounded px-2 py-1 text-sm w-48" 
+                           onkeyup="searchCourses()">
+                    <button onclick="clearCourseSearch()" class="text-gray-500 hover:text-gray-700 text-sm">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Resultados de Búsqueda -->
+            <div id="courseSearchResults" class="hidden border rounded p-3 bg-blue-50">
+                <h6 class="text-sm font-semibold mb-2">Cursos Base Trobats:</h6>
+                <div id="searchResultsList" class="flex flex-wrap gap-1"></div>
             </div>
             
             <!-- Cursos Disponibles -->

@@ -279,8 +279,6 @@ class CourseController extends Controller
                     ->withErrors(['code' => "El codi '{$data['code']}' ja existeix. Si us plau, selecciona un altre títol o introdueix un codi diferent."]);
             }
 
-            $data['slug'] = Str::slug($data['title']);
-
             $course = CampusCourse::create($data);
 
             return redirect()
@@ -457,10 +455,6 @@ class CourseController extends Controller
                     )
                 ], 422);
             }
-        }
-
-        if ($course->title !== $data['title']) {
-            $data['slug'] = Str::slug($data['title']);
         }
 
         $course->update($data);

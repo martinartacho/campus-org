@@ -291,8 +291,8 @@ class CampusImportService
         if (!empty($csvCode)) {
             $courseCode = $csvCode;
         } else {
-            // Generar código automáticamente usando el mismo algoritmo que el modelo
-            $courseCode = $this->generateCourseCode($courseTitle);
+            // Generar código único por temporada
+            $courseCode = $this->generateUniqueCourseCode($courseTitle, $season->id);
         }
         
         $sessions = $this->extractSessions($data);
@@ -317,8 +317,8 @@ class CampusImportService
         }
         
         try {
-            // Crear CampusCourse
-            $slug = Str::slug($courseTitle) . '-' . uniqid();
+            // Crear CampusCourse con slug único por temporada
+            $slug = $this->generateUniqueSlug($courseTitle, $season->id);
             
             $course = CampusCourse::create([
                 'season_id' => $season->id,
@@ -383,7 +383,89 @@ class CampusImportService
     }
     
     /**
-     * Generate a unique course code from title
+     * Generate unique slug for course by season
+     * 
+     * @param string $title
+     * @param int $seasonId
+     * @return string
+     */
+    private function generateUniqueSlug($title, $seasonId)
+    {
+        $baseSlug = Str::slug($title);
+        $season = CampusSeason::find($seasonId);
+        $seasonYear = $season ? substr($season->season_start->format('Y'), -2) : date('y');
+        $uniqueSlug = "{$baseSlug}-{$seasonYear}";
+        
+        // Si existe, añadir sufijo numérico
+        $counter = 1;
+        while (CampusCourse::where('slug', $uniqueSlug)->where('season_id', $seasonId)->exists()) {
+            $uniqueSlug = "{$baseSlug}-{$seasonYear}-{$counter}";
+            $counter++;
+        }
+        
+        return $uniqueSlug;
+    }
+    
+    /**
+     * Generate unique course code by season
+     * 
+     * @param string $title
+     * @param int $seasonId
+     * @return string
+     */
+    private function generateUniqueCourseCode($title, $seasonId)
+    {
+        // 1. Normalitzar text (accents i caràcters especials)
+        $normalized = Str::ascii($title);
+        $normalized = strtoupper($normalized);
+        $normalized = preg_replace('/[^A-Z\s]/', '', $normalized);
+
+        // 2. Separar paraulas
+        $words = array_values(array_filter(explode(' ', $normalized)));
+        $count = count($words);
+
+        $base = '';
+
+        if ($count == 1) {
+            $base = substr($words[0], 0, 6);
+        }
+        elseif ($count == 2) {
+            $base = substr($words[0], 0, 3) . substr($words[1], 0, 3);
+        }
+        elseif ($count == 3) {
+            foreach ($words as $w) {
+                $base .= substr($w, 0, 2);
+            }
+        }
+        elseif ($count == 4) {
+            $base = substr($words[0], 0, 3) . substr($words[1], 0, 1) . substr($words[2], 0, 1) . substr($words[3], 0, 1);
+        }
+        elseif ($count == 5) {
+            $base = substr($words[0], 0, 2) . substr($words[1], 0, 2) . substr($words[2], 0, 1) . substr($words[3], 0, 1);
+        }
+        else { // 6 o més
+            foreach ($words as $w) {
+                $base .= substr($w, 0, 1);
+                if (strlen($base) >= 6) break;
+            }
+        }
+
+        // Assegurar 6 caràcters
+        $base = substr(str_pad($base, 6, 'X'), 0, 6);
+
+        // 3. Generar número incremental por temporada
+        $counter = 1;
+        do {
+            $code = $base . '-' . str_pad($counter, 3, '0', STR_PAD_LEFT);
+            $exists = CampusCourse::where('code', $code)->where('season_id', $seasonId)->exists();
+            $counter++;
+        } while ($exists);
+
+        return $code;
+    }
+    
+    /**
+     * Generate a unique course code from title (legacy method)
      * 
      * @param string $title
      * @return string

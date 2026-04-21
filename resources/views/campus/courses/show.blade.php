@@ -13,10 +13,40 @@
             </a>
         </div>
     </li>
+    
+    {{-- Si es una instancia, mostrar enlace al curso padre --}}
+    @if($course->parent_id)
+        <li>
+            <div class="flex items-center">
+                <i class="bi bi-chevron-right text-gray-400 mx-1"></i>
+                <a href="{{ route('campus.courses.show', $course->parent) }}"
+                   class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2">
+                    {{ $course->parent->title }}
+                </a>
+            </div>
+        </li>
+    @endif
+    
+    {{-- Enlace a calendario si tiene permisos --}}
+    @if(auth()->user()->can('campus.resources.view'))
+        <li>
+            <div class="flex items-center">
+                <i class="bi bi-chevron-right text-gray-400 mx-1"></i>
+                <a href="{{ route('campus.resources.calendar') }}"
+                   class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2">
+                    <i class="bi bi-calendar-week me-1"></i>
+                    Calendari
+                </a>
+            </div>
+        </li>
+    @endif
+    
     <li aria-current="page">
         <div class="flex items-center">
             <i class="bi bi-chevron-right text-gray-400 mx-1"></i>
-            <span class="ms-1 text-sm font-medium text-gray-500 md:ms-2">{{ __('campus.course_details') }}</span>
+            <span class="ms-1 text-sm font-medium text-gray-500 md:ms-2">
+                {{ $course->title }} @if($course->code)({{ $course->code }})@endif
+            </span>
         </div>
     </li>
 @endsection

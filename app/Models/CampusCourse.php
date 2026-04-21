@@ -20,7 +20,12 @@ class CampusCourse extends Model
 
         static::creating(function ($course) {
             if (empty($course->slug)) {
-                $baseSlug = \Str::slug($course->title);
+                // Priorizar usar el código como slug si está disponible
+                if (!empty($course->code)) {
+                    $baseSlug = \Str::slug($course->code);
+                } else {
+                    $baseSlug = \Str::slug($course->title);
+                }
                 
                 // Si es un curso hijo, añadir sufijo para evitar duplicados
                 if ($course->parent_id) {
@@ -44,8 +49,14 @@ class CampusCourse extends Model
         });
 
         static::updating(function ($course) {
-            if ($course->isDirty('title') && empty($course->slug)) {
-                $baseSlug = \Str::slug($course->title);
+            // Generar slug si el título cambió o si no hay slug
+            if ($course->isDirty('title') || empty($course->slug)) {
+                // Priorizar usar el código como slug si está disponible
+                if (!empty($course->code) && !$course->isDirty('code')) {
+                    $baseSlug = \Str::slug($course->code);
+                } else {
+                    $baseSlug = \Str::slug($course->title);
+                }
                 
                 // Si es un curso hijo, añadir sufijo para evitar duplicados
                 if ($course->parent_id) {

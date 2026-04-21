@@ -148,6 +148,9 @@ class RolesAndPermissionsSeeder extends Seeder
             'campus.my_courses.view',
             'campus.my_courses.manage',
             
+            // Permisos de recursos
+            'campus.resources.view',
+            
             // Permisos de tesorería adicionales
             'campus.consents.request',
             'campus.consents.view',
@@ -294,6 +297,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'campus.teachers.edit', 'campus.teachers.assign',
             'campus.registrations.index', 'campus.registrations.view', 'campus.registrations.create',
             'campus.registrations.edit', 'campus.registrations.manage',
+            'campus.resources.view',  // Acceso a calendario de recursos
             'notifications.index', 'notifications.create', 'notifications.edit', 'notifications.view',
         ];
         $coordinacio->syncPermissions($coordinacioPermissions);

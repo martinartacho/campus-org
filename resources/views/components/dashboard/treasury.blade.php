@@ -103,6 +103,26 @@
         </a>
         @endcan
         
+        {{-- Gestión de Calendario --}}
+        @can('campus.resources.view')
+        <a href="{{ route('campus.resources.calendar') }}" 
+           class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 border border-gray-200">
+            <div class="flex items-center mb-4">
+                <div class="p-3 bg-orange-100 rounded-lg mr-4">
+                    <i class="bi bi-calendar-week text-orange-600 text-2xl"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-semibold text-gray-900">Gestió de Calendari</h3>
+                    <p class="text-sm text-gray-600">Gestionar propera temporada fent servir el model calendari de recursos</p>
+                </div>
+            </div>
+            <div class="text-sm text-gray-500">
+                <i class="bi bi-arrow-right-circle me-1"></i>
+                Accedir al calendari
+            </div>
+        </a>
+        @endcan
+        
         {{-- Informes Financieros --}}
         @can('campus.reports.financial')
         <a href="#" 
