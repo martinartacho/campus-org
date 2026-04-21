@@ -2,11 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use Closure;
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Auth;
-use App\Models\Setting;
-use Illuminate\Support\Facades\Cache;
 
 
 class SetLocale
@@ -14,7 +9,6 @@ class SetLocale
     public function handle($request, Closure $next)
     {
 
-        
         // Prioridad 1: Idioma de la sesión (si existe)
 /*         if (session()->has('locale')) {
             $locale = session('locale');
@@ -35,13 +29,18 @@ class SetLocale
             
             // Verificar conflicto con preferencia de usuario solo si está autenticado
             if (Auth::check() && !session()->has('language_conflict')) {
-                $userLang = Auth::user()->getLanguage();
-                
-                if ($userLang && $userLang !== $locale) {
-                    session()->flash('language_conflict', [
-                        'session_language' => $locale,
-                        'user_language' => $userLang
-                    ]);
+                try {
+                    $userLang = Auth::user()->getLanguage();
+                    
+                    if ($userLang && $userLang !== $locale) {
+                        session()->flash('language_conflict', [
+                            'session_language' => $locale,
+                            'user_language' => $userLang
+                        ]);
+                    }
+                } catch (\Exception $e) {
+                    // Log error but continue
+                    \Log::error('Error getting user language: ' . $e->getMessage());
                 }
             }
             
@@ -50,12 +49,17 @@ class SetLocale
 
         // Prioridad 2: Idioma del usuario (si está autenticado)
         if (Auth::check()) {
-            $userLang = Auth::user()->getLanguage();
-            
-            if ($userLang) {
-                App::setLocale($userLang);
-                session()->put('locale', $userLang);
-                return $next($request);
+            try {
+                $userLang = Auth::user()->getLanguage();
+                
+                if ($userLang) {
+                    App::setLocale($userLang);
+                    session()->put('locale', $userLang);
+                    return $next($request);
+                }
+            } catch (\Exception $e) {
+                // Log error but continue
+                \Log::error('Error getting user language: ' . $e->getMessage());
             }
         }
         
