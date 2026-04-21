@@ -42,8 +42,6 @@
 
 @section('content')
     <div class="space-y-6">
-        {{-- Generación Automática de Períodos --}}
-        @include('campus.seasons.partials.generate-periods', ['season' => $season])
         {{-- Información general --}}
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {{-- Datos principales --}}
@@ -52,9 +50,7 @@
                     <div class="flex items-start justify-between">
                         <div>
                             <h3 class="text-lg font-medium text-gray-900 mb-2">{{ $season->name }}</h3>
-                            
                             @if($season->description)
-                                <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('campus.season_description') }}</label>
                                 <p class="text-gray-600 mb-4">{{ $season->description }}</p>
                             @endif
                             

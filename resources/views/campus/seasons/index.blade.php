@@ -137,13 +137,16 @@
                                 <form action="{{ route('campus.seasons.destroy', $season) }}" 
                                       method="POST" 
                                       class="inline"
-                                      onsubmit="return confirm('{{ __('campus.delete_confirmation') }}')">
+                                      onsubmit="return confirm('{{ $season->getDeletionConfirmationMessage() }}')">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" 
-                                            class="text-red-600 hover:text-red-900"
-                                            title="{{ __('campus.delete') }}">
-                                        <i class="bi bi-trash"></i>
+                                            class="text-red-600 hover:text-red-900 {{ $season->hasChildren() ? 'font-bold' : '' }}"
+                                            title="{{ $season->hasChildren() ? __('campus.delete_with_children') : __('campus.delete') }}">
+                                        <i class="bi bi-trash{{ $season->hasChildren() ? '-fill' : '' }}"></i>
+                                        @if($season->hasChildren())
+                                            <span class="ml-1 text-xs">({{ $season->getChildrenCount() }})</span>
+                                        @endif
                                     </button>
                                 </form>
                             </div>

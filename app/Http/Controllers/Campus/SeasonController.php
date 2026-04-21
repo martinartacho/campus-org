@@ -402,8 +402,8 @@ class SeasonController extends Controller
      */
     public function destroy(CampusSeason $season)
     {
-        // Verificar si hay cursos asociados
-        if ($season->courses()->exists()) {
+        // Verificar si hay cursos asociados (incluyendo cursos de hijos)
+        if ($season->getAllCourses()->isNotEmpty()) {
             return redirect()->route('campus.seasons.index')
                 ->with('error', 'No es pot eliminar la temporada perquè té cursos associats.');
         }
@@ -414,10 +414,20 @@ class SeasonController extends Controller
                 ->with('error', 'No es pot eliminar la temporada actual. Marca una altra temporada com a actual primer.');
         }
 
+        // Contar hijos para mensaje
+        $childrenCount = $season->getChildrenCount();
+        
+        // Eliminar en cascada (Laravel se encarga de los hijos con foreign key)
         $season->delete();
 
-        return redirect()->route('campus.seasons.index')
-            ->with('success', 'Temporada eliminada correctament.');
+        // Mensaje según si tenía hijos o no
+        if ($childrenCount > 0) {
+            return redirect()->route('campus.seasons.index')
+                ->with('success', "Temporada i les seves {$childrenCount} subtemporades eliminades correctament.");
+        } else {
+            return redirect()->route('campus.seasons.index')
+                ->with('success', 'Temporada eliminada correctament.');
+        }
     }
     
     /**

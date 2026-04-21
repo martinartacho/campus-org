@@ -230,6 +230,7 @@ return [
     'update' => 'Actualitzar',
     'edit' => 'Editar',
     'delete' => 'Eliminar',
+    'delete_with_children' => 'Eliminar temporada i subtemporades',
     'view' => 'Veure',
     'actions' => 'Accions',
     
@@ -255,6 +256,8 @@ return [
     
     // Messages
     'delete_confirmation' => 'Estàs segur que vols eliminar aquesta temporada?',
+    'delete_with_children_confirmation' => 'Estàs segur que vols eliminar la temporada ":season" i les seves :count subtemporades (:children)? Aquesta acció no es pot desfer.',
+    'delete_with_many_children_confirmation' => 'Estàs segur que vols eliminar la temporada ":season" i les seves :count subtemporades (:children) i més? Aquesta acció no es pot desfer.',
     'date_validation_error' => 'La data de finalització ha de ser posterior a la data d\'inici.',
     
     // Statistics

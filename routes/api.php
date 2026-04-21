@@ -16,7 +16,6 @@ use App\Http\Controllers\TaskBoardController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TaskListController;
 use App\Http\Controllers\TaskChecklistController;
-use App\Http\Controllers\Api\CoursesController;
 
 use App\Models\Notification;
 use App\Services\FCMService;
@@ -117,7 +116,3 @@ Route::middleware('auth:api')->prefix('tasks')->group(function () {
 
 // Rutas de descarga de archivos
 Route::middleware('auth:api')->get('/tasks/attachments/{attachment}/download', [TaskController::class, 'downloadAttachment']);
-
-// Rutas cursos para WoodComerce (solo para select)
-Route::get('/courses/list', [CoursesController::class, 'list']);
-

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 
 class CampusSeason extends Model
 {
@@ -459,6 +460,57 @@ class CampusSeason extends Model
     public function isTrimester(): bool
     {
         return $this->type === 'trimester' && !is_null($this->parent_id);
+    }
+
+    /**
+     * Check if this season has children (sub-seasons).
+     */
+    public function hasChildren(): bool
+    {
+        return $this->children()->exists();
+    }
+
+    /**
+     * Get count of children seasons.
+     */
+    public function getChildrenCount(): int
+    {
+        return $this->children()->count();
+    }
+
+    /**
+     * Get children seasons for deletion confirmation.
+     */
+    public function getChildrenForDeletion(): Collection
+    {
+        return $this->children()->select('id', 'name', 'type')->get();
+    }
+
+    /**
+     * Get deletion confirmation message based on children.
+     */
+    public function getDeletionConfirmationMessage(): string
+    {
+        if (!$this->hasChildren()) {
+            return __('campus.delete_confirmation');
+        }
+
+        $childrenCount = $this->getChildrenCount();
+        $childrenList = $this->getChildrenForDeletion()->pluck('name')->take(3)->implode(', ');
+        
+        if ($childrenCount <= 3) {
+            return __('campus.delete_with_children_confirmation', [
+                'season' => $this->name,
+                'count' => $childrenCount,
+                'children' => $childrenList
+            ]);
+        } else {
+            return __('campus.delete_with_many_children_confirmation', [
+                'season' => $this->name,
+                'count' => $childrenCount,
+                'children' => $childrenList
+            ]);
+        }
     }
 
     /**
