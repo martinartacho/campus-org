@@ -53,8 +53,7 @@
                 <i class="bi bi-chevron-right text-gray-400 mx-1"></i>
                 <a href="{{ route('campus.resources.calendar') }}"
                    class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2">
-                    <i class="bi bi-calendar-week me-1"></i>
-                    Calendari
+                    🗓️
                 </a>
             </div>
         </li>
