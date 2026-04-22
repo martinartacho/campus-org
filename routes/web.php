@@ -242,8 +242,8 @@ Route::middleware(['auth', 'permission:campus.courses.view'])
     Route::get('/registrations', [RegistrationController::class, 'index'])
         ->name('registrations.index');
     
-    // Rutas de clonación de cursos
-    Route::get('/courses/clone', [CourseCloneController::class, 'create'])
+    // Rutas de clonación de cursos - Comentadas temporalmente
+    /* Route::get('/courses/clone', [CourseCloneController::class, 'create'])
         ->name('courses.clone');
     Route::post('/courses/clone', [CourseCloneController::class, 'clone'])
         ->name('courses.clone.store');
@@ -252,7 +252,7 @@ Route::middleware(['auth', 'permission:campus.courses.view'])
     
     // Ruta de prueba
     Route::get('/courses/test', [TestController::class, 'index'])
-        ->name('courses.test');
+        ->name('courses.test'); */
 });
 
 // Rutes de PDFs fora del grup de permisos (només amb auth)
