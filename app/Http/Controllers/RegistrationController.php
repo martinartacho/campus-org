@@ -524,11 +524,17 @@ class RegistrationController extends Controller
         // Allow access if:
         // 1. User is authenticated and owns the registration, OR
         // 2. Registration was created in the last 24 hours (for guest users), OR
-        // 3. Payment is confirmed (regardless of authentication)
+        // 3. Payment is confirmed (regardless of authentication), OR
+        // 4. User has admin/teacher role
         $canAccess = false;
         
         if (auth()->check()) {
-            $canAccess = auth()->id() === $registration->user_id;
+            // Admin and teachers can access any invoice
+            if (auth()->user()->hasRole(['admin', 'super-admin', 'teacher'])) {
+                $canAccess = true;
+            } else {
+                $canAccess = auth()->id() === $registration->user_id;
+            }
         } else {
             // Allow access for recent registrations (within 24 hours) OR confirmed payments
             $isRecent = $registration->created_at->diffInHours(now()) <= 24;
@@ -642,6 +648,24 @@ class RegistrationController extends Controller
                     ])
                 ]
             );
+        }
+
+        // Enviar email de confirmación a cada estudiante
+        foreach ($registrations as $registration) {
+            try {
+                \Mail::to($registration->student->email)->send(
+                    new \App\Mail\RegistrationConfirmedMail($registration)
+                );
+                Log::info('Confirmation email sent', [
+                    'registration_id' => $registration->id,
+                    'student_email' => $registration->student->email
+                ]);
+            } catch (\Exception $e) {
+                Log::error('Failed to send confirmation email', [
+                    'registration_id' => $registration->id,
+                    'error' => $e->getMessage()
+                ]);
+            }
         }
 
         Log::info('Payment completed and synced', [
