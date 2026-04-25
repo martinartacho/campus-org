@@ -533,7 +533,13 @@ class RegistrationController extends Controller
             if (auth()->user()->hasRole(['admin', 'super-admin', 'teacher'])) {
                 $canAccess = true;
             } else {
+                // Check by user_id OR by student email (for registrations without user_id)
                 $canAccess = auth()->id() === $registration->user_id;
+                
+                // Additional check: if user_id is empty, check by student email
+                if (!$canAccess && empty($registration->user_id) && $registration->student) {
+                    $canAccess = auth()->user()->email === $registration->student->email;
+                }
             }
         } else {
             // Allow access for recent registrations (within 24 hours) OR confirmed payments
