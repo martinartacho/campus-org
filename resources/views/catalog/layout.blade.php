@@ -56,7 +56,7 @@
                     </a>
                     <a href="{{ route('cart.index') }}" class="text-gray-700 hover:text-blue-600 font-medium transition relative">
                         <i class="bi bi-cart-fill me-1"></i>
-                        Carrito
+                        Cistella
                         @if($cartItemsCount > 0)
                             <span class="cart-badge absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                                 {{ $cartItemsCount }}
@@ -66,12 +66,12 @@
                     @if(auth()->check())
                         <a href="{{ route('dashboard') }}" class="text-gray-700 hover:text-blue-600 font-medium transition">
                             <i class="bi bi-person-circle me-1"></i>
-                            Mi Campus
+                            Campus
                         </a>
                     @else
                         <a href="{{ route('login') }}" class="text-gray-700 hover:text-blue-600 font-medium transition">
                             <i class="bi bi-box-arrow-in-right me-1"></i>
-                            Iniciar Sesión
+                            Iniciar Sesió
                         </a>
                     @endif
                 </div>
@@ -92,7 +92,7 @@
                     <i class="bi bi-grid-3x3-gap-fill me-2"></i>Catàleg
                 </a>
                 <a href="{{ route('cart.index') }}" class="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md relative">
-                    <i class="bi bi-cart-fill me-2"></i>Carrito
+                    <i class="bi bi-cart-fill me-2"></i>Cistella
                     @if($cartItemsCount > 0)
                         <span class="absolute top-2 right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                             {{ $cartItemsCount }}
@@ -101,11 +101,11 @@
                 </a>
                 @if(auth()->check())
                     <a href="{{ route('dashboard') }}" class="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md">
-                        <i class="bi bi-person-circle me-2"></i>Mi Campus
+                        <i class="bi bi-person-circle me-2"></i>Campus
                     </a>
                 @else
                     <a href="{{ route('login') }}" class="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md">
-                        <i class="bi bi-box-arrow-in-right me-2"></i>Iniciar Sesión
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Iniciar Sesió
                     </a>
                 @endif
             </div>
@@ -153,11 +153,11 @@
                     <h3 class="text-lg font-semibold mb-4">Enlaces Rápidos</h3>
                     <ul class="space-y-2 text-sm">
                         <li><a href="{{ route('catalog.index') }}" class="text-gray-300 hover:text-white">Catàleg de Cursos</a></li>
-                        <li><a href="{{ route('cart.index') }}" class="text-gray-300 hover:text-white">Mi Carrito</a></li>
+                        <li><a href="{{ route('cart.index') }}" class="text-gray-300 hover:text-white">Cistella</a></li>
                         @if(auth()->check())
-                            <li><a href="{{ route('dashboard') }}" class="text-gray-300 hover:text-white">Mi Campus</a></li>
+                            <li><a href="{{ route('dashboard') }}" class="text-gray-300 hover:text-white">Campus</a></li>
                         @else
-                            <li><a href="{{ route('login') }}" class="text-gray-300 hover:text-white">Iniciar Sesión</a></li>
+                            <li><a href="{{ route('login') }}" class="text-gray-300 hover:text-white">Iniciar Sesió</a></li>
                         @endif
                     </ul>
                 </div>

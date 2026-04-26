@@ -83,7 +83,7 @@
                     @if($isInCart)
                         <button onclick="removeFromCart({{ $course->id }})" 
                                 class="px-6 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition font-semibold">
-                            <i class="bi bi-cart-x me-2"></i>Eliminar del Carrito
+                            <i class="bi bi-cart-x me-2"></i>Eliminar del Cistella
                         </button>
                     @elseif(!$course->hasAvailableSpots())
                         <button disabled 
@@ -93,13 +93,13 @@
                     @else
                         <button onclick="addToCart({{ $course->id }})" 
                                 class="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition font-semibold">
-                            <i class="bi bi-cart-plus me-2"></i>Añadir al Carrito
+                            <i class="bi bi-cart-plus me-2"></i>Añadir al Cistella
                         </button>
                     @endif
                     
                     <div class="mt-3">
                         <a href="{{ route('cart.index') }}" class="text-white hover:text-blue-200 underline text-sm">
-                            <i class="bi bi-cart me-1"></i>Ver carrito
+                            <i class="bi bi-cart me-1"></i>Veure cistella
                         </a>
                     </div>
                 </div>

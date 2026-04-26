@@ -1,6 +1,6 @@
 @extends('catalog.layout')
 
-@section('title', 'Carrito Vacío')
+@section('title', 'Cistella Buida')
 
 @section('content')
 <div class="max-w-4xl mx-auto px-4 py-8">
@@ -8,10 +8,10 @@
     <div class="text-center mb-8">
         <h1 class="text-3xl font-bold text-gray-900 mb-4">
             <i class="bi bi-cart-x me-2"></i>
-            Carrito Vacío
+            Cistella Buida
         </h1>
         <p class="text-gray-600 text-lg">
-            Tu carrito de compras está vacío. ¡Añade algunos cursos para comenzar!
+            La teva cistella de compres està buida. Afegeix alguns cursos per començar!
         </p>
     </div>
 
@@ -22,7 +22,7 @@
         </div>
         
         <h2 class="text-xl font-semibold text-gray-800 mb-4">
-            No tienes cursos en tu carrito
+            No tens cursos a la teva cistella
         </h2>
         
         <p class="text-gray-600 mb-8 max-w-md mx-auto">
@@ -102,14 +102,14 @@
             <div>
                 <h4 class="font-semibold text-blue-800 mb-2">¿Cómo añadir cursos?</h4>
                 <p class="text-blue-700 text-sm">
-                    Navega pel nostre catàleg, selecciona els cursos que t'interessen i fes clic a "Afegir al Carrito".
+                    Navega pel nostre catàleg, selecciona els cursos que t'interessen i fes clic a "Afegir a la Cistella".
                 </p>
             </div>
             
             <div>
                 <h4 class="font-semibold text-blue-800 mb-2">¿Proceso de matriculación?</h4>
                 <p class="text-blue-700 text-sm">
-                    Una vez en el carrito, puedes proceder con la matriculación y pago de forma segura a través de Stripe.
+                    Un cop a la cistella, pots procedir amb la matriculació i pagament de forma segura a través de Stripe.
                 </p>
             </div>
         </div>

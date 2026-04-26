@@ -33,7 +33,7 @@
             <ul class="space-y-2 list-disc list-inside ml-4">
                 <li>No se ha realizado ningún cargo en tu tarjeta</li>
                 <li>Tu matriculación no ha sido confirmada</li>
-                <li>Los cursos siguen disponibles en tu carrito</li>
+                <li>Los cursos siguen disponibles en tu cistella</li>
                 <li>Las plazas no han sido reservadas</li>
             </ul>
             
@@ -42,7 +42,7 @@
                     <i class="bi bi-lightbulb me-2"></i>Buenas noticias
                 </h3>
                 <p class="text-blue-800">
-                    ¡No te preocupes! Los cursos que tenías en tu carrito siguen disponibles. 
+                    ¡No te preocupes! Los cursos que tenías en tu cistella siguen disponibles. 
                     Puedes volver a intentar el proceso de matriculación cuando quieras.
                 </p>
             </div>
@@ -81,7 +81,7 @@
                 </div>
                 
                 <h3 class="text-xl font-bold text-gray-900 mb-2">
-                    Revisar Carrito
+                    Revisar Cistella
                 </h3>
                 
                 <p class="text-gray-600 mb-4">
@@ -90,7 +90,7 @@
                 
                 <a href="{{ route('cart.index') }}" 
                    class="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold">
-                    <i class="bi bi-cart me-2"></i>Ver Mi Carrito
+                    <i class="bi bi-cart me-2"></i>Veure la Meva Cistella
                 </a>
             </div>
         </div>
@@ -163,7 +163,7 @@
                 <a href="{{ route('login') }}" 
                    class="block p-4 bg-white rounded-lg hover:shadow-md transition text-center">
                     <i class="bi bi-box-arrow-in-right text-green-600 text-2xl mb-2"></i>
-                    <h3 class="font-semibold text-gray-900 mb-1">Iniciar Sesión</h3>
+                    <h3 class="font-semibold text-gray-900 mb-1">Iniciar Sessió</h3>
                     <p class="text-gray-600 text-sm">Accede a tu cuenta</p>
                 </a>
             @endif

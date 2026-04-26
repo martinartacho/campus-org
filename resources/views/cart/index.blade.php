@@ -1,6 +1,6 @@
 @extends('catalog.layout')
 
-@section('title', 'Mi Carrito')
+@section('title', 'La Meva Cistella')
 
 @php
     $cartItemsCount = $cart->items_count ?? 0;
@@ -11,7 +11,7 @@
     <!-- Header -->
     <div class="text-center mb-8">
         <h1 class="text-4xl font-bold text-gray-900 mb-4">
-            <i class="bi bi-cart-fill text-blue-600 me-3"></i>Mi Carrito
+            <i class="bi bi-cart-fill text-blue-600 me-3"></i>La Meva Cistella
         </h1>
         <p class="text-xl text-gray-600">
             Revisa tus cursos seleccionados antes de proceder con la matriculación
@@ -29,7 +29,7 @@
                         </h2>
                         <button onclick="clearCart()" 
                                 class="text-red-600 hover:text-red-800 text-sm font-medium">
-                            <i class="bi bi-trash me-1"></i>Vaciar Carrito
+                            <i class="bi bi-trash me-1"></i>Buidar Cistella
                         </button>
                     </div>
 
@@ -129,7 +129,7 @@
                                 Problemas con algunos cursos
                             </h3>
                             <p class="text-red-700 text-sm mb-4">
-                                Los siguientes cursos tienen problemas y deben ser eliminados del carrito:
+                                Els següents cursos tenen problemes i han de ser eliminats de la cistella:
                             </p>
                             
                             <div class="space-y-3">
@@ -252,11 +252,11 @@
             </div>
             
             <h2 class="text-2xl font-bold text-gray-900 mb-4">
-                Tu carrito está vacío
+                La teva cistella està buida
             </h2>
             
             <p class="text-gray-600 mb-8 max-w-md mx-auto">
-                Parece que aún no has añadido ningún curso a tu carrito. 
+                Sembla que encara no has afegit cap curs a la teva cistella. 
                 Explora el nostre catàleg i troba el curs perfecte per a tu.
             </p>
             
@@ -269,12 +269,12 @@
                 @if(auth()->check())
                     <a href="{{ route('dashboard') }}" 
                        class="inline-block px-6 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition font-semibold">
-                        <i class="bi bi-house me-2"></i>Mi Campus
+                        <i class="bi bi-house me-2"></i>Campus
                     </a>
                 @else
                     <a href="{{ route('login') }}" 
                        class="inline-block px-6 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition font-semibold">
-                        <i class="bi bi-box-arrow-in-right me-2"></i>Iniciar Sesión
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Iniciar Sesió
                     </a>
                 @endif
             </div>
@@ -284,7 +284,7 @@
 
 <script>
 function clearCart() {
-    if (confirm('¿Estás seguro de que quieres vaciar el carrito?')) {
+    if (confirm('Estàs segur que vols buidar la cistella?')) {
         fetch('/carrito/clear', {
             method: 'DELETE',
             headers: {
@@ -302,7 +302,7 @@ function clearCart() {
             }
         })
         .catch(error => {
-            showToast('Error al vaciar el carrito', 'error');
+            showToast('Error en buidar la cistella', 'error');
         });
     }
 }

@@ -236,7 +236,7 @@
         @else
             <a href="{{ route('login') }}" 
                class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold text-center">
-                <i class="bi bi-box-arrow-in-right me-2"></i>Iniciar Sesión
+                <i class="bi bi-box-arrow-in-right me-2"></i>Iniciar Sessió
             </a>
         @endif
         

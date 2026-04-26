@@ -121,7 +121,7 @@ class Cart extends Model
                             ->first();
 
         if ($existingItem) {
-            throw new \Exception('El curso ya está en el carrito');
+            throw new \Exception('El curs ja és a la cistella');
         }
 
         // Validate course can be added

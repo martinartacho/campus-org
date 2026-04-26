@@ -33,7 +33,7 @@ class RegistrationController extends Controller
         if (!$cart || $cart->isEmpty()) {
             return redirect()
                 ->route('cart.index')
-                ->with('error', 'Tu carrito está vacío. Añade cursos antes de matricularte.');
+                ->with('error', 'La teva cistella està buida. Afegeix cursos abans de matricular-te.');
         }
 
         // Load cart with items and validate
@@ -58,7 +58,7 @@ class RegistrationController extends Controller
         if (!empty($invalidItems)) {
             return redirect()
                 ->route('cart.index')
-                ->with('error', 'Hay problemas con algunos cursos en tu carrito. Por favor, revísalos antes de continuar.');
+                ->with('error', 'Hi ha problemes amb alguns cursos a la teva cistella. Si us plau, revisa-los abans de continuar.');
         }
 
         if ($validItems->isEmpty()) {

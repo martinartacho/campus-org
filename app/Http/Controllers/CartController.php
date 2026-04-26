@@ -63,7 +63,7 @@ class CartController extends Controller
             $cartItem = $cart->addCourse($course);
 
             // Flash message
-            $message = "¡\"{$course->title}\" añadido al carrito correctamente!";
+            $message = "¡\"{$course->title}\" afegit a la cistella correctament!";
 
             if ($request->expectsJson()) {
                 return response()->json([
@@ -103,12 +103,12 @@ class CartController extends Controller
         $cart = Cart::getCurrent();
 
         if (!$cart) {
-            $message = 'No hay carrito activo';
+            $message = 'No hi ha cistella activa';
         } else {
             $removed = $cart->removeCourse($course->id);
             $message = $removed ? 
-                "\"{$course->title}\" eliminado del carrito" : 
-                'El curso no estaba en el carrito';
+                "\"{$course->title}\" eliminat de la cistella" : 
+                'El curs no estava a la cistella';
         }
 
         if ($request->expectsJson()) {
@@ -133,10 +133,10 @@ class CartController extends Controller
         $cart = Cart::getCurrent();
 
         if (!$cart) {
-            $message = 'No hay carrito activo';
+            $message = 'No hi ha cistella activa';
         } else {
             $cleared = $cart->clear();
-            $message = $cleared ? 'Carrito vaciado correctamente' : 'El carrito ya estaba vacío';
+            $message = $cleared ? 'Cistella buidada correctament' : 'La cistella ja estava buida';
         }
 
         if ($request->expectsJson()) {
@@ -169,7 +169,7 @@ class CartController extends Controller
         if (!$cart) {
             return response()->json([
                 'success' => false,
-                'message' => 'No hay carrito activo'
+                'message' => 'No hi ha cistella activa'
             ], 404);
         }
 
@@ -204,7 +204,7 @@ class CartController extends Controller
         if (!$cart) {
             return response()->json([
                 'success' => false,
-                'message' => 'No hay carrito activo'
+                'message' => 'No hi ha cistella activa'
             ], 404);
         }
 
@@ -341,7 +341,7 @@ class CartController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => "{$cleaned} carritos expirados eliminados",
+            'message' => "{$cleaned} cistelles expirades eliminades",
             'cleaned_count' => $cleaned
         ]);
     }
