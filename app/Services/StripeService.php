@@ -81,10 +81,17 @@ class StripeService
                 
                 // Create mock event for testing
                 $data = json_decode($payload, true);
+                $sessionObject = $data['data']['object'];
+                
+                // Asegurar que metadata sea objeto
+                if (isset($sessionObject['metadata']) && is_array($sessionObject['metadata'])) {
+                    $sessionObject['metadata'] = (object) $sessionObject['metadata'];
+                }
+                
                 return (object) [
                     'type' => $data['type'] ?? 'checkout.session.completed',
                     'data' => (object) [
-                        'object' => (object) $data['data']['object']
+                        'object' => (object) $sessionObject
                     ],
                     'id' => 'test_' . time()
                 ];
