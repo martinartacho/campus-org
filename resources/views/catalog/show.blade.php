@@ -51,13 +51,13 @@
                         @if($course->hours)
                             <div class="flex items-center">
                                 <i class="bi bi-clock me-2"></i>
-                                <span>{{ $course->hours }} sessions</span>
+                                <span>{{ $course->hours }} hores</span>
                             </div>
                         @endif
                         @if($course->sessions)
                             <div class="flex items-center">
                                 <i class="bi bi-calendar-week me-2"></i>
-                                <span>{{ $course->sessions }} sesiones</span>
+                                <span>{{ $course->sessions }} sessions</span>
                             </div>
                         @endif
                         @if($course->location)
