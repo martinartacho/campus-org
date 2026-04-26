@@ -72,6 +72,24 @@ class StripeService
     public function verifyWebhook(string $payload, string $sigHeader): ?object
     {
         try {
+            // Skip verification for test signatures or in local environment
+            if (app()->environment('local') && $sigHeader === 'test_signature') {
+                Log::info('Stripe webhook verification skipped for test', [
+                    'environment' => app()->environment(),
+                    'signature' => $sigHeader
+                ]);
+                
+                // Create mock event for testing
+                $data = json_decode($payload, true);
+                return (object) [
+                    'type' => $data['type'] ?? 'checkout.session.completed',
+                    'data' => (object) [
+                        'object' => (object) $data['data']['object']
+                    ],
+                    'id' => 'test_' . time()
+                ];
+            }
+            
             $event = Webhook::constructEvent(
                 $payload, 
                 $sigHeader, 

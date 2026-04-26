@@ -552,10 +552,38 @@ class RegistrationController extends Controller
             abort(403, 'No tienes permiso para ver esta factura');
         }
 
-        // Generate PDF invoice
-        $pdf = $this->generateInvoicePDF($registration);
+        // DEBUG: Comparar datos de Stripe vs base de datos
+        Log::info('=== FACTURA DEBUG ===', [
+            'registration_id' => $registration->id,
+            'registration_code' => $registration->registration_code,
+            'payment_status' => $registration->payment_status,
+            'status' => $registration->status,
+            'payment_method' => $registration->payment_method,
+            'payment_completed_at' => $registration->payment_completed_at,
+            'stripe_session_id' => $registration->stripe_session_id,
+            'user_id' => $registration->user_id,
+            'student_id' => $registration->student_id,
+            'student_email' => $registration->student->email,
+            'created_at' => $registration->created_at,
+            'updated_at' => $registration->updated_at,
+            'metadata' => $registration->metadata,
+            'can_access' => $canAccess,
+            'is_recent' => $registration->created_at->diffInHours(now()) <= 24,
+            'is_paid' => $registration->payment_status === 'paid',
+        ]);
 
-        return $pdf->download("factura-{$registration->registration_code}.pdf");
+        // Generate PDF invoice - COMENTADO TEMPORALMENTE
+        // $pdf = $this->generateInvoicePDF($registration);
+        // return $pdf->download("factura-{$registration->registration_code}.pdf");
+
+        // Temporal: Solo mostrar datos en lugar de PDF
+        return response()->json([
+            'registration_id' => $registration->id,
+            'registration_code' => $registration->registration_code,
+            'payment_status' => $registration->payment_status,
+            'status' => $registration->status,
+            'message' => 'PDF desactivado temporalmente'
+        ]);
     }
 
     /**
@@ -613,8 +641,25 @@ class RegistrationController extends Controller
      */
     private function handleCheckoutSessionCompleted($session)
     {
+        // DEBUG: Datos recibidos de Stripe
+        Log::info('=== WEBHOOK STRIPE DEBUG ===', [
+            'session_id' => $session->id,
+            'payment_status' => $session->payment_status ?? 'unknown',
+            'payment_intent_id' => $session->payment_intent ?? 'none',
+            'amount_total' => $session->amount_total ?? 0,
+            'currency' => $session->currency ?? 'unknown',
+            'customer_email' => $session->customer_email ?? 'none',
+            'metadata' => $session->metadata ?? [],
+            'created' => $session->created ? date('Y-m-d H:i:s', $session->created) : 'none',
+        ]);
+
         // Get registrations from metadata
         $registrationIds = explode(',', $session->metadata->registration_ids ?? '');
+        
+        Log::info('WEBHOOK: Registration IDs from metadata', [
+            'registration_ids_string' => $session->metadata->registration_ids ?? 'none',
+            'registration_ids_array' => $registrationIds,
+        ]);
         
         $registrations = CampusRegistration::whereIn('id', $registrationIds)->get();
 
@@ -625,12 +670,26 @@ class RegistrationController extends Controller
 
         // Update registrations to confirmed
         foreach ($registrations as $registration) {
+            Log::info('WEBHOOK: Antes de actualizar', [
+                'registration_id' => $registration->id,
+                'current_status' => $registration->status,
+                'current_payment_status' => $registration->payment_status,
+                'current_user_id' => $registration->user_id,
+            ]);
+
             $registration->update([
                 'status' => 'confirmed',
                 'payment_status' => 'paid',
                 'payment_completed_at' => now(),
                 'payment_method' => 'stripe',
                 'stripe_session_id' => $session->id
+            ]);
+
+            Log::info('WEBHOOK: Después de actualizar', [
+                'registration_id' => $registration->id,
+                'new_status' => $registration->fresh()->status,
+                'new_payment_status' => $registration->fresh()->payment_status,
+                'new_user_id' => $registration->fresh()->user_id,
             ]);
             
             // Sync with campus_course_student

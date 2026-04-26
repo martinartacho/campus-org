@@ -5,6 +5,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\RegistrationController as PublicRegistrationController;
 use Illuminate\Support\Facades\Route;
 
+
 // Rutas del Catálogo Público de Cursos - Sin middleware web
 Route::get('/cursos', [CatalogController::class, 'index'])->name('catalog.index');
 Route::get('/cursos/{course}', [CatalogController::class, 'show'])->name('catalog.show');
@@ -28,8 +29,6 @@ Route::post('/matricular', [PublicRegistrationController::class, 'store'])->name
 Route::get('/payment/success', [PublicRegistrationController::class, 'success'])->name('payment.success');
 Route::get('/payment/cancel', [PublicRegistrationController::class, 'cancel'])->name('payment.cancel');
 
-// Webhook de Stripe (debe ser accesible públicamente)
-Route::post('/stripe/webhook', [PublicRegistrationController::class, 'webhook'])->name('stripe.webhook');
 
 // Test route
 Route::get('/test-public', function() {
