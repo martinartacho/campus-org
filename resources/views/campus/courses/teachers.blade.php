@@ -265,7 +265,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const msg = document.createElement('div');
             msg.id = 'noTeacherResults';
             msg.className = 'text-center py-4 text-gray-500';
-            msg.textContent = '{{ __('campus.no_results') }}';
+            msg.textContent = 'No hi ha resultats';
             searchInput.closest('.bg-white').querySelector('.space-y-6').appendChild(msg);
         }
     }
