@@ -109,7 +109,7 @@
                 </div>
 
                 <div class="text-sm text-gray-500">
-                    {{ __('campus.hours') }}
+                    {{ __('campus.sessions') }}
                     <strong>{{ $teacher->pivot->sessions_assigned }}</strong>
                 </div>
 
@@ -178,7 +178,7 @@
             </div>
 
             <div>
-                <label class="campus-label">{{ __('campus.hours') }}</label>
+                <label class="campus-label">{{ __('campus.sessions') }}</label>
                 <input type="number"
                     name="sessions_assigned"
                     class="campus-input w-24"
@@ -221,7 +221,7 @@
             </div>
 
             <div>
-                <label class="campus-label">{{ __('campus.hours') }}</label>
+                <label class="campus-label">{{ __('campus.sessions') }}</label>
                 <input type="number" name="sessions_assigned" class="campus-input w-24">
             </div>
 
