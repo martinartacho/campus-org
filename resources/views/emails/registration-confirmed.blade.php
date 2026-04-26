@@ -89,21 +89,21 @@
             <h3>📚 Curso Matriculado</h3>
             <p><strong>Curso:</strong> {{ $course->title }}</p>
             <p><strong>Código:</strong> {{ $course->code }}</p>
-            <p><strong>Horas:</strong> {{ $course->hours }} horas</p>
+            <p><strong>Sessions:</strong> {{ $course->hours }} sessions</p>
             <p><strong>Precio:</strong> {{ number_format($registration->amount, 2) }} €</p>
             <p><strong>Fecha de Matriculación:</strong> {{ $registration->registration_date->format('d/m/Y') }}</p>
             <p><strong>Código de Matrícula:</strong> {{ $registration->registration_code }}</p>
         </div>
 
-        <h3>📄 Descargar Factura</h3>
-        <p>Puedes descargar tu factura en cualquier momento usando el siguiente enlace:</p>
-        <p><a href="{{ url('factura/' . $registration->id) }}" class="btn">📥 Descargar Factura PDF</a></p>
+        <h3>📄 Descargar Comprovant</h3>
+        <p>Pots descarregar el teu comprovant en qualsevol moment usant el següent enllaç:</p>
+        <p><a href="{{ url('factura/' . $registration->id) }}" class="btn">📥 Descarregar Comprovant PDF</a></p>
 
         <h3>🎯 Próximos Pasos</h3>
         <ul>
             <li>Revisa tu correo electrónico regularmente para actualizaciones del curso</li>
             <li>Prepárate para comenzar en la fecha de inicio del curso</li>
-            <li>Guarda esta factura para tus registros</li>
+            <li>Guarda aquest comprovant per als teus registres</li>
             <li>Si tienes alguna pregunta, contacta con info@campus.org</li>
         </ul>
 

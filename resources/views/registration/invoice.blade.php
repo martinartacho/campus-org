@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Factura - {{ $registration->registration_code }}</title>
+    <title>Comprovant - {{ $registration->registration_code }}</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -112,7 +112,7 @@
     <div class="invoice">
         <!-- Header -->
         <div class="header">
-            <h1>FACTURA</h1>
+            <h1>COMPROVANT</h1>
             <p><strong>Número:</strong> {{ $registration->registration_code }}</p>
             <p><strong>Fecha de Emisión:</strong> {{ $issue_date }}</p>
             <p><strong>Estado:</strong> 
@@ -152,7 +152,7 @@
             <p><strong>Curso:</strong> {{ $course->title }}</p>
             <p><strong>Código del Curso:</strong> {{ $course->code }}</p>
             <p><strong>Temporada:</strong> {{ $season->name }}</p>
-            <p><strong>Horas:</strong> {{ $course->hours }} horas</p>
+            <p><strong>Sessions:</strong> {{ $course->hours }} sessions</p>
             <p><strong>Fecha de Matriculación:</strong> {{ $registration->registration_date->format('d/m/Y') }}</p>
         </div>
 
@@ -161,7 +161,7 @@
             <thead>
                 <tr>
                     <th>Descripción</th>
-                    <th>Horas</th>
+                    <th>Sessions</th>
                     <th>Precio Unitario</th>
                     <th class="amount">Total</th>
                 </tr>
@@ -210,7 +210,7 @@
 
         <!-- Footer -->
         <div class="footer">
-            <p>Esta factura es un documento válido de matriculación en Campus Virtual.</p>
+            <p>Aquest comprovant és un document vàlid de matriculació en Campus Virtual.</p>
             <p>Para cualquier consulta, contacta con info@campus.org</p>
             <p>Campus Virtual - {{ date('Y') }}</p>
         </div>

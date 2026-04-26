@@ -51,7 +51,7 @@
                         @if($course->hours)
                             <div class="flex items-center">
                                 <i class="bi bi-clock me-2"></i>
-                                <span>{{ $course->hours }} horas</span>
+                                <span>{{ $course->hours }} sessions</span>
                             </div>
                         @endif
                         @if($course->sessions)
@@ -155,7 +155,7 @@
                             @if($course->hours)
                                 <div class="flex items-center text-gray-600">
                                     <i class="bi bi-clock me-2 text-blue-500"></i>
-                                    <span><strong>Duración:</strong> {{ $course->hours }} horas</span>
+                                    <span><strong>Duración:</strong> {{ $course->hours }} sessions</span>
                                 </div>
                             @endif
                             @if($course->sessions)

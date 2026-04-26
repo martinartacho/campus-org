@@ -572,18 +572,9 @@ class RegistrationController extends Controller
             'is_paid' => $registration->payment_status === 'paid',
         ]);
 
-        // Generate PDF invoice - COMENTADO TEMPORALMENTE
-        // $pdf = $this->generateInvoicePDF($registration);
-        // return $pdf->download("factura-{$registration->registration_code}.pdf");
-
-        // Temporal: Solo mostrar datos en lugar de PDF
-        return response()->json([
-            'registration_id' => $registration->id,
-            'registration_code' => $registration->registration_code,
-            'payment_status' => $registration->payment_status,
-            'status' => $registration->status,
-            'message' => 'PDF desactivado temporalmente'
-        ]);
+        // Generate PDF invoice
+        $pdf = $this->generateInvoicePDF($registration);
+        return $pdf->download("comprovant-{$registration->registration_code}.pdf");
     }
 
     /**

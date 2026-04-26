@@ -62,7 +62,7 @@
                                 @if($registration->course->hours)
                                     <div class="flex items-center mb-1">
                                         <i class="bi bi-clock me-2"></i>
-                                        Duración: {{ $registration->course->hours }} horas
+                                        Duración: {{ $registration->course->hours }} sessions
                                     </div>
                                 @endif
                                 @if($registration->course->location)
