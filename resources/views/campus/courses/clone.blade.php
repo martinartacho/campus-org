@@ -205,7 +205,7 @@ function displayCourses(courses) {
         container.innerHTML = `
             <div class="text-center py-8 text-gray-500">
                 <i class="bi bi-inbox text-4xl mb-2"></i>
-                <p>No hay cursos disponibles en esta temporada</p>
+                <p>No hi ha cursos disponibles en aquesta temporada</p>
             </div>
         `;
     } else {

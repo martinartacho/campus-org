@@ -44,7 +44,7 @@
                 <div class="flex items-center">
                     <a href="{{ route('catalog.index') }}" class="flex items-center space-x-2">
                         <img src="https://dev.upg.cat/img/logo.svg" alt="Campus Virtual" class="h-8 w-auto">
-                        <span class="font-bold text-xl text-gray-900">Campus Virtual</span>
+                        <span class="font-bold text-xl text-gray-900">Campus</span>
                     </a>
                 </div>
 
