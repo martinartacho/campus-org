@@ -26,7 +26,7 @@
         </h2>
         
         <p class="text-gray-600 mb-8 max-w-md mx-auto">
-            Explora nuestro catálogo de cursos y añade los que te interesan para comenzar tu proceso de matriculación.
+            Explora el nostre catàleg de cursos i afegeix els que t'interessen per començar el teu procés de matriculació.
         </p>
         
         <!-- Action Buttons -->
@@ -40,7 +40,7 @@
             <a href="{{ route('catalog.index') }}" 
                class="inline-flex items-center justify-center px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition font-semibold">
                 <i class="bi bi-book me-2"></i>
-                Ver Catálogo
+                Veure Catàleg
             </a>
         </div>
     </div>
@@ -102,7 +102,7 @@
             <div>
                 <h4 class="font-semibold text-blue-800 mb-2">¿Cómo añadir cursos?</h4>
                 <p class="text-blue-700 text-sm">
-                    Navega por nuestro catálogo, selecciona los cursos que te interesan y haz clic en "Añadir al Carrito".
+                    Navega pel nostre catàleg, selecciona els cursos que t'interessen i fes clic a "Afegir al Carrito".
                 </p>
             </div>
             

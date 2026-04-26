@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     
-    <title>@yield('title', 'Campus Virtual') - Catálogo de Cursos</title>
+    <title>@yield('title', 'Campus Virtual') - Catàleg de Cursos</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -52,7 +52,7 @@
                 <div class="hidden md:flex items-center space-x-8">
                     <a href="{{ route('catalog.index') }}" class="text-gray-700 hover:text-blue-600 font-medium transition">
                         <i class="bi bi-grid-3x3-gap-fill me-1"></i>
-                        Catálogo
+                        Catàleg
                     </a>
                     <a href="{{ route('cart.index') }}" class="text-gray-700 hover:text-blue-600 font-medium transition relative">
                         <i class="bi bi-cart-fill me-1"></i>
@@ -89,7 +89,7 @@
         <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
             <div class="px-2 pt-2 pb-3 space-y-1">
                 <a href="{{ route('catalog.index') }}" class="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md">
-                    <i class="bi bi-grid-3x3-gap-fill me-2"></i>Catálogo
+                    <i class="bi bi-grid-3x3-gap-fill me-2"></i>Catàleg
                 </a>
                 <a href="{{ route('cart.index') }}" class="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md relative">
                     <i class="bi bi-cart-fill me-2"></i>Carrito
@@ -152,7 +152,7 @@
                 <div>
                     <h3 class="text-lg font-semibold mb-4">Enlaces Rápidos</h3>
                     <ul class="space-y-2 text-sm">
-                        <li><a href="{{ route('catalog.index') }}" class="text-gray-300 hover:text-white">Catálogo de Cursos</a></li>
+                        <li><a href="{{ route('catalog.index') }}" class="text-gray-300 hover:text-white">Catàleg de Cursos</a></li>
                         <li><a href="{{ route('cart.index') }}" class="text-gray-300 hover:text-white">Mi Carrito</a></li>
                         @if(auth()->check())
                             <li><a href="{{ route('dashboard') }}" class="text-gray-300 hover:text-white">Mi Campus</a></li>

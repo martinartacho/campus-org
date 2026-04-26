@@ -72,7 +72,7 @@
                                class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
                         <div>
                             <span class="text-sm font-medium text-gray-700">Hacer públicos</span>
-                            <p class="text-xs text-gray-500">Los cursos serán visibles en el catálogo público</p>
+                            <p class="text-xs text-gray-500">Els cursos seran visibles en el catàleg públic</p>
                         </div>
                     </label>
                 </div>

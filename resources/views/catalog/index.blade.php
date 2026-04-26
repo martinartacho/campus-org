@@ -1,6 +1,6 @@
 @extends('catalog.layout')
 
-@section('title', 'Catálogo de Cursos')
+@section('title', 'Catàleg de Cursos')
 
 @php
     $cartItemsCount = count($cartItems ?? []);
@@ -11,7 +11,7 @@
     <!-- Header -->
     <div class="text-center mb-12">
         <h1 class="text-4xl font-bold text-gray-900 mb-4">
-            Catálogo de Cursos
+            Catàleg de Cursos
         </h1>
         <p class="text-xl text-gray-600 max-w-3xl mx-auto">
             Descubre nuestros cursos de la temporada {{ $season->name ?? 'Actual' }} 

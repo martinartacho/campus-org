@@ -13,7 +13,7 @@
         <ol class="flex items-center space-x-2 text-sm text-gray-500">
             <li>
                 <a href="{{ route('catalog.index') }}" class="hover:text-blue-600">
-                    <i class="bi bi-house"></i> Catálogo
+                    <i class="bi bi-house"></i> Catàleg
                 </a>
             </li>
             <li class="flex items-center">

@@ -257,7 +257,7 @@
             
             <p class="text-gray-600 mb-8 max-w-md mx-auto">
                 Parece que aún no has añadido ningún curso a tu carrito. 
-                Explora nuestro catálogo y encuentra el curso perfecto para ti.
+                Explora el nostre catàleg i troba el curs perfecte per a tu.
             </p>
             
             <div class="space-x-4">
