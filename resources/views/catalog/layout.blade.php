@@ -43,7 +43,7 @@
                 <!-- Logo -->
                 <div class="flex items-center">
                     <a href="{{ route('catalog.index') }}" class="flex items-center space-x-2">
-                        <i class="bi bi-mortarboard-fill text-blue-600 text-2xl"></i>
+                        <img src="https://dev.upg.cat/img/logo.svg" alt="Campus Virtual" class="h-8 w-auto">
                         <span class="font-bold text-xl text-gray-900">Campus Virtual</span>
                     </a>
                 </div>
