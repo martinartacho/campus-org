@@ -10,7 +10,7 @@
             <h1 class="text-3xl font-bold text-gray-900">Calendari Quadrimestral</h1>
             @if($selectedSeason)
                 <p class="text-gray-600 mt-1">
-                    {{ $selectedSeason->name }} ({{ $startDate->format('d/m/Y') }} - {{ $endDate->format('d/m/Y') }})
+                    {{ $selectedSeason->name }} ({{ $startDate ? $startDate->format('d/m/Y') : 'N/A' }} - {{ $endDate ? $endDate->format('d/m/Y') : 'N/A' }})
                 </p>
             @endif
         </div>

@@ -76,8 +76,13 @@ class ResourceController extends Controller
         $selectedSeason = CampusSeason::getDefaultForCalendar();
         
         // Obtenir el rang de dates del quadrimestre (4 mesos)
-        $startDate = $selectedSeason ? $selectedSeason->start_date : now()->startOfMonth();
-        $endDate = $selectedSeason ? $selectedSeason->end_date : now()->copy()->addMonths(3)->endOfMonth();
+        if ($selectedSeason && $selectedSeason->start_date && $selectedSeason->end_date) {
+            $startDate = $selectedSeason->start_date;
+            $endDate = $selectedSeason->end_date;
+        } else {
+            $startDate = now()->startOfMonth();
+            $endDate = now()->copy()->addMonths(3)->endOfMonth();
+        }
         
         // Obtenir tots els horaris del quadrimestre
         $schedules = CampusCourseSchedule::with(['course', 'space', 'timeSlot'])
