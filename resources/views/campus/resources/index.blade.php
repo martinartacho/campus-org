@@ -9,13 +9,13 @@
         <h1 class="text-3xl font-bold text-gray-900">Re-Cursos</h1>
         <div class="flex gap-4">
             <a href="{{ route('campus.resources.calendar') }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-                <i class="fas fa-calendar-alt mr-2"></i>Calendari
+                <i class="bi bi-calendar-alt mr-2"></i>Calendari
             </a>
             <a href="{{ route('campus.resources.calendar.quarterly') }}" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-                <i class="fas fa-calendar mr-2"></i>Calendari Quadrimestral
+                <i class="bi bi-calendar mr-2"></i>Calendari Quadrimestral
             </a>
             <a href="{{ route('campus.resources.calendar.monthly') }}" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
-                <i class="fas fa-calendar-alt mr-2"></i>Calendari Mensual
+                <i class="bi bi-calendar-alt mr-2"></i>Calendari Mensual
             </a>
         </div>
     </div>
