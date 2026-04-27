@@ -65,6 +65,11 @@ class Cart extends Model
      */
     public static function getForUser(int $userId): self
     {
+        // First, clean up any carts with null session_id for this user (legacy data)
+        static::where('user_id', $userId)
+               ->where('session_id', null)
+               ->delete();
+
         $cart = static::where('user_id', $userId)
                       ->where('status', self::STATUS_ACTIVE)
                       ->first();
