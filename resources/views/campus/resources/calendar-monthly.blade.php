@@ -99,17 +99,17 @@
         
         <!-- Dies de la setmana -->
         <div class="grid grid-cols-7 border-b border-gray-200">
-            <div class="text-sm font-medium text-gray-700 text-center py-3 bg-gray-50">Dilluns</div>
-            <div class="text-sm font-medium text-gray-700 text-center py-3 bg-gray-50">Dimarts</div>
-            <div class="text-sm font-medium text-gray-700 text-center py-3 bg-gray-50">Dimecres</div>
-            <div class="text-sm font-medium text-gray-700 text-center py-3 bg-gray-50">Dijous</div>
-            <div class="text-sm font-medium text-gray-700 text-center py-3 bg-gray-50">Divendres</div>
-            <div class="text-sm font-medium text-gray-700 text-center py-3 bg-gray-50">Dissabte</div>
+            <div class="text-sm font-medium text-gray-700 text-center py-3 bg-gray-50 border-r border-gray-200">Dilluns</div>
+            <div class="text-sm font-medium text-gray-700 text-center py-3 bg-gray-50 border-r border-gray-200">Dimarts</div>
+            <div class="text-sm font-medium text-gray-700 text-center py-3 bg-gray-50 border-r border-gray-200">Dimecres</div>
+            <div class="text-sm font-medium text-gray-700 text-center py-3 bg-gray-50 border-r border-gray-200">Dijous</div>
+            <div class="text-sm font-medium text-gray-700 text-center py-3 bg-gray-50 border-r border-gray-200">Divendres</div>
+            <div class="text-sm font-medium text-gray-700 text-center py-3 bg-gray-50 border-r border-gray-200">Dissabte</div>
             <div class="text-sm font-medium text-gray-700 text-center py-3 bg-gray-50">Diumenge</div>
         </div>
         
         <!-- Calendari del mes -->
-        <div class="grid grid-cols-7 gap-0">
+        <div class="grid grid-cols-7 gap-0 border-collapse">
             @php
                 $daysInMonth = $currentMonth->daysInMonth;
                 $firstDayOfMonth = $currentMonth->copy()->startOfMonth();
@@ -133,7 +133,7 @@
                     $isWeekend = $currentDay->isWeekend();
                 @endphp
                 
-                <div class="h-32 border border-gray-200 {{ $isToday ? 'bg-blue-50' : ($isWeekend ? 'bg-gray-50' : ($isPast ? 'bg-gray-50' : 'bg-white')) }} p-2 overflow-hidden relative">
+                <div class="h-32 border border-gray-200 border-r-0 border-b-0 {{ $isToday ? 'bg-blue-50' : ($isWeekend ? 'bg-gray-50' : ($isPast ? 'bg-gray-50' : 'bg-white')) }} p-2 overflow-hidden relative">
                     <!-- Número del dia -->
                     <div class="flex justify-between items-start mb-1">
                         <div class="text-sm font-medium {{ $isToday ? 'text-blue-600' : ($isWeekend ? 'text-gray-500' : 'text-gray-700') }}">
