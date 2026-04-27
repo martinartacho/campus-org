@@ -72,7 +72,7 @@ class Cart extends Model
         if (!$cart) {
             $cart = static::create([
                 'user_id' => $userId,
-                'session_id' => null, // Explicitly set to null for authenticated users
+                'session_id' => 'user_' . $userId . '_' . uniqid(), // Unique session_id for authenticated users
                 'expires_at' => now()->addDays(7),
                 'status' => self::STATUS_ACTIVE
             ]);
