@@ -70,6 +70,51 @@ class ResourceController extends Controller
         return view('campus.resources.calendar', compact('timeSlots', 'spaces', 'semester', 'selectedSeason', 'coursesCount'));
     }
     
+    public function calendarQuarterly(Request $request)
+    {
+        $semester = $request->get('semester', '1Q');
+        $selectedSeason = CampusSeason::getDefaultForCalendar();
+        
+        // Obtenir el rang de dates del quadrimestre (4 mesos)
+        $startDate = $selectedSeason ? $selectedSeason->start_date : now()->startOfMonth();
+        $endDate = $selectedSeason ? $selectedSeason->end_date : now()->copy()->addMonths(3)->endOfMonth();
+        
+        // Obtenir tots els horaris del quadrimestre
+        $schedules = CampusCourseSchedule::with(['course', 'space', 'timeSlot'])
+            ->whereHas('course', function($query) use ($selectedSeason) {
+                if ($selectedSeason) {
+                    $query->where('season_id', $selectedSeason->id);
+                }
+            })
+            ->whereBetween('start_date', [$startDate, $endDate])
+            ->orderBy('start_date')
+            ->get();
+            
+        // Agrupar per mes per a la vista quadrimestral
+        $monthlySchedules = $schedules->groupBy(function($schedule) {
+            return \Carbon\Carbon::parse($schedule->start_date)->format('Y-m');
+        });
+        
+        // Obtenir espais i cursos per als filtres
+        $spaces = CampusSpace::where('is_active', true)
+            ->orderBy('type')
+            ->orderBy('capacity', 'desc')
+            ->get();
+            
+        $courses = CampusCourse::where('season_id', $selectedSeason->id ?? null)
+            ->orderBy('title')
+            ->get();
+            
+        return view('campus.resources.calendar-quarterly', compact(
+            'monthlySchedules', 
+            'spaces', 
+            'courses', 
+            'selectedSeason',
+            'startDate',
+            'endDate'
+        ));
+    }
+    
     public function searchCourses(Request $request)
     {
         $search = $request->get('search', '');
