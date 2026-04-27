@@ -60,26 +60,32 @@ class Cart extends Model
         }
     }
 
-    /**
-     * Get or create cart for user
-     */
-    public static function getForUser(int $userId): self
-    {
-        $cart = static::where('user_id', $userId)
-                      ->where('status', self::STATUS_ACTIVE)
-                      ->first();
 
-        if (!$cart) {
-            $cart = static::create([
-                'user_id' => $userId,
-                'session_id' => null, // Explicitly set to null for authenticated users
-                'expires_at' => now()->addDays(7),
-                'status' => self::STATUS_ACTIVE
-            ]);
-        }
+/**
+ * Get or create cart for user
+ */
+public static function getForUser(int $userId): self
+{
+    // First, clean up any carts with null session_id for this user (legacy data)
+    static::where('user_id', $userId)
+           ->where('session_id', null)
+           ->delete();
 
-        return $cart;
+    $cart = static::where('user_id', $userId)
+                  ->where('status', self::STATUS_ACTIVE)
+                  ->first();
+
+    if (!$cart) {
+        $cart = static::create([
+            'user_id' => $userId,
+            'session_id' => 'user_' . $userId . '_' . uniqid(), // Unique session_id for authenticated users
+            'expires_at' => now()->addDays(7),
+            'status' => self::STATUS_ACTIVE
+        ]);
     }
+
+    return $cart;
+}
 
     /**
      * Get or create cart for session (guest users)
