@@ -2,6 +2,20 @@
 
 @section('title', 'Calendari Mensual' . ($selectedSeason ? ' - ' . $selectedSeason->name : ''))
 
+@push('styles')
+<style>
+.calendar-grid {
+    display: grid !important;
+    grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+    gap: 0 !important;
+}
+.calendar-day {
+    border: 1px solid #e5e7eb;
+    min-height: 128px;
+}
+</style>
+@endpush
+
 @section('content')
 <div class="container mx-auto px-4 py-8">
     <!-- Capçalera -->
@@ -109,7 +123,7 @@
         </div>
         
         <!-- Calendari del mes -->
-        <div class="grid grid-cols-7 gap-0 border-collapse" style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr));">
+        <div class="calendar-grid">
             @php
                 $daysInMonth = $currentMonth->daysInMonth;
                 $firstDayOfMonth = $currentMonth->copy()->startOfMonth();
@@ -133,7 +147,7 @@
                     $isWeekend = $currentDay->isWeekend();
                 @endphp
                 
-                <div class="h-32 border border-gray-200 border-r-0 border-b-0 {{ $isToday ? 'bg-blue-50' : ($isWeekend ? 'bg-gray-50' : ($isPast ? 'bg-gray-50' : 'bg-white')) }} p-2 overflow-hidden relative">
+                <div class="calendar-day {{ $isToday ? 'bg-blue-50' : ($isWeekend ? 'bg-gray-50' : ($isPast ? 'bg-gray-50' : 'bg-white')) }} p-2 overflow-hidden relative">
                     <!-- Número del dia -->
                     <div class="flex justify-between items-start mb-1">
                         <div class="text-sm font-medium {{ $isToday ? 'text-blue-600' : ($isWeekend ? 'text-gray-500' : 'text-gray-700') }}">
