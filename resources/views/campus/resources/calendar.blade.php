@@ -346,6 +346,25 @@ function selectCourse(courseId, courseTitle, courseCode) {
 
     <div class="flex justify-between items-center mb-6">
         <div>
+            <h1 class="text-3xl font-bold text-gray-900">Calendari</h1>
+            @if($selectedSeason)
+                <p class="text-gray-600 mt-1">
+                    {{ $selectedSeason->name }} - Semestre {{ $semester }}
+                </p>
+            @endif
+        </div>
+        <div class="flex gap-4">
+            <a href="{{ route('campus.resources.calendar.monthly.bootstrap') }}" class="bg-info text-white px-4 py-2 rounded hover:bg-info">
+                <i class="bi bi-calendar-alt me-2"></i>Vista Mensual
+            </a>
+            <a href="{{ route('campus.resources.index') }}" class="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">
+                <i class="fas fa-th-large mr-2"></i>Recursos
+            </a>
+        </div>
+    </div>
+
+    <div class="flex justify-between items-center mb-6">
+        <div>
             <h1 class="text-3xl font-bold text-gray-900">Re-Cursos</h1>
             @if($selectedSeason)
                 <p class="text-sm text-gray-600 mt-1">
