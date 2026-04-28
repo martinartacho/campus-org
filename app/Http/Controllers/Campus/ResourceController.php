@@ -185,21 +185,10 @@ class ResourceController extends Controller
         $startDate = $currentMonth->copy()->startOfMonth();
         $endDate = $currentMonth->copy()->endOfMonth();
         
-        // Aplicar filtres
-        $spaceFilter = $request->get('space');
-        $courseFilter = $request->get('course');
-        $statusFilter = $request->get('status');
-
         // Obtenir cursos de la temporada
-        $coursesQuery = CampusCourse::where('season_id', $selectedSeason->id ?? null)
-            ->orderBy('title');
-
-        // Aplicar filtre de curs
-        if ($courseFilter) {
-            $coursesQuery->where('id', $courseFilter);
-        }
-
-        $courses = $coursesQuery->get();
+        $courses = CampusCourse::where('season_id', $selectedSeason->id ?? null)
+            ->orderBy('title')
+            ->get();
         // Generar horaris setmanals per cursos que no en tenen
         foreach ($courses as $course) {
             $this->generateWeeklySchedules($course);

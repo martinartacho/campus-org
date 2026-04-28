@@ -92,15 +92,10 @@
                 <i class="bi bi-grid-3x3-gap me-1"></i>Recursos
             </a>
             
-            <!-- Botons d'agenda -->
-            <div class="btn-group" role="group">
-                <button type="button" class="btn btn-warning btn-sm" onclick="generateAllAgenda()" title="Generar agenda de tots els cursos">
-                    <i class="bi bi-calendar-plus me-1"></i>Generar Agenda
-                </button>
-                <button type="button" class="btn btn-danger btn-sm" onclick="regenerateAllAgenda()" title="Regenerar agenda (forçar actualització)">
-                    <i class="bi bi-arrow-clockwise me-1"></i>Regenerar
-                </button>
-            </div>
+            <!-- Botó d'agenda -->
+            <button type="button" class="btn btn-warning btn-sm" onclick="regenerateAllAgenda()" title="Regenerar agenda (forçar actualització)">
+                <i class="bi bi-arrow-clockwise me-1"></i>Regenerar
+            </button>
         </div>
     </div>
     
@@ -108,61 +103,9 @@
     <div class="text-center mb-3">
         <h2 class="h3 mb-0">
             {{ $currentMonth->translatedFormat('F Y') }}
-            <small class="text-muted ms-2">
-                {{ $selectedSeason ? $selectedSeason->title : '' }}
-                {{ $selectedSeason ? 'Curs ' . $selectedSeason->academic_year : '' }}
-            </small>
         </h2>
     </div>
     
-    <!-- Filtres -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <div class="row g-3">
-                <!-- Filtre per espai -->
-                <div class="col-md-3">
-                    <label class="form-label fw-semibold">Espai</label>
-                    <select id="spaceFilter" class="form-select">
-                        <option value="">Tots els espais</option>
-                        @foreach($spaces as $space)
-                            <option value="{{ $space->id }}">{{ $space->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                
-                <!-- Filtre per curs -->
-                <div class="col-md-3">
-                    <label class="form-label fw-semibold">Curs</label>
-                    <select id="courseFilter" class="form-select">
-                        <option value="">Tots els cursos</option>
-                        @foreach($courses as $course)
-                            <option value="{{ $course->id }}">{{ $course->code }} - {{ $course->title }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                
-                <!-- Filtre per estat -->
-                <div class="col-md-3">
-                    <label class="form-label fw-semibold">Estat</label>
-                    <select id="statusFilter" class="form-select">
-                        <option value="">Tots els estats</option>
-                        <option value="active">Actius</option>
-                        <option value="completed">Completats</option>
-                        <option value="error">Amb errors</option>
-                    </select>
-                </div>
-                
-                <!-- Botó aplicar filtre -->
-                <div class="col-md-3">
-                    <label class="form-label fw-semibold">&nbsp;</label>
-                    <button type="button" onclick="applyFilters()" class="btn btn-primary w-100">
-                        <i class="bi bi-funnel me-1"></i>Aplicar filtre
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Calendari Mensual -->
     <div class="card">
         <!-- Capçalera del mes -->
@@ -239,6 +182,17 @@
                                                 <span class="badge bg-primary rounded-pill">
                                                     {{ $daySchedules->where('course', '!=', null)->count() }}
                                                 </span>
+                                            @endif
+                                        </div>
+                                        
+                                        <!-- Totes les franges horaries del dia -->
+                                        <div class="time-slots-container">
+                                            @foreach($daySchedules as $scheduleData)
+                                                @php
+                                                    $course = $scheduleData['course'];
+                                                    $session = $scheduleData['session'];
+                                                    $space = $scheduleData['space'];
+                                                    $totalSessions = $course->sessions ?? 1;
                                                     $currentSessionIndex = 0;
                                                     
                                                     // Trobar l'índex de la sessió actual
@@ -498,36 +452,6 @@ function toggleNonLectiveDay(date) {
     });
 }
 
-function generateAllAgenda() {
-    if (!confirm('Vols generar l\'agenda de tots els cursos que no en tenen?')) {
-        return;
-    }
-    
-    showLoading('Generant agenda...');
-    
-    fetch('/campus/resources/calendar/generate-agenda', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        hideLoading();
-        if (data.success) {
-            alert('Agenda generada correctament!\n' + data.message);
-            window.location.reload();
-        } else {
-            alert('Error: ' + data.message);
-        }
-    })
-    .catch(error => {
-        hideLoading();
-        console.error('Error:', error);
-        alert('Error al generar l\'agenda: ' + error.message);
-    });
-}
 
 function regenerateAllAgenda() {
     if (!confirm('Vols regenerar l\'agenda de tots els cursos? Això sobreescriurà les agendes existents.')) {
@@ -599,39 +523,6 @@ function hideLoading() {
     if (loading) {
         loading.style.display = 'none';
     }
-}
-
-function applyFilters() {
-    const spaceFilter = document.getElementById('spaceFilter').value;
-    const courseFilter = document.getElementById('courseFilter').value;
-    const statusFilter = document.getElementById('statusFilter').value;
-    
-    // Construir URL amb filtres
-    const url = new URL(window.location);
-    const params = new URLSearchParams(url.search);
-    
-    // Afegir o actualitzar paràmetres de filtre
-    if (spaceFilter) {
-        params.set('space', spaceFilter);
-    } else {
-        params.delete('space');
-    }
-    
-    if (courseFilter) {
-        params.set('course', courseFilter);
-    } else {
-        params.delete('course');
-    }
-    
-    if (statusFilter) {
-        params.set('status', statusFilter);
-    } else {
-        params.delete('status');
-    }
-    
-    // Actualitzar URL sense recarregar la pàgina
-    url.search = params.toString();
-    window.location.href = url.toString();
 }
 </script>
 @endsection
