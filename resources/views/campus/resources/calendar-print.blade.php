@@ -198,8 +198,21 @@
                             $session = $scheduleData['session'];
                             $space = $scheduleData['space'];
                             
+                            // Calcular comptador de sessions
+                            $totalSessions = $course->sessions ?? 1;
+                            $currentSessionIndex = 0;
+                            
+                            if ($course->schedule && is_array($course->schedule)) {
+                                foreach ($course->schedule as $index => $sched) {
+                                    if ($sched['date'] == $session['date'] && $sched['time'] == $session['time']) {
+                                        $currentSessionIndex = $index + 1;
+                                        break;
+                                    }
+                                }
+                            }
+                            
                             echo '<div class="course-item">';
-                            echo '<span class="course-code">' . $course->code . '</span><br>';
+                            echo '<span class="course-code">' . $course->code . ' ' . $currentSessionIndex . '/' . $totalSessions . '</span><br>';
                             echo '<span class="course-info">' . $session['time'] . ' ' . ($space->name ?? '') . '</span>';
                             echo '</div>';
                         }

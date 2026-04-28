@@ -202,19 +202,31 @@
                                                     $course = $scheduleData['course'];
                                                     $session = $scheduleData['session'];
                                                     $space = $scheduleData['space'];
-                                                    $timeSlot = $scheduleData['timeSlot'];
-                                                    $isEmpty = $session['is_empty'] ?? false;
+                                                    $totalSessions = $course->sessions ?? 1;
+                                                    $currentSessionIndex = 0;
+                                                    
+                                                    // Trobar l'índex de la sessió actual
+                                                    if ($course->schedule && is_array($course->schedule)) {
+                                                        foreach ($course->schedule as $index => $sched) {
+                                                            if ($sched['date'] == $session['date'] && $sched['time'] == $session['time']) {
+                                                                $currentSessionIndex = $index + 1; // +1 perquè és 1-based
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
                                                 @endphp
                                                 
-                                                <!-- Curs assignat -->
-                                                    <div class="small p-1 mb-1 rounded bg-primary text-white text-decoration-none cursor-pointer" 
-                                                         data-space="{{ $space->id }}"
-                                                         data-course="{{ $course->id }}"
-                                                         data-date="{{ $session['date'] }}"
-                                                         data-time="{{ $session['time'] }}"
-                                                         title="{{ $course->title }} - {{ $space->name }} ({{ $session['time'] }})">
-                                                        <div class="fw-bold">{{ $course->code }}</div>
-                                                        <div class="small">{{ $session['time'] }} {{ $space->name }}</div>
+                                                <div class="bg-primary text-white p-1 mb-1 rounded text-decoration-none position-relative" 
+                                                     href="{{ route('campus.courses.show', $course->id) }}"
+                                                     style="font-size: 11px; line-height: 1.2; display: block; cursor: pointer;">
+                                                    <div class="d-flex justify-content-between align-items-start">
+                                                        <div>
+                                                            <div class="fw-semibold">{{ $course->code }}</div>
+                                                            <div class="badge bg-light text-dark" style="font-size: 9px;">
+                                                                {{ $currentSessionIndex }}/{{ $totalSessions }}
+                                                            </div>
+                                                        </div>
+                                                        <div class="small">{{ $session['time'] }} {{ $space->name ?? '' }}</div>
                                                     </div>
                                             @endforeach
                                         </div>
