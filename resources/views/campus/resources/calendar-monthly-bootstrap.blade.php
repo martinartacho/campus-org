@@ -120,18 +120,18 @@
         <div class="card-body">
             <div class="row g-3">
                 <!-- Filtre per espai -->
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label class="form-label fw-semibold">Espai</label>
                     <select id="spaceFilter" class="form-select">
                         <option value="">Tots els espais</option>
                         @foreach($spaces as $space)
-                            <option value="{{ $space->id }}">{{ $space->name }} ({{ $space->type }})</option>
+                            <option value="{{ $space->id }}">{{ $space->name }}</option>
                         @endforeach
                     </select>
                 </div>
                 
                 <!-- Filtre per curs -->
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label class="form-label fw-semibold">Curs</label>
                     <select id="courseFilter" class="form-select">
                         <option value="">Tots els cursos</option>
@@ -142,14 +142,22 @@
                 </div>
                 
                 <!-- Filtre per estat -->
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label class="form-label fw-semibold">Estat</label>
                     <select id="statusFilter" class="form-select">
                         <option value="">Tots els estats</option>
-                        @foreach(\App\Models\CampusCourseSchedule::STATUSES as $key => $value)
-                            <option value="{{ $key }}">{{ $value }}</option>
-                        @endforeach
+                        <option value="active">Actius</option>
+                        <option value="completed">Completats</option>
+                        <option value="error">Amb errors</option>
                     </select>
+                </div>
+                
+                <!-- Botó aplicar filtre -->
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">&nbsp;</label>
+                    <button type="button" onclick="applyFilters()" class="btn btn-primary w-100">
+                        <i class="bi bi-funnel me-1"></i>Aplicar filtre
+                    </button>
                 </div>
             </div>
         </div>
@@ -231,17 +239,6 @@
                                                 <span class="badge bg-primary rounded-pill">
                                                     {{ $daySchedules->where('course', '!=', null)->count() }}
                                                 </span>
-                                            @endif
-                                        </div>
-                                        
-                                        <!-- Totes les franges horaries del dia -->
-                                        <div class="time-slots-container">
-                                            @foreach($daySchedules as $scheduleData)
-                                                @php
-                                                    $course = $scheduleData['course'];
-                                                    $session = $scheduleData['session'];
-                                                    $space = $scheduleData['space'];
-                                                    $totalSessions = $course->sessions ?? 1;
                                                     $currentSessionIndex = 0;
                                                     
                                                     // Trobar l'índex de la sessió actual
@@ -602,6 +599,39 @@ function hideLoading() {
     if (loading) {
         loading.style.display = 'none';
     }
+}
+
+function applyFilters() {
+    const spaceFilter = document.getElementById('spaceFilter').value;
+    const courseFilter = document.getElementById('courseFilter').value;
+    const statusFilter = document.getElementById('statusFilter').value;
+    
+    // Construir URL amb filtres
+    const url = new URL(window.location);
+    const params = new URLSearchParams(url.search);
+    
+    // Afegir o actualitzar paràmetres de filtre
+    if (spaceFilter) {
+        params.set('space', spaceFilter);
+    } else {
+        params.delete('space');
+    }
+    
+    if (courseFilter) {
+        params.set('course', courseFilter);
+    } else {
+        params.delete('course');
+    }
+    
+    if (statusFilter) {
+        params.set('status', statusFilter);
+    } else {
+        params.delete('status');
+    }
+    
+    // Actualitzar URL sense recarregar la pàgina
+    url.search = params.toString();
+    window.location.href = url.toString();
 }
 </script>
 @endsection
