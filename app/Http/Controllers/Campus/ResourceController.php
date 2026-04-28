@@ -236,26 +236,8 @@ class ResourceController extends Controller
             }
         }
         
-        // Afegir franges buides per a cada dia
-        foreach ($monthlySchedules as $date => $sessions) {
-            $existingTimes = $sessions->pluck('session.time')->unique()->toArray();
-            
-            foreach ($allTimeSlots as $time => $timeSlots) {
-                if (!in_array($time, $existingTimes)) {
-                    // Afegir franja buida
-                    $monthlySchedules->get($date)->push([
-                        'course' => null,
-                        'session' => [
-                            'date' => $date,
-                            'time' => $time,
-                            'is_empty' => true
-                        ],
-                        'space' => null,
-                        'timeSlot' => $timeSlots->first()
-                    ]);
-                }
-            }
-        }
+        // No afegir franges buides - només mostrar cursos assignats
+        // Les franges lliures no calen segons feedback de l'usuari
         
         // Ordenar sessions per hora
         $monthlySchedules = $monthlySchedules->map(function($daySchedules) {

@@ -176,14 +176,7 @@
                                                     $isEmpty = $session['is_empty'] ?? false;
                                                 @endphp
                                                 
-                                                @if($isEmpty)
-                                                    <!-- Franja buida -->
-                                                    <div class="small p-1 mb-1 rounded bg-light text-muted border">
-                                                        <div class="fw-bold">{{ $session['time'] }}</div>
-                                                        <div class="small">Lliure</div>
-                                                    </div>
-                                                @else
-                                                    <!-- Curs assignat -->
+                                                <!-- Curs assignat -->
                                                     <div class="small p-1 mb-1 rounded bg-primary text-white text-decoration-none cursor-pointer" 
                                                          data-space="{{ $space->id }}"
                                                          data-course="{{ $course->id }}"
@@ -193,7 +186,6 @@
                                                         <div class="fw-bold">{{ $course->code }}</div>
                                                         <div class="small">{{ $session['time'] }} {{ $space->name }}</div>
                                                     </div>
-                                                @endif
                                             @endforeach
                                         </div>
                                     </td>
