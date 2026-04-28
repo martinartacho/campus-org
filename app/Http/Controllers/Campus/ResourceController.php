@@ -281,12 +281,12 @@ class ResourceController extends Controller
     }
     
     /**
-     * Determina el semestre a partir d'una data
+     * Determina el trimestre a partir d'una data
      */
     private function getSemesterFromDate($date)
     {
         $month = $date->month;
-        return ($month <= 6) ? '1S' : '2S';
+        return ($month <= 6) ? '1Q' : '2Q';
     }
     
     public function searchCourses(Request $request)
