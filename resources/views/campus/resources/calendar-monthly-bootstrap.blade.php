@@ -17,14 +17,14 @@
         <div class="d-flex gap-2">
             <!-- Navegació de mesos -->
             <div class="d-flex align-items-center gap-2">
-                <a href="{{ route('campus.resources.calendar.monthly.bootstrap', ['month' => $currentMonth->copy()->subMonth()->format('Y-m')]) }}" 
+                <a href="{{ route('campus.resources.calendar.monthly', ['month' => $currentMonth->copy()->subMonth()->format('Y-m')]) }}" 
                    class="btn btn-secondary btn-sm">
                     <i class="bi bi-chevron-left"></i>
                 </a>
                 <span class="fw-semibold text-secondary px-2">
                     {{ $currentMonth->format('F Y') }}
                 </span>
-                <a href="{{ route('campus.resources.calendar.monthly.bootstrap', ['month' => $currentMonth->copy()->addMonth()->format('Y-m')]) }}" 
+                <a href="{{ route('campus.resources.calendar.monthly', ['month' => $currentMonth->copy()->addMonth()->format('Y-m')]) }}" 
                    class="btn btn-secondary btn-sm">
                     <i class="bi bi-chevron-right"></i>
                 </a>
