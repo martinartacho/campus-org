@@ -162,16 +162,15 @@
                                         @if($daySchedules->count() > 0)
                                             <div class="overflow-auto" style="max-height: 80px;">
                                                 @foreach($daySchedules->take(3) as $schedule)
-                                                    @php
-                                                        $colorClass = 'bg-primary text-white';
-                                                        if ($schedule->status === 'conflict') {
-                                                            $colorClass = 'bg-danger text-white';
-                                                        } elseif ($schedule->status === 'pending') {
-                                                            $colorClass = 'bg-warning text-dark';
-                                                        }
-                                                    @endphp
-                                                    
-                                                    <div class="small p-1 mb-1 rounded {{ $colorClass }} text-decoration-none cursor-pointer" 
+                                                    <div class="small p-1 mb-1 rounded 
+                                                        @if($schedule->status === 'conflict')
+                                                            bg-danger text-white
+                                                        @elseif($schedule->status === 'pending')
+                                                            bg-warning text-dark
+                                                        @else
+                                                            bg-primary text-white
+                                                        @endif
+                                                        text-decoration-none cursor-pointer" 
                                                          data-space="{{ $schedule->space_id }}"
                                                          data-course="{{ $schedule->course_id }}"
                                                          data-status="{{ $schedule->status }}"
