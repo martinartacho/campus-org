@@ -372,6 +372,19 @@ class ResourceController extends Controller
     }
     
     /**
+     * Exportar calendari a Excel
+     */
+    public function exportCalendar(Request $request)
+    {
+        $month = $request->get('month', now()->month);
+        $year = $request->get('year', now()->year);
+        
+        $fileName = "calendari_{$year}_{$month}.xlsx";
+        
+        return \Excel::download(new \App\Exports\CalendarExport($month, $year), $fileName);
+    }
+    
+    /**
      * Determina el trimestre a partir d'una data
      */
     private function getSemesterFromDate($date)
