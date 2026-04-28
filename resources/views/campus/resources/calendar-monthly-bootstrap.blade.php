@@ -136,9 +136,9 @@
                                     @php
                                         $day = $cellIndex - $firstDayOfWeek + 1;
                                         $currentDay = $currentMonth->copy()->day($day);
-                                        $daySchedules = $monthlySchedules->filter(function($schedule) use ($currentDay) {
-                                            return \Carbon\Carbon::parse($schedule->start_date)->isSameDay($currentDay);
-                                        });
+                                        // Obtenir horaris per aquest dia específic
+                                        $dayKey = $currentDay->format('Y-m-d');
+                                        $daySchedules = $monthlySchedules->get($dayKey, collect());
                                         $isToday = $currentDay->isToday();
                                         $isPast = $currentDay->isPast();
                                         $isWeekend = $currentDay->isWeekend();
