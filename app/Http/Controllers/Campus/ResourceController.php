@@ -185,7 +185,17 @@ class ResourceController extends Controller
         $startDate = $currentMonth->copy()->startOfMonth();
         $endDate = $currentMonth->copy()->endOfMonth();
         
-        // Obtenir tots els horaris del mes
+        // Obtenir cursos de la temporada
+        $courses = CampusCourse::where('season_id', $selectedSeason->id ?? null)
+            ->orderBy('title')
+            ->get();
+            
+        // Generar horaris setmanals per cursos que no en tenen
+        foreach ($courses as $course) {
+            $this->generateWeeklySchedules($course);
+        }
+        
+        // Obtenir tots els horaris del mes (potser nous)
         $schedules = CampusCourseSchedule::with(['course', 'space', 'timeSlot'])
             ->whereHas('course', function($query) use ($selectedSeason) {
                 if ($selectedSeason) {
@@ -201,14 +211,10 @@ class ResourceController extends Controller
             return \Carbon\Carbon::parse($schedule->start_date)->format('Y-m-d');
         });
         
-        // Obtenir espais i cursos per als filtres
+        // Obtenir espais per als filtres
         $spaces = CampusSpace::where('is_active', true)
             ->orderBy('type')
             ->orderBy('capacity', 'desc')
-            ->get();
-            
-        $courses = CampusCourse::where('season_id', $selectedSeason->id ?? null)
-            ->orderBy('title')
             ->get();
             
         return view('campus.resources.calendar-monthly-bootstrap', compact(
@@ -220,6 +226,67 @@ class ResourceController extends Controller
             'startDate',
             'endDate'
         ));
+    }
+    
+    /**
+     * Genera horaris setmanals per a cursos que no en tenen
+     */
+    private function generateWeeklySchedules($course)
+    {
+        // Si el curs ja té horaris, no fer res
+        if ($course->schedules()->count() > 0) {
+            return;
+        }
+        
+        // Obtenir el time_slot per saber quin dia de la setmana i hora
+        $timeSlot = $course->timeSlot;
+        if (!$timeSlot) {
+            return;
+        }
+        
+        $dayOfWeek = $timeSlot->day_of_week; // 1 = Dilluns, 7 = Diumenge
+        $startTime = $timeSlot->start_time;
+        
+        // Generar tantes sessions com indiqui el camp hours
+        $sessions = $course->hours ?? 1;
+        $currentDate = $course->start_date->copy();
+        
+        for ($i = 0; $i < $sessions; $i++) {
+            // Trobar el proper dia de la setmana correcte
+            while ($currentDate->dayOfWeekIso != $dayOfWeek) {
+                $currentDate->addDay();
+            }
+            
+            // Si ens passem de la data de finalització, aturar
+            if ($currentDate->gt($course->end_date)) {
+                break;
+            }
+            
+            // Crear l'horari
+            \App\Models\CampusCourseSchedule::create([
+                'course_id' => $course->id,
+                'space_id' => $course->space_id,
+                'time_slot_id' => $course->time_slot_id,
+                'semester' => $this->getSemesterFromDate($currentDate),
+                'status' => 'assigned',
+                'session_count' => 1,
+                'start_date' => $currentDate->format('Y-m-d'),
+                'end_date' => $currentDate->format('Y-m-d'),
+                'notes' => 'Generat automàticament'
+            ]);
+            
+            // Avançar una setmana per a la propera sessió
+            $currentDate->addWeek();
+        }
+    }
+    
+    /**
+     * Determina el semestre a partir d'una data
+     */
+    private function getSemesterFromDate($date)
+    {
+        $month = $date->month;
+        return ($month <= 6) ? '1S' : '2S';
     }
     
     public function searchCourses(Request $request)
