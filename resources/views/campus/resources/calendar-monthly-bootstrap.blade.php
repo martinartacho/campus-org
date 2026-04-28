@@ -63,6 +63,16 @@
             <a href="{{ route('campus.resources.index') }}" class="btn btn-secondary btn-sm">
                 <i class="bi bi-grid-3x3-gap me-1"></i>Recursos
             </a>
+            
+            <!-- Botons d'agenda -->
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-warning btn-sm" onclick="generateAllAgenda()" title="Generar agenda de tots els cursos">
+                    <i class="bi bi-calendar-plus me-1"></i>Generar Agenda
+                </button>
+                <button type="button" class="btn btn-danger btn-sm" onclick="regenerateAllAgenda()" title="Regenerar agenda (forçar actualització)">
+                    <i class="bi bi-arrow-clockwise me-1"></i>Regenerar
+                </button>
+            </div>
         </div>
     </div>
 
@@ -419,6 +429,98 @@ function toggleNonLectiveDay(date) {
         console.error('Error:', error);
         alert('Error al marcar/desmarcar dia no lectiu: ' + error.message);
     });
+}
+
+function generateAllAgenda() {
+    if (!confirm('Vols generar l\'agenda de tots els cursos que no en tenen?')) {
+        return;
+    }
+    
+    showLoading('Generant agenda...');
+    
+    fetch('/campus/resources/calendar/generate-agenda', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        hideLoading();
+        if (data.success) {
+            alert('Agenda generada correctament!\n' + data.message);
+            window.location.reload();
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        hideLoading();
+        console.error('Error:', error);
+        alert('Error al generar l\'agenda: ' + error.message);
+    });
+}
+
+function regenerateAllAgenda() {
+    if (!confirm('Vols regenerar l\'agenda de tots els cursos? Això sobreescriurà les agendes existents.')) {
+        return;
+    }
+    
+    showLoading('Regenerant agenda...');
+    
+    fetch('/campus/resources/calendar/regenerate-agenda', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        hideLoading();
+        if (data.success) {
+            alert('Agenda regenerada correctament!\n' + data.message);
+            window.location.reload();
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        hideLoading();
+        console.error('Error:', error);
+        alert('Error al regenerar l\'agenda: ' + error.message);
+    });
+}
+
+function showLoading(message) {
+    // Crear o mostrar loading overlay
+    let loading = document.getElementById('loadingOverlay');
+    if (!loading) {
+        loading = document.createElement('div');
+        loading.id = 'loadingOverlay';
+        loading.innerHTML = `
+            <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; display: flex; align-items: center; justify-content: center;">
+                <div style="background: white; padding: 20px; border-radius: 8px; text-align: center;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Carregant...</span>
+                    </div>
+                    <p class="mt-2 mb-0">${message}</p>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(loading);
+    } else {
+        loading.style.display = 'flex';
+        loading.querySelector('p').textContent = message;
+    }
+}
+
+function hideLoading() {
+    const loading = document.getElementById('loadingOverlay');
+    if (loading) {
+        loading.style.display = 'none';
+    }
 }
 </script>
 @endsection

@@ -442,6 +442,115 @@ class ResourceController extends Controller
     }
     
     /**
+     * Generar agenda per a cursos que no en tenen
+     */
+    public function generateAgenda(Request $request)
+    {
+        try {
+            $selectedSeason = \App\Models\CampusSeason::getDefaultForCalendar();
+            
+            // Obtenir cursos sense agenda
+            $courses = CampusCourse::where('season_id', $selectedSeason->id ?? null)
+                ->where(function($query) {
+                    $query->whereNull('schedule')
+                          ->orWhere('schedule', '[]');
+                })
+                ->with(['space', 'timeSlot'])
+                ->get();
+            
+            $generatedCount = 0;
+            $errorCount = 0;
+            $errors = [];
+            
+            foreach ($courses as $course) {
+                try {
+                    $this->generateWeeklySchedules($course);
+                    $generatedCount++;
+                } catch (\Exception $e) {
+                    $errorCount++;
+                    $errors[] = "Error amb {$course->code}: " . $e->getMessage();
+                }
+            }
+            
+            $message = "S'han generat {$generatedCount} agendes.";
+            if ($errorCount > 0) {
+                $message .= " Hi ha hagut {$errorCount} errors.";
+                if (count($errors) <= 3) {
+                    $message .= " Errors: " . implode(', ', $errors);
+                }
+            }
+            
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'generated' => $generatedCount,
+                'errors' => $errorCount
+            ]);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+    
+    /**
+     * Regenerar agenda per a tots els cursos
+     */
+    public function regenerateAgenda(Request $request)
+    {
+        try {
+            $selectedSeason = \App\Models\CampusSeason::getDefaultForCalendar();
+            
+            // Obtenir tots els cursos de la temporada
+            $courses = CampusCourse::where('season_id', $selectedSeason->id ?? null)
+                ->with(['space', 'timeSlot'])
+                ->get();
+            
+            $regeneratedCount = 0;
+            $errorCount = 0;
+            $errors = [];
+            
+            foreach ($courses as $course) {
+                try {
+                    // Esborrar agenda existent
+                    $course->schedule = null;
+                    $course->save();
+                    
+                    // Generar nova agenda
+                    $this->generateWeeklySchedules($course);
+                    $regeneratedCount++;
+                } catch (\Exception $e) {
+                    $errorCount++;
+                    $errors[] = "Error amb {$course->code}: " . $e->getMessage();
+                }
+            }
+            
+            $message = "S' han regenerat {$regeneratedCount} agendes.";
+            if ($errorCount > 0) {
+                $message .= " Hi ha hagut {$errorCount} errors.";
+                if (count($errors) <= 3) {
+                    $message .= " Errors: " . implode(', ', $errors);
+                }
+            }
+            
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'regenerated' => $regeneratedCount,
+                'errors' => $errorCount
+            ]);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+    
+    /**
      * Exportar calendari a Excel (quadrimestre complet)
      */
     public function exportCalendar(Request $request)

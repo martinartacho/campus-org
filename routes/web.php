@@ -886,6 +886,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('resources/calendar/monthly-bootstrap', [ResourceController::class, 'calendarMonthlyBootstrap'])->name('resources.calendar.monthly.bootstrap');
         Route::post('resources/calendar/toggle-non-lective', [ResourceController::class, 'toggleNonLectiveDay'])->name('resources.calendar.toggle-non-lective');
         Route::get('resources/calendar/print', [ResourceController::class, 'calendarPrint'])->name('resources.calendar.print');
+        Route::post('resources/calendar/generate-agenda', [ResourceController::class, 'generateAgenda'])->name('resources.calendar.generate-agenda');
+        Route::post('resources/calendar/regenerate-agenda', [ResourceController::class, 'regenerateAgenda'])->name('resources.calendar.regenerate-agenda');
         Route::get('resources/calendar/export', [ResourceController::class, 'exportCalendar'])->name('resources.calendar.export');
         Route::get('resources/search/courses', [ResourceController::class, 'searchCourses'])->name('resources.search.courses');
         Route::post('resources/assign', [ResourceController::class, 'assign'])->name('resources.assign');
