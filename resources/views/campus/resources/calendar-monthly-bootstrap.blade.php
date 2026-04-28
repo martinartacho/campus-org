@@ -20,17 +20,30 @@
                 <button onclick="printCalendar()" class="btn btn-success btn-sm no-print" title="Imprimir (Ctrl+P)">
                     <i class="bi bi-printer"></i>
                 </button>
-                <a href="{{ route('campus.resources.calendar.monthly.bootstrap', ['month' => $currentMonth->copy()->subMonth()->format('Y-m')]) }}" 
-                   class="btn btn-secondary btn-sm">
-                    <i class="bi bi-chevron-left"></i>
-                </a>
-                <span class="fw-semibold text-secondary px-2">
-                    {{ $currentMonth->format('F Y') }}
-                </span>
-                <a href="{{ route('campus.resources.calendar.monthly.bootstrap', ['month' => $currentMonth->copy()->addMonth()->format('Y-m')]) }}" 
-                   class="btn btn-secondary btn-sm">
-                    <i class="bi bi-chevron-right"></i>
-                </a>
+                
+                <!-- Selector ràpid de mesos -->
+                <select id="monthSelector" class="form-select form-select-sm no-print" style="width: 200px;">
+                    @php
+                        $currentYear = now()->year;
+                        $months = [];
+                        for($y = $currentYear; $y <= $currentYear + 2; $y++) {
+                            for($m = 1; $m <= 12; $m++) {
+                                $monthDate = \Carbon\Carbon::create($y, $m, 1);
+                                $months[] = [
+                                    'value' => $monthDate->format('Y-m'),
+                                    'label' => $monthDate->translatedFormat('F Y'),
+                                    'selected' => $monthDate->format('Y-m') === $currentMonth->format('Y-m')
+                                ];
+                            }
+                        }
+                    @endphp
+                    
+                    @foreach($months as $month)
+                        <option value="{{ $month['value'] }}" {{ $month['selected'] ? 'selected' : '' }}>
+                            {{ $month['label'] }}
+                        </option>
+                    @endforeach
+                </select>
             </div>
             
             <!-- Selector de temporada -->
@@ -337,6 +350,17 @@ document.addEventListener('keydown', function(e) {
     if (e.ctrlKey && e.key === 'p') {
         e.preventDefault();
         printCalendar();
+    }
+});
+
+// Selector de mesos
+document.addEventListener('DOMContentLoaded', function() {
+    const monthSelector = document.getElementById('monthSelector');
+    if (monthSelector) {
+        monthSelector.addEventListener('change', function() {
+            const selectedMonth = this.value;
+            window.location.href = `/campus/resources/calendar/monthly-bootstrap?month=${selectedMonth}`;
+        });
     }
 });
 </script>
