@@ -555,9 +555,31 @@ class ResourceController extends Controller
                 }
             }
             
+            // Detectar errors d'agendament
+            $agendaErrors = [];
+            foreach ($courses as $course) {
+                if ($course->schedule && is_array($course->schedule)) {
+                    $expectedSessions = $course->sessions ?? 1;
+                    $actualSessions = count($course->schedule);
+                    
+                    if ($actualSessions < $expectedSessions) {
+                        $missingSessions = $expectedSessions - $actualSessions;
+                        $agendaErrors[] = [
+                            'course' => $course->code,
+                            'missing' => $missingSessions,
+                            'expected' => $expectedSessions,
+                            'actual' => $actualSessions
+                        ];
+                    }
+                }
+            }
+            
             $message = "S' han regenerat {$regeneratedCount} agendes.";
             if ($totalSkipped > 0) {
                 $message .= " S'han omès {$totalSkipped} sessions per dies no lectius.";
+            }
+            if (!empty($agendaErrors)) {
+                $message .= " ⚠️ ERROR: Hi ha " . count($agendaErrors) . " cursos amb sessions pendents d'assignar. Revisa les dates de finalització.";
             }
             if ($errorCount > 0) {
                 $message .= " Hi ha hagut {$errorCount} errors.";
@@ -570,7 +592,8 @@ class ResourceController extends Controller
                 'success' => true,
                 'message' => $message,
                 'regenerated' => $regeneratedCount,
-                'errors' => $errorCount
+                'errors' => $errorCount,
+                'agenda_errors' => $agendaErrors
             ]);
             
         } catch (\Exception $e) {

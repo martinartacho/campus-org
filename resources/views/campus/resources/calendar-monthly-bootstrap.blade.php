@@ -103,7 +103,18 @@
             </div>
         </div>
     </div>
-
+    
+    <!-- Títol del mes sobre calendari -->
+    <div class="text-center mb-3">
+        <h2 class="h3 mb-0">
+            {{ $currentMonth->translatedFormat('F Y') }}
+            <small class="text-muted ms-2">
+                {{ $selectedSeason ? $selectedSeason->title : '' }}
+                {{ $selectedSeason ? 'Curs ' . $selectedSeason->academic_year : '' }}
+            </small>
+        </h2>
+    </div>
+    
     <!-- Filtres -->
     <div class="card mb-4">
         <div class="card-body">
@@ -525,7 +536,18 @@ function regenerateAllAgenda() {
     .then(data => {
         hideLoading();
         if (data.success) {
-            alert('Agenda regenerada correctament!\n' + data.message);
+            let message = 'Agenda regenerada correctament!\n' + data.message;
+            
+            // Si hi ha errors d'agendament, mostrar detall
+            if (data.agenda_errors && data.agenda_errors.length > 0) {
+                message += '\n\n⚠️ DETALL D\'ERRORS:\n';
+                data.agenda_errors.forEach(error => {
+                    message += `• ${error.course}: Falten ${error.missing} sessions (${error.actual}/${error.expected})\n`;
+                });
+                message += '\n📋 SOLUCIÓ: Revisa les dates de finalització dels cursos.';
+            }
+            
+            alert(message);
             window.location.reload();
         } else {
             alert('Error: ' + data.message);
