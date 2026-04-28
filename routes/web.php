@@ -882,8 +882,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('resources', [ResourceController::class, 'index'])->name('resources.index');
         Route::get('resources/calendar', [ResourceController::class, 'calendar'])->name('resources.calendar');
         Route::get('resources/calendar/quarterly', [ResourceController::class, 'calendarQuarterly'])->name('resources.calendar.quarterly');
-        Route::get('resources/calendar/monthly', [ResourceController::class, 'calendarMonthly'])->name('resources.calendar.monthly');
-        Route::get('resources/calendar/monthly-bootstrap', [ResourceController::class, 'calendarMonthly'])->name('resources.calendar.monthly.bootstrap');
+        Route::get('resources/calendar/monthly', [ResourceController::class, 'calendarMonthlyBootstrap'])->name('resources.calendar.monthly');
+        Route::get('resources/calendar/monthly-bootstrap', [ResourceController::class, 'calendarMonthlyBootstrap'])->name('resources.calendar.monthly.bootstrap');
         Route::get('resources/search/courses', [ResourceController::class, 'searchCourses'])->name('resources.search.courses');
         Route::post('resources/assign', [ResourceController::class, 'assign'])->name('resources.assign');
         
