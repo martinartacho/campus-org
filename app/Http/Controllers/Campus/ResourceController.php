@@ -167,6 +167,53 @@ class ResourceController extends Controller
         ));
     }
     
+    public function calendarMonthlyBootstrap(Request $request)
+    {
+        $month = $request->get('month', now()->format('Y-m'));
+        $currentMonth = \Carbon\Carbon::createFromFormat('Y-m', $month);
+        $selectedSeason = CampusSeason::getDefaultForCalendar();
+        
+        // Obtenir el rang de dates del mes
+        $startDate = $currentMonth->copy()->startOfMonth();
+        $endDate = $currentMonth->copy()->endOfMonth();
+        
+        // Obtenir tots els horaris del mes
+        $schedules = CampusCourseSchedule::with(['course', 'space', 'timeSlot'])
+            ->whereHas('course', function($query) use ($selectedSeason) {
+                if ($selectedSeason) {
+                    $query->where('season_id', $selectedSeason->id);
+                }
+            })
+            ->whereBetween('start_date', [$startDate, $endDate])
+            ->orderBy('start_date')
+            ->get();
+            
+        // Agrupar per dia per a la vista mensual
+        $monthlySchedules = $schedules->groupBy(function($schedule) {
+            return \Carbon\Carbon::parse($schedule->start_date)->format('Y-m-d');
+        });
+        
+        // Obtenir espais i cursos per als filtres
+        $spaces = CampusSpace::where('is_active', true)
+            ->orderBy('type')
+            ->orderBy('capacity', 'desc')
+            ->get();
+            
+        $courses = CampusCourse::where('season_id', $selectedSeason->id ?? null)
+            ->orderBy('title')
+            ->get();
+            
+        return view('campus.resources.calendar-monthly-bootstrap', compact(
+            'monthlySchedules', 
+            'spaces', 
+            'courses', 
+            'selectedSeason',
+            'currentMonth',
+            'startDate',
+            'endDate'
+        ));
+    }
+    
     public function searchCourses(Request $request)
     {
         $search = $request->get('search', '');
