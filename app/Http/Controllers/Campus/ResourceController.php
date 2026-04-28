@@ -273,12 +273,13 @@ class ResourceController extends Controller
                 break;
             }
             
-            // Comprovar si ja existeix aquest horari (espai + time_slot + semester)
+            // Comprovar si ja existeix aquest horari (espai + time_slot + semester + data)
             $semester = $this->getSemesterFromDate($currentDate);
             $existingSchedule = \App\Models\CampusCourseSchedule::where([
                 'space_id' => $course->space_id,
                 'time_slot_id' => $course->time_slot_id,
-                'semester' => $semester
+                'semester' => $semester,
+                'start_date' => $currentDate->format('Y-m-d')
             ])->first();
             
             // Si no existeix, crear-lo
