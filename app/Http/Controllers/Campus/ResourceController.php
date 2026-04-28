@@ -233,7 +233,7 @@ class ResourceController extends Controller
      */
     private function generateWeeklySchedules($course)
     {
-        // Si el curs ja té horaris, no fer res
+        // Si el curs ja té horaris, no generar
         if ($course->schedules()->count() > 0) {
             return;
         }
@@ -258,48 +258,39 @@ class ResourceController extends Controller
             $startTime = $timeSlot->start_time;
         }
         
-        // Generar tantes sessions com indiqui el camp hours
+        // Calcular quantes sessions caben dins del període
         $sessions = $course->hours ?? 1;
         $currentDate = $course->start_date->copy();
+        $actualSessions = 0;
         
+        // Simular totes les sessions per comptar-les
         for ($i = 0; $i < $sessions; $i++) {
-            // Trobar el proper dia de la setmana correcte
             while ($currentDate->dayOfWeekIso != $dayOfWeek) {
                 $currentDate->addDay();
             }
             
-            // Si ens passem de la data de finalització, aturar
             if ($currentDate->gt($course->end_date)) {
                 break;
             }
             
-            // Comprovar si ja existeix aquest horari (espai + time_slot + semester + data)
-            $semester = $this->getSemesterFromDate($currentDate);
-            $existingSchedule = \App\Models\CampusCourseSchedule::where([
-                'space_id' => $course->space_id,
-                'time_slot_id' => $course->time_slot_id,
-                'semester' => $semester,
-                'start_date' => $currentDate->format('Y-m-d')
-            ])->first();
-            
-            // Si no existeix, crear-lo
-            if (!$existingSchedule) {
-                \App\Models\CampusCourseSchedule::create([
-                    'course_id' => $course->id,
-                    'space_id' => $course->space_id,
-                    'time_slot_id' => $course->time_slot_id,
-                    'semester' => $semester,
-                    'status' => 'assigned',
-                    'session_count' => 1,
-                    'start_date' => $currentDate->format('Y-m-d'),
-                    'end_date' => $currentDate->format('Y-m-d'),
-                    'notes' => 'Generat automàticament'
-                ]);
-            }
-            
-            // Avançar una setmana per a la propera sessió
+            $actualSessions++;
             $currentDate->addWeek();
         }
+        
+        // Crear UN sol registre amb la informació del patró
+        $semester = $this->getSemesterFromDate($course->start_date);
+        
+        \App\Models\CampusCourseSchedule::create([
+            'course_id' => $course->id,
+            'space_id' => $course->space_id,
+            'time_slot_id' => $course->time_slot_id,
+            'semester' => $semester,
+            'status' => 'assigned',
+            'session_count' => $actualSessions, // Nombre real de sessions
+            'start_date' => $course->start_date->format('Y-m-d'),
+            'end_date' => $course->end_date->format('Y-m-d'),
+            'notes' => "Patró setmanal: {$actualSessions} sessions cada " . $timeSlot->description
+        ]);
     }
     
     /**
