@@ -25,26 +25,6 @@
             </p>
         </div>
         
-        <!-- Navegació per mesos -->
-        <div class="d-flex align-items-center gap-2">
-            <a href="{{ route('campus.resources.calendar.monthly.bootstrap', ['month' => $currentMonth->copy()->subMonth()->format('Y-m')]) }}" 
-               class="btn btn-outline-secondary btn-sm" 
-               title="{{ $currentMonth->copy()->subMonth()->translatedFormat('F Y') }}">
-                <i class="bi bi-chevron-left"></i>
-                {{ $currentMonth->copy()->subMonth()->translatedFormat('F') }}
-            </a>
-            
-            <span class="fw-bold text-primary px-2">
-                {{ $currentMonth->translatedFormat('F Y') }}
-            </span>
-            
-            <a href="{{ route('campus.resources.calendar.monthly.bootstrap', ['month' => $currentMonth->copy()->addMonth()->format('Y-m')]) }}" 
-               class="btn btn-outline-secondary btn-sm" 
-               title="{{ $currentMonth->copy()->addMonth()->translatedFormat('F Y') }}">
-                {{ $currentMonth->copy()->addMonth()->translatedFormat('F') }}
-                <i class="bi bi-chevron-right"></i>
-            </a>
-        </div>
         
         <div class="d-flex gap-2">
             <!-- Navegació de mesos -->
@@ -101,10 +81,25 @@
     
     <!-- Títol del mes sobre calendari -->
     <div class="text-center mb-3">
-        <h2 class="h3 mb-0">
+        <a href="{{ route('campus.resources.calendar.monthly.bootstrap', ['month' => $currentMonth->copy()->subMonth()->format('Y-m')]) }}" 
+            class="btn btn-outline-secondary btn-sm" 
+            title="{{ $currentMonth->copy()->subMonth()->translatedFormat('F Y') }}">
+            <i class="bi bi-chevron-left"></i>
+            {{ $currentMonth->copy()->subMonth()->translatedFormat('F') }}
+        </a>
+        
+        <span class="fw-bold text-primary px-2">
             {{ $currentMonth->translatedFormat('F Y') }}
-        </h2>
+        </span>
+        
+        <a href="{{ route('campus.resources.calendar.monthly.bootstrap', ['month' => $currentMonth->copy()->addMonth()->format('Y-m')]) }}" 
+            class="btn btn-outline-secondary btn-sm" 
+            title="{{ $currentMonth->copy()->addMonth()->translatedFormat('F Y') }}">
+            {{ $currentMonth->copy()->addMonth()->translatedFormat('F') }}
+            <i class="bi bi-chevron-right"></i>
+        </a>
     </div>
+    
     
     <!-- Calendari Mensual -->
     <div class="card">
