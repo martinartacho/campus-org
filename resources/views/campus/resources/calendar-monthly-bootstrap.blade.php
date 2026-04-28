@@ -8,13 +8,44 @@
     <!-- Capçalera -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1 class="h3 fw-bold text-dark">Calendari Mensual</h1>
-            @if($selectedSeason)
-                <p class="text-muted mt-1">
-                    {{ $selectedSeason->name }} - {{ $currentMonth->format('F Y') }}
-                </p>
-            @endif
+            <h3 class="h5 mb-1">
+                Calendari Mensual
+                <small class="text-muted ms-2">
+                    {{ $selectedSeason ? $selectedSeason->title : 'Sense temporada' }}
+                    {{ $selectedSeason ? 'Curs ' . $selectedSeason->academic_year : '' }}
+                </small>
+            </h3>
+            <p class="mb-0 text-muted">
+                {{ $currentMonth->translatedFormat('F Y') }}
+                @if($monthlySchedules->count() > 0)
+                    <span class="badge bg-primary rounded-pill ms-2">
+                        {{ $monthlySchedules->sum(fn($day) => $day->count()) }} sessions
+                    </span>
+                @endif
+            </p>
         </div>
+        
+        <!-- Navegació per mesos -->
+        <div class="d-flex align-items-center gap-2">
+            <a href="{{ route('campus.resources.calendar.monthly.bootstrap', ['month' => $currentMonth->copy()->subMonth()->format('Y-m')]) }}" 
+               class="btn btn-outline-secondary btn-sm" 
+               title="{{ $currentMonth->copy()->subMonth()->translatedFormat('F Y') }}">
+                <i class="bi bi-chevron-left"></i>
+                {{ $currentMonth->copy()->subMonth()->translatedFormat('F') }}
+            </a>
+            
+            <span class="fw-bold text-primary px-2">
+                {{ $currentMonth->translatedFormat('F Y') }}
+            </span>
+            
+            <a href="{{ route('campus.resources.calendar.monthly.bootstrap', ['month' => $currentMonth->copy()->addMonth()->format('Y-m')]) }}" 
+               class="btn btn-outline-secondary btn-sm" 
+               title="{{ $currentMonth->copy()->addMonth()->translatedFormat('F Y') }}">
+                {{ $currentMonth->copy()->addMonth()->translatedFormat('F') }}
+                <i class="bi bi-chevron-right"></i>
+            </a>
+        </div>
+        
         <div class="d-flex gap-2">
             <!-- Navegació de mesos -->
             <div class="d-flex align-items-center gap-2">
