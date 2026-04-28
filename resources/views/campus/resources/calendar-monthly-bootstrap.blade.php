@@ -3,6 +3,7 @@
 @section('title', 'Calendari Mensual' . ($selectedSeason ? ' - ' . $selectedSeason->name : ''))
 
 @section('content')
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <div class="container mx-auto px-4 py-8">
     <!-- Capçalera -->
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -376,18 +377,31 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function toggleNonLectiveDay(date) {
+    console.log('Toggling non-lective day:', date);
+    
+    const csrfToken = document.querySelector('meta[name="csrf-token"]');
+    if (!csrfToken) {
+        console.error('CSRF token not found');
+        alert('Error: CSRF token no trobat');
+        return;
+    }
+    
     fetch('/campus/resources/calendar/toggle-non-lective', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            'X-CSRF-TOKEN': csrfToken.getAttribute('content')
         },
         body: JSON.stringify({
             date: date
         })
     })
-    .then(response => response.json())
+    .then(response => {
+        console.log('Response status:', response.status);
+        return response.json();
+    })
     .then(data => {
+        console.log('Response data:', data);
         if (data.success) {
             // Recarregar la pàgina per veure els canvis
             window.location.reload();
@@ -397,7 +411,7 @@ function toggleNonLectiveDay(date) {
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Error al marcar/desmarcar dia no lectiu');
+        alert('Error al marcar/desmarcar dia no lectiu: ' + error.message);
     });
 }
 </script>
