@@ -65,7 +65,7 @@ class CalendarExport implements FromCollection, WithHeadings, WithTitle, WithSty
                             'Títol' => $course->title,
                             'Espai' => $course->space->name ?? 'Sense assignar',
                             'Professor' => $course->teacher->name ?? 'Sense assignar',
-                            'Hores' => $course->hours,
+                            'Hores' => '',
                             'Sessions' => count($course->schedule),
                             'Mes' => $sessionDate->translatedFormat('F'),
                         ];

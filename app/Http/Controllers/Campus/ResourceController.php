@@ -301,7 +301,7 @@ class ResourceController extends Controller
         }
         
         // Generar totes les sessions
-        $sessions = $course->sessions ?? $course->hours ?? 1;
+        $sessions = $course->sessions ?? 1;
         $currentDate = $course->start_date->copy();
         $agenda = [];
         
@@ -339,7 +339,7 @@ class ResourceController extends Controller
         }
         
         // Afegir informació de sessions omeses
-        $totalSessions = $course->sessions ?? $course->hours ?? 1;
+        $totalSessions = $course->sessions ?? 1;
         $skippedSessions = $totalSessions - count($agenda);
         
         if ($skippedSessions > 0) {
@@ -549,7 +549,7 @@ class ResourceController extends Controller
             $totalSkipped = 0;
             foreach ($courses as $course) {
                 if ($course->schedule && is_array($course->schedule)) {
-                    $totalSessions = $course->sessions ?? $course->hours ?? 1;
+                    $totalSessions = $course->sessions ?? 1;
                     $actualSessions = count($course->schedule);
                     $totalSkipped += ($totalSessions - $actualSessions);
                 }
