@@ -179,8 +179,7 @@
                                                          data-time="{{ $session['time'] }}"
                                                          title="{{ $course->title }} - {{ $space->name }} ({{ $session['time'] }})">
                                                         <div class="fw-bold">{{ $course->code }}</div>
-                                                        <div class="small">{{ $space->name }}</div>
-                                                        <div class="small">{{ $session['time'] }}</div>
+                                                        <div class="small">{{ $session['time'] }} {{ $space->name }}</div>
                                                     </div>
                                                 @endforeach
                                                 

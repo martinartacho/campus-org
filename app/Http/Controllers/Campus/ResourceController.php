@@ -282,7 +282,7 @@ class ResourceController extends Controller
         $agenda = [];
         
         for ($i = 0; $i < $sessions; $i++) {
-            // Trobar el proper dia de la setmana correcte
+            // Trobar el primer dia de la setmana correcte
             while ($currentDate->dayOfWeekIso != $dayOfWeek) {
                 $currentDate->addDay();
             }
