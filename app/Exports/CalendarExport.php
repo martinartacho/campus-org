@@ -32,9 +32,15 @@ class CalendarExport implements FromCollection, WithHeadings, WithTitle, WithSty
             return collect($data);
         }
         
-        // Obtenir rang de dates de la temporada
-        $startDate = \Carbon\Carbon::parse($season->start_date);
-        $endDate = \Carbon\Carbon::parse($season->end_date);
+        // Obtenir rang de dates de la temporada (o per defecte)
+        if ($season->start_date && $season->end_date) {
+            $startDate = \Carbon\Carbon::parse($season->start_date);
+            $endDate = \Carbon\Carbon::parse($season->end_date);
+        } else {
+            // Rang per defecte: 1r de setembre a 31 de desembre
+            $startDate = \Carbon\Carbon::create(now()->year, 9, 1);
+            $endDate = \Carbon\Carbon::create(now()->year, 12, 31);
+        }
         
         // 1. Tots els cursos de la temporada
         $courses = CampusCourse::where('season_id', $season->id)
