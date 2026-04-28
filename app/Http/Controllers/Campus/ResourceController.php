@@ -137,7 +137,15 @@ class ResourceController extends Controller
                     $query->where('season_id', $selectedSeason->id);
                 }
             })
-            ->whereBetween('start_date', [$startDate, $endDate])
+            ->where(function($query) use ($startDate, $endDate) {
+                // Buscar horaris que overlapin amb el mes actual
+                $query->whereBetween('start_date', [$startDate, $endDate])
+                      ->orWhereBetween('end_date', [$startDate, $endDate])
+                      ->orWhere(function($q) use ($startDate, $endDate) {
+                          $q->where('start_date', '<=', $startDate)
+                            ->where('end_date', '>=', $endDate);
+                      });
+            })
             ->orderBy('start_date')
             ->get();
             
