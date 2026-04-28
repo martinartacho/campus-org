@@ -136,7 +136,7 @@
                                     @php
                                         $day = $cellIndex - $firstDayOfWeek + 1;
                                         $currentDay = $currentMonth->copy()->day($day);
-                                        // Obtenir horaris per aquest dia específic
+                                        // Obtenir sessions per aquest dia específic
                                         $dayKey = $currentDay->format('Y-m-d');
                                         $daySchedules = $monthlySchedules->get($dayKey, collect());
                                         $isToday = $currentDay->isToday();
@@ -165,23 +165,22 @@
                                         <!-- Horaris del dia -->
                                         @if($daySchedules->count() > 0)
                                             <div class="overflow-auto" style="max-height: 80px;">
-                                                @foreach($daySchedules->take(3) as $schedule)
-                                                    <div class="small p-1 mb-1 rounded 
-                                                        @if($schedule->status === 'conflict')
-                                                            bg-danger text-white
-                                                        @elseif($schedule->status === 'pending')
-                                                            bg-warning text-dark
-                                                        @else
-                                                            bg-primary text-white
-                                                        @endif
-                                                        text-decoration-none cursor-pointer" 
-                                                         data-space="{{ $schedule->space_id }}"
-                                                         data-course="{{ $schedule->course_id }}"
-                                                         data-status="{{ $schedule->status }}"
-                                                         title="{{ $schedule->course->title }} - {{ $schedule->space->name }} ({{ $schedule->timeSlot->start_time }})">
-                                                        <div class="fw-bold">{{ $schedule->course->code }}</div>
-                                                        <div class="small">{{ $schedule->space->name }}</div>
-                                                        <div class="small">{{ $schedule->timeSlot->start_time }}</div>
+                                                @foreach($daySchedules->take(3) as $scheduleData)
+                                                    @php
+                                                        $course = $scheduleData['course'];
+                                                        $session = $scheduleData['session'];
+                                                        $space = $scheduleData['space'];
+                                                        $timeSlot = $scheduleData['timeSlot'];
+                                                    @endphp
+                                                    <div class="small p-1 mb-1 rounded bg-primary text-white text-decoration-none cursor-pointer" 
+                                                         data-space="{{ $space->id }}"
+                                                         data-course="{{ $course->id }}"
+                                                         data-date="{{ $session['date'] }}"
+                                                         data-time="{{ $session['time'] }}"
+                                                         title="{{ $course->title }} - {{ $space->name }} ({{ $session['time'] }})">
+                                                        <div class="fw-bold">{{ $course->code }}</div>
+                                                        <div class="small">{{ $space->name }}</div>
+                                                        <div class="small">{{ $session['time'] }}</div>
                                                     </div>
                                                 @endforeach
                                                 
