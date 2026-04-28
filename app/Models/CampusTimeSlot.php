@@ -21,8 +21,8 @@ class CampusTimeSlot extends Model
 
     protected $casts = [
         'day_of_week' => 'integer',
-        'start_time' => 'datetime:H:i',
-        'end_time' => 'datetime:H:i',
+        'start_time' => 'time',
+        'end_time' => 'time',
         'is_active' => 'boolean'
     ];
 
