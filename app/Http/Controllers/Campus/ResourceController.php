@@ -316,17 +316,35 @@ class ResourceController extends Controller
                 break;
             }
             
+            // VALIDAR: Comprovar si el dia és no lectiu
+            $currentDateStr = $currentDate->format('Y-m-d');
+            if (\App\Models\CampusNonLectiveDay::isNonLective($currentDateStr)) {
+                // Ometre aquesta sessió perquè és dia no lectiu
+                $currentDate->addWeek();
+                continue;
+            }
+            
             // Afegir sessió a l'agenda
             $agenda[] = [
                 'date' => $currentDate->format('Y-m-d'),
                 'time' => $startTime->format('H:i'),
                 'day_of_week' => $dayOfWeek,
                 'space_id' => $course->space_id,
-                'time_slot_id' => $course->time_slot_id
+                'time_slot_id' => $course->time_slot_id,
+                'skipped_non_lective' => false // Marcar que no s'ha omès
             ];
             
             // Avançar una setmana per a la propera sessió
             $currentDate->addWeek();
+        }
+        
+        // Afegir informació de sessions omeses
+        $totalSessions = $course->hours ?? 1;
+        $skippedSessions = $totalSessions - count($agenda);
+        
+        if ($skippedSessions > 0) {
+            // Opcional: Pots afegir un log o notificació aquí
+            \Log::info("Curs {$course->code}: {$skippedSessions} sessions omeses per dies no lectius");
         }
         
         // Guardar agenda al camp schedule del curs
@@ -527,7 +545,20 @@ class ResourceController extends Controller
                 }
             }
             
+            // Comptar sessions omeses per dies no lectius
+            $totalSkipped = 0;
+            foreach ($courses as $course) {
+                if ($course->schedule && is_array($course->schedule)) {
+                    $totalSessions = $course->hours ?? 1;
+                    $actualSessions = count($course->schedule);
+                    $totalSkipped += ($totalSessions - $actualSessions);
+                }
+            }
+            
             $message = "S' han regenerat {$regeneratedCount} agendes.";
+            if ($totalSkipped > 0) {
+                $message .= " S'han omès {$totalSkipped} sessions per dies no lectius.";
+            }
             if ($errorCount > 0) {
                 $message .= " Hi ha hagut {$errorCount} errors.";
                 if (count($errors) <= 3) {
