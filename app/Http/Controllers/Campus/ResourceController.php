@@ -244,8 +244,19 @@ class ResourceController extends Controller
             return;
         }
         
-        $dayOfWeek = $timeSlot->day_of_week; // 1 = Dilluns, 7 = Diumenge
-        $startTime = $timeSlot->start_time;
+        // Assegurar que timeSlot és un objecte, no una col·lecció
+        if (is_object($timeSlot)) {
+            $dayOfWeek = $timeSlot->day_of_week; // 1 = Dilluns, 7 = Diumenge
+            $startTime = $timeSlot->start_time;
+        } else {
+            // Si és una col·lecció, obtenir el primer element
+            $timeSlot = $timeSlot->first();
+            if (!$timeSlot) {
+                return;
+            }
+            $dayOfWeek = $timeSlot->day_of_week;
+            $startTime = $timeSlot->start_time;
+        }
         
         // Generar tantes sessions com indiqui el camp hours
         $sessions = $course->hours ?? 1;
