@@ -17,6 +17,9 @@
         <div class="d-flex gap-2">
             <!-- Navegació de mesos -->
             <div class="d-flex align-items-center gap-2">
+                <button onclick="printCalendar()" class="btn btn-success btn-sm no-print" title="Imprimir (Ctrl+P)">
+                    <i class="bi bi-printer"></i>
+                </button>
                 <a href="{{ route('campus.resources.calendar.monthly.bootstrap', ['month' => $currentMonth->copy()->subMonth()->format('Y-m')]) }}" 
                    class="btn btn-secondary btn-sm">
                     <i class="bi bi-chevron-left"></i>
@@ -149,29 +152,38 @@
                                         elseif ($isPast) $bgClass = 'bg-light';
                                     @endphp
                                     
-                                    <td class="{{ $bgClass }} p-2" style="height: 120px; vertical-align: top;">
+                                    <td class="{{ $bgClass }} p-2" style="height: auto; min-height: 200px; vertical-align: top;">
                                         <!-- Número del dia -->
-                                        <div class="d-flex justify-content-between align-items-start mb-1">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
                                             <div class="fw-semibold {{ $isToday ? 'text-primary' : ($isWeekend ? 'text-muted' : 'text-dark') }}">
                                                 {{ $day }}
                                             </div>
                                             @if($daySchedules->count() > 0)
                                                 <span class="badge bg-primary rounded-pill">
-                                                    {{ $daySchedules->count() }}
+                                                    {{ $daySchedules->where('course', '!=', null)->count() }}
                                                 </span>
                                             @endif
                                         </div>
                                         
-                                        <!-- Horaris del dia -->
-                                        @if($daySchedules->count() > 0)
-                                            <div class="overflow-auto" style="max-height: 80px;">
-                                                @foreach($daySchedules->take(3) as $scheduleData)
-                                                    @php
-                                                        $course = $scheduleData['course'];
-                                                        $session = $scheduleData['session'];
-                                                        $space = $scheduleData['space'];
-                                                        $timeSlot = $scheduleData['timeSlot'];
-                                                    @endphp
+                                        <!-- Totes les franges horaries del dia -->
+                                        <div class="time-slots-container">
+                                            @foreach($daySchedules as $scheduleData)
+                                                @php
+                                                    $course = $scheduleData['course'];
+                                                    $session = $scheduleData['session'];
+                                                    $space = $scheduleData['space'];
+                                                    $timeSlot = $scheduleData['timeSlot'];
+                                                    $isEmpty = $session['is_empty'] ?? false;
+                                                @endphp
+                                                
+                                                @if($isEmpty)
+                                                    <!-- Franja buida -->
+                                                    <div class="small p-1 mb-1 rounded bg-light text-muted border">
+                                                        <div class="fw-bold">{{ $session['time'] }}</div>
+                                                        <div class="small">Lliure</div>
+                                                    </div>
+                                                @else
+                                                    <!-- Curs assignat -->
                                                     <div class="small p-1 mb-1 rounded bg-primary text-white text-decoration-none cursor-pointer" 
                                                          data-space="{{ $space->id }}"
                                                          data-course="{{ $course->id }}"
@@ -181,15 +193,9 @@
                                                         <div class="fw-bold">{{ $course->code }}</div>
                                                         <div class="small">{{ $session['time'] }} {{ $space->name }}</div>
                                                     </div>
-                                                @endforeach
-                                                
-                                                @if($daySchedules->count() > 3)
-                                                    <div class="small text-muted text-center bg-light rounded p-1">
-                                                        +{{ $daySchedules->count() - 3 }} més
-                                                    </div>
                                                 @endif
-                                            </div>
-                                        @endif
+                                            @endforeach
+                                        </div>
                                     </td>
                                 @endif
                             @endfor
@@ -329,5 +335,75 @@ document.addEventListener('DOMContentLoaded', function() {
     courseFilter.addEventListener('change', applyFilters);
     statusFilter.addEventListener('change', applyFilters);
 });
+
+function printCalendar() {
+    window.print();
+}
+
+// Auto-impressió opcional
+document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey && e.key === 'p') {
+        e.preventDefault();
+        printCalendar();
+    }
+});
 </script>
 @endsection
+
+@push('styles')
+<style>
+    .calendar-container {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+    
+    .calendar-table {
+        font-size: 0.85rem;
+    }
+    
+    .calendar-table th {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        padding: 0.5rem;
+        text-align: center;
+        font-weight: 600;
+    }
+    
+    .calendar-table td {
+        border: 1px solid #dee2e6;
+        vertical-align: top;
+    }
+    
+    .time-slots-container {
+        max-height: none;
+        overflow: visible;
+    }
+    
+    /* Estils per impressió */
+    @media print {
+        .no-print {
+            display: none !important;
+        }
+        
+        .calendar-container {
+            max-width: 100%;
+            margin: 0;
+            padding: 10px;
+        }
+        
+        .calendar-table {
+            font-size: 0.75rem;
+        }
+        
+        .calendar-table td {
+            height: auto !important;
+            min-height: 150px !important;
+            page-break-inside: avoid;
+        }
+        
+        .time-slots-container {
+            page-break-inside: avoid;
+        }
+    }
+</style>
+@endpush

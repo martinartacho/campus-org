@@ -202,6 +202,12 @@ class ResourceController extends Controller
             ->orderBy('title')
             ->get();
 
+        // Obtenir totes les franges horaries disponibles
+        $allTimeSlots = \App\Models\CampusTimeSlot::where('is_active', true)
+            ->orderBy('start_time')
+            ->get()
+            ->groupBy('start_time');
+        
         // Processar agenda JSON per agrupar per dia
         $monthlySchedules = collect();
         
@@ -209,6 +215,7 @@ class ResourceController extends Controller
             if ($course->schedule && is_array($course->schedule)) {
                 foreach ($course->schedule as $session) {
                     $sessionDate = $session['date'];
+                    $sessionTime = $session['time'];
                     
                     // Només sessions dins del mes actual
                     if ($sessionDate >= $startDate->format('Y-m-d') && 
@@ -227,7 +234,33 @@ class ResourceController extends Controller
                     }
                 }
             }
-        }    
+        }
+        
+        // Afegir franges buides per a cada dia
+        foreach ($monthlySchedules as $date => $sessions) {
+            $existingTimes = $sessions->pluck('session.time')->unique()->toArray();
+            
+            foreach ($allTimeSlots as $time => $timeSlots) {
+                if (!in_array($time, $existingTimes)) {
+                    // Afegir franja buida
+                    $monthlySchedules->get($date)->push([
+                        'course' => null,
+                        'session' => [
+                            'date' => $date,
+                            'time' => $time,
+                            'is_empty' => true
+                        ],
+                        'space' => null,
+                        'timeSlot' => $timeSlots->first()
+                    ]);
+                }
+            }
+        }
+        
+        // Ordenar sessions per hora
+        $monthlySchedules = $monthlySchedules->map(function($daySchedules) {
+            return $daySchedules->sortBy('session.time')->values();
+        });    
         
         // Obtenir espais per als filtres
         $spaces = CampusSpace::where('is_active', true)
