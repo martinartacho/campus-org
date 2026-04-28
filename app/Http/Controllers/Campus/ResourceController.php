@@ -247,6 +247,11 @@ class ResourceController extends Controller
         // Obtenir dies no lectius del mes
         $nonLectiveDays = \App\Models\CampusNonLectiveDay::getInRange($startDate, $endDate);
         
+        // Normalitzar dates a format Y-m-d (sense hora) per comparació
+        $nonLectiveDays = array_map(function($date) {
+            return \Carbon\Carbon::parse($date)->format('Y-m-d');
+        }, $nonLectiveDays);
+        
         // Obtenir espais per als filtres
         $spaces = CampusSpace::where('is_active', true)
             ->orderBy('type')
