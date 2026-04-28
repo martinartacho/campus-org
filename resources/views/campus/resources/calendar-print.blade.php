@@ -212,7 +212,11 @@
                             }
                             
                             echo '<div class="course-item">';
-                            echo '<span class="course-code">' . $course->code . ' ' . $currentSessionIndex . '/' . $totalSessions . '</span><br>';
+                            if ($currentSessionIndex == $totalSessions) {
+                                echo '<span class="course-code">' . $course->code . ' ✓ ' . $totalSessions . '/' . $totalSessions . '</span><br>';
+                            } else {
+                                echo '<span class="course-code">' . $course->code . ' ' . $currentSessionIndex . '/' . $totalSessions . '</span><br>';
+                            }
                             echo '<span class="course-info">' . $session['time'] . ' ' . ($space->name ?? '') . '</span>';
                             echo '</div>';
                         }

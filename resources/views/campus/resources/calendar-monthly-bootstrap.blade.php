@@ -223,8 +223,13 @@
                                                         <div>
                                                             <div class="fw-semibold">{{ $course->code }}</div>
                                                             <div class="badge bg-light text-dark" style="font-size: 9px;">
+                                                            @if($currentSessionIndex == $totalSessions)
+                                                                <i class="bi bi-check-circle-fill text-success me-1"></i>
+                                                                {{ $totalSessions }}/{{ $totalSessions }}
+                                                            @else
                                                                 {{ $currentSessionIndex }}/{{ $totalSessions }}
-                                                            </div>
+                                                            @endif
+                                                        </div>
                                                         </div>
                                                         <div class="small">{{ $session['time'] }} {{ $space->name ?? '' }}</div>
                                                     </div>
