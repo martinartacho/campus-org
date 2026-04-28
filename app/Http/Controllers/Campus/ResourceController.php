@@ -262,18 +262,28 @@ class ResourceController extends Controller
                 break;
             }
             
-            // Crear l'horari
-            \App\Models\CampusCourseSchedule::create([
-                'course_id' => $course->id,
+            // Comprovar si ja existeix aquest horari (espai + time_slot + semester)
+            $semester = $this->getSemesterFromDate($currentDate);
+            $existingSchedule = \App\Models\CampusCourseSchedule::where([
                 'space_id' => $course->space_id,
                 'time_slot_id' => $course->time_slot_id,
-                'semester' => $this->getSemesterFromDate($currentDate),
-                'status' => 'assigned',
-                'session_count' => 1,
-                'start_date' => $currentDate->format('Y-m-d'),
-                'end_date' => $currentDate->format('Y-m-d'),
-                'notes' => 'Generat automàticament'
-            ]);
+                'semester' => $semester
+            ])->first();
+            
+            // Si no existeix, crear-lo
+            if (!$existingSchedule) {
+                \App\Models\CampusCourseSchedule::create([
+                    'course_id' => $course->id,
+                    'space_id' => $course->space_id,
+                    'time_slot_id' => $course->time_slot_id,
+                    'semester' => $semester,
+                    'status' => 'assigned',
+                    'session_count' => 1,
+                    'start_date' => $currentDate->format('Y-m-d'),
+                    'end_date' => $currentDate->format('Y-m-d'),
+                    'notes' => 'Generat automàticament'
+                ]);
+            }
             
             // Avançar una setmana per a la propera sessió
             $currentDate->addWeek();
