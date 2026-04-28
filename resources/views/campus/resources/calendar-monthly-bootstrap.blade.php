@@ -22,9 +22,11 @@
                    class="btn btn-success btn-sm no-print" title="Exportar temporada completa a Excel">
                     <i class="bi bi-file-earmark-excel"></i>
                 </a>
-                <button onclick="printCalendar()" class="btn btn-outline-success btn-sm no-print" title="Imprimir (Ctrl+P)">
+                <a href="{{ route('campus.resources.calendar.print', ['month' => $currentMonth->format('Y-m')]) }}" 
+                   target="_blank"
+                   class="btn btn-outline-success btn-sm no-print" title="Imprimir (vista millorada)">
                     <i class="bi bi-printer"></i>
-                </button>
+                </a>
                 
                 <!-- Selector ràpid de mesos -->
                 <select id="monthSelector" class="form-select form-select-sm no-print" style="width: 200px;">

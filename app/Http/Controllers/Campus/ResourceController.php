@@ -372,6 +372,76 @@ class ResourceController extends Controller
     }
     
     /**
+     * Vista d'impressió millorada
+     */
+    public function calendarPrint(Request $request)
+    {
+        $month = $request->get('month', now()->format('Y-m'));
+        $currentMonth = \Carbon\Carbon::createFromFormat('Y-m', $month);
+        $selectedSeason = \App\Models\CampusSeason::getDefaultForCalendar();
+        
+        // Obtenir el rang de dates del mes
+        $startDate = $currentMonth->copy()->startOfMonth();
+        $endDate = $currentMonth->copy()->endOfMonth();
+        
+        // Obtenir cursos amb agenda JSON
+        $courses = CampusCourse::where('season_id', $selectedSeason->id ?? null)
+            ->whereNotNull('schedule')
+            ->where('schedule', '!=', '[]')
+            ->with(['space', 'timeSlot'])
+            ->orderBy('title')
+            ->get();
+
+        // Processar agenda JSON per agrupar per dia
+        $monthlySchedules = collect();
+        
+        foreach ($courses as $course) {
+            if ($course->schedule && is_array($course->schedule)) {
+                foreach ($course->schedule as $session) {
+                    $sessionDate = $session['date'];
+                    $sessionTime = $session['time'];
+                    
+                    // Només sessions dins del mes actual
+                    if ($sessionDate >= $startDate->format('Y-m-d') && 
+                        $sessionDate <= $endDate->format('Y-m-d')) {
+                        
+                        if (!$monthlySchedules->has($sessionDate)) {
+                            $monthlySchedules->put($sessionDate, collect());
+                        }
+                        
+                        $monthlySchedules->get($sessionDate)->push([
+                            'course' => $course,
+                            'session' => $session,
+                            'space' => $course->space,
+                            'timeSlot' => $course->timeSlot
+                        ]);
+                    }
+                }
+            }
+        }
+        
+        // Ordenar sessions per hora
+        $monthlySchedules = $monthlySchedules->map(function($daySchedules) {
+            return $daySchedules->sortBy('session.time')->values();
+        });
+        
+        // Obtenir dies no lectius del mes
+        $nonLectiveDays = \App\Models\CampusNonLectiveDay::getInRange($startDate, $endDate);
+        
+        // Normalitzar dates a format Y-m-d (sense hora) per comparació
+        $nonLectiveDays = array_map(function($date) {
+            return \Carbon\Carbon::parse($date)->format('Y-m-d');
+        }, $nonLectiveDays);
+        
+        return view('campus.resources.calendar-print', compact(
+            'monthlySchedules', 
+            'selectedSeason',
+            'currentMonth',
+            'nonLectiveDays'
+        ));
+    }
+    
+    /**
      * Exportar calendari a Excel (quadrimestre complet)
      */
     public function exportCalendar(Request $request)
