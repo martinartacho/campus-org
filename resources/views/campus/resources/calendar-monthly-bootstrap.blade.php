@@ -127,10 +127,13 @@
                             @for($col = 0; $col < 7; $col++)
                                 @php
                                     $cellIndex = $row * 7 + $col;
-                                    if ($cellIndex < $firstDayOfWeek || $cellIndex >= $firstDayOfWeek + $daysInMonth) {
-                                        // Cella buida
-                                        echo '<td class="bg-light" style="height: 120px;"></td>';
-                                    } else {
+                                @endphp
+                                
+                                @if($cellIndex < $firstDayOfWeek || $cellIndex >= $firstDayOfWeek + $daysInMonth)
+                                    <!-- Cella buida -->
+                                    <td class="bg-light" style="height: 120px;"></td>
+                                @else
+                                    @php
                                         $day = $cellIndex - $firstDayOfWeek + 1;
                                         $currentDay = $currentMonth->copy()->day($day);
                                         $daySchedules = $monthlySchedules->filter(function($schedule) use ($currentDay) {
@@ -144,7 +147,8 @@
                                         if ($isToday) $bgClass = 'bg-primary bg-opacity-10';
                                         elseif ($isWeekend) $bgClass = 'bg-light';
                                         elseif ($isPast) $bgClass = 'bg-light';
-                                ?>
+                                    @endphp
+                                    
                                     <td class="{{ $bgClass }} p-2" style="height: 120px; vertical-align: top;">
                                         <!-- Número del dia -->
                                         <div class="d-flex justify-content-between align-items-start mb-1">
@@ -189,9 +193,7 @@
                                             </div>
                                         @endif
                                     </td>
-                                @php
-                                    }
-                                @endphp
+                                @endif
                             @endfor
                         </tr>
                     @endfor
