@@ -137,7 +137,7 @@
                                         $day = $cellIndex - $firstDayOfWeek + 1;
                                         $currentDay = $currentMonth->copy()->day($day);
                                         $daySchedules = $monthlySchedules->filter(function($schedule) use ($currentDay) {
-                                            return \Carbon\Carbon::parse($schedule->start_date)->isSameDay($currentDay);
+                                            return \Carbon\Carbon::parse($schedule['start_date'])->isSameDay($currentDay);
                                         });
                                         $isToday = $currentDay->isToday();
                                         $isPast = $currentDay->isPast();
