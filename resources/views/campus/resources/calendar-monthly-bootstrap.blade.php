@@ -261,12 +261,26 @@
                                                     <div class="d-flex justify-content-between align-items-start">
                                                         <div>
                                                             <div class="fw-semibold">{{ $course->code }}</div>
-                                                            <div class="badge bg-light text-dark" style="font-size: 9px;">
+                                                            <div class="badge bg-light text-dark position-relative" style="font-size: 9px;">
                                                             @if($currentSessionIndex == $totalSessions)
                                                                 <i class="bi bi-check-circle-fill text-success me-1"></i>
                                                                 {{ $totalSessions }}/{{ $totalSessions }}
                                                             @else
                                                                 {{ $currentSessionIndex }}/{{ $totalSessions }}
+                                                                @php
+                                                                    // Comprovar si aquest curs té errors d'agendament
+                                                                    $hasAgendaError = false;
+                                                                    if ($course->schedule && is_array($course->schedule)) {
+                                                                        $expectedSessions = $course->sessions ?? 1;
+                                                                        $actualSessions = count($course->schedule);
+                                                                        $hasAgendaError = $actualSessions < $expectedSessions;
+                                                                    }
+                                                                @endphp
+                                                                @if($hasAgendaError)
+                                                                    <i class="bi bi-exclamation-triangle-fill text-warning position-absolute" 
+                                                                       style="top: -8px; right: -8px; font-size: 10px; background: white; border-radius: 50%; padding: 2px;"
+                                                                       title="Aquest curs té sessions pendents d'assignar"></i>
+                                                                @endif
                                                             @endif
                                                         </div>
                                                         </div>

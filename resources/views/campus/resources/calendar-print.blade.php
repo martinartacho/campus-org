@@ -212,10 +212,20 @@
                             }
                             
                             echo '<div class="course-item">';
+                            // Comprovar si aquest curs té errors d'agendament
+                            $hasAgendaError = false;
+                            if ($course->schedule && is_array($course->schedule)) {
+                                $expectedSessions = $course->sessions ?? 1;
+                                $actualSessions = count($course->schedule);
+                                $hasAgendaError = $actualSessions < $expectedSessions;
+                            }
+                            
                             if ($currentSessionIndex == $totalSessions) {
-                                echo '<span class="course-code">' . $course->code . ' ✓ ' . $totalSessions . '/' . $totalSessions . '</span><br>';
+                                $errorIcon = $hasAgendaError ? ' ⚠️' : '';
+                                echo '<span class="course-code">' . $course->code . ' ✓ ' . $totalSessions . '/' . $totalSessions . $errorIcon . '</span><br>';
                             } else {
-                                echo '<span class="course-code">' . $course->code . ' ' . $currentSessionIndex . '/' . $totalSessions . '</span><br>';
+                                $errorIcon = $hasAgendaError ? ' ⚠️' : '';
+                                echo '<span class="course-code">' . $course->code . ' ' . $currentSessionIndex . '/' . $totalSessions . $errorIcon . '</span><br>';
                             }
                             echo '<span class="course-info">' . $session['time'] . ' ' . ($space->name ?? '') . '</span>';
                             echo '</div>';
