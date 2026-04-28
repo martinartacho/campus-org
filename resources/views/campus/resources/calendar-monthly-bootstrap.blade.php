@@ -57,10 +57,7 @@
             <a href="{{ route('campus.resources.calendar') }}" class="btn btn-primary btn-sm">
                 <i class="bi bi-calendar-week me-1"></i>Vista Setmanal
             </a>
-            <a href="{{ route('campus.resources.calendar.quarterly') }}" class="btn btn-success btn-sm">
-                <i class="bi bi-calendar me-1"></i>Vista Quadrimestral
-            </a>
-            <a href="{{ route('campus.resources.index') }}" class="btn btn-secondary btn-sm">
+                        <a href="{{ route('campus.resources.index') }}" class="btn btn-secondary btn-sm">
                 <i class="bi bi-grid-3x3-gap me-1"></i>Recursos
             </a>
             
