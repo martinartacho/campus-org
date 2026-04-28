@@ -46,13 +46,6 @@
                 </select>
             </div>
             
-            <!-- Selector de temporada -->
-            @if($selectedSeason)
-                <select id="seasonSelector" class="form-select form-select-sm">
-                    <option value="{{ $selectedSeason->id }}" selected>{{ $selectedSeason->name }}</option>
-                </select>
-            @endif
-            
             <!-- Enllaços de navegació -->
             <a href="{{ route('campus.resources.calendar') }}" class="btn btn-primary btn-sm">
                 <i class="bi bi-calendar-week me-1"></i>Vista Setmanal
@@ -158,18 +151,25 @@
                                         $isToday = $currentDay->isToday();
                                         $isPast = $currentDay->isPast();
                                         $isWeekend = $currentDay->isWeekend();
+                                        $isNonLective = in_array($dayKey, $nonLectiveDays);
                                         
                                         $bgClass = 'bg-white';
                                         if ($isToday) $bgClass = 'bg-primary bg-opacity-10';
+                                        elseif ($isNonLective) $bgClass = 'bg-danger bg-opacity-10';
                                         elseif ($isWeekend) $bgClass = 'bg-light';
                                         elseif ($isPast) $bgClass = 'bg-light';
                                     @endphp
                                     
-                                    <td class="{{ $bgClass }} p-2" style="height: auto; min-height: 200px; vertical-align: top;">
+                                    <td class="{{ $bgClass }} p-2 day-cell" style="height: auto; min-height: 200px; vertical-align: top; cursor: pointer;" 
+    data-date="{{ $currentDay->format('Y-m-d') }}" 
+    title="Clica per marcar/desmarcar dia no lectiu">
                                         <!-- Número del dia -->
                                         <div class="d-flex justify-content-between align-items-start mb-2">
-                                            <div class="fw-semibold {{ $isToday ? 'text-primary' : ($isWeekend ? 'text-muted' : 'text-dark') }}">
+                                            <div class="fw-semibold {{ $isToday ? 'text-primary' : ($isNonLective ? 'text-danger' : ($isWeekend ? 'text-muted' : 'text-dark')) }}">
                                                 {{ $day }}
+                                                @if($isNonLective)
+                                                    <i class="bi bi-x-circle-fill text-danger small ms-1"></i>
+                                                @endif
                                             </div>
                                             @if($daySchedules->count() > 0)
                                                 <span class="badge bg-primary rounded-pill">
@@ -362,7 +362,44 @@ document.addEventListener('DOMContentLoaded', function() {
             window.location.href = `/campus/resources/calendar/monthly-bootstrap?month=${selectedMonth}`;
         });
     }
+    
+    // Gestió de dies no lectius
+    document.querySelectorAll('.day-cell').forEach(cell => {
+        cell.addEventListener('click', function(e) {
+            // Si no és un curs, permet marcar/desmarcar
+            if (!e.target.closest('.bg-primary')) {
+                const date = this.dataset.date;
+                toggleNonLectiveDay(date);
+            }
+        });
+    });
 });
+
+function toggleNonLectiveDay(date) {
+    fetch('/campus/resources/calendar/toggle-non-lective', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({
+            date: date
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Recarregar la pàgina per veure els canvis
+            window.location.reload();
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al marcar/desmarcar dia no lectiu');
+    });
+}
 </script>
 @endsection
 

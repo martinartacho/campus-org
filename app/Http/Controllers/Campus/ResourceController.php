@@ -244,6 +244,9 @@ class ResourceController extends Controller
             return $daySchedules->sortBy('session.time')->values();
         });    
         
+        // Obtenir dies no lectius del mes
+        $nonLectiveDays = \App\Models\CampusNonLectiveDay::getInRange($startDate, $endDate);
+        
         // Obtenir espais per als filtres
         $spaces = CampusSpace::where('is_active', true)
             ->orderBy('type')
@@ -257,7 +260,8 @@ class ResourceController extends Controller
             'selectedSeason',
             'currentMonth',
             'startDate',
-            'endDate'
+            'endDate',
+            'nonLectiveDays'
         ));
     }
     
@@ -323,6 +327,43 @@ class ResourceController extends Controller
         // Guardar agenda al camp schedule del curs
         $course->schedule = $agenda;
         $course->save();
+    }
+    
+    /**
+     * Marcar/desmarcar dia no lectiu
+     */
+    public function toggleNonLectiveDay(Request $request)
+    {
+        $date = $request->input('date');
+        
+        try {
+            $nonLectiveDay = \App\Models\CampusNonLectiveDay::where('date', $date)->first();
+            
+            if ($nonLectiveDay) {
+                // Si existeix, desactivar-lo
+                $nonLectiveDay->delete();
+                $message = 'Dia marcat com lectiu';
+            } else {
+                // Si no existeix, crear-lo
+                \App\Models\CampusNonLectiveDay::create([
+                    'date' => $date,
+                    'description' => 'Dia no lectiu',
+                    'is_active' => true
+                ]);
+                $message = 'Dia marcat com no lectiu';
+            }
+            
+            return response()->json([
+                'success' => true,
+                'message' => $message
+            ]);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ], 500);
+        }
     }
     
     /**
