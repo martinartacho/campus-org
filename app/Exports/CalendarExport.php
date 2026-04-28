@@ -29,10 +29,8 @@ class CalendarExport implements FromCollection, WithHeadings, WithTitle, WithSty
         $startDate = \Carbon\Carbon::create($this->year, $this->month, 1);
         $endDate = $startDate->copy()->endOfMonth();
         
-        $courses = CampusCourse::where('season_id', function($query) {
-                $season = \App\Models\CampusSeason::getDefaultForCalendar();
-                $query->where('id', $season->id ?? null);
-            })
+        $season = \App\Models\CampusSeason::getDefaultForCalendar();
+        $courses = CampusCourse::where('season_id', $season->id ?? null)
             ->whereNotNull('schedule')
             ->where('schedule', '!=', '[]')
             ->with(['space', 'timeSlot'])
