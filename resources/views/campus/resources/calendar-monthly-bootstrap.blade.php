@@ -18,8 +18,8 @@
         <div class="d-flex gap-2">
             <!-- Navegació de mesos -->
             <div class="d-flex align-items-center gap-2">
-                <a href="{{ route('campus.resources.calendar.export', ['month' => $currentMonth->month, 'year' => $currentMonth->year]) }}" 
-                   class="btn btn-success btn-sm no-print" title="Exportar a Excel">
+                <a href="{{ route('campus.resources.calendar.export', ['season_id' => $selectedSeason->id ?? null]) }}" 
+                   class="btn btn-success btn-sm no-print" title="Exportar temporada completa a Excel">
                     <i class="bi bi-file-earmark-excel"></i>
                 </a>
                 <button onclick="printCalendar()" class="btn btn-outline-success btn-sm no-print" title="Imprimir (Ctrl+P)">

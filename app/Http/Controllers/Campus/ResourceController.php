@@ -372,16 +372,21 @@ class ResourceController extends Controller
     }
     
     /**
-     * Exportar calendari a Excel
+     * Exportar calendari a Excel (quadrimestre complet)
      */
     public function exportCalendar(Request $request)
     {
-        $month = $request->get('month', now()->month);
-        $year = $request->get('year', now()->year);
+        $seasonId = $request->get('season_id');
         
-        $fileName = "calendari_{$year}_{$month}.xlsx";
+        // Obtenir temporada per al nom del fitxer
+        $season = $seasonId ? 
+            \App\Models\CampusSeason::find($seasonId) : 
+            \App\Models\CampusSeason::getDefaultForCalendar();
+            
+        $seasonName = $season ? str_replace(' ', '_', $season->name) : 'complet';
+        $fileName = "calendari_{$seasonName}.xlsx";
         
-        return \Excel::download(new \App\Exports\CalendarExport($month, $year), $fileName);
+        return \Excel::download(new \App\Exports\CalendarExport($seasonId), $fileName);
     }
     
     /**

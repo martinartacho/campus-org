@@ -12,25 +12,32 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class CalendarExport implements FromCollection, WithHeadings, WithTitle, WithStyles
 {
-    protected $month;
-    protected $year;
+    protected $seasonId;
 
-    public function __construct($month, $year)
+    public function __construct($seasonId = null)
     {
-        $this->month = $month;
-        $this->year = $year;
+        $this->seasonId = $seasonId;
     }
 
     public function collection()
     {
         $data = [];
         
-        // 1. Cursos del mes
-        $startDate = \Carbon\Carbon::create($this->year, $this->month, 1);
-        $endDate = $startDate->copy()->endOfMonth();
+        // Obtenir temporada
+        $season = $this->seasonId ? 
+            \App\Models\CampusSeason::find($this->seasonId) : 
+            \App\Models\CampusSeason::getDefaultForCalendar();
+            
+        if (!$season) {
+            return collect($data);
+        }
         
-        $season = \App\Models\CampusSeason::getDefaultForCalendar();
-        $courses = CampusCourse::where('season_id', $season->id ?? null)
+        // Obtenir rang de dates de la temporada
+        $startDate = \Carbon\Carbon::parse($season->start_date);
+        $endDate = \Carbon\Carbon::parse($season->end_date);
+        
+        // 1. Tots els cursos de la temporada
+        $courses = CampusCourse::where('season_id', $season->id)
             ->whereNotNull('schedule')
             ->where('schedule', '!=', '[]')
             ->with(['space', 'timeSlot'])
@@ -42,7 +49,8 @@ class CalendarExport implements FromCollection, WithHeadings, WithTitle, WithSty
                 foreach ($course->schedule as $session) {
                     $sessionDate = \Carbon\Carbon::parse($session['date']);
                     
-                    if ($sessionDate->month == $this->month && $sessionDate->year == $this->year) {
+                    // Només sessions dins del rang de la temporada
+                    if ($sessionDate->between($startDate, $endDate)) {
                         $data[] = [
                             'Tipus' => 'Curs',
                             'Data' => $session['date'],
@@ -53,20 +61,21 @@ class CalendarExport implements FromCollection, WithHeadings, WithTitle, WithSty
                             'Professor' => $course->teacher->name ?? 'Sense assignar',
                             'Hores' => $course->hours,
                             'Sessions' => count($course->schedule),
+                            'Mes' => $sessionDate->translatedFormat('F'),
                         ];
                     }
                 }
             }
         }
 
-        // 2. Dies no lectius
-        $nonLectiveDays = CampusNonLectiveDay::whereMonth('date', $this->month)
-            ->whereYear('date', $this->year)
+        // 2. Tots els dies no lectius de la temporada
+        $nonLectiveDays = CampusNonLectiveDay::whereBetween('date', [$startDate, $endDate])
             ->where('is_active', true)
             ->orderBy('date')
             ->get();
 
         foreach ($nonLectiveDays as $day) {
+            $dayDate = \Carbon\Carbon::parse($day->date);
             $data[] = [
                 'Tipus' => 'Dia No Lectiu',
                 'Data' => $day->date,
@@ -77,6 +86,7 @@ class CalendarExport implements FromCollection, WithHeadings, WithTitle, WithSty
                 'Professor' => '',
                 'Hores' => '',
                 'Sessions' => '',
+                'Mes' => $dayDate->translatedFormat('F'),
             ];
         }
 
@@ -100,13 +110,17 @@ class CalendarExport implements FromCollection, WithHeadings, WithTitle, WithSty
             'Professor',
             'Hores',
             'Sessions',
+            'Mes',
         ];
     }
 
     public function title(): string
     {
-        $monthName = \Carbon\Carbon::create($this->year, $this->month, 1)->translatedFormat('F');
-        return "Calendari {$monthName} {$this->year}";
+        $season = $this->seasonId ? 
+            \App\Models\CampusSeason::find($this->seasonId) : 
+            \App\Models\CampusSeason::getDefaultForCalendar();
+            
+        return $season ? "Calendari {$season->name}" : "Calendari Completa";
     }
 
     public function styles(Worksheet $sheet)
