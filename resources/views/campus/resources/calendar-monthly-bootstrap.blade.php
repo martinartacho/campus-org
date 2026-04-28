@@ -108,12 +108,6 @@
     
     <!-- Calendari Mensual -->
     <div class="card">
-        <!-- Capçalera del mes -->
-        <div class="card-header bg-light">
-            <h2 class="h5 text-center mb-0 fw-bold">
-                {{ $currentMonth->format('F') }} {{ $currentMonth->year }}
-            </h2>
-        </div>
         
         <!-- Dies de la setmana -->
         <div class="table-responsive">
