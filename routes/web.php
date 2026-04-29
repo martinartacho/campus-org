@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\EventQuestionTemplateController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\Campus\CategoryController;
 use App\Http\Controllers\Campus\CourseController;
+use App\Http\Controllers\Campus\CourseCloneController;
 use App\Http\Controllers\Campus\CourseTeacherController;
 use App\Http\Controllers\WebHelpController;
 use App\Http\Controllers\ReleaseController;
@@ -250,9 +251,9 @@ Route::middleware(['auth', 'permission:campus.courses.view'])
     Route::get('/courses/clone/courses', [CourseCloneController::class, 'getCourses'])
         ->name('courses.clone.courses');
     
-    // Ruta de prueba
-    Route::get('/courses/test', [TestController::class, 'index'])
-        ->name('courses.test');
+    // Ruta de prueba - Comentada perquè TestController no existeix
+    // Route::get('/courses/test', [TestController::class, 'index'])
+    //     ->name('courses.test');
 });
 
 // Rutes de PDFs fora del grup de permisos (només amb auth)

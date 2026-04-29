@@ -11,7 +11,7 @@
             <a href="{{ route('campus.resources.calendar') }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
                 <i class="fas fa-calendar-alt mr-2"></i>Calendari
             </a>
-                        <a href="{{ route('campus.resources.calendar.monthly') }}" class="bg-info text-white px-4 py-2 rounded hover:bg-info">
+                        <a href="{{ route('campus.resources.calendar.monthly.bootstrap') }}" class="bg-info text-white px-4 py-2 rounded hover:bg-info">
                 <i class="bi bi-calendar-alt me-2"></i>Calendari Mensual
             </a>
         </div>
