@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\EventQuestionTemplateController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\Campus\CategoryController;
 use App\Http\Controllers\Campus\CourseController;
+use App\Http\Controllers\Campus\CourseCloneController;
 use App\Http\Controllers\Campus\CourseTeacherController;
 use App\Http\Controllers\WebHelpController;
 use App\Http\Controllers\ReleaseController;
@@ -250,9 +251,9 @@ Route::middleware(['auth', 'permission:campus.courses.view'])
     Route::get('/courses/clone/courses', [CourseCloneController::class, 'getCourses'])
         ->name('courses.clone.courses');
     
-    // Ruta de prueba
-    Route::get('/courses/test', [TestController::class, 'index'])
-        ->name('courses.test'); */
+    // Ruta de prueba - Comentada perquè TestController no existeix
+    // Route::get('/courses/test', [TestController::class, 'index'])
+    //     ->name('courses.test'); */
 });
 
 // Rutes de PDFs fora del grup de permisos (només amb auth)
@@ -881,6 +882,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Re-Cursos - Resource Management
         Route::get('resources', [ResourceController::class, 'index'])->name('resources.index');
         Route::get('resources/calendar', [ResourceController::class, 'calendar'])->name('resources.calendar');
+        Route::get('resources/calendar/monthly-bootstrap', [ResourceController::class, 'calendarMonthlyBootstrap'])->name('resources.calendar.monthly.bootstrap');
+        Route::post('resources/calendar/toggle-non-lective', [ResourceController::class, 'toggleNonLectiveDay'])->name('resources.calendar.toggle-non-lective');
+        Route::get('resources/calendar/print', [ResourceController::class, 'calendarPrint'])->name('resources.calendar.print');
+        Route::post('resources/calendar/generate-agenda', [ResourceController::class, 'generateAgenda'])->name('resources.calendar.generate-agenda');
+        Route::post('resources/calendar/regenerate-agenda', [ResourceController::class, 'regenerateAgenda'])->name('resources.calendar.regenerate-agenda');
+        Route::get('resources/calendar/export', [ResourceController::class, 'exportCalendar'])->name('resources.calendar.export');
         Route::get('resources/search/courses', [ResourceController::class, 'searchCourses'])->name('resources.search.courses');
         Route::post('resources/assign', [ResourceController::class, 'assign'])->name('resources.assign');
         
