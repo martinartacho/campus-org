@@ -70,6 +70,567 @@ class ResourceController extends Controller
         return view('campus.resources.calendar', compact('timeSlots', 'spaces', 'semester', 'selectedSeason', 'coursesCount'));
     }
     
+    public function calendarQuarterly(Request $request)
+    {
+        $semester = $request->get('semester', '1Q');
+        $selectedSeason = CampusSeason::getDefaultForCalendar();
+        
+        // Obtenir el rang de dates del quadrimestre (4 mesos)
+        if ($selectedSeason && $selectedSeason->start_date && $selectedSeason->end_date) {
+            $startDate = $selectedSeason->start_date;
+            $endDate = $selectedSeason->end_date;
+        } else {
+            $startDate = now()->startOfMonth();
+            $endDate = now()->copy()->addMonths(3)->endOfMonth();
+        }
+        
+        // Obtenir tots els horaris del quadrimestre
+        $schedules = CampusCourseSchedule::with(['course', 'space', 'timeSlot'])
+            ->whereHas('course', function($query) use ($selectedSeason) {
+                if ($selectedSeason) {
+                    $query->where('season_id', $selectedSeason->id);
+                }
+            })
+            ->whereBetween('start_date', [$startDate, $endDate])
+            ->orderBy('start_date')
+            ->get();
+            
+        // Agrupar per mes per a la vista quadrimestral
+        $monthlySchedules = $schedules->groupBy(function($schedule) {
+            return \Carbon\Carbon::parse($schedule->start_date)->format('Y-m');
+        });
+        
+        // Obtenir espais i cursos per als filtres
+        $spaces = CampusSpace::where('is_active', true)
+            ->orderBy('type')
+            ->orderBy('capacity', 'desc')
+            ->get();
+            
+        $courses = CampusCourse::where('season_id', $selectedSeason->id ?? null)
+            ->orderBy('title')
+            ->get();
+            
+        return view('campus.resources.calendar-quarterly', compact(
+            'monthlySchedules', 
+            'spaces', 
+            'courses', 
+            'selectedSeason',
+            'startDate',
+            'endDate'
+        ));
+    }
+    
+    public function calendarMonthly(Request $request)
+    {
+        $month = $request->get('month', now()->format('Y-m'));
+        $currentMonth = \Carbon\Carbon::createFromFormat('Y-m', $month);
+        $selectedSeason = CampusSeason::getDefaultForCalendar();
+        
+        // Obtenir el rang de dates del mes
+        $startDate = $currentMonth->copy()->startOfMonth();
+        $endDate = $currentMonth->copy()->endOfMonth();
+        
+        // Obtenir tots els horaris del mes
+        $schedules = CampusCourseSchedule::with(['course', 'space', 'timeSlot'])
+            ->whereHas('course', function($query) use ($selectedSeason) {
+                if ($selectedSeason) {
+                    $query->where('season_id', $selectedSeason->id);
+                }
+            })
+            ->where(function($query) use ($startDate, $endDate) {
+                // Buscar horaris que overlapin amb el mes actual
+                $query->whereBetween('start_date', [$startDate, $endDate])
+                      ->orWhereBetween('end_date', [$startDate, $endDate])
+                      ->orWhere(function($q) use ($startDate, $endDate) {
+                          $q->where('start_date', '<=', $startDate)
+                            ->where('end_date', '>=', $endDate);
+                      });
+            })
+            ->orderBy('start_date')
+            ->get();
+            
+        // Agrupar per dia per a la vista mensual
+        $monthlySchedules = $schedules->groupBy(function($schedule) {
+            return \Carbon\Carbon::parse($schedule->start_date)->format('Y-m-d');
+        });
+        
+        // Obtenir espais i cursos per als filtres
+        $spaces = CampusSpace::where('is_active', true)
+            ->orderBy('type')
+            ->orderBy('capacity', 'desc')
+            ->get();
+            
+        $courses = CampusCourse::where('season_id', $selectedSeason->id ?? null)
+            ->orderBy('title')
+            ->get();
+            
+        return view('campus.resources.calendar-monthly', compact(
+            'monthlySchedules', 
+            'spaces', 
+            'courses', 
+            'selectedSeason',
+            'currentMonth',
+            'startDate',
+            'endDate'
+        ));
+    }
+    
+    public function calendarMonthlyBootstrap(Request $request)
+    {
+        $month = $request->get('month', now()->format('Y-m'));
+        $currentMonth = \Carbon\Carbon::createFromFormat('Y-m', $month);
+        $selectedSeason = CampusSeason::getDefaultForCalendar();
+        
+        // Obtenir el rang de dates del mes
+        $startDate = $currentMonth->copy()->startOfMonth();
+        $endDate = $currentMonth->copy()->endOfMonth();
+        
+        // Obtenir cursos de la temporada
+        $courses = CampusCourse::where('season_id', $selectedSeason->id ?? null)
+            ->orderBy('title')
+            ->get();
+        // Generar horaris setmanals per cursos que no en tenen
+        foreach ($courses as $course) {
+            $this->generateWeeklySchedules($course);
+        }
+        
+        // Obtenir cursos amb agenda JSON
+        $courses = CampusCourse::where('season_id', $selectedSeason->id ?? null)
+            ->whereNotNull('schedule')
+            ->where('schedule', '!=', '[]')
+            ->with(['space', 'timeSlot'])
+            ->orderBy('title')
+            ->get();
+
+        // Obtenir totes les franges horaries disponibles
+        $allTimeSlots = \App\Models\CampusTimeSlot::where('is_active', true)
+            ->orderBy('start_time')
+            ->get()
+            ->groupBy('start_time');
+        
+        // Processar agenda JSON per agrupar per dia
+        $monthlySchedules = collect();
+        
+        foreach ($courses as $course) {
+            if ($course->schedule && is_array($course->schedule)) {
+                foreach ($course->schedule as $session) {
+                    $sessionDate = $session['date'];
+                    $sessionTime = $session['time'];
+                    
+                    // Només sessions dins del mes actual
+                    if ($sessionDate >= $startDate->format('Y-m-d') && 
+                        $sessionDate <= $endDate->format('Y-m-d')) {
+                        
+                        if (!$monthlySchedules->has($sessionDate)) {
+                            $monthlySchedules->put($sessionDate, collect());
+                        }
+                        
+                        $monthlySchedules->get($sessionDate)->push([
+                            'course' => $course,
+                            'session' => $session,
+                            'space' => $course->space,
+                            'timeSlot' => $course->timeSlot
+                        ]);
+                    }
+                }
+            }
+        }
+        
+        // No afegir franges buides - només mostrar cursos assignats
+        // Les franges lliures no calen segons feedback de l'usuari
+        
+        // Ordenar sessions per hora
+        $monthlySchedules = $monthlySchedules->map(function($daySchedules) {
+            return $daySchedules->sortBy('session.time')->values();
+        });    
+        
+        // Obtenir dies no lectius del mes
+        $nonLectiveDays = \App\Models\CampusNonLectiveDay::getInRange($startDate, $endDate);
+        
+        // Normalitzar dates a format Y-m-d (sense hora) per comparació
+        $nonLectiveDays = array_map(function($date) {
+            return \Carbon\Carbon::parse($date)->format('Y-m-d');
+        }, $nonLectiveDays);
+        
+        // Obtenir espais per als filtres
+        $spaces = CampusSpace::where('is_active', true)
+            ->orderBy('type')
+            ->orderBy('capacity', 'desc')
+            ->get();
+            
+        return view('campus.resources.calendar-monthly-bootstrap', compact(
+            'monthlySchedules', 
+            'spaces', 
+            'courses', 
+            'selectedSeason',
+            'currentMonth',
+            'startDate',
+            'endDate',
+            'nonLectiveDays'
+        ));
+    }
+    
+    /**
+     * Genera horaris setmanals per a cursos que no en tenen
+     */
+    private function generateWeeklySchedules($course)
+    {
+        // Si el curs ja té agenda, no generar
+        if ($course->schedule && !empty($course->schedule)) {
+            return;
+        }
+        
+        // Obtenir el time_slot per saber quin dia de la setmana i hora
+        $timeSlot = $course->timeSlot;
+        if (!$timeSlot) {
+            return;
+        }
+        
+        // Assegurar que timeSlot és un objecte, no una col·lecció
+        if (is_object($timeSlot)) {
+            $dayOfWeek = $timeSlot->day_of_week; // 1 = Dilluns, 7 = Diumenge
+            $startTime = $timeSlot->start_time;
+        } else {
+            // Si és una col·lecció, obtenir el primer element
+            $timeSlot = $timeSlot->first();
+            if (!$timeSlot) {
+                return;
+            }
+            $dayOfWeek = $timeSlot->day_of_week;
+            $startTime = $timeSlot->start_time;
+        }
+        
+        // Generar totes les sessions
+        $sessions = $course->sessions ?? 1;
+        $currentDate = $course->start_date->copy();
+        $agenda = [];
+        
+        for ($i = 0; $i < $sessions; $i++) {
+            // Trobar el primer dia de la setmana correcte
+            while ($currentDate->dayOfWeekIso != $dayOfWeek) {
+                $currentDate->addDay();
+            }
+            
+            // Si ens passem de la data de finalització, aturar
+            if ($currentDate->gt($course->end_date)) {
+                break;
+            }
+            
+            // VALIDAR: Comprovar si el dia és no lectiu
+            $currentDateStr = $currentDate->format('Y-m-d');
+            if (\App\Models\CampusNonLectiveDay::isNonLective($currentDateStr)) {
+                // Ometre aquesta sessió perquè és dia no lectiu
+                $currentDate->addWeek();
+                continue;
+            }
+            
+            // Afegir sessió a l'agenda
+            $agenda[] = [
+                'date' => $currentDate->format('Y-m-d'),
+                'time' => $startTime->format('H:i'),
+                'day_of_week' => $dayOfWeek,
+                'space_id' => $course->space_id,
+                'time_slot_id' => $course->time_slot_id,
+                'skipped_non_lective' => false // Marcar que no s'ha omès
+            ];
+            
+            // Avançar una setmana per a la propera sessió
+            $currentDate->addWeek();
+        }
+        
+        // Afegir informació de sessions omeses
+        $totalSessions = $course->sessions ?? 1;
+        $skippedSessions = $totalSessions - count($agenda);
+        
+        if ($skippedSessions > 0) {
+            // Opcional: Pots afegir un log o notificació aquí
+            \Log::info("Curs {$course->code}: {$skippedSessions} sessions omeses per dies no lectius");
+        }
+        
+        // Guardar agenda al camp schedule del curs
+        $course->schedule = $agenda;
+        $course->save();
+    }
+    
+    /**
+     * Marcar/desmarcar dia no lectiu
+     */
+    public function toggleNonLectiveDay(Request $request)
+    {
+        $date = $request->input('date');
+        
+        try {
+            $nonLectiveDay = \App\Models\CampusNonLectiveDay::where('date', $date)->first();
+            
+            if ($nonLectiveDay) {
+                // Si existeix, desactivar-lo
+                $nonLectiveDay->delete();
+                $message = 'Dia marcat com lectiu';
+            } else {
+                // Si no existeix, crear-lo
+                \App\Models\CampusNonLectiveDay::create([
+                    'date' => $date,
+                    'description' => 'Dia no lectiu',
+                    'is_active' => true
+                ]);
+                $message = 'Dia marcat com no lectiu';
+            }
+            
+            return response()->json([
+                'success' => true,
+                'message' => $message
+            ]);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+    
+    /**
+     * Vista d'impressió millorada
+     */
+    public function calendarPrint(Request $request)
+    {
+        $month = $request->get('month', now()->format('Y-m'));
+        $currentMonth = \Carbon\Carbon::createFromFormat('Y-m', $month);
+        $selectedSeason = \App\Models\CampusSeason::getDefaultForCalendar();
+        
+        // Obtenir el rang de dates del mes
+        $startDate = $currentMonth->copy()->startOfMonth();
+        $endDate = $currentMonth->copy()->endOfMonth();
+        
+        // Obtenir cursos amb agenda JSON
+        $courses = CampusCourse::where('season_id', $selectedSeason->id ?? null)
+            ->whereNotNull('schedule')
+            ->where('schedule', '!=', '[]')
+            ->with(['space', 'timeSlot'])
+            ->orderBy('title')
+            ->get();
+
+        // Processar agenda JSON per agrupar per dia
+        $monthlySchedules = collect();
+        
+        foreach ($courses as $course) {
+            if ($course->schedule && is_array($course->schedule)) {
+                foreach ($course->schedule as $session) {
+                    $sessionDate = $session['date'];
+                    $sessionTime = $session['time'];
+                    
+                    // Només sessions dins del mes actual
+                    if ($sessionDate >= $startDate->format('Y-m-d') && 
+                        $sessionDate <= $endDate->format('Y-m-d')) {
+                        
+                        if (!$monthlySchedules->has($sessionDate)) {
+                            $monthlySchedules->put($sessionDate, collect());
+                        }
+                        
+                        $monthlySchedules->get($sessionDate)->push([
+                            'course' => $course,
+                            'session' => $session,
+                            'space' => $course->space,
+                            'timeSlot' => $course->timeSlot
+                        ]);
+                    }
+                }
+            }
+        }
+        
+        // Ordenar sessions per hora
+        $monthlySchedules = $monthlySchedules->map(function($daySchedules) {
+            return $daySchedules->sortBy('session.time')->values();
+        });
+        
+        // Obtenir dies no lectius del mes
+        $nonLectiveDays = \App\Models\CampusNonLectiveDay::getInRange($startDate, $endDate);
+        
+        // Normalitzar dates a format Y-m-d (sense hora) per comparació
+        $nonLectiveDays = array_map(function($date) {
+            return \Carbon\Carbon::parse($date)->format('Y-m-d');
+        }, $nonLectiveDays);
+        
+        return view('campus.resources.calendar-print', compact(
+            'monthlySchedules', 
+            'selectedSeason',
+            'currentMonth',
+            'nonLectiveDays'
+        ));
+    }
+    
+    /**
+     * Generar agenda per a cursos que no en tenen
+     */
+    public function generateAgenda(Request $request)
+    {
+        try {
+            $selectedSeason = \App\Models\CampusSeason::getDefaultForCalendar();
+            
+            // Obtenir cursos sense agenda
+            $courses = CampusCourse::where('season_id', $selectedSeason->id ?? null)
+                ->where(function($query) {
+                    $query->whereNull('schedule')
+                          ->orWhere('schedule', '[]');
+                })
+                ->with(['space', 'timeSlot'])
+                ->get();
+            
+            $generatedCount = 0;
+            $errorCount = 0;
+            $errors = [];
+            
+            foreach ($courses as $course) {
+                try {
+                    $this->generateWeeklySchedules($course);
+                    $generatedCount++;
+                } catch (\Exception $e) {
+                    $errorCount++;
+                    $errors[] = "Error amb {$course->code}: " . $e->getMessage();
+                }
+            }
+            
+            $message = "S'han generat {$generatedCount} agendes.";
+            if ($errorCount > 0) {
+                $message .= " Hi ha hagut {$errorCount} errors.";
+                if (count($errors) <= 3) {
+                    $message .= " Errors: " . implode(', ', $errors);
+                }
+            }
+            
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'generated' => $generatedCount,
+                'errors' => $errorCount
+            ]);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+    
+    /**
+     * Regenerar agenda per a tots els cursos
+     */
+    public function regenerateAgenda(Request $request)
+    {
+        try {
+            $selectedSeason = \App\Models\CampusSeason::getDefaultForCalendar();
+            
+            // Obtenir tots els cursos de la temporada
+            $courses = CampusCourse::where('season_id', $selectedSeason->id ?? null)
+                ->with(['space', 'timeSlot'])
+                ->get();
+            
+            $regeneratedCount = 0;
+            $errorCount = 0;
+            $errors = [];
+            
+            foreach ($courses as $course) {
+                try {
+                    // Esborrar agenda existent
+                    $course->schedule = null;
+                    $course->save();
+                    
+                    // Generar nova agenda
+                    $this->generateWeeklySchedules($course);
+                    $regeneratedCount++;
+                } catch (\Exception $e) {
+                    $errorCount++;
+                    $errors[] = "Error amb {$course->code}: " . $e->getMessage();
+                }
+            }
+            
+            // Comptar sessions omeses per dies no lectius
+            $totalSkipped = 0;
+            foreach ($courses as $course) {
+                if ($course->schedule && is_array($course->schedule)) {
+                    $totalSessions = $course->sessions ?? 1;
+                    $actualSessions = count($course->schedule);
+                    $totalSkipped += ($totalSessions - $actualSessions);
+                }
+            }
+            
+            // Detectar errors d'agendament
+            $agendaErrors = [];
+            foreach ($courses as $course) {
+                if ($course->schedule && is_array($course->schedule)) {
+                    $expectedSessions = $course->sessions ?? 1;
+                    $actualSessions = count($course->schedule);
+                    
+                    if ($actualSessions < $expectedSessions) {
+                        $missingSessions = $expectedSessions - $actualSessions;
+                        $agendaErrors[] = [
+                            'course' => $course->code,
+                            'missing' => $missingSessions,
+                            'expected' => $expectedSessions,
+                            'actual' => $actualSessions
+                        ];
+                    }
+                }
+            }
+            
+            $message = "S' han regenerat {$regeneratedCount} agendes.";
+            if ($totalSkipped > 0) {
+                $message .= " S'han omès {$totalSkipped} sessions per dies no lectius.";
+            }
+            if (!empty($agendaErrors)) {
+                $message .= " ⚠️ ERROR: Hi ha " . count($agendaErrors) . " cursos amb sessions pendents d'assignar. Revisa les dates de finalització.";
+            }
+            if ($errorCount > 0) {
+                $message .= " Hi ha hagut {$errorCount} errors.";
+                if (count($errors) <= 3) {
+                    $message .= " Errors: " . implode(', ', $errors);
+                }
+            }
+            
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'regenerated' => $regeneratedCount,
+                'errors' => $errorCount,
+                'agenda_errors' => $agendaErrors
+            ]);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+    
+    /**
+     * Exportar calendari a Excel (quadrimestre complet)
+     */
+    public function exportCalendar(Request $request)
+    {
+        $seasonId = $request->get('season_id');
+        
+        // Obtenir temporada per al nom del fitxer
+        $season = $seasonId ? 
+            \App\Models\CampusSeason::find($seasonId) : 
+            \App\Models\CampusSeason::getDefaultForCalendar();
+            
+        $seasonName = $season ? str_replace(' ', '_', $season->name) : 'complet';
+        $fileName = "calendari_{$seasonName}.xlsx";
+        
+        return \Excel::download(new \App\Exports\CalendarExport($seasonId), $fileName);
+    }
+    
+    /**
+     * Determina el trimestre a partir d'una data
+     */
+    private function getSemesterFromDate($date)
+    {
+        $month = $date->month;
+        return ($month <= 6) ? '1Q' : '2Q';
+    }
+    
     public function searchCourses(Request $request)
     {
         $search = $request->get('search', '');

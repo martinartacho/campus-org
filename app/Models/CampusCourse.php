@@ -465,6 +465,14 @@ class CampusCourse extends Model
     {
         return $this->belongsTo(CampusTimeSlot::class, 'time_slot_id');
     }
+    
+    /**
+     * Get the schedules for the course.
+     */
+    public function schedules(): HasMany
+    {
+        return $this->hasMany(CampusCourseSchedule::class, 'course_id');
+    }
 
     /**
      * Get the teachers for the course.
