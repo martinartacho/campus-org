@@ -375,8 +375,8 @@
                     no dudes en contactarnos.
                 </p>
                 <div class="space-y-2">
-                    <a href="mailto:info@campus.org" class="flex items-center text-blue-600 hover:text-blue-800 text-sm">
-                        <i class="bi bi-envelope me-2"></i>info@campus.org
+                    <a href="mailto:campus@upg.cat" class="flex items-center text-blue-600 hover:text-blue-800 text-sm">
+                        <i class="bi bi-envelope me-2"></i>campus@upg.cat
                     </a>
                     <a href="tel:+34900123456" class="flex items-center text-blue-600 hover:text-blue-800 text-sm">
                         <i class="bi bi-telephone me-2"></i>+34 900 123 456

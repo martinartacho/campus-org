@@ -115,7 +115,7 @@
         </div>
         
         <div class="text-center mt-6">
-            <a href="mailto:info@campus.org" 
+            <a href="mailto:campus@upg.cat" 
                class="inline-flex items-center text-blue-600 hover:text-blue-800 font-semibold">
                 <i class="bi bi-envelope me-2"></i>
                 Contactar soporte

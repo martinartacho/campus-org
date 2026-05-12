@@ -16,7 +16,7 @@
         
         <p class="text-xl text-gray-600">
             @if($isFree)
-T'has matriculat correctament als teus cursos seleccionats.
+                T'has matriculat correctament als teus cursos seleccionats.
             @else
                 El teu pagament s'ha processat correctament i la teva matriculació està confirmada.
             @endif
@@ -89,7 +89,7 @@ T'has matriculat correctament als teus cursos seleccionats.
                                 <div class="text-sm text-gray-500">Pagat</div>
                             @else
                                 <div class="text-lg font-bold text-green-600">
-GRATUÏT
+                                    GRATUÏT
                                 </div>
                             @endif
                         </div>
@@ -132,7 +132,7 @@ GRATUÏT
                 <div>
                     <h3 class="font-semibold text-gray-800 mb-2">Factura</h3>
                     <p class="text-gray-600 text-sm mb-3">
-Rebràs un correu electrònic amb la factura detallada de la teva matriculació.
+                        Rebràs un correu electrònic amb la factura detallada de la teva matriculació.
                     </p>
                     <a href="{{ route('registration.invoice', $registration->id) }}" 
                        target="_blank"
@@ -203,26 +203,26 @@ Rebràs un correu electrònic amb la factura detallada de la teva matriculació.
             <div class="p-4 bg-gray-50 rounded-lg">
                 <i class="bi bi-envelope text-blue-600 text-2xl mb-2"></i>
                 <h3 class="font-semibold text-gray-900 mb-1">Correu</h3>
-                <a href="mailto:info@campus.org" class="text-blue-600 hover:text-blue-800 text-sm">
-                    info@campus.org
+                <a href="mailto:campus@upg.cat" class="text-blue-600 hover:text-blue-800 text-sm">
+                    campus@upg.cat
                 </a>
             </div>
             
-            <div class="p-4 bg-gray-50 rounded-lg">
+            {{-- <div class="p-4 bg-gray-50 rounded-lg">
                 <i class="bi bi-telephone text-blue-600 text-2xl mb-2"></i>
                 <h3 class="font-semibold text-gray-900 mb-1">Telèfon</h3>
                 <a href="tel:+34900123456" class="text-blue-600 hover:text-blue-800 text-sm">
                     +34 900 123 456
                 </a>
-            </div>
-            
+            </div> --}}
+           {{--  
             <div class="p-4 bg-gray-50 rounded-lg">
                 <i class="bi bi-clock text-blue-600 text-2xl mb-2"></i>
                 <h3 class="font-semibold text-gray-900 mb-1">Horari</h3>
                 <p class="text-gray-600 text-sm">
                     L-V: 9:00 - 18:00
                 </p>
-            </div>
+            </div> --}}
         </div>
     </div>
 

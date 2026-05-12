@@ -312,8 +312,8 @@
                     <!-- Help -->
                     <div class="mt-6 text-center">
                         <p class="text-sm text-gray-600 mb-2">¿Necesitas ayuda?</p>
-                        <a href="mailto:info@campus.org" class="text-blue-600 hover:text-blue-800 text-sm">
-                            <i class="bi bi-envelope me-1"></i>info@campus.org
+                        <a href="mailto:campus@upg.cat" class="text-blue-600 hover:text-blue-800 text-sm">
+                            <i class="bi bi-envelope me-1"></i>campus@upg.cat
                         </a>
                     </div>
                 </div>

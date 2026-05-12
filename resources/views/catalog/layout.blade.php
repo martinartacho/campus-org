@@ -166,7 +166,7 @@
                 <div>
                     <h3 class="text-lg font-semibold mb-4">Contacto</h3>
                     <div class="space-y-2 text-sm text-gray-300">
-                        <p><i class="bi bi-envelope me-2"></i>info@campus.org</p>
+                        <p><i class="bi bi-envelope me-2"></i>campus@upg.cat</p>
                         <p><i class="bi bi-telephone me-2"></i>+34 900 123 456</p>
                         <p><i class="bi bi-geo-alt me-2"></i>Barcelona, España</p>
                     </div>
