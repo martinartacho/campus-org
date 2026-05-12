@@ -204,7 +204,7 @@
                         <a href="{{ route('registration.create') }}" 
                            class="block w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition font-semibold text-center mb-4">
                             <i class="bi bi-credit-card me-2"></i>
-                            Proceder al Pago
+                            Procedir al Pagament
                         </a>
                     @endif
 
@@ -218,10 +218,10 @@
                     <div class="mt-6 p-4 bg-green-50 rounded-lg">
                         <div class="flex items-center space-x-2 text-green-800 text-sm">
                             <i class="bi bi-shield-check"></i>
-                            <span>Pago seguro con Stripe</span>
+                            <span>Pagament segur amb Stripe</span>
                         </div>
                         <p class="text-green-700 text-xs mt-2">
-                            Tus datos de pago están encriptados y seguros. 
+                            Les teves dades de pagament estan encriptades i segures. 
                             No almacenamos información de tarjetas de crédito.
                         </p>
                     </div>

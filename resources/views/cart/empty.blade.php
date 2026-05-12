@@ -107,9 +107,9 @@
             </div>
             
             <div>
-                <h4 class="font-semibold text-blue-800 mb-2">¿Proceso de matriculación?</h4>
+                <h4 class="font-semibold text-blue-800 mb-2">¿Procés de matriculació?</h4>
                 <p class="text-blue-700 text-sm">
-                    Una vez en el carrito, puedes proceder con la matriculación y pago de forma segura a través de Stripe.
+                    Un cop al carret, pots procedir amb la matriculació i pagament de forma segura a través de Stripe.
                 </p>
             </div>
         </div>
