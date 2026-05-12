@@ -1,6 +1,6 @@
 @extends('catalog.layout')
 
-@section('title', 'Matriculación Completada')
+@section('title', 'Matriculació Completada')
 
 @section('content')
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -11,12 +11,12 @@
         </div>
         
         <h1 class="text-4xl font-bold text-gray-900 mb-4">
-            ¡Matriculación Completada!
+            ¡Matriculació Completada!
         </h1>
         
         <p class="text-xl text-gray-600">
             @if($isFree)
-                Te has matriculado correctamente en tus cursos seleccionados.
+T'has matriculat correctament als teus cursos seleccionats.
             @else
                 El teu pagament s'ha processat correctament i la teva matriculació està confirmada.
             @endif
@@ -26,7 +26,7 @@
     <!-- Registration Details -->
     <div class="bg-white rounded-lg shadow-md p-6 mb-8">
         <h2 class="text-2xl font-bold text-gray-900 mb-6">
-            <i class="bi bi-clipboard-check me-2"></i>Detalles de tu Matriculación
+            <i class="bi bi-clipboard-check me-2"></i>Detalls de la teva Matriculació
         </h2>
         
         <div class="space-y-4">
@@ -56,19 +56,19 @@
                                 @if($registration->course->start_date)
                                     <div class="flex items-center mb-1">
                                         <i class="bi bi-calendar3 me-2"></i>
-                                        Inicio: {{ $registration->course->start_date->format('d/m/Y') }}
+                                        Inici: {{ $registration->course->start_date->format('d/m/Y') }}
                                     </div>
                                 @endif
                                 @if($registration->course->hours)
                                     <div class="flex items-center mb-1">
                                         <i class="bi bi-clock me-2"></i>
-                                        Duración: {{ $registration->course->hours }} horas
+                                        Durada: {{ $registration->course->hours }} hores
                                     </div>
                                 @endif
                                 @if($registration->course->location)
                                     <div class="flex items-center mb-1">
                                         <i class="bi bi-geo-alt me-2"></i>
-                                        Ubicación: {{ $registration->course->location }}
+                                        Ubicació: {{ $registration->course->location }}
                                     </div>
                                 @endif
                             </div>
@@ -86,10 +86,10 @@
                                 <div class="text-lg font-bold text-gray-900">
                                     {{ number_format($registration->amount, 2) }} &euro;
                                 </div>
-                                <div class="text-sm text-gray-500">Pagado</div>
+                                <div class="text-sm text-gray-500">Pagat</div>
                             @else
                                 <div class="text-lg font-bold text-green-600">
-                                    GRATIS
+GRATUÏT
                                 </div>
                             @endif
                         </div>
@@ -132,12 +132,12 @@
                 <div>
                     <h3 class="font-semibold text-gray-800 mb-2">Factura</h3>
                     <p class="text-gray-600 text-sm mb-3">
-                        Recibirás un correo electrónico con la factura detallada de tu matriculación.
+Rebràs un correu electrònic amb la factura detallada de la teva matriculació.
                     </p>
                     <a href="{{ route('registration.invoice', $registration->id) }}" 
                        target="_blank"
                        class="inline-block px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition text-sm">
-                        <i class="bi bi-download me-2"></i>Descargar Factura
+                        <i class="bi bi-download me-2"></i>Descarregar Factura
                     </a>
                 </div>
             </div>
@@ -147,42 +147,42 @@
     <!-- Next Steps -->
     <div class="bg-blue-50 rounded-lg p-6 mb-8">
         <h2 class="text-xl font-bold text-blue-900 mb-4">
-            <i class="bi bi-info-circle me-2"></i>Próximos Pasos
+            <i class="bi bi-info-circle me-2"></i>Propers Passos
         </h2>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-                <h3 class="font-semibold text-blue-800 mb-2">Antes del Curso</h3>
+                <h3 class="font-semibold text-blue-800 mb-2">Abans del Curs</h3>
                 <ul class="space-y-2 text-blue-700 text-sm">
                     <li class="flex items-start">
                         <i class="bi bi-check-circle me-2 mt-0.5"></i>
-                        <span>Recibirás un email de confirmación con todos los detalles</span>
+                        <span>Rebràs un email de confirmació amb tots els detalls</span>
                     </li>
                     <li class="flex items-start">
                         <i class="bi bi-check-circle me-2 mt-0.5"></i>
-                        <span>Te contactaremos antes del inicio para recordatorio</span>
+                        <span>Et contactarem abans de l'inici per recordatori</span>
                     </li>
                     <li class="flex items-start">
                         <i class="bi bi-check-circle me-2 mt-0.5"></i>
-                        <span>Prepara los materiales necesarios para el primer día</span>
+                        <span>Prepara els materials necessaris per al primer dia</span>
                     </li>
                 </ul>
             </div>
             
             <div>
-                <h3 class="font-semibold text-blue-800 mb-2">Durante el Curso</h3>
+                <h3 class="font-semibold text-blue-800 mb-2">Durant el Curs</h3>
                 <ul class="space-y-2 text-blue-700 text-sm">
                     <li class="flex items-start">
                         <i class="bi bi-check-circle me-2 mt-0.5"></i>
-                        <span>Accede al campus virtual para seguir tu progreso</span>
+                        <span>Accedeix al campus virtual per seguir el teu progrés</span>
                     </li>
                     <li class="flex items-start">
                         <i class="bi bi-check-circle me-2 mt-0.5"></i>
-                        <span>Participa activamente en las clases y actividades</span>
+                        <span>Participa activament a les classes i activitats</span>
                     </li>
                     <li class="flex items-start">
                         <i class="bi bi-check-circle me-2 mt-0.5"></i>
-                        <span>Contacta con soporte si necesitas ayuda</span>
+                        <span>Contacta amb suport si necessites ajuda</span>
                     </li>
                 </ul>
             </div>
@@ -192,17 +192,17 @@
     <!-- Contact Information -->
     <div class="bg-white rounded-lg shadow-md p-6 mb-8">
         <h2 class="text-xl font-bold text-gray-900 mb-4">
-            <i class="bi bi-question-circle me-2"></i>¿Necesitas Ayuda?
+            <i class="bi bi-question-circle me-2"></i>¿Necessites Ajuda?
         </h2>
         
         <p class="text-gray-600 mb-4">
-            Si tienes alguna pregunta sobre tu matriculación o los cursos, no dudes en contactarnos:
+            Si tens alguna pregunta sobre la teva matriculació o els cursos, no dubtis en contactar-nos:
         </p>
         
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
             <div class="p-4 bg-gray-50 rounded-lg">
                 <i class="bi bi-envelope text-blue-600 text-2xl mb-2"></i>
-                <h3 class="font-semibold text-gray-900 mb-1">Email</h3>
+                <h3 class="font-semibold text-gray-900 mb-1">Correu</h3>
                 <a href="mailto:info@campus.org" class="text-blue-600 hover:text-blue-800 text-sm">
                     info@campus.org
                 </a>
@@ -210,7 +210,7 @@
             
             <div class="p-4 bg-gray-50 rounded-lg">
                 <i class="bi bi-telephone text-blue-600 text-2xl mb-2"></i>
-                <h3 class="font-semibold text-gray-900 mb-1">Teléfono</h3>
+                <h3 class="font-semibold text-gray-900 mb-1">Telèfon</h3>
                 <a href="tel:+34900123456" class="text-blue-600 hover:text-blue-800 text-sm">
                     +34 900 123 456
                 </a>
@@ -218,7 +218,7 @@
             
             <div class="p-4 bg-gray-50 rounded-lg">
                 <i class="bi bi-clock text-blue-600 text-2xl mb-2"></i>
-                <h3 class="font-semibold text-gray-900 mb-1">Horario</h3>
+                <h3 class="font-semibold text-gray-900 mb-1">Horari</h3>
                 <p class="text-gray-600 text-sm">
                     L-V: 9:00 - 18:00
                 </p>
@@ -231,18 +231,18 @@
         @if(auth()->check())
             <a href="{{ route('dashboard') }}" 
                class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold text-center">
-                <i class="bi bi-house me-2"></i>Ir a Mi Campus
+                <i class="bi bi-house me-2"></i>Anar al Meu Campus
             </a>
         @else
             <a href="{{ route('login') }}" 
                class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold text-center">
-                <i class="bi bi-box-arrow-in-right me-2"></i>Iniciar Sesión
+                <i class="bi bi-box-arrow-in-right me-2"></i>Iniciar Sessió
             </a>
         @endif
         
         <a href="{{ route('catalog.index') }}" 
            class="px-6 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition font-semibold text-center">
-            <i class="bi bi-search me-2"></i>Explorar Más Cursos
+            <i class="bi bi-search me-2"></i>Explorar Més Cursos
         </a>
     </div>
 </div>
