@@ -203,8 +203,8 @@
             <div class="p-4 bg-gray-50 rounded-lg">
                 <i class="bi bi-envelope text-blue-600 text-2xl mb-2"></i>
                 <h3 class="font-semibold text-gray-900 mb-1">Correu</h3>
-                <a href="mailto:campus@upg.cat" class="text-blue-600 hover:text-blue-800 text-sm">
-                    campus@upg.cat
+                <a href="mailto:{{ env('MAIL_ADDRESS_CONTACTE', 'info@campus.org') }}" class="text-blue-600 hover:text-blue-800 text-sm">
+                    {{ env('MAIL_ADDRESS_CONTACTE', 'info@campus.org') }}
                 </a>
             </div>
             

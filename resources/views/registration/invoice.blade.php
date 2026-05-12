@@ -129,7 +129,7 @@
             <strong>Campus Virtual</strong><br>
             Dirección del Campus<br>
             Teléfono: +34 900 123 456<br>
-            Email: campus@upg.cat<br>
+            Email: {{ env('MAIL_ADDRESS_CONTACTE', 'info@campus.org') }}<br>
             CIF: B12345678
         </div>
 
@@ -211,7 +211,7 @@
         <!-- Footer -->
         <div class="footer">
             <p>Esta factura es un documento válido de matriculación en Campus Virtual.</p>
-            <p>Per a qualsevol consulta, contacta amb campus@upg.cat</p>
+            <p>Per a qualsevol consulta, contacta amb {{ env('MAIL_ADDRESS_CONTACTE', 'info@campus.org') }}</p>
             <p>Campus Virtual - {{ date('Y') }}</p>
         </div>
     </div>

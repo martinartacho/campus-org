@@ -168,7 +168,7 @@
                 </a>
             @endif
             
-            <a href="mailto:campus@upg.cat" 
+            <a href="mailto:{{ env('MAIL_ADDRESS_CONTACTE', 'info@campus.org') }}" 
                class="block p-4 bg-white rounded-lg hover:shadow-md transition text-center">
                 <i class="bi bi-envelope text-purple-600 text-2xl mb-2"></i>
                 <h3 class="font-semibold text-gray-900 mb-1">Contactar</h3>

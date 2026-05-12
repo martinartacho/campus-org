@@ -233,8 +233,8 @@
                             Si tienes dudas sobre el proceso de matriculación:
                         </p>
                         <div class="space-y-1 text-sm">
-                            <a href="mailto:campus@upg.cat" class="text-blue-600 hover:text-blue-800 block">
-                                <i class="bi bi-envelope me-1"></i>campus@upg.cat
+                            <a href="mailto:{{ env('MAIL_ADDRESS_CONTACTE', 'info@campus.org') }}" class="text-blue-600 hover:text-blue-800 block">
+                                <i class="bi bi-envelope me-1"></i>{{ env('MAIL_ADDRESS_CONTACTE', 'info@campus.org') }}
                             </a>
                             <a href="tel:+34900123456" class="text-blue-600 hover:text-blue-800 block">
                                 <i class="bi bi-telephone me-1"></i>+34 900 123 456

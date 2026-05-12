@@ -104,11 +104,11 @@
             <li>Revisa tu correo electrónico regularmente para actualizaciones del curso</li>
             <li>Prepárate para comenzar en la fecha de inicio del curso</li>
             <li>Guarda esta factura para tus registros</li>
-            <li>Si tens alguna pregunta, contacta amb campus@upg.cat</li>
+            <li>Si tens alguna pregunta, contacta amb {{ env('MAIL_ADDRESS_CONTACTE', 'info@campus.org') }}</li>
         </ul>
 
         <h3>📞 Contacto y Soporte</h3>
-        <p><strong>Email:</strong> campus@upg.cat</p>
+        <p><strong>Email:</strong> {{ env('MAIL_ADDRESS_CONTACTE', 'info@campus.org') }}</p>
         <p><strong>Teléfono:</strong> +34 900 123 456</p>
         <p><strong>Horario:</strong> L-V: 9:00 - 18:00</p>
     </div>

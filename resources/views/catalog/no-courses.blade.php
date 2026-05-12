@@ -79,8 +79,8 @@
                 no dudes en contactarnos.
             </p>
             <div class="flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-6">
-                <a href="mailto:campus@upg.cat" class="flex items-center text-blue-600 hover:text-blue-800">
-                    <i class="bi bi-envelope me-2"></i>campus@upg.cat
+                <a href="mailto:{{ env('MAIL_ADDRESS_CONTACTE', 'info@campus.org') }}" class="flex items-center text-blue-600 hover:text-blue-800">
+                    <i class="bi bi-envelope me-2"></i>{{ env('MAIL_ADDRESS_CONTACTE', 'info@campus.org') }}
                 </a>
                 <a href="tel:+34900123456" class="flex items-center text-blue-600 hover:text-blue-800">
                     <i class="bi bi-telephone me-2"></i>+34 900 123 456
