@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Factura - {{ $registration->registration_code }}</title>
+    <title>Comprovant - {{ $registration->registration_code }}</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -112,7 +112,7 @@
     <div class="invoice">
         <!-- Header -->
         <div class="header">
-            <h1>FACTURA</h1>
+            <h1>COMPROVANT</h1>
             <p><strong>Número:</strong> {{ $registration->registration_code }}</p>
             <p><strong>Fecha de Emisión:</strong> {{ $issue_date }}</p>
             <p><strong>Estado:</strong> 
@@ -127,10 +127,10 @@
         <!-- Company Info -->
         <div class="company-info">
             <strong>Campus Virtual</strong><br>
-            Dirección del Campus<br>
-            Teléfono: +34 900 123 456<br>
+            Direcció:  {{ env('POSTAL_ADDRESS_CONTACTE', 'Rambla, 4, edifici CTUG') }}<br>
+            Teléfon:  {{ env('PHONE_CONTACTE', '+36 xxx xxx xxx') }}<br>
             Email: {{ env('MAIL_ADDRESS_CONTACTE', 'info@campus.org') }}<br>
-            CIF: B12345678
+            CIF: {{ env('CIF_CONTACTE', '+36 xxx xxx xxx') }}
         </div>
 
         <!-- Clear float -->
@@ -210,7 +210,7 @@
 
         <!-- Footer -->
         <div class="footer">
-            <p>Esta factura es un documento válido de matriculación en Campus Virtual.</p>
+            <p>Esta Comprovant es un documento válido de matriculación en Campus Virtual.</p>
             <p>Per a qualsevol consulta, contacta amb {{ env('MAIL_ADDRESS_CONTACTE', 'info@campus.org') }}</p>
             <p>Campus Virtual - {{ date('Y') }}</p>
         </div>
