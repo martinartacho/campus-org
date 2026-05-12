@@ -130,7 +130,7 @@
             Direcció:  {{ env('POSTAL_ADDRESS_CONTACTE', 'Rambla, 4, edifici CTUG') }}<br>
             Teléfon:  {{ env('PHONE_CONTACTE', '+36 xxx xxx xxx') }}<br>
             Email: {{ env('MAIL_ADDRESS_CONTACTE', 'info@campus.org') }}<br>
-            CIF: {{ env('CIF_CONTACTE', '+36 xxx xxx xxx') }}
+            CIF: {{ env('CIF_CONTACTE', 'B123456Z') }}
         </div>
 
         <!-- Clear float -->

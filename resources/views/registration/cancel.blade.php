@@ -127,11 +127,11 @@
                     Si sigues teniendo problemas, estamos aquí para ayudarte:
                 </p>
                 <div class="space-y-2">
-                    <a href="mailto:soporte@campus.org" class="flex items-center text-yellow-600 hover:text-yellow-800 text-sm">
-                        <i class="bi bi-envelope me-2"></i>soporte@campus.org
+                    <a href="mailto:{{ env('MAIL_ADDRESS_CONTACTE', 'soporte@campus.org') }}" class="flex items-center text-yellow-600 hover:text-yellow-800 text-sm">
+                        <i class="bi bi-envelope me-2"></i>{{ env('MAIL_ADDRESS_CONTACTE', 'soporte@campus.org') }}
                     </a>
-                    <a href="tel:+34900123456" class="flex items-center text-yellow-600 hover:text-yellow-800 text-sm">
-                        <i class="bi bi-telephone me-2"></i>+34 900 123 456
+                    <a href="tel:{{ env('PHONE_CONTACTE', '+34900123456') }}" class="flex items-center text-yellow-600 hover:text-yellow-800 text-sm">
+                        <i class="bi bi-telephone me-2"></i>{{ env('PHONE_CONTACTE', '+34 900 123 456') }}
                     </a>
                 </div>
             </div>

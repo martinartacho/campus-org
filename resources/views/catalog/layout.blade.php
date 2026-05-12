@@ -167,8 +167,8 @@
                     <h3 class="text-lg font-semibold mb-4">Contacto</h3>
                     <div class="space-y-2 text-sm text-gray-300">
                         <p><i class="bi bi-envelope me-2"></i>{{ env('MAIL_ADDRESS_CONTACTE', 'info@campus.org') }}</p>
-                        <p><i class="bi bi-telephone me-2"></i>+34 900 123 456</p>
-                        <p><i class="bi bi-geo-alt me-2"></i>Barcelona, España</p>
+                        <p><i class="bi bi-telephone me-2"></i>{{ env('PHONE_CONTACTE', '+34 900 123 456') }}</p>
+                        <p><i class="bi bi-geo-alt me-2"></i>{{ env('POSTAL_ADDRESS_CONTACTE', 'Barcelona, España') }}</p>
                     </div>
                 </div>
             </div>

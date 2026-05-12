@@ -118,7 +118,7 @@
             <a href="mailto:{{ env('MAIL_ADDRESS_CONTACTE', 'info@campus.org') }}" 
                class="inline-flex items-center text-blue-600 hover:text-blue-800 font-semibold">
                 <i class="bi bi-envelope me-2"></i>
-                Contactar soporte
+                {{ __('campus.contact_support') }}
             </a>
         </div>
     </div>

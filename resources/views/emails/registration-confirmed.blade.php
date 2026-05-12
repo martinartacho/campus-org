@@ -109,7 +109,7 @@
 
         <h3>📞 Contacto y Soporte</h3>
         <p><strong>Email:</strong> {{ env('MAIL_ADDRESS_CONTACTE', 'info@campus.org') }}</p>
-        <p><strong>Teléfono:</strong> +34 900 123 456</p>
+        <p><strong>Teléfono:</strong> {{ env('PHONE_CONTACTE', '+34 900 123 456') }}</p>
         <p><strong>Horario:</strong> L-V: 9:00 - 18:00</p>
     </div>
 
