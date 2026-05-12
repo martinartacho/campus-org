@@ -18,7 +18,7 @@
             @if($isFree)
                 Te has matriculado correctamente en tus cursos seleccionados.
             @else
-                Tu pago ha sido procesado correctamente y tu matriculación está confirmada.
+                El teu pagament s'ha processat correctament i la teva matriculació està confirmada.
             @endif
         </p>
     </div>
@@ -103,28 +103,28 @@
     @if(!$isFree && isset($session))
         <div class="bg-white rounded-lg shadow-md p-6 mb-8">
             <h2 class="text-2xl font-bold text-gray-900 mb-4">
-                <i class="bi bi-receipt me-2"></i>Información del Pago
+                <i class="bi bi-receipt me-2"></i>Informació del Pagament
             </h2>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <h3 class="font-semibold text-gray-800 mb-2">Resumen del Pago</h3>
+                    <h3 class="font-semibold text-gray-800 mb-2">Resum del Pagament</h3>
                     <dl class="space-y-2 text-sm">
                         <div class="flex justify-between">
-                            <dt class="text-gray-600">ID de Transacción:</dt>
+                            <dt class="text-gray-600">ID de Transacció:</dt>
                             <dd class="font-mono">{{ $session->payment_intent }}</dd>
                         </div>
                         <div class="flex justify-between">
-                            <dt class="text-gray-600">Fecha:</dt>
+                            <dt class="text-gray-600">Data del Pagament:</dt>
                             <dd>{{ \Carbon\Carbon::createFromTimestamp($session->created)->format('d/m/Y H:i') }}</dd>
                         </div>
                         <div class="flex justify-between">
-                            <dt class="text-gray-600">Monto Total:</dt>
+                            <dt class="text-gray-600">Import Total:</dt>
                             <dd class="font-semibold">{{ number_format($session->amount_total / 100, 2) }} &euro;</dd>
                         </div>
                         <div class="flex justify-between">
-                            <dt class="text-gray-600">Método de Pago:</dt>
-                            <dd>{{ $session->payment_method_types[0] ?? 'Tarjeta' }}</dd>
+                            <dt class="text-gray-600">Mètode de Pagament:</dt>
+                            <dd>{{ $session->payment_method_types[0] ?? 'Targeta' }}</dd>
                         </div>
                     </dl>
                 </div>

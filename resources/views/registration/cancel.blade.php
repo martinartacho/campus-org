@@ -1,6 +1,6 @@
 @extends('catalog.layout')
 
-@section('title', 'Pago Cancelado')
+@section('title', 'Pagament Cancel·lat')
 
 @section('content')
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -11,11 +11,11 @@
         </div>
         
         <h1 class="text-4xl font-bold text-gray-900 mb-4">
-            Pago Cancelado
+            Pagament Cancel·lat
         </h1>
         
         <p class="text-xl text-gray-600">
-            Has cancelado el proceso de pago. Tu matriculación no ha sido completada.
+            Has cancel·lat el procés de pagament. La teva matriculació no s'ha completat.
         </p>
     </div>
 
@@ -27,11 +27,11 @@
         
         <div class="space-y-4 text-gray-700">
             <p>
-                Has cancelado el proceso de pago en Stripe. Esto significa que:
+                Has cancel·lat el procés de pagament a Stripe. Això significa que:
             </p>
             
             <ul class="space-y-2 list-disc list-inside ml-4">
-                <li>No se ha realizado ningún cargo en tu tarjeta</li>
+                <li>No s'ha realitzat cap càrrec a la teva targeta</li>
                 <li>Tu matriculación no ha sido confirmada</li>
                 <li>Los cursos siguen disponibles en tu carrito</li>
                 <li>Las plazas no han sido reservadas</li>
