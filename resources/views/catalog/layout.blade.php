@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     
-    <title>@yield('title', 'Campus Virtual') - Catálogo de Cursos</title>
+    <title>@yield('title', __('campus.campus_virtual')) - {{ __('campus.catalog_page_title') }}</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -44,7 +44,7 @@
                 <div class="flex items-center">
                     <a href="{{ route('catalog.index') }}" class="flex items-center space-x-2">
                         <i class="bi bi-mortarboard-fill text-blue-600 text-2xl"></i>
-                        <span class="font-bold text-xl text-gray-900">Campus Virtual</span>
+                        <span class="font-bold text-xl text-gray-900">{{ __('campus.campus_virtual') }}</span>
                     </a>
                 </div>
 
@@ -52,11 +52,11 @@
                 <div class="hidden md:flex items-center space-x-8">
                     <a href="{{ route('catalog.index') }}" class="text-gray-700 hover:text-blue-600 font-medium transition">
                         <i class="bi bi-grid-3x3-gap-fill me-1"></i>
-                        Catálogo
+                        {{ __('campus.catalog') }}
                     </a>
                     <a href="{{ route('cart.index') }}" class="text-gray-700 hover:text-blue-600 font-medium transition relative">
                         <i class="bi bi-cart-fill me-1"></i>
-                        Carrito
+                        {{ __('campus.cart') }}
                         @if($cartItemsCount > 0)
                             <span class="cart-badge absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                                 {{ $cartItemsCount }}
@@ -66,12 +66,12 @@
                     @if(auth()->check())
                         <a href="{{ route('dashboard') }}" class="text-gray-700 hover:text-blue-600 font-medium transition">
                             <i class="bi bi-person-circle me-1"></i>
-                            Mi Campus
+                            {{ __('campus.my_campus') }}
                         </a>
                     @else
                         <a href="{{ route('login') }}" class="text-gray-700 hover:text-blue-600 font-medium transition">
                             <i class="bi bi-box-arrow-in-right me-1"></i>
-                            Iniciar Sesión
+                            {{ __('campus.start_session') }}
                         </a>
                     @endif
                 </div>
@@ -89,10 +89,10 @@
         <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
             <div class="px-2 pt-2 pb-3 space-y-1">
                 <a href="{{ route('catalog.index') }}" class="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md">
-                    <i class="bi bi-grid-3x3-gap-fill me-2"></i>Catálogo
+                    <i class="bi bi-grid-3x3-gap-fill me-2"></i>{{ __('campus.catalog') }}
                 </a>
                 <a href="{{ route('cart.index') }}" class="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md relative">
-                    <i class="bi bi-cart-fill me-2"></i>Carrito
+                    <i class="bi bi-cart-fill me-2"></i>{{ __('campus.cart') }}
                     @if($cartItemsCount > 0)
                         <span class="absolute top-2 right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                             {{ $cartItemsCount }}
@@ -101,11 +101,11 @@
                 </a>
                 @if(auth()->check())
                     <a href="{{ route('dashboard') }}" class="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md">
-                        <i class="bi bi-person-circle me-2"></i>Mi Campus
+                        <i class="bi bi-person-circle me-2"></i>{{ __('campus.my_campus') }}
                     </a>
                 @else
                     <a href="{{ route('login') }}" class="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md">
-                        <i class="bi bi-box-arrow-in-right me-2"></i>Iniciar Sesión
+                        <i class="bi bi-box-arrow-in-right me-2"></i>{{ __('campus.start_session') }}
                     </a>
                 @endif
             </div>
@@ -142,29 +142,29 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <!-- About -->
                 <div>
-                    <h3 class="text-lg font-semibold mb-4">Campus Virtual</h3>
+                    <h3 class="text-lg font-semibold mb-4">{{ __('campus.campus_virtual') }}</h3>
                     <p class="text-gray-300 text-sm">
-                        Plataforma de formación online con cursos de alta calidad para tu desarrollo profesional y personal.
+                        {{ __('campus.platform_description') }}
                     </p>
                 </div>
 
                 <!-- Quick Links -->
                 <div>
-                    <h3 class="text-lg font-semibold mb-4">Enlaces Rápidos</h3>
+                    <h3 class="text-lg font-semibold mb-4">{{ __('campus.quick_links') }}</h3>
                     <ul class="space-y-2 text-sm">
-                        <li><a href="{{ route('catalog.index') }}" class="text-gray-300 hover:text-white">Catálogo de Cursos</a></li>
-                        <li><a href="{{ route('cart.index') }}" class="text-gray-300 hover:text-white">Mi Carrito</a></li>
+                        <li><a href="{{ route('catalog.index') }}" class="text-gray-300 hover:text-white">{{ __('campus.catalog') }} de Cursos</a></li>
+                        <li><a href="{{ route('cart.index') }}" class="text-gray-300 hover:text-white">Mi {{ __('campus.cart') }}</a></li>
                         @if(auth()->check())
-                            <li><a href="{{ route('dashboard') }}" class="text-gray-300 hover:text-white">Mi Campus</a></li>
+                            <li><a href="{{ route('dashboard') }}" class="text-gray-300 hover:text-white">{{ __('campus.my_campus') }}</a></li>
                         @else
-                            <li><a href="{{ route('login') }}" class="text-gray-300 hover:text-white">Iniciar Sesión</a></li>
+                            <li><a href="{{ route('login') }}" class="text-gray-300 hover:text-white">{{ __('campus.start_session') }}</a></li>
                         @endif
                     </ul>
                 </div>
 
                 <!-- Contact -->
                 <div>
-                    <h3 class="text-lg font-semibold mb-4">Contacto</h3>
+                    <h3 class="text-lg font-semibold mb-4">{{ __('campus.contact') }}</h3>
                     <div class="space-y-2 text-sm text-gray-300">
                         <p><i class="bi bi-envelope me-2"></i>{{ env('MAIL_ADDRESS_CONTACTE', 'info@campus.org') }}</p>
                         <p><i class="bi bi-telephone me-2"></i>{{ env('PHONE_CONTACTE', '+34 900 123 456') }}</p>
@@ -174,7 +174,7 @@
             </div>
 
             <div class="border-t border-gray-700 mt-8 pt-8 text-center text-sm text-gray-400">
-                <p>&copy; {{ date('Y') }} Campus Virtual. Todos los derechos reservados.</p>
+                <p>&copy; {{ date('Y') }} {{ __('campus.campus_virtual') }}. {{ __('campus.all_rights_reserved') }}.</p>
             </div>
         </div>
     </footer>
@@ -225,7 +225,7 @@
                     showToast(data.message, 'error');
                 }
             } catch (error) {
-                showToast('Error al añadir al carrito', 'error');
+                showToast('{{ __('campus.error_adding_to_cart') }}', 'error');
             }
         }
 
@@ -252,7 +252,7 @@
                     showToast(data.message, 'error');
                 }
             } catch (error) {
-                showToast('Error al eliminar del carrito', 'error');
+                showToast('{{ __('campus.error_removing_from_cart') }}', 'error');
             }
         }
 

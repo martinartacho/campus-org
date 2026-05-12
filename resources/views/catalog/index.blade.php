@@ -1,6 +1,6 @@
 @extends('catalog.layout')
 
-@section('title', 'Catálogo de Cursos')
+@section('title', __('campus.catalog_title'))
 
 @php
     $cartItemsCount = count($cartItems ?? []);
@@ -11,20 +11,19 @@
     <!-- Header -->
     <div class="text-center mb-12">
         <h1 class="text-4xl font-bold text-gray-900 mb-4">
-            Catálogo de Cursos
+            {{ __('campus.catalog_title') }}
         </h1>
         <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-            Descubre nuestros cursos de la temporada {{ $season->name ?? 'Actual' }} 
-            y comienza tu viaje de aprendizaje hoy mismo.
+            {!! __('campus.catalog_description', ['season' => $season->name ?? __('campus.current_season')]) !!}
         </p>
         
         @if($season)
             <div class="mt-6 inline-flex items-center px-4 py-2 bg-blue-100 text-blue-800 rounded-full">
                 <i class="bi bi-calendar3 me-2"></i>
-                Temporada: {{ $season->name }}
+                {{ __('campus.season_label') }} {{ $season->name }}
                 @if($season->isRegistrationOpen())
                     <span class="ml-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
-                        Matriculación Abierta
+                        {{ __('campus.registration_open') }}
                     </span>
                 @endif
             </div>
@@ -34,19 +33,19 @@
     <!-- Filters Section -->
     <div class="bg-white rounded-lg shadow-md p-6 mb-8">
         <h2 class="text-lg font-semibold text-gray-900 mb-4">
-            <i class="bi bi-funnel me-2"></i>Filtrar Cursos
+            <i class="bi bi-funnel me-2"></i>{{ __('campus.filter_courses') }}
         </h2>
         
         <form method="GET" action="{{ route('catalog.index') }}" class="space-y-4">
             <!-- Search -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Buscar</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('campus.search') }}</label>
                     <div class="relative">
                         <input type="text" 
                                name="search" 
                                value="{{ request('search') }}"
-                               placeholder="Buscar por título, código..."
+                               placeholder="{{ __('campus.search_placeholder') }}"
                                class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <i class="bi bi-search absolute left-3 top-3 text-gray-400"></i>
                     </div>
@@ -54,9 +53,9 @@
 
                 <!-- Category -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Categoría</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('campus.category') }}</label>
                     <select name="category" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="">Todas las categorías</option>
+                        <option value="">{{ __('campus.all_categories') }}</option>
                         @foreach($categories as $category)
                             <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
                                 {{ $category->name }}
@@ -67,9 +66,9 @@
 
                 <!-- Level -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Nivel</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('campus.level') }}</label>
                     <select name="level" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="">Todos los niveles</option>
+                        <option value="">{{ __('campus.all_levels') }}</option>
                         @foreach($levels as $level)
                             <option value="{{ $level }}" {{ request('level') == $level ? 'selected' : '' }}>
                                 {{ \App\Models\CampusCourse::LEVELS[$level] ?? $level }}
@@ -80,9 +79,9 @@
 
                 <!-- Format -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Formato</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('campus.format') }}</label>
                     <select name="format" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="">Todos los formatos</option>
+                        <option value="">{{ __('campus.all_formats') }}</option>
                         @foreach($formats as $format)
                             <option value="{{ $format }}" {{ request('format') == $format ? 'selected' : '' }}>
                                 {{ ucfirst($format) }}
@@ -95,7 +94,7 @@
             <!-- Price and Hours Range -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Precio Mínimo</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('campus.price_min') }}</label>
                     <input type="number" 
                            name="price_min" 
                            value="{{ request('price_min') }}"
@@ -106,7 +105,7 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Precio Máximo</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('campus.price_max') }}</label>
                     <input type="number" 
                            name="price_max" 
                            value="{{ request('price_max') }}"
@@ -117,7 +116,7 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Horas Mínimas</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('campus.hours_min') }}</label>
                     <input type="number" 
                            name="hours_min" 
                            value="{{ request('hours_min') }}"
@@ -127,7 +126,7 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Horas Máximas</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('campus.hours_max') }}</label>
                     <input type="number" 
                            name="hours_max" 
                            value="{{ request('hours_max') }}"
@@ -141,30 +140,30 @@
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
                 <div class="flex items-center space-x-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Ordenar por</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('campus.sort_by') }}</label>
                         <select name="sort" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="start_date" {{ request('sort') == 'start_date' ? 'selected' : '' }}>Fecha de inicio</option>
-                            <option value="title" {{ request('sort') == 'title' ? 'selected' : '' }}>Título</option>
-                            <option value="price" {{ request('sort') == 'price' ? 'selected' : '' }}>Precio</option>
-                            <option value="hours" {{ request('sort') == 'hours' ? 'selected' : '' }}>Duración</option>
+                            <option value="start_date" {{ request('sort') == 'start_date' ? 'selected' : '' }}>{{ __('campus.start_date') }}</option>
+                            <option value="title" {{ request('sort') == 'title' ? 'selected' : '' }}>{{ __('campus.title') }}</option>
+                            <option value="price" {{ request('sort') == 'price' ? 'selected' : '' }}>{{ __('campus.price') }}</option>
+                            <option value="hours" {{ request('sort') == 'hours' ? 'selected' : '' }}>{{ __('campus.duration') }}</option>
                         </select>
                     </div>
                     
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">&nbsp;</label>
                         <select name="order" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="asc" {{ request('order') == 'asc' ? 'selected' : '' }}>Ascendente</option>
-                            <option value="desc" {{ request('order') == 'desc' ? 'selected' : '' }}>Descendente</option>
+                            <option value="asc" {{ request('order') == 'asc' ? 'selected' : '' }}>{{ __('campus.ascending') }}</option>
+                            <option value="desc" {{ request('order') == 'desc' ? 'selected' : '' }}>{{ __('campus.descending') }}</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="flex space-x-2">
                     <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
-                        <i class="bi bi-search me-2"></i>Aplicar Filtros
+                        <i class="bi bi-search me-2"></i>{{ __('campus.apply_filters') }}
                     </button>
                     <a href="{{ route('catalog.index') }}" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition">
-                        <i class="bi bi-x-circle me-2"></i>Limpiar
+                        <i class="bi bi-x-circle me-2"></i>{{ __('campus.clear') }}
                     </a>
                 </div>
             </div>
@@ -175,9 +174,9 @@
     <div class="mb-6">
         <p class="text-gray-600">
             @if($courses->total() > 0)
-                Mostrando {{ $courses->firstItem() }}-{{ $courses->lastItem() }} de {{ $courses->total() }} cursos
+                {{ __('campus.showing_results', ['from' => $courses->firstItem(), 'to' => $courses->lastItem(), 'total' => $courses->total()]) }}
             @else
-                No se encontraron cursos con los filtros seleccionados
+                {{ __('campus.no_courses_found') }}
             @endif
         </p>
     </div>
@@ -199,7 +198,7 @@
                                 </span>
                             @else
                                 <span class="bg-gray-500 text-white text-xs px-2 py-1 rounded-full font-semibold">
-                                    Gratis
+                                    {{ __('campus.free') }}
                                 </span>
                             @endif
                         </div>
@@ -250,7 +249,7 @@
                         <div class="mb-4">
                             @if($course->max_students)
                                 <div class="flex items-center justify-between text-sm">
-                                    <span class="text-gray-600">Plazas disponibles:</span>
+                                    <span class="text-gray-600">{{ __('campus.available_spots') }}</span>
                                     <span class="font-semibold {{ $course->available_spots > 5 ? 'text-green-600' : ($course->available_spots > 0 ? 'text-yellow-600' : 'text-red-600') }}">
                                         {{ $course->available_spots }} / {{ $course->max_students }}
                                     </span>
@@ -262,7 +261,7 @@
                                 </div>
                             @else
                                 <span class="text-sm text-green-600">
-                                    <i class="bi bi-infinity me-1"></i>Plazas ilimitadas
+                                    <i class="bi bi-infinity me-1"></i>{{ __('campus.unlimited_spots') }}
                                 </span>
                             @endif
                         </div>
@@ -271,7 +270,7 @@
                         <div class="flex space-x-2">
                             <a href="{{ route('catalog.show', $course) }}" 
                                class="flex-1 text-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
-                                <i class="bi bi-eye me-1"></i>Ver Detalles
+                                <i class="bi bi-eye me-1"></i>{{ __('campus.view_details') }}
                             </a>
                             
                             @if(in_array($course->id, $cartItems))
@@ -282,7 +281,7 @@
                             @elseif(!$course->hasAvailableSpots())
                                 <button disabled 
                                         class="px-4 py-2 bg-gray-300 text-gray-500 rounded-md cursor-not-allowed">
-                                    <i class="bi bi-x-circle"></i> No Disponible
+                                    <i class="bi bi-x-circle"></i> {{ __('campus.not_available') }}
                                 </button>
                             @else
                                 <button onclick="addToCart({{ $course->id }})" 
@@ -304,9 +303,9 @@
         <!-- No Results -->
         <div class="text-center py-12">
             <i class="bi bi-search text-6xl text-gray-300 mb-4"></i>
-            <h3 class="text-xl font-semibold text-gray-600 mb-2">No se encontraron cursos</h3>
+            <h3 class="text-xl font-semibold text-gray-600 mb-2">{{ __('campus.no_courses_found_title') }}</h3>
             <p class="text-gray-500 mb-6">
-                Intenta ajustar los filtros o <a href="{{ route('catalog.index') }}" class="text-blue-600 hover:underline">ver todos los cursos</a>
+                {!! __('campus.no_courses_found_description', ['url' => route('catalog.index')]) !!}
             </p>
         </div>
     @endif
