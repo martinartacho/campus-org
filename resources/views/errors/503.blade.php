@@ -299,10 +299,6 @@
                                     <i class="fas fa-envelope me-1"></i>
                                     Correu electrònic
                                 </a>
-                               {{--  <a href="tel:+34900000000" class="btn btn-outline-success contact-btn">
-                                    <i class="fas fa-phone me-1"></i>
-                                    Telèfon
-                                </a> --}}
                             </div>
                         </div>
                         
