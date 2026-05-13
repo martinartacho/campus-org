@@ -269,7 +269,7 @@
         <p><strong>PROTECCIÓ DE DADES - RGPD</strong></p>
         <p>A la UPG tractem la informació que ens faciliteu exclusivament per oferir el servei sol·licitat. Les dades proporcionades es conservaran mentre es mantingui la relació formativa, o durant els anys necessaris per complir amb les obligacions legals.</p>
         <p>Teniu dret a obtenir confirmació i accés quant al tractament de les vostres dades personals per part de l'Associació per a l'Impuls d'Estudis Populars (AIEP). Podeu rectificar les vostres dades o sol·licitar la seva supressió quan aquestes no siguin necessàries.</p>
-        <p><strong><i>Associació per l'impuls d'Estudis Populars (AIEP) - CIF G-66314998 - Carrer Mare de Deu de Montserrat, edifici Roca Umbert, 36 - 08401 Granollers</i></strong></p>
+        <p><strong><i>Associació per l'impuls d'Estudis Populars (AIEP) - CIF {{ env('CIF_CONTACTE', 'G-66314998') }} - {{ env('POSTAL_ADDRESS_CONTACTE', 'Carrer Mare de Deu de Montserrat, edifici Roca Umbert, 36 - 08401 Granollers') }}</i></strong></p>
         
         <p>Generat automàticament per Campus UPG - {{ now()->format('d/m/Y H:i') }}  </p>
     </div>

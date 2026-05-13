@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Matrícula Confirmada - Campus Virtual</title>
+    <title>{{ __('campus.registration_confirmed_title') }} - {{ __('campus.campus_virtual') }}</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -68,54 +68,54 @@
 </head>
 <body>
     <div class="header">
-        <h1>🎓 Matrícula Confirmada</h1>
-        <p>Campus Virtual</p>
+        <h1>🎓 {{ __('campus.registration_confirmed_title') }}</h1>
+        <p>{{ __('campus.campus_virtual') }}</p>
     </div>
 
     <div class="content">
-        <p>¡Hola {{ $student->first_name }}!</p>
+        <p>{{ __('campus.hello_student', ['name' => $student->first_name]) }}</p>
         
-        <p>Tu matrícula ha sido confirmada exitosamente. A continuación encontrarás todos los detalles:</p>
+        <p>{{ __('campus.registration_confirmed_message') }}</p>
 
         <div class="student-info">
-            <h3>📋 Datos del Estudiante</h3>
-            <p><strong>Nombre:</strong> {{ $student->first_name }} {{ $student->last_name }}</p>
-            <p><strong>Email:</strong> {{ $student->email }}</p>
-            <p><strong>Código de Estudiante:</strong> {{ $student->student_code }}</p>
-            <p><strong>Estado:</strong> <span class="status-paid">PAGADO</span></p>
+            <h3>📋 {{ __('campus.student_data') }}</h3>
+            <p><strong>{{ __('campus.name') }}:</strong> {{ $student->first_name }} {{ $student->last_name }}</p>
+            <p><strong>{{ __('campus.email') }}:</strong> {{ $student->email }}</p>
+            <p><strong>{{ __('campus.student_code') }}:</strong> {{ $student->student_code }}</p>
+            <p><strong>{{ __('campus.status') }}:</strong> <span class="status-paid">{{ __('campus.paid') }}</span></p>
         </div>
 
         <div class="course-info">
-            <h3>📚 Curso Matriculado</h3>
-            <p><strong>Curso:</strong> {{ $course->title }}</p>
-            <p><strong>Código:</strong> {{ $course->code }}</p>
-            <p><strong>Horas:</strong> {{ $course->hours }} horas</p>
-            <p><strong>Precio:</strong> {{ number_format($registration->amount, 2) }} €</p>
-            <p><strong>Fecha de Matriculación:</strong> {{ $registration->registration_date->format('d/m/Y') }}</p>
-            <p><strong>Código de Matrícula:</strong> {{ $registration->registration_code }}</p>
+            <h3>📚 {{ __('campus.enrolled_course') }}</h3>
+            <p><strong>{{ __('campus.course') }}:</strong> {{ $course->title }}</p>
+            <p><strong>{{ __('campus.code') }}:</strong> {{ $course->code }}</p>
+            <p><strong>{{ __('campus.hours') }}:</strong> {{ $course->hours }} {{ __('campus.hours') }}</p>
+            <p><strong>{{ __('campus.price') }}:</strong> {{ number_format($registration->amount, 2) }} €</p>
+            <p><strong>{{ __('campus.registration_date') }}:</strong> {{ $registration->registration_date->format('d/m/Y') }}</p>
+            <p><strong>{{ __('campus.registration_code') }}:</strong> {{ $registration->registration_code }}</p>
         </div>
 
-        <h3>📄 Descargar Factura</h3>
-        <p>Puedes descargar tu factura en cualquier momento usando el siguiente enlace:</p>
-        <p><a href="{{ url('factura/' . $registration->id) }}" class="btn">📥 Descargar Factura PDF</a></p>
+        <h3>📄 {{ __('campus.download_invoice') }}</h3>
+        <p>{{ __('campus.download_invoice_description') }}</p>
+        <p><a href="{{ url('factura/' . $registration->id) }}" class="btn">📥 {{ __('campus.download_invoice_pdf') }}</a></p>
 
-        <h3>🎯 Próximos Pasos</h3>
+        <h3>🎯 {{ __('campus.next_steps') }}</h3>
         <ul>
-            <li>Revisa tu correo electrónico regularmente para actualizaciones del curso</li>
-            <li>Prepárate para comenzar en la fecha de inicio del curso</li>
-            <li>Guarda esta factura para tus registros</li>
-            <li>Si tienes alguna pregunta, contacta con info@campus.org</li>
+            <li>{{ __('campus.check_email_updates') }}</li>
+            <li>{{ __('campus.prepare_start_date') }}</li>
+            <li>{{ __('campus.save_invoice') }}</li>
+            <li>{{ __('campus.if_questions_contact', ['email' => env('MAIL_ADDRESS_CONTACTE', 'info@campus.org')]) }}</li>
         </ul>
 
-        <h3>📞 Contacto y Soporte</h3>
-        <p><strong>Email:</strong> info@campus.org</p>
-        <p><strong>Teléfono:</strong> +34 900 123 456</p>
-        <p><strong>Horario:</strong> L-V: 9:00 - 18:00</p>
+        <h3>📞 {{ __('campus.contact_support') }}</h3>
+        <p><strong>{{ __('campus.email') }}:</strong> {{ env('MAIL_ADDRESS_CONTACTE', 'info@campus.org') }}</p>
+        <p><strong>{{ __('campus.phone') }}:</strong> {{ env('PHONE_CONTACTE', '+34 900 123 456') }}</p>
+        <p><strong>{{ __('campus.schedule') }}:</strong> {{ __('campus.work_schedule') }}</p>
     </div>
 
     <div class="footer">
-        <p>Este es un correo automático de Campus Virtual. Por favor no respondas a este mensaje.</p>
-        <p>&copy; {{ date('Y') }} Campus Virtual. Todos los derechos reservados.</p>
+        <p>{{ __('campus.automatic_email') }}</p>
+        <p>&copy; {{ date('Y') }} {{ __('campus.campus_virtual') }}. {{ __('campus.all_rights_reserved') }}.</p>
     </div>
 </body>
 </html>
