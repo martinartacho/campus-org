@@ -292,7 +292,7 @@
                                     <ul class="space-y-2 mb-0">
                                         <li class="flex items-center">
                                             <i class="bi bi-envelope mr-2 text-blue-600"></i>
-                                            <strong>Email:</strong> campus@upg.cat
+                                            <strong>Email:</strong> {{ env('MAIL_ADDRESS_CONTACTE', 'campus@upg.cat') }}
                                         </li>
                                         <!-- <li class="flex items-center">
                                             <i class="bi bi-telephone mr-2 text-blue-600"></i>

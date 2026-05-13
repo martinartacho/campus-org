@@ -204,7 +204,7 @@
                         <a href="{{ route('registration.create') }}" 
                            class="block w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition font-semibold text-center mb-4">
                             <i class="bi bi-credit-card me-2"></i>
-                            Proceder al Pago
+                            Procedir al Pagament
                         </a>
                     @endif
 
@@ -218,10 +218,10 @@
                     <div class="mt-6 p-4 bg-green-50 rounded-lg">
                         <div class="flex items-center space-x-2 text-green-800 text-sm">
                             <i class="bi bi-shield-check"></i>
-                            <span>Pago seguro con Stripe</span>
+                            <span>Pagament segur amb Stripe</span>
                         </div>
                         <p class="text-green-700 text-xs mt-2">
-                            Tus datos de pago están encriptados y seguros. 
+                            Les teves dades de pagament estan encriptades i segures. 
                             No almacenamos información de tarjetas de crédito.
                         </p>
                     </div>
@@ -233,11 +233,11 @@
                             Si tienes dudas sobre el proceso de matriculación:
                         </p>
                         <div class="space-y-1 text-sm">
-                            <a href="mailto:info@campus.org" class="text-blue-600 hover:text-blue-800 block">
-                                <i class="bi bi-envelope me-1"></i>info@campus.org
+                            <a href="mailto:{{ env('MAIL_ADDRESS_CONTACTE', 'info@campus.org') }}" class="text-blue-600 hover:text-blue-800 block">
+                                <i class="bi bi-envelope me-1"></i>{{ env('MAIL_ADDRESS_CONTACTE', 'info@campus.org') }}
                             </a>
-                            <a href="tel:+34900123456" class="text-blue-600 hover:text-blue-800 block">
-                                <i class="bi bi-telephone me-1"></i>+34 900 123 456
+                            <a href="tel:{{ env('PHONE_CONTACTE', '+34900123456') }}" class="text-blue-600 hover:text-blue-800 block">
+                                <i class="bi bi-telephone me-1"></i>{{ env('PHONE_CONTACTE', '+34 900 123 456') }}
                             </a>
                         </div>
                     </div>

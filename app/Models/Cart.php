@@ -61,7 +61,7 @@ class Cart extends Model
     }
 
     /**
-     * Get or create cart for user
+     * Get or create cart for user (authenticated users)
      */
     public static function getForUser(int $userId): self
     {
@@ -72,7 +72,7 @@ class Cart extends Model
         if (!$cart) {
             $cart = static::create([
                 'user_id' => $userId,
-                'session_id' => 'user_' . $userId . '_' . uniqid(),
+                'session_id' => 'user_' . $userId . '_' . uniqid(), // Unique session_id for authenticated users
                 'expires_at' => now()->addDays(7),
                 'status' => self::STATUS_ACTIVE
             ]);

@@ -1,6 +1,6 @@
 @extends('catalog.layout')
 
-@section('title', 'Pago Cancelado')
+@section('title', __('campus.payment_cancelled'))
 
 @section('content')
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -11,39 +11,38 @@
         </div>
         
         <h1 class="text-4xl font-bold text-gray-900 mb-4">
-            Pago Cancelado
+            {{ __('campus.payment_cancelled') }}
         </h1>
         
         <p class="text-xl text-gray-600">
-            Has cancelado el proceso de pago. Tu matriculación no ha sido completada.
+            {{ __('campus.payment_cancelled_message') }}
         </p>
     </div>
 
     <!-- Information -->
     <div class="bg-white rounded-lg shadow-md p-6 mb-8">
         <h2 class="text-2xl font-bold text-gray-900 mb-4">
-            <i class="bi bi-info-circle me-2"></i>¿Qué ha pasado?
+            <i class="bi bi-info-circle me-2"></i>{{ __('campus.what_happened') }}
         </h2>
         
         <div class="space-y-4 text-gray-700">
             <p>
-                Has cancelado el proceso de pago en Stripe. Esto significa que:
+                {{ __('campus.cancelled_stripe_process') }}
             </p>
             
             <ul class="space-y-2 list-disc list-inside ml-4">
-                <li>No se ha realizado ningún cargo en tu tarjeta</li>
-                <li>Tu matriculación no ha sido confirmada</li>
-                <li>Los cursos siguen disponibles en tu carrito</li>
-                <li>Las plazas no han sido reservadas</li>
+                <li>{{ __('campus.no_charge_made') }}</li>
+                <li>{{ __('campus.registration_not_confirmed') }}</li>
+                <li>{{ __('campus.courses_still_available') }}</li>
+                <li>{{ __('campus.spots_not_reserved') }}</li>
             </ul>
             
             <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
                 <h3 class="font-semibold text-blue-900 mb-2">
-                    <i class="bi bi-lightbulb me-2"></i>Buenas noticias
+                    <i class="bi bi-lightbulb me-2"></i>{{ __('campus.good_news') }}
                 </h3>
                 <p class="text-blue-800">
-                    ¡No te preocupes! Los cursos que tenías en tu carrito siguen disponibles. 
-                    Puedes volver a intentar el proceso de matriculación cuando quieras.
+                    {{ __('campus.dont_worry_courses_available') }}
                 </p>
             </div>
         </div>
@@ -59,16 +58,16 @@
                 </div>
                 
                 <h3 class="text-xl font-bold text-gray-900 mb-2">
-                    Intentar de Nuevo
+                    {{ __('campus.try_again') }}
                 </h3>
                 
                 <p class="text-gray-600 mb-4">
-                    Si fue un error o cambias de opinión, puedes volver a completar tu matriculación.
+                    {{ __('campus.try_again_description') }}
                 </p>
                 
                 <a href="{{ route('registration.create') }}" 
                    class="inline-block px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold">
-                    <i class="bi bi-arrow-clockwise me-2"></i>Reintentar Matriculación
+                    <i class="bi bi-arrow-clockwise me-2"></i>{{ __('campus.retry_registration') }}
                 </a>
             </div>
         </div>
@@ -81,16 +80,16 @@
                 </div>
                 
                 <h3 class="text-xl font-bold text-gray-900 mb-2">
-                    Revisar Carrito
+                    {{ __('campus.review_cart') }}
                 </h3>
                 
                 <p class="text-gray-600 mb-4">
-                    Quizás quieres modificar los cursos seleccionados o añadir/eliminar algún curso.
+                    {{ __('campus.review_cart_description') }}
                 </p>
                 
                 <a href="{{ route('cart.index') }}" 
                    class="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold">
-                    <i class="bi bi-cart me-2"></i>Ver Mi Carrito
+                    <i class="bi bi-cart me-2"></i>{{ __('campus.view_my_cart') }}
                 </a>
             </div>
         </div>
@@ -99,39 +98,39 @@
     <!-- Help Section -->
     <div class="bg-yellow-50 rounded-lg p-6 mb-8">
         <h2 class="text-xl font-bold text-yellow-900 mb-4">
-            <i class="bi bi-question-circle me-2"></i>¿Necesitas Ayuda?
+            <i class="bi bi-question-circle me-2"></i>{{ __('campus.need_help_cancel') }}
         </h2>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-                <h3 class="font-semibold text-yellow-800 mb-2">Problemas comunes</h3>
+                <h3 class="font-semibold text-yellow-800 mb-2">{{ __('campus.common_problems') }}</h3>
                 <ul class="space-y-2 text-yellow-700 text-sm">
                     <li class="flex items-start">
                         <i class="bi bi-info-circle me-2 mt-0.5"></i>
-                        <span><strong>Tarjeta rechazada:</strong> Verifica los datos o contacta con tu banco</span>
+                        <span>{{ __('campus.card_rejected') }}</span>
                     </li>
                     <li class="flex items-start">
                         <i class="bi bi-info-circle me-2 mt-0.5"></i>
-                        <span><strong>Error de conexión:</strong> Revisa tu internet e intenta de nuevo</span>
+                        <span>{{ __('campus.connection_error') }}</span>
                     </li>
                     <li class="flex items-start">
                         <i class="bi bi-info-circle me-2 mt-0.5"></i>
-                        <span><strong>Dudas sobre el curso:</strong> Revisa la información del curso</span>
+                        <span>{{ __('campus.course_doubts') }}</span>
                     </li>
                 </ul>
             </div>
             
             <div>
-                <h3 class="font-semibold text-yellow-800 mb-2">Contacto Directo</h3>
+                <h3 class="font-semibold text-yellow-800 mb-2">{{ __('campus.direct_contact') }}</h3>
                 <p class="text-yellow-700 text-sm mb-3">
-                    Si sigues teniendo problemas, estamos aquí para ayudarte:
+                    {{ __('campus.still_having_problems') }}
                 </p>
                 <div class="space-y-2">
-                    <a href="mailto:soporte@campus.org" class="flex items-center text-yellow-600 hover:text-yellow-800 text-sm">
-                        <i class="bi bi-envelope me-2"></i>soporte@campus.org
+                    <a href="mailto:{{ env('MAIL_ADDRESS_CONTACTE', 'soporte@campus.org') }}" class="flex items-center text-yellow-600 hover:text-yellow-800 text-sm">
+                        <i class="bi bi-envelope me-2"></i>{{ env('MAIL_ADDRESS_CONTACTE', 'soporte@campus.org') }}
                     </a>
-                    <a href="tel:+34900123456" class="flex items-center text-yellow-600 hover:text-yellow-800 text-sm">
-                        <i class="bi bi-telephone me-2"></i>+34 900 123 456
+                    <a href="tel:{{ env('PHONE_CONTACTE', '+34900123456') }}" class="flex items-center text-yellow-600 hover:text-yellow-800 text-sm">
+                        <i class="bi bi-telephone me-2"></i>{{ env('PHONE_CONTACTE', '+34 900 123 456') }}
                     </a>
                 </div>
             </div>
@@ -141,38 +140,38 @@
     <!-- Alternative Options -->
     <div class="bg-gray-50 rounded-lg p-6">
         <h2 class="text-xl font-bold text-gray-900 mb-4">
-            <i class="bi bi-grid-3x3-gap me-2"></i>Otras Opciones
+            <i class="bi bi-grid-3x3-gap me-2"></i>{{ __('campus.other_options') }}
         </h2>
         
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <a href="{{ route('catalog.index') }}" 
                class="block p-4 bg-white rounded-lg hover:shadow-md transition text-center">
                 <i class="bi bi-search text-blue-600 text-2xl mb-2"></i>
-                <h3 class="font-semibold text-gray-900 mb-1">Explorar Cursos</h3>
-                <p class="text-gray-600 text-sm">Descubre más cursos disponibles</p>
+                <h3 class="font-semibold text-gray-900 mb-1">{{ __('campus.explore_courses') }}</h3>
+                <p class="text-gray-600 text-sm">{{ __('campus.discover_more_courses') }}</p>
             </a>
             
             @if(auth()->check())
                 <a href="{{ route('dashboard') }}" 
                    class="block p-4 bg-white rounded-lg hover:shadow-md transition text-center">
                     <i class="bi bi-house text-green-600 text-2xl mb-2"></i>
-                    <h3 class="font-semibold text-gray-900 mb-1">Mi Campus</h3>
-                    <p class="text-gray-600 text-sm">Gestiona tus matrículas</p>
+                    <h3 class="font-semibold text-gray-900 mb-1">{{ __('campus.my_campus') }}</h3>
+                    <p class="text-gray-600 text-sm">{{ __('campus.manage_registrations') }}</p>
                 </a>
             @else
                 <a href="{{ route('login') }}" 
                    class="block p-4 bg-white rounded-lg hover:shadow-md transition text-center">
                     <i class="bi bi-box-arrow-in-right text-green-600 text-2xl mb-2"></i>
-                    <h3 class="font-semibold text-gray-900 mb-1">Iniciar Sesión</h3>
-                    <p class="text-gray-600 text-sm">Accede a tu cuenta</p>
+                    <h3 class="font-semibold text-gray-900 mb-1">{{ __('campus.start_session') }}</h3>
+                    <p class="text-gray-600 text-sm">{{ __('campus.access_account') }}</p>
                 </a>
             @endif
             
-            <a href="mailto:info@campus.org" 
+            <a href="mailto:{{ env('MAIL_ADDRESS_CONTACTE', 'info@campus.org') }}" 
                class="block p-4 bg-white rounded-lg hover:shadow-md transition text-center">
                 <i class="bi bi-envelope text-purple-600 text-2xl mb-2"></i>
-                <h3 class="font-semibold text-gray-900 mb-1">Contactar</h3>
-                <p class="text-gray-600 text-sm">Envíanos tus dudas</p>
+                <h3 class="font-semibold text-gray-900 mb-1">{{ __('campus.contact') }}</h3>
+                <p class="text-gray-600 text-sm">{{ __('campus.send_doubts') }}</p>
             </a>
         </div>
     </div>

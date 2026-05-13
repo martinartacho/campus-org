@@ -269,7 +269,7 @@
                             id="submitBtn"
                             class="flex-1 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition font-semibold disabled:bg-gray-400 disabled:cursor-not-allowed">
                         <i class="bi bi-credit-card me-2"></i>
-                        <span id="submitText">Proceder al Pago</span>
+                        <span id="submitText">Procedir al Pagament</span>
                         </button>
                     </div>
 
@@ -285,17 +285,17 @@
                     <div class="mt-6 p-4 bg-green-50 rounded-lg">
                         <div class="flex items-center space-x-2 text-green-800 text-sm">
                             <i class="bi bi-shield-check"></i>
-                            <span>Pago 100% seguro</span>
+                            <span>Pagament 100% segur</span>
                         </div>
                         <p class="text-green-700 text-xs mt-2">
-                            Procesamiento seguro con Stripe. 
-                            Tus datos están protegidos con encriptación SSL.
+                            Processament segur amb Stripe. 
+                            Les teves dades estan protegides amb encriptació SSL.
                         </p>
                     </div>
 
                     <!-- Payment Methods -->
                     <div class="mt-4">
-                        <p class="text-sm text-gray-600 mb-2">Métodos de pago aceptados:</p>
+                        <p class="text-sm text-gray-600 mb-2">Mètodes de pagament acceptats:</p>
                         <div class="flex space-x-2">
                             <div class="w-12 h-8 bg-gray-100 rounded flex items-center justify-center">
                                 <i class="bi bi-credit-card text-gray-600 text-sm"></i>
@@ -312,8 +312,8 @@
                     <!-- Help -->
                     <div class="mt-6 text-center">
                         <p class="text-sm text-gray-600 mb-2">¿Necesitas ayuda?</p>
-                        <a href="mailto:info@campus.org" class="text-blue-600 hover:text-blue-800 text-sm">
-                            <i class="bi bi-envelope me-1"></i>info@campus.org
+                        <a href="mailto:{{ env('MAIL_ADDRESS_CONTACTE', 'info@campus.org') }}" class="text-blue-600 hover:text-blue-800 text-sm">
+                            <i class="bi bi-envelope me-1"></i>{{ env('MAIL_ADDRESS_CONTACTE', 'info@campus.org') }}
                         </a>
                     </div>
                 </div>
