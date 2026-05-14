@@ -85,6 +85,12 @@ sudo chown -R $USER:www-data .
 sudo chmod -R 775 storage bootstrap/cache
 ```
 
+**Nota importante:** Después de ejecutar `composer update` en producción, es necesario ejecutar manualmente:
+```bash
+php artisan setup:permissions --fix
+```
+Este comando ya no se ejecuta automáticamente para evitar efectos secundarios no deseados.
+
 ---
 
 ## ✅ 6. Ejecutar migraciones y seeders
