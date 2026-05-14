@@ -212,12 +212,12 @@ $beneficiary_fields = [
 ### **PARA INCIDENTES DE SEGURIDAD CRÍTICOS**
 
 🚨 **Emergencia Inmediata**:
-- **Email**: security@campus.org
+- **Email**: security@example.com
 - **Teléfono**: [+34] XXX XXX XXX
 - **Slack**: #security-emergency
 
 🔧 **Soporte Técnico**:
-- **Email**: support@campus.org
+- **Email**: support@example.com
 - **GitHub Issues**: https://github.com/org/campus/issues
 - **Documentación**: https://docs.campus.org
 

@@ -22,6 +22,7 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+/.windsurf
 ISSUE_IBAN_ENCRYPTION_CORRUPT_UPDATED.md
 /var/www/secure-docs/
 # Temporal files - should not be committed

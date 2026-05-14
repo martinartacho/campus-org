@@ -215,12 +215,12 @@ php artisan banking:recover --fix
 ## 📞 **SOPORTE I CONTACTE**
 
 ### **Per problemes crítics de seguretat:**
-- 📧 **Email urgent**: security@campus.org
+- 📧 **Email urgent**: security@example.com
 - 📱 **Telèfon emergència**: [+34] XXX XXX XXX
 - 💬 **Slack**: #security-emergency
 
 ### **Per dubtes tècnics:**
-- 📧 **Email suport**: support@campus.org
+- 📧 **Email suport**: support@example.com
 - 📋 **Issues GitHub**: https://github.com/org/campus/issues
 - 📚 **Documentació**: https://docs.campus.org
 

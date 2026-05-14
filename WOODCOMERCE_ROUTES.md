@@ -55,7 +55,7 @@ GET /api/courses/list
 
 ### Desarrollo Local
 ```
-http://campus-org.test/campus/courses/woodcomerce
+http://campus-local.test/campus/courses/woodcomerce
 ```
 
 ### Producción
